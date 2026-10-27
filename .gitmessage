@@ -1,0 +1,17 @@
+
+# <type>(<scope>): <summary>      imperative, lower-case, no full stop, <= 72 chars
+#
+# type:  feat | fix | eval | test | docs | refactor | chore
+# scope: deid | extract | mcp | viewer | eval | data | docs | config   (optional)
+#
+# Body (optional, wrap at 72): what changed and why, not how.
+# Include numbers when they changed, e.g. "dev leak recall 0.81 -> 0.96".
+#
+# Examples:
+#   feat(deid): add NRIC/FIN recogniser with checksum
+#   fix(extract): reject evidence spans that cross a surrogate tag
+#   eval(deid): score pattern-only recall on dev
+#   docs: add architecture diagram to README
+#   chore(config): add requirements.txt and .env.example
+#
+# Never commit .env, vault/, runs/ or anything from the test split's outputs.
