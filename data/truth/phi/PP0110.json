@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0110",
+  "source": "TCGA-AK-3427.4236854f-3076-49d3-8091-3b5fc989e061",
+  "cancer_type": "KIRC",
+  "split": "dev",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Nair",
+      "start": 94,
+      "end": 106
+    },
+    {
+      "type": "ID",
+      "text": "F1724825K",
+      "start": 116,
+      "end": 125
+    },
+    {
+      "type": "DOB",
+      "text": "05/01/1948",
+      "start": 131,
+      "end": 141
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6152035",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 170,
+      "end": 206
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9697 2166",
+      "start": 214,
+      "end": 227
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-44426",
+      "start": 242,
+      "end": 252
+    },
+    {
+      "type": "DATE",
+      "text": "16/08/2025",
+      "start": 267,
+      "end": 277
+    },
+    {
+      "type": "DATE",
+      "text": "23/08/2025",
+      "start": 291,
+      "end": 301
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Rao",
+      "start": 322,
+      "end": 336
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Rao",
+      "start": 5523,
+      "end": 5537
+    },
+    {
+      "type": "DATE",
+      "text": "23 Aug 2025",
+      "start": 5541,
+      "end": 5552
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Li Ting",
+      "start": 5580,
+      "end": 5594
+    },
+    {
+      "type": "DATE",
+      "text": "23/08/2025",
+      "start": 5623,
+      "end": 5633
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Nair",
+      "start": 5650,
+      "end": 5662
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6152035",
+      "start": 5667,
+      "end": 5677
+    }
+  ]
+}

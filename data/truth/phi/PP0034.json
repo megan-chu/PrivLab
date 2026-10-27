@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0034",
+  "source": "TCGA-UU-A93S.821ED144-DF12-4E49-ADC7-27FA5E422B83",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Teo Mei Xuan",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "S0532931J",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "20/09/1989",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6512314",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6776 1422",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-79116",
+      "start": 263,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "01/08/2025",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2025",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Nair",
+      "start": 342,
+      "end": 357
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2579116",
+      "start": 359,
+      "end": 367
+    },
+    {
+      "type": "ID",
+      "text": "S0532931J",
+      "start": 368,
+      "end": 377
+    },
+    {
+      "type": "EMAIL",
+      "text": "teo.xuan2@mailbox.example",
+      "start": 4225,
+      "end": 4250
+    },
+    {
+      "type": "NAME",
+      "text": "Teo Mei Xuan",
+      "start": 4269,
+      "end": 4281
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Turner",
+      "start": 4309,
+      "end": 4325
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2025",
+      "start": 4354,
+      "end": 4364
+    },
+    {
+      "type": "NAME",
+      "text": "Teo Mei Xuan",
+      "start": 4381,
+      "end": 4393
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6512314",
+      "start": 4398,
+      "end": 4408
+    }
+  ]
+}

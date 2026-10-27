@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0185",
+  "source": "TCGA-EJ-7789.7483212d-f96c-4afd-b817-74517b54de53",
+  "cancer_type": "PRAD",
+  "split": "dev",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Walker",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "918-79-4700",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "04/18/1940",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9980912",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 174,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "(549) 555-2318",
+      "start": 227,
+      "end": 241
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-44704",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DATE",
+      "text": "01/29/2026",
+      "start": 281,
+      "end": 291
+    },
+    {
+      "type": "DATE",
+      "text": "02/07/2026",
+      "start": 305,
+      "end": 315
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Krishnan",
+      "start": 336,
+      "end": 354
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2644704",
+      "start": 356,
+      "end": 365
+    },
+    {
+      "type": "ID",
+      "text": "918-79-4700",
+      "start": 366,
+      "end": 377
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Anderson",
+      "start": 3700,
+      "end": 3717
+    },
+    {
+      "type": "PHONE",
+      "text": "(549) 555-2318",
+      "start": 3744,
+      "end": 3758
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Hui Min",
+      "start": 3786,
+      "end": 3800
+    },
+    {
+      "type": "DATE",
+      "text": "02/07/2026",
+      "start": 3829,
+      "end": 3839
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Walker",
+      "start": 3856,
+      "end": 3868
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9980912",
+      "start": 3873,
+      "end": 3883
+    }
+  ]
+}

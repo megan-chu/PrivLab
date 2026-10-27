@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0004",
+  "source": "TCGA-E2-A2P6.E6A21CE6-841D-4D9B-A563-80B9BAF6E682",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda bin Abdullah",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "S0122691F",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "09/07/1974",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P5218028",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8261 8433",
+      "start": 183,
+      "end": 196
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-02504",
+      "start": 211,
+      "end": 221
+    },
+    {
+      "type": "DATE",
+      "text": "26/01/2026",
+      "start": 236,
+      "end": 246
+    },
+    {
+      "type": "DATE",
+      "text": "04/02/2026",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Chee Keong",
+      "start": 291,
+      "end": 308
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Subramaniam",
+      "start": 5380,
+      "end": 5400
+    },
+    {
+      "type": "DATE",
+      "text": "04/02/2026",
+      "start": 5429,
+      "end": 5439
+    }
+  ]
+}

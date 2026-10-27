@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0183",
+  "source": "TCGA-CH-5740.25992d81-7441-4d60-a773-457618dcedbc",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Siew Lan",
+      "start": 94,
+      "end": 106
+    },
+    {
+      "type": "ID",
+      "text": "S9391119I",
+      "start": 116,
+      "end": 125
+    },
+    {
+      "type": "DOB",
+      "text": "27/08/1951",
+      "start": 131,
+      "end": 141
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4091420",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 170,
+      "end": 206
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6899 2212",
+      "start": 214,
+      "end": 227
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-39609",
+      "start": 242,
+      "end": 252
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2026",
+      "start": 267,
+      "end": 277
+    },
+    {
+      "type": "DATE",
+      "text": "24/01/2026",
+      "start": 291,
+      "end": 301
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Li Ting",
+      "start": 322,
+      "end": 336
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2639609",
+      "start": 338,
+      "end": 347
+    },
+    {
+      "type": "ID",
+      "text": "S9391119I",
+      "start": 348,
+      "end": 357
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Li Ting",
+      "start": 906,
+      "end": 920
+    },
+    {
+      "type": "DATE",
+      "text": "24 Jan 2026",
+      "start": 924,
+      "end": 935
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Thompson",
+      "start": 963,
+      "end": 980
+    },
+    {
+      "type": "DATE",
+      "text": "24/01/2026",
+      "start": 1009,
+      "end": 1019
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Siew Lan",
+      "start": 1036,
+      "end": 1048
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4091420",
+      "start": 1053,
+      "end": 1063
+    }
+  ]
+}

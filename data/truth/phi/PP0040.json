@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0040",
+  "source": "TCGA-BH-A18M.4F67B7BE-68C1-40E1-8276-2D26B46C744D",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Garcia",
+      "start": 105,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "958-78-4770",
+      "start": 126,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "11/17/1984",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7661748",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "PHONE",
+      "text": "(927) 555-7843",
+      "start": 180,
+      "end": 194
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-06544",
+      "start": 209,
+      "end": 219
+    },
+    {
+      "type": "DATE",
+      "text": "07/27/2026",
+      "start": 234,
+      "end": 244
+    },
+    {
+      "type": "DATE",
+      "text": "08/03/2026",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Li Ting",
+      "start": 289,
+      "end": 303
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2606544",
+      "start": 305,
+      "end": 314
+    },
+    {
+      "type": "ID",
+      "text": "958-78-4770",
+      "start": 315,
+      "end": 326
+    },
+    {
+      "type": "EMAIL",
+      "text": "linda.garcia15@mailbox.example",
+      "start": 3532,
+      "end": 3562
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Garcia",
+      "start": 3581,
+      "end": 3593
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Menon",
+      "start": 3621,
+      "end": 3636
+    },
+    {
+      "type": "DATE",
+      "text": "08/03/2026",
+      "start": 3665,
+      "end": 3675
+    }
+  ]
+}

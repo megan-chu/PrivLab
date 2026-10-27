@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0140",
+  "source": "TCGA-55-8097.3e2989f4-213d-4f64-be03-9b967f1fcc08",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Pillai",
+      "start": 100,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "S1790807C",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "20/04/1973",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "P5609255",
+      "start": 158,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 176,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9918 7933",
+      "start": 220,
+      "end": 233
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-24969",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DATE",
+      "text": "19/11/2025",
+      "start": 273,
+      "end": 283
+    },
+    {
+      "type": "DATE",
+      "text": "28/11/2025",
+      "start": 297,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Raman",
+      "start": 328,
+      "end": 343
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Raman",
+      "start": 4724,
+      "end": 4739
+    },
+    {
+      "type": "DATE",
+      "text": "28 Nov 2025",
+      "start": 4743,
+      "end": 4754
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Clarke",
+      "start": 4782,
+      "end": 4801
+    },
+    {
+      "type": "DATE",
+      "text": "28/11/2025",
+      "start": 4830,
+      "end": 4840
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+Maple Grove University Hospital
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Susan Anderson    SSN: 943-20-7917
+DOB: 06/28/1961    MRN: H9924543
+Address: 92 Harbor View Rd, Apt 4B, Portland, ME 04101
+Phone: (833) 555-8418
+Accession No: SP26-55120    Collected: 06/14/2026    Reported: 06/20/2026
+Requesting surgeon: Dr Lee Kok Wah
+*SP2655120*943-20-7917*
+
+SP-CONS. SURG PATH REPORT. 1st Specimen collected on. FINAL DIAGNOSIS. Primary Pathologist: Dr Lee Kok Wah Other Pathologist: 1. STATION (RESECTION) : THREE LYMPH NODE AND ASSOCIATED. FIBROADIPOSE TISSUE, NEGATIVE FOR TUMOR. 2. L11 LYMPH NODE (RESECTION) : METASTATIC ADENOCARCINOMA IN ONE OF. TWO LYMPH NODES (1/2) -. 3. STATION 6 LYMPH NODE (RESECTION) : TWO LYMPH NODE AND ANDOCIATED. FIBROADIPOSE TISSUE, NEGATIVE FOR TUMOR. 4. LEFT UPPER LOBE LUNG (LOBECTOMYO: SPECIMEN TYPE: Lobectomy. TUMOR SITE: Left. HISTOLOGIC TYPE: Adenocarcinoma, mixed acinar (dominant component) &. bronchioloalveolar types. TUMOR SIZE: Greatest dimension 3. 5cm. LOCATION, SIZE, AND HISTOLOGIC TYPE OF. SEPARATE TUMOR NODULES, IF ANY: none identified. HISTOLOGIC GRADE: G2-G3: Moderately to Poorly differentiated (the poorly. differentiated component represents less than 53 of the tumor) . LYMPH NODES: Metastatic carcinoma in 3 of 18 lymph nodes. (see part 1-6) -. DIRECT EXTENSION OF TUMOR: none identified. EXTENT OF INVASION (7th Edition, AJCC) : PRIMARY TUMOR: pT2a: Tumor more than 3 cm but 5 cm or less. REGIONAL LYMPH NODES: pN1: Metastasis in ipsilateral peribronchial lymph nodes. MARGINS: margins uninvolved by invasive carcinoma. VENOUS/ARTERIAL (LARGE VESSEL) INVASION: Indeterminate. There are obliterated vessels within the tumor but no. carcinoma is seen in the lumina. LYMPHATIC (SMALL VESSEL) INVASION: Indeterminate. ADDITIONAL PATHOLOGIC FINDINGS: Emphysematous changes with subpleural bulla formation. NOTE: EGPR & KRAS ordered on block 4E. Results will be reported in. an addendum. STATION 5 LYMPH NODE (RESECTION) : ONE LYMPH NODE AND ASSOCIATED. FIBROADIPOSE TISSUE, NEGATIVE FOR TUMOR. 6. STATION 7 LYMPH NODE (RESECTION) : ONE LYMPH NODE AND ASCOCIATED. FIBROADIPOSE TISSUE, NEGATIVE FOR TUMOR. ADDENDUM. KRAS MUTATION ANALYSIS: BLOCK TESTED: RESULT: POSITIVE. NOTE: The assay detected a mutation in either codon 12 or 13 of the. KRAS gene. A copy of the complete report is available in. and is also on file in the. Based on these results, EGFR testing is not. needed. See. for official report. Reported bv:
+
+Electronically signed by Dr Arjun Rao, Consultant Pathologist, on 06/20/2026
+Page 1 of 1  |  Susan Anderson  |  H9924543

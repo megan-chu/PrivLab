@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0122",
+  "source": "TCGA-95-7948.1cee5f67-bdcc-41cb-8764-5e0d8e09ed61",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "George Pemberton",
+      "start": 97,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "384 066 6589",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "28/10/1944",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8433377",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 182,
+      "end": 214
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7799 178086",
+      "start": 222,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-84071",
+      "start": 252,
+      "end": 261
+    },
+    {
+      "type": "DATE",
+      "text": "14/01/2025",
+      "start": 276,
+      "end": 286
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2025",
+      "start": 300,
+      "end": 310
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Rajesh Raman",
+      "start": 331,
+      "end": 346
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2584071",
+      "start": 348,
+      "end": 356
+    },
+    {
+      "type": "ID",
+      "text": "3840666589",
+      "start": 357,
+      "end": 367
+    },
+    {
+      "type": "EMAIL",
+      "text": "george.pemberton23@mailbox.example",
+      "start": 8630,
+      "end": 8664
+    },
+    {
+      "type": "NAME",
+      "text": "George Pemberton",
+      "start": 8683,
+      "end": 8699
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Nair",
+      "start": 8727,
+      "end": 8741
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2025",
+      "start": 8770,
+      "end": 8780
+    }
+  ]
+}

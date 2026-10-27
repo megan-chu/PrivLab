@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0101",
+  "source": "TCGA-B0-4815.477535c0-712e-4c9e-9815-4f47a27da412",
+  "cancer_type": "KIRC",
+  "split": "dev",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Nair",
+      "start": 94,
+      "end": 105
+    },
+    {
+      "type": "ID",
+      "text": "S5704331H",
+      "start": 115,
+      "end": 124
+    },
+    {
+      "type": "DOB",
+      "text": "11/06/1971",
+      "start": 130,
+      "end": 140
+    },
+    {
+      "type": "MRN",
+      "text": "P1021494",
+      "start": 149,
+      "end": 157
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 167,
+      "end": 203
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9484 2661",
+      "start": 211,
+      "end": 224
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-51585",
+      "start": 239,
+      "end": 248
+    },
+    {
+      "type": "DATE",
+      "text": "20/09/2025",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "23/09/2025",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Walker",
+      "start": 318,
+      "end": 333
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Nair",
+      "start": 1961,
+      "end": 1972
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9484 2661",
+      "start": 1999,
+      "end": 2012
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Martinez",
+      "start": 2040,
+      "end": 2057
+    },
+    {
+      "type": "DATE",
+      "text": "23/09/2025",
+      "start": 2086,
+      "end": 2096
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0148",
+  "source": "TCGA-69-7765.89d3bed4-3090-463f-ac00-c2de1abaabb2",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Jun Jie",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "T7031207C",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "26/06/1959",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H9361693",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8173 9899",
+      "start": 171,
+      "end": 184
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-61776",
+      "start": 199,
+      "end": 209
+    },
+    {
+      "type": "DATE",
+      "text": "17/12/2025",
+      "start": 224,
+      "end": 234
+    },
+    {
+      "type": "DATE",
+      "text": "25/12/2025",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Hui Min",
+      "start": 279,
+      "end": 293
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Rahman",
+      "start": 5718,
+      "end": 5731
+    },
+    {
+      "type": "DATE",
+      "text": "25/12/2025",
+      "start": 5760,
+      "end": 5770
+    }
+  ]
+}

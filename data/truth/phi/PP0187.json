@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0187",
+  "source": "TCGA-G9-7522.8d3c4720-f528-4a73-b2f0-95b2aac093f2",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Lee Wei Ling",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "G0790320R",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "15/06/1955",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8653507",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 176,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6164 4320",
+      "start": 220,
+      "end": 233
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-23372",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DATE",
+      "text": "21/02/2025",
+      "start": 273,
+      "end": 283
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 297,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Jia Hui",
+      "start": 328,
+      "end": 342
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Jia Hui",
+      "start": 4587,
+      "end": 4601
+    },
+    {
+      "type": "DATE",
+      "text": "27 Feb 2025",
+      "start": 4605,
+      "end": 4616
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Thomas Lewis",
+      "start": 4644,
+      "end": 4659
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 4688,
+      "end": 4698
+    }
+  ]
+}

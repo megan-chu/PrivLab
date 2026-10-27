@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0128",
+  "source": "TCGA-05-4430.0c8a524e-3241-4cde-8d22-1330aaf8c603",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Rao",
+      "start": 100,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "F9492995N",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "18/05/1968",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6254872",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 174,
+      "end": 210
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8998 8863",
+      "start": 218,
+      "end": 231
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-30035",
+      "start": 246,
+      "end": 255
+    },
+    {
+      "type": "DATE",
+      "text": "15/03/2026",
+      "start": 270,
+      "end": 280
+    },
+    {
+      "type": "DATE",
+      "text": "19/03/2026",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Martinez",
+      "start": 325,
+      "end": 345
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2630035",
+      "start": 347,
+      "end": 355
+    },
+    {
+      "type": "ID",
+      "text": "F9492995N",
+      "start": 356,
+      "end": 365
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Subramaniam",
+      "start": 951,
+      "end": 969
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8998 8863",
+      "start": 996,
+      "end": 1009
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Salleh",
+      "start": 1037,
+      "end": 1051
+    },
+    {
+      "type": "DATE",
+      "text": "19/03/2026",
+      "start": 1080,
+      "end": 1090
+    }
+  ]
+}

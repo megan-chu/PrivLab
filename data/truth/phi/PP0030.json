@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0030",
+  "source": "TCGA-B6-A0IJ.F3BAF04C-35EE-450F-BFA8-E9DFE9F984FD",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Bennett",
+      "start": 97,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "747 407 4826",
+      "start": 126,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "17/08/1946",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "P6018975",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7209 348728",
+      "start": 179,
+      "end": 194
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-56615",
+      "start": 209,
+      "end": 219
+    },
+    {
+      "type": "DATE",
+      "text": "29/03/2026",
+      "start": 234,
+      "end": 244
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2026",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Subramaniam",
+      "start": 289,
+      "end": 310
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2656615",
+      "start": 312,
+      "end": 321
+    },
+    {
+      "type": "ID",
+      "text": "7474074826",
+      "start": 322,
+      "end": 332
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Subramaniam",
+      "start": 2263,
+      "end": 2284
+    },
+    {
+      "type": "DATE",
+      "text": "05 Apr 2026",
+      "start": 2288,
+      "end": 2299
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Abdullah",
+      "start": 2327,
+      "end": 2344
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2026",
+      "start": 2373,
+      "end": 2383
+    }
+  ]
+}

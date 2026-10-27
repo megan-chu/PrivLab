@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0044",
+  "source": "TCGA-CM-6167.8a5176da-e133-4647-b2bb-30285b8bbeab",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Kavitha Nair",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "F1925462M",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "08/08/1947",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "P6510922",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8416 3953",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-88833",
+      "start": 263,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "14/11/2025",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "22/11/2025",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Pemberton",
+      "start": 342,
+      "end": 361
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2588833",
+      "start": 363,
+      "end": 371
+    },
+    {
+      "type": "ID",
+      "text": "F1925462M",
+      "start": 372,
+      "end": 381
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Pemberton",
+      "start": 4390,
+      "end": 4409
+    },
+    {
+      "type": "DATE",
+      "text": "22 Nov 2025",
+      "start": 4413,
+      "end": 4424
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Clarke",
+      "start": 4452,
+      "end": 4467
+    },
+    {
+      "type": "DATE",
+      "text": "22/11/2025",
+      "start": 4496,
+      "end": 4506
+    }
+  ]
+}

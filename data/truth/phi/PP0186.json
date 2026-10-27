@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0186",
+  "source": "TCGA-HC-A8D1.6C5B3FD6-3C50-4DF3-9101-D131075F4A5B",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Hui Min",
+      "start": 94,
+      "end": 106
+    },
+    {
+      "type": "ID",
+      "text": "S7320309J",
+      "start": 116,
+      "end": 125
+    },
+    {
+      "type": "DOB",
+      "text": "24/05/1961",
+      "start": 131,
+      "end": 141
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6162867",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8221 4468",
+      "start": 168,
+      "end": 181
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-70984",
+      "start": 196,
+      "end": 206
+    },
+    {
+      "type": "DATE",
+      "text": "16/05/2026",
+      "start": 221,
+      "end": 231
+    },
+    {
+      "type": "DATE",
+      "text": "24/05/2026",
+      "start": 245,
+      "end": 255
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Wei Ling",
+      "start": 276,
+      "end": 292
+    },
+    {
+      "type": "EMAIL",
+      "text": "chua.min86@mailbox.example",
+      "start": 3336,
+      "end": 3362
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Hui Min",
+      "start": 3381,
+      "end": 3393
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Hui Min",
+      "start": 3421,
+      "end": 3435
+    },
+    {
+      "type": "DATE",
+      "text": "24/05/2026",
+      "start": 3464,
+      "end": 3474
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Hui Min",
+      "start": 3491,
+      "end": 3503
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6162867",
+      "start": 3508,
+      "end": 3518
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0131",
+  "source": "TCGA-50-5068.d8025f22-0b42-4204-bc58-56fc727c71ac",
+  "cancer_type": "LUAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Chee Keong",
+      "start": 100,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "G3865577P",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "04/08/1940",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "H3778404",
+      "start": 158,
+      "end": 166
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9834 2938",
+      "start": 174,
+      "end": 187
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-11104",
+      "start": 202,
+      "end": 211
+    },
+    {
+      "type": "DATE",
+      "text": "29/05/2026",
+      "start": 226,
+      "end": 236
+    },
+    {
+      "type": "DATE",
+      "text": "02/06/2026",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Rajesh Nair",
+      "start": 281,
+      "end": 295
+    },
+    {
+      "type": "EMAIL",
+      "text": "ong.keong30@mailbox.example",
+      "start": 1301,
+      "end": 1328
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Chee Keong",
+      "start": 1347,
+      "end": 1361
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Rahman",
+      "start": 1389,
+      "end": 1407
+    },
+    {
+      "type": "DATE",
+      "text": "02/06/2026",
+      "start": 1436,
+      "end": 1446
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Chee Keong",
+      "start": 1463,
+      "end": 1477
+    },
+    {
+      "type": "MRN",
+      "text": "H3778404",
+      "start": 1482,
+      "end": 1490
+    }
+  ]
+}

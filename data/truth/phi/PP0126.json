@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0126",
+  "source": "TCGA-44-2666.bbc3c899-16af-41e4-9ba5-57963305df6f",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Tan Siew Lan",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "S5814491F",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "03/04/1965",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "H1517059",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 174,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9247 5883",
+      "start": 230,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-21489",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "25/03/2026",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "02/04/2026",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Salleh",
+      "start": 338,
+      "end": 356
+    },
+    {
+      "type": "EMAIL",
+      "text": "tan.lan94@mailbox.example",
+      "start": 4007,
+      "end": 4032
+    },
+    {
+      "type": "NAME",
+      "text": "Tan Siew Lan",
+      "start": 4051,
+      "end": 4063
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Thompson",
+      "start": 4091,
+      "end": 4108
+    },
+    {
+      "type": "DATE",
+      "text": "02/04/2026",
+      "start": 4137,
+      "end": 4147
+    }
+  ]
+}

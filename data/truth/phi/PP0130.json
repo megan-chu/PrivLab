@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0130",
+  "source": "TCGA-49-4507.e37717f8-8175-4f30-a817-ae365097804a",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz binte Hassan",
+      "start": 94,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "T7503731C",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "19/09/1963",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4469093",
+      "start": 165,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 185,
+      "end": 233
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9633 5480",
+      "start": 241,
+      "end": 254
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-48349",
+      "start": 269,
+      "end": 279
+    },
+    {
+      "type": "DATE",
+      "text": "14/01/2026",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DATE",
+      "text": "19/01/2026",
+      "start": 318,
+      "end": 328
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Miller",
+      "start": 349,
+      "end": 364
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2648349",
+      "start": 366,
+      "end": 375
+    },
+    {
+      "type": "ID",
+      "text": "T7503731C",
+      "start": 376,
+      "end": 385
+    },
+    {
+      "type": "EMAIL",
+      "text": "muhammad.hassan34@mailbox.example",
+      "start": 935,
+      "end": 968
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz binte Hassan",
+      "start": 987,
+      "end": 1014
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Hui Min",
+      "start": 1042,
+      "end": 1056
+    },
+    {
+      "type": "DATE",
+      "text": "19/01/2026",
+      "start": 1085,
+      "end": 1095
+    }
+  ]
+}

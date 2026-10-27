@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0067",
+  "source": "TCGA-AA-3842.890ecc56-472a-4b9b-8513-14c3d7fbd0d7",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Jun Jie",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "G8633752K",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "23/09/1964",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8033690",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9788 1797",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-03050",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "13/07/2025",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "16/07/2025",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Ismail",
+      "start": 343,
+      "end": 356
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Wei Ling",
+      "start": 937,
+      "end": 949
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9788 1797",
+      "start": 976,
+      "end": 989
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Whitaker",
+      "start": 1017,
+      "end": 1034
+    },
+    {
+      "type": "DATE",
+      "text": "16/07/2025",
+      "start": 1063,
+      "end": 1073
+    }
+  ]
+}

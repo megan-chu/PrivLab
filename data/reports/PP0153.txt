@@ -1,0 +1,14 @@
+Riverside General Hospital
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Ng Wei Ling    NRIC: G1705865M
+DOB: 25/03/1945    MRN: P2180916
+Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
+Phone: +65 6297 9621
+Accession No: SP25-11215    Collected: 30/09/2025    Reported: 02/10/2025
+Requesting surgeon: Dr Oliver Hughes
+
+Gross Description. Microscopic. Description. Diagnosis Details. Comments. Laterality. LUNG TISSUE CHECKLIST. Right-lower. Specimen type: Lobectomy. Tumor site: Lung. Tumor size: 4.5 X 3.8 X 3.5 cm. Histologic type: Adenocarcinoma. Histologic grade: Moderately differentiated. Tumor extent: Not specified. Other tumor nodules: Not specified. Lymph nodes: Not specified. Lymphatic invasion: Not specified. Venous invasion: Not specified. Margins: Not specified. Evidence of neo-adjuvant treatment: Not specified. Additional pathologic findings: Not specified. Comments: CK7, CD15, TTF1 - positive.
+
+Electronically signed by Dr Nurul Abdullah, Consultant Pathologist, on 02/10/2025

@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0029",
+  "source": "TCGA-AR-A24S.C0A8A457-8790-4745-BD5D-AFBE55254A1C",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Holloway",
+      "start": 99,
+      "end": 115
+    },
+    {
+      "type": "ID",
+      "text": "780 913 4310",
+      "start": 127,
+      "end": 139
+    },
+    {
+      "type": "DOB",
+      "text": "07/12/1978",
+      "start": 145,
+      "end": 155
+    },
+    {
+      "type": "MRN",
+      "text": "H3791137",
+      "start": 164,
+      "end": 172
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 182,
+      "end": 214
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7541 252640",
+      "start": 222,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-40251",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "11/04/2025",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "14/04/2025",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Hui Min",
+      "start": 332,
+      "end": 346
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2540251",
+      "start": 348,
+      "end": 357
+    },
+    {
+      "type": "ID",
+      "text": "7809134310",
+      "start": 358,
+      "end": 368
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Hui Min",
+      "start": 1577,
+      "end": 1591
+    },
+    {
+      "type": "DATE",
+      "text": "14 Apr 2025",
+      "start": 1595,
+      "end": 1606
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Iyer",
+      "start": 1634,
+      "end": 1648
+    },
+    {
+      "type": "DATE",
+      "text": "14/04/2025",
+      "start": 1677,
+      "end": 1687
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Holloway",
+      "start": 1704,
+      "end": 1720
+    },
+    {
+      "type": "MRN",
+      "text": "H3791137",
+      "start": 1725,
+      "end": 1733
+    }
+  ]
+}

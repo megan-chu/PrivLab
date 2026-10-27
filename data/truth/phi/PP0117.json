@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0117",
+  "source": "TCGA-MM-A564.1BA365C7-6B1F-485B-B4AE-09E1CC110748",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "George Holloway",
+      "start": 111,
+      "end": 126
+    },
+    {
+      "type": "ID",
+      "text": "889 163 7564",
+      "start": 138,
+      "end": 150
+    },
+    {
+      "type": "DOB",
+      "text": "03/05/1953",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3632804",
+      "start": 175,
+      "end": 185
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7384 152796",
+      "start": 193,
+      "end": 208
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-62510",
+      "start": 223,
+      "end": 233
+    },
+    {
+      "type": "DATE",
+      "text": "26/07/2026",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DATE",
+      "text": "28/07/2026",
+      "start": 272,
+      "end": 282
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Abdullah",
+      "start": 303,
+      "end": 318
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2662510",
+      "start": 320,
+      "end": 329
+    },
+    {
+      "type": "ID",
+      "text": "8891637564",
+      "start": 330,
+      "end": 340
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Rajesh Iyer",
+      "start": 3421,
+      "end": 3435
+    },
+    {
+      "type": "DATE",
+      "text": "28/07/2026",
+      "start": 3464,
+      "end": 3474
+    },
+    {
+      "type": "NAME",
+      "text": "George Holloway",
+      "start": 3491,
+      "end": 3506
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3632804",
+      "start": 3511,
+      "end": 3521
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0157",
+  "source": "TCGA-55-7907.233ef961-8050-47e5-bb53-260a7de4174d",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Bennett",
+      "start": 111,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "646 225 1794",
+      "start": 137,
+      "end": 149
+    },
+    {
+      "type": "DOB",
+      "text": "03/06/1944",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "MRN",
+      "text": "H2427388",
+      "start": 174,
+      "end": 182
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 192,
+      "end": 229
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7504 783932",
+      "start": 237,
+      "end": 252
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-66774",
+      "start": 267,
+      "end": 277
+    },
+    {
+      "type": "DATE",
+      "text": "16/07/2026",
+      "start": 292,
+      "end": 302
+    },
+    {
+      "type": "DATE",
+      "text": "24/07/2026",
+      "start": 316,
+      "end": 326
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Abdullah",
+      "start": 347,
+      "end": 367
+    },
+    {
+      "type": "EMAIL",
+      "text": "oliver.bennett26@mailbox.example",
+      "start": 9606,
+      "end": 9638
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Bennett",
+      "start": 9657,
+      "end": 9671
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Whitaker",
+      "start": 9699,
+      "end": 9717
+    },
+    {
+      "type": "DATE",
+      "text": "24/07/2026",
+      "start": 9746,
+      "end": 9756
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Bennett",
+      "start": 9773,
+      "end": 9787
+    },
+    {
+      "type": "MRN",
+      "text": "H2427388",
+      "start": 9792,
+      "end": 9800
+    }
+  ]
+}

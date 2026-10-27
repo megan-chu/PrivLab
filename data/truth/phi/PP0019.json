@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0019",
+  "source": "TCGA-AC-A2QH.C2A0E948-2B9E-4E49-90C4-57CE4C4A95B3",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Holloway",
+      "start": 111,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "865 185 0670",
+      "start": 137,
+      "end": 149
+    },
+    {
+      "type": "DOB",
+      "text": "20/06/1949",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "MRN",
+      "text": "P8713146",
+      "start": 174,
+      "end": 182
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7546 965845",
+      "start": 190,
+      "end": 205
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-21052",
+      "start": 220,
+      "end": 230
+    },
+    {
+      "type": "DATE",
+      "text": "20/03/2026",
+      "start": 245,
+      "end": 255
+    },
+    {
+      "type": "DATE",
+      "text": "27/03/2026",
+      "start": 269,
+      "end": 279
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Hassan",
+      "start": 300,
+      "end": 314
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Holloway",
+      "start": 13267,
+      "end": 13282
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7546 965845",
+      "start": 13309,
+      "end": 13324
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Rao",
+      "start": 13352,
+      "end": 13365
+    },
+    {
+      "type": "DATE",
+      "text": "27/03/2026",
+      "start": 13394,
+      "end": 13404
+    }
+  ]
+}

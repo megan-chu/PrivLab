@@ -1,0 +1,15 @@
+Kallang Medical Centre
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Chua Jia Hui    NRIC: G5891783X
+DOB: 21/11/1943    MRN: H1522621
+Phone: +65 8722 3430
+Accession No: S26-63781    Collected: 18/06/2026    Reported: 24/06/2026
+Requesting surgeon: Dr Michael Harris
+
+Diagnosis: 1. Ablated breast sample with a moderately differentiated invasive ductal carcinoma. (tumor diameter 105 cm) with focal ulceration of the skin and a satellite node. (diameter 0.9 cm) in the skin. Tumor-free dorsal resection margin. Together with the preliminary finding, this gives rise to the following tumor. classification: NOS, G II, pT4b pN3a(11/22)LOVORO. :34499A83-DFCE-4D88-BAA0-A7590AF8BC07.
+
+COMMENT: Report copy sent to chua.hui17@mailbox.example at the request of Chua Jia Hui.
+
+Electronically signed by Dr Michael Johnson, Consultant Pathologist, on 24/06/2026

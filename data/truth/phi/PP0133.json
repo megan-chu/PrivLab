@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0133",
+  "source": "TCGA-55-7283.39929fe3-b87c-413c-8613-f5a15b407b28",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda bin Salleh",
+      "start": 100,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "F2579913P",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "06/12/1973",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1277874",
+      "start": 165,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 185,
+      "end": 233
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9714 1639",
+      "start": 241,
+      "end": 254
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-69512",
+      "start": 269,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "30/01/2026",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "03/02/2026",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Lewis",
+      "start": 348,
+      "end": 362
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2669512",
+      "start": 364,
+      "end": 372
+    },
+    {
+      "type": "ID",
+      "text": "F2579913P",
+      "start": 373,
+      "end": 382
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Lewis",
+      "start": 6274,
+      "end": 6288
+    },
+    {
+      "type": "DATE",
+      "text": "03 Feb 2026",
+      "start": 6292,
+      "end": 6303
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Kok Wah",
+      "start": 6331,
+      "end": 6346
+    },
+    {
+      "type": "DATE",
+      "text": "03/02/2026",
+      "start": 6375,
+      "end": 6385
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0197",
+  "source": "TCGA-KK-A6E7.8173D1A9-5564-4824-AFD6-2097B90F4008",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Kok Wah",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "F7292842M",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "25/09/1955",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2961547",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 176,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9824 1568",
+      "start": 232,
+      "end": 245
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-42500",
+      "start": 260,
+      "end": 269
+    },
+    {
+      "type": "DATE",
+      "text": "07/06/2025",
+      "start": 284,
+      "end": 294
+    },
+    {
+      "type": "DATE",
+      "text": "11/06/2025",
+      "start": 308,
+      "end": 318
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Rahman",
+      "start": 339,
+      "end": 354
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Rahman",
+      "start": 4911,
+      "end": 4926
+    },
+    {
+      "type": "DATE",
+      "text": "11 Jun 2025",
+      "start": 4930,
+      "end": 4941
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Raman",
+      "start": 4969,
+      "end": 4985
+    },
+    {
+      "type": "DATE",
+      "text": "11/06/2025",
+      "start": 5014,
+      "end": 5024
+    }
+  ]
+}

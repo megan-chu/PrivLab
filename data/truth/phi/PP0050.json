@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0050",
+  "source": "TCGA-A6-A56B.FEE2A033-7EE5-4528-80AF-979BD2FDCBF9",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "David Garcia",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "973-98-9151",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "12/15/1972",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8121922",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 174,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "(536) 555-5843",
+      "start": 227,
+      "end": 241
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-57440",
+      "start": 256,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "06/16/2026",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "06/22/2026",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Rahman",
+      "start": 335,
+      "end": 350
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Walker",
+      "start": 3749,
+      "end": 3762
+    },
+    {
+      "type": "PHONE",
+      "text": "(536) 555-5843",
+      "start": 3789,
+      "end": 3803
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Pillai",
+      "start": 3831,
+      "end": 3846
+    },
+    {
+      "type": "DATE",
+      "text": "06/22/2026",
+      "start": 3875,
+      "end": 3885
+    }
+  ]
+}

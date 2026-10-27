@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0177",
+  "source": "TCGA-CH-5791.009bf26f-b3df-4f10-b496-a4304af1e091",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Krishnan",
+      "start": 100,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "G2405800Q",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "24/03/1972",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4946691",
+      "start": 158,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9316 3841",
+      "start": 176,
+      "end": 189
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-93041",
+      "start": 204,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "23/04/2025",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "29/04/2025",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Walker",
+      "start": 284,
+      "end": 299
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2593041",
+      "start": 301,
+      "end": 310
+    },
+    {
+      "type": "ID",
+      "text": "G2405800Q",
+      "start": 311,
+      "end": 320
+    },
+    {
+      "type": "EMAIL",
+      "text": "arjun.krishnan18@mailbox.example",
+      "start": 1229,
+      "end": 1261
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Krishnan",
+      "start": 1280,
+      "end": 1294
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Walker",
+      "start": 1322,
+      "end": 1337
+    },
+    {
+      "type": "DATE",
+      "text": "29/04/2025",
+      "start": 1366,
+      "end": 1376
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Krishnan",
+      "start": 1393,
+      "end": 1407
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4946691",
+      "start": 1412,
+      "end": 1422
+    }
+  ]
+}

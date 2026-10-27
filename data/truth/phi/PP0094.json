@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0094",
+  "source": "TCGA-BP-4975.e2ff0050-6701-4191-955f-1419b74c95b1",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Rahman",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "S0386571A",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "28/07/1948",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P7616116",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 185,
+      "end": 233
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8920 7438",
+      "start": 241,
+      "end": 254
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-78580",
+      "start": 269,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "02/06/2026",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "06/06/2026",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Zhi Hao",
+      "start": 348,
+      "end": 362
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2678580",
+      "start": 364,
+      "end": 372
+    },
+    {
+      "type": "ID",
+      "text": "S0386571A",
+      "start": 373,
+      "end": 382
+    },
+    {
+      "type": "EMAIL",
+      "text": "mohd.rahman95@mailbox.example",
+      "start": 2873,
+      "end": 2902
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Rahman",
+      "start": 2921,
+      "end": 2944
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Rahman",
+      "start": 2972,
+      "end": 2986
+    },
+    {
+      "type": "DATE",
+      "text": "06/06/2026",
+      "start": 3015,
+      "end": 3025
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Rahman",
+      "start": 3042,
+      "end": 3065
+    },
+    {
+      "type": "MRN",
+      "text": "P7616116",
+      "start": 3070,
+      "end": 3078
+    }
+  ]
+}

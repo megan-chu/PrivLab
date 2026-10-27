@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0069",
+  "source": "TCGA-AD-6899.d2761f85-daab-4236-bff3-d7ec6927a166",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Pemberton",
+      "start": 111,
+      "end": 128
+    },
+    {
+      "type": "ID",
+      "text": "882 634 3519",
+      "start": 140,
+      "end": 152
+    },
+    {
+      "type": "DOB",
+      "text": "08/05/1980",
+      "start": 158,
+      "end": 168
+    },
+    {
+      "type": "MRN",
+      "text": "P4195751",
+      "start": 177,
+      "end": 185
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 195,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7787 685997",
+      "start": 235,
+      "end": 250
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-36187",
+      "start": 265,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "15/01/2026",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "18/01/2026",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Hughes",
+      "start": 344,
+      "end": 359
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Salleh",
+      "start": 4773,
+      "end": 4788
+    },
+    {
+      "type": "DATE",
+      "text": "18/01/2026",
+      "start": 4817,
+      "end": 4827
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0046",
+  "source": "TCGA-G4-6322.3e8f1c36-63d9-4f6e-8c16-b2e74f8fd138",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Fletcher",
+      "start": 99,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "075 818 1418",
+      "start": 129,
+      "end": 141
+    },
+    {
+      "type": "DOB",
+      "text": "20/05/1954",
+      "start": 147,
+      "end": 157
+    },
+    {
+      "type": "MRN",
+      "text": "P3472100",
+      "start": 166,
+      "end": 174
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 184,
+      "end": 216
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7614 492127",
+      "start": 224,
+      "end": 239
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-13021",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DATE",
+      "text": "07/10/2025",
+      "start": 279,
+      "end": 289
+    },
+    {
+      "type": "DATE",
+      "text": "16/10/2025",
+      "start": 303,
+      "end": 313
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Miller",
+      "start": 334,
+      "end": 349
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2513021",
+      "start": 351,
+      "end": 360
+    },
+    {
+      "type": "ID",
+      "text": "0758181418",
+      "start": 361,
+      "end": 371
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Walker",
+      "start": 2920,
+      "end": 2938
+    },
+    {
+      "type": "DATE",
+      "text": "16/10/2025",
+      "start": 2967,
+      "end": 2977
+    }
+  ]
+}

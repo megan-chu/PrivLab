@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0112",
+  "source": "TCGA-A3-3387.f5199278-aa10-477e-a9a8-000ed52065ac",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Salleh",
+      "start": 100,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "F4216894R",
+      "start": 135,
+      "end": 144
+    },
+    {
+      "type": "DOB",
+      "text": "25/12/1954",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "MRN",
+      "text": "H5879280",
+      "start": 169,
+      "end": 177
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 187,
+      "end": 240
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8868 4087",
+      "start": 248,
+      "end": 261
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-96398",
+      "start": 276,
+      "end": 286
+    },
+    {
+      "type": "DATE",
+      "text": "08/03/2025",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DATE",
+      "text": "10/03/2025",
+      "start": 325,
+      "end": 335
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Pemberton",
+      "start": 356,
+      "end": 374
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Abdullah",
+      "start": 3238,
+      "end": 3254
+    },
+    {
+      "type": "DATE",
+      "text": "10/03/2025",
+      "start": 3283,
+      "end": 3293
+    }
+  ]
+}

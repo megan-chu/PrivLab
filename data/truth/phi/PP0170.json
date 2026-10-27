@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0170",
+  "source": "TCGA-G9-6363.bd52ccc2-462d-41df-a5a4-dc45bd78aea4",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Miller",
+      "start": 103,
+      "end": 115
+    },
+    {
+      "type": "ID",
+      "text": "976-48-6169",
+      "start": 124,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "10/22/1989",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6565326",
+      "start": 160,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "(785) 555-7382",
+      "start": 178,
+      "end": 192
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-09678",
+      "start": 207,
+      "end": 217
+    },
+    {
+      "type": "DATE",
+      "text": "07/03/2026",
+      "start": 232,
+      "end": 242
+    },
+    {
+      "type": "DATE",
+      "text": "07/05/2026",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Iyer",
+      "start": 287,
+      "end": 300
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2609678",
+      "start": 302,
+      "end": 311
+    },
+    {
+      "type": "ID",
+      "text": "976-48-6169",
+      "start": 312,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Iyer",
+      "start": 4567,
+      "end": 4580
+    },
+    {
+      "type": "DATE",
+      "text": "05 Jul 2026",
+      "start": 4584,
+      "end": 4595
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Garcia",
+      "start": 4623,
+      "end": 4638
+    },
+    {
+      "type": "DATE",
+      "text": "07/05/2026",
+      "start": 4667,
+      "end": 4677
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Miller",
+      "start": 4694,
+      "end": 4706
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6565326",
+      "start": 4711,
+      "end": 4721
+    }
+  ]
+}

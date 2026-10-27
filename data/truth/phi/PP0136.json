@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0136",
+  "source": "TCGA-73-4666.4ab3bc9e-68ae-4c85-9a2a-11ead25ee142",
+  "cancer_type": "LUAD",
+  "split": "dev",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Ismail",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "T7213865H",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "24/05/1989",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "H1088762",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8181 1618",
+      "start": 177,
+      "end": 190
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-20048",
+      "start": 205,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "23/02/2025",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Hughes",
+      "start": 284,
+      "end": 301
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2520048",
+      "start": 303,
+      "end": 311
+    },
+    {
+      "type": "ID",
+      "text": "T7213865H",
+      "start": 312,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Hughes",
+      "start": 4455,
+      "end": 4472
+    },
+    {
+      "type": "DATE",
+      "text": "27 Feb 2025",
+      "start": 4476,
+      "end": 4487
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Jun Jie",
+      "start": 4515,
+      "end": 4528
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 4557,
+      "end": 4567
+    }
+  ]
+}

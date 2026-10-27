@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0036",
+  "source": "TCGA-3C-AALK.F43B01E6-E1DB-44B1-8003-93870606346A",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Lewis",
+      "start": 105,
+      "end": 116
+    },
+    {
+      "type": "ID",
+      "text": "965-22-2874",
+      "start": 125,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "06/18/1989",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "H4833486",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 179,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "(882) 555-5176",
+      "start": 232,
+      "end": 246
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-45424",
+      "start": 261,
+      "end": 271
+    },
+    {
+      "type": "DATE",
+      "text": "08/09/2025",
+      "start": 286,
+      "end": 296
+    },
+    {
+      "type": "DATE",
+      "text": "08/17/2025",
+      "start": 310,
+      "end": 320
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Johnson",
+      "start": 341,
+      "end": 357
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2545424",
+      "start": 359,
+      "end": 368
+    },
+    {
+      "type": "ID",
+      "text": "965-22-2874",
+      "start": 369,
+      "end": 380
+    },
+    {
+      "type": "EMAIL",
+      "text": "karen.lewis20@mailbox.example",
+      "start": 10812,
+      "end": 10841
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Lewis",
+      "start": 10860,
+      "end": 10871
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Iyer",
+      "start": 10899,
+      "end": 10913
+    },
+    {
+      "type": "DATE",
+      "text": "08/17/2025",
+      "start": 10942,
+      "end": 10952
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Lewis",
+      "start": 10969,
+      "end": 10980
+    },
+    {
+      "type": "MRN",
+      "text": "H4833486",
+      "start": 10985,
+      "end": 10993
+    }
+  ]
+}

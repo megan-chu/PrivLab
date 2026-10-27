@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0049",
+  "source": "TCGA-F4-6463.a06e1c69-5737-4692-950c-4ef74ced2d03",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Garcia",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "918-68-1605",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "04/29/1966",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1703065",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 174,
+      "end": 217
+    },
+    {
+      "type": "PHONE",
+      "text": "(493) 555-6848",
+      "start": 225,
+      "end": 239
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-41642",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DATE",
+      "text": "07/26/2025",
+      "start": 279,
+      "end": 289
+    },
+    {
+      "type": "DATE",
+      "text": "07/28/2025",
+      "start": 303,
+      "end": 313
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Harris",
+      "start": 334,
+      "end": 349
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2541642",
+      "start": 351,
+      "end": 360
+    },
+    {
+      "type": "ID",
+      "text": "918-68-1605",
+      "start": 361,
+      "end": 372
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Raman",
+      "start": 869,
+      "end": 883
+    },
+    {
+      "type": "DATE",
+      "text": "07/28/2025",
+      "start": 912,
+      "end": 922
+    }
+  ]
+}

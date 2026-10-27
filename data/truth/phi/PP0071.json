@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0071",
+  "source": "TCGA-AA-3710.cafe6b42-0750-48e0-80fe-3aacaa8fc9b3",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Anderson",
+      "start": 103,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "973-80-6530",
+      "start": 127,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "02/01/1963",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "H3822492",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "PHONE",
+      "text": "(858) 555-1962",
+      "start": 179,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-47160",
+      "start": 208,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "05/16/2026",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "05/25/2026",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Hassan",
+      "start": 288,
+      "end": 302
+    },
+    {
+      "type": "EMAIL",
+      "text": "thomas.anderson5@mailbox.example",
+      "start": 1231,
+      "end": 1263
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Anderson",
+      "start": 1282,
+      "end": 1297
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Clark",
+      "start": 1325,
+      "end": 1339
+    },
+    {
+      "type": "DATE",
+      "text": "05/25/2026",
+      "start": 1368,
+      "end": 1378
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Anderson",
+      "start": 1395,
+      "end": 1410
+    },
+    {
+      "type": "MRN",
+      "text": "H3822492",
+      "start": 1415,
+      "end": 1423
+    }
+  ]
+}

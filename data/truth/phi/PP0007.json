@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0007",
+  "source": "TCGA-A2-A0CP.DAB9A2B8-FCE7-4FF4-BAC4-4D2A04D7A43B",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Wei Ling",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "F1333872T",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "06/11/1977",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "H5191056",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 174,
+      "end": 210
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6516 8956",
+      "start": 218,
+      "end": 231
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-59082",
+      "start": 246,
+      "end": 255
+    },
+    {
+      "type": "DATE",
+      "text": "07/07/2025",
+      "start": 270,
+      "end": 280
+    },
+    {
+      "type": "DATE",
+      "text": "13/07/2025",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Wei Ling",
+      "start": 325,
+      "end": 340
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2559082",
+      "start": 342,
+      "end": 350
+    },
+    {
+      "type": "ID",
+      "text": "F1333872T",
+      "start": 351,
+      "end": 360
+    },
+    {
+      "type": "NAME",
+      "text": "Tan Zhi Hao",
+      "start": 2750,
+      "end": 2761
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6516 8956",
+      "start": 2788,
+      "end": 2801
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Jia Hui",
+      "start": 2829,
+      "end": 2842
+    },
+    {
+      "type": "DATE",
+      "text": "13/07/2025",
+      "start": 2871,
+      "end": 2881
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Wei Ling",
+      "start": 2898,
+      "end": 2910
+    },
+    {
+      "type": "MRN",
+      "text": "H5191056",
+      "start": 2915,
+      "end": 2923
+    }
+  ]
+}

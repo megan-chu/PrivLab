@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0172",
+  "source": "TCGA-G9-6336.ceda2ffb-b844-4f89-baba-82a66e6f3f0e",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Holloway",
+      "start": 111,
+      "end": 126
+    },
+    {
+      "type": "ID",
+      "text": "701 840 9438",
+      "start": 138,
+      "end": 150
+    },
+    {
+      "type": "DOB",
+      "text": "14/10/1968",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "MRN",
+      "text": "H5641409",
+      "start": 175,
+      "end": 183
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 193,
+      "end": 230
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7115 753205",
+      "start": 238,
+      "end": 253
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-42831",
+      "start": 268,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "25/07/2025",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "30/07/2025",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Jun Jie",
+      "start": 348,
+      "end": 362
+    },
+    {
+      "type": "EMAIL",
+      "text": "oliver.holloway66@mailbox.example",
+      "start": 4296,
+      "end": 4329
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Holloway",
+      "start": 4348,
+      "end": 4363
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 4391,
+      "end": 4405
+    },
+    {
+      "type": "DATE",
+      "text": "30/07/2025",
+      "start": 4434,
+      "end": 4444
+    }
+  ]
+}

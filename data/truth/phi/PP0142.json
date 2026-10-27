@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0142",
+  "source": "TCGA-78-7150.99bec792-e05e-49fd-8601-5f51e876e614",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 97,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "438 663 2271",
+      "start": 122,
+      "end": 134
+    },
+    {
+      "type": "DOB",
+      "text": "15/11/1940",
+      "start": 140,
+      "end": 150
+    },
+    {
+      "type": "MRN",
+      "text": "H3256060",
+      "start": 159,
+      "end": 167
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 177,
+      "end": 209
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7201 824087",
+      "start": 217,
+      "end": 232
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-68765",
+      "start": 247,
+      "end": 257
+    },
+    {
+      "type": "DATE",
+      "text": "30/06/2025",
+      "start": 272,
+      "end": 282
+    },
+    {
+      "type": "DATE",
+      "text": "08/07/2025",
+      "start": 296,
+      "end": 306
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Subramaniam",
+      "start": 327,
+      "end": 348
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Menon",
+      "start": 3614,
+      "end": 3628
+    },
+    {
+      "type": "DATE",
+      "text": "08/07/2025",
+      "start": 3657,
+      "end": 3667
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 3684,
+      "end": 3697
+    },
+    {
+      "type": "MRN",
+      "text": "H3256060",
+      "start": 3702,
+      "end": 3710
+    }
+  ]
+}

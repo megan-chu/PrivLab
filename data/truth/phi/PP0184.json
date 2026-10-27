@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0184",
+  "source": "TCGA-G9-6370.fa0332e6-d535-45c0-8ed9-9b36816f1350",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda bin Abdullah",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "T7128639D",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "13/07/1949",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1584868",
+      "start": 167,
+      "end": 177
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6780 7397",
+      "start": 185,
+      "end": 198
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-10229",
+      "start": 213,
+      "end": 222
+    },
+    {
+      "type": "DATE",
+      "text": "29/03/2026",
+      "start": 237,
+      "end": 247
+    },
+    {
+      "type": "DATE",
+      "text": "04/04/2026",
+      "start": 261,
+      "end": 271
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Krishnan",
+      "start": 292,
+      "end": 310
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Miller",
+      "start": 3836,
+      "end": 3851
+    },
+    {
+      "type": "DATE",
+      "text": "04/04/2026",
+      "start": 3880,
+      "end": 3890
+    }
+  ]
+}

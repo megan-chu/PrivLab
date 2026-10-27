@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0070",
+  "source": "TCGA-AA-3852.27e4a994-74c4-47ab-8f7c-00f2c468f3ef",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Ng Li Ting",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "T6385467G",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "16/11/1987",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "H7033835",
+      "start": 148,
+      "end": 156
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 166,
+      "end": 214
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8146 4625",
+      "start": 222,
+      "end": 235
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-66179",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DATE",
+      "text": "03/01/2026",
+      "start": 275,
+      "end": 285
+    },
+    {
+      "type": "DATE",
+      "text": "09/01/2026",
+      "start": 299,
+      "end": 309
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Li Ting",
+      "start": 330,
+      "end": 345
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Li Ting",
+      "start": 1002,
+      "end": 1017
+    },
+    {
+      "type": "DATE",
+      "text": "09 Jan 2026",
+      "start": 1021,
+      "end": 1032
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Rahman",
+      "start": 1060,
+      "end": 1074
+    },
+    {
+      "type": "DATE",
+      "text": "09/01/2026",
+      "start": 1103,
+      "end": 1113
+    },
+    {
+      "type": "NAME",
+      "text": "Ng Li Ting",
+      "start": 1130,
+      "end": 1140
+    },
+    {
+      "type": "MRN",
+      "text": "H7033835",
+      "start": 1145,
+      "end": 1153
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0048",
+  "source": "TCGA-AD-A5EK.603C0BEB-A258-454E-970D-8ACABA1EE96D",
+  "cancer_type": "COAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Siew Lan",
+      "start": 94,
+      "end": 107
+    },
+    {
+      "type": "ID",
+      "text": "T9621851B",
+      "start": 117,
+      "end": 126
+    },
+    {
+      "type": "DOB",
+      "text": "12/03/1987",
+      "start": 132,
+      "end": 142
+    },
+    {
+      "type": "MRN",
+      "text": "H8887557",
+      "start": 151,
+      "end": 159
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 169,
+      "end": 217
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6850 2698",
+      "start": 225,
+      "end": 238
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-84318",
+      "start": 253,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "12/07/2026",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "14/07/2026",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Krishnan",
+      "start": 332,
+      "end": 351
+    },
+    {
+      "type": "EMAIL",
+      "text": "wong.lan95@mailbox.example",
+      "start": 3963,
+      "end": 3989
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Siew Lan",
+      "start": 4008,
+      "end": 4021
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Iyer",
+      "start": 4049,
+      "end": 4062
+    },
+    {
+      "type": "DATE",
+      "text": "14/07/2026",
+      "start": 4091,
+      "end": 4101
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Siew Lan",
+      "start": 4118,
+      "end": 4131
+    },
+    {
+      "type": "MRN",
+      "text": "H8887557",
+      "start": 4136,
+      "end": 4144
+    }
+  ]
+}

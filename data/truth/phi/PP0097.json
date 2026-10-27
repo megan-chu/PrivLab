@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0097",
+  "source": "TCGA-CZ-5463.324d4d25-e72e-4faa-bd17-6c2201a2d6ce",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah binte Rahman",
+      "start": 98,
+      "end": 122
+    },
+    {
+      "type": "ID",
+      "text": "G2099934P",
+      "start": 132,
+      "end": 141
+    },
+    {
+      "type": "DOB",
+      "text": "03/10/1984",
+      "start": 147,
+      "end": 157
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2471723",
+      "start": 166,
+      "end": 176
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6491 6883",
+      "start": 184,
+      "end": 197
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-51202",
+      "start": 212,
+      "end": 222
+    },
+    {
+      "type": "DATE",
+      "text": "26/02/2026",
+      "start": 237,
+      "end": 247
+    },
+    {
+      "type": "DATE",
+      "text": "07/03/2026",
+      "start": 261,
+      "end": 271
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Clark",
+      "start": 292,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Clark",
+      "start": 3739,
+      "end": 3754
+    },
+    {
+      "type": "DATE",
+      "text": "07 Mar 2026",
+      "start": 3758,
+      "end": 3769
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Hassan",
+      "start": 3797,
+      "end": 3811
+    },
+    {
+      "type": "DATE",
+      "text": "07/03/2026",
+      "start": 3840,
+      "end": 3850
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah binte Rahman",
+      "start": 3867,
+      "end": 3891
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2471723",
+      "start": 3896,
+      "end": 3906
+    }
+  ]
+}

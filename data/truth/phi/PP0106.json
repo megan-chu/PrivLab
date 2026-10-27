@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0106",
+  "source": "TCGA-CJ-5682.06855541-6550-4efb-9b3f-d8a3f9888386",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Clarke",
+      "start": 99,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "444 713 2478",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "14/10/1968",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "P2497984",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7167 426236",
+      "start": 178,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-58896",
+      "start": 208,
+      "end": 217
+    },
+    {
+      "type": "DATE",
+      "text": "03/10/2025",
+      "start": 232,
+      "end": 242
+    },
+    {
+      "type": "DATE",
+      "text": "11/10/2025",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 287,
+      "end": 301
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 2209,
+      "end": 2223
+    },
+    {
+      "type": "DATE",
+      "text": "11 Oct 2025",
+      "start": 2227,
+      "end": 2238
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Nair",
+      "start": 2266,
+      "end": 2279
+    },
+    {
+      "type": "DATE",
+      "text": "11/10/2025",
+      "start": 2308,
+      "end": 2318
+    }
+  ]
+}

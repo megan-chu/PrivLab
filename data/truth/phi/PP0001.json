@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0001",
+  "source": "TCGA-D8-A1Y0.53ED4388-8CD2-4925-81A9-9C4792C83566",
+  "cancer_type": "BRCA",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Wei Ling",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "T3218196H",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "07/11/1942",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4903402",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8928 1106",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-79907",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "31/01/2025",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "03/02/2025",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Pemberton",
+      "start": 343,
+      "end": 362
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2579907",
+      "start": 364,
+      "end": 373
+    },
+    {
+      "type": "ID",
+      "text": "T3218196H",
+      "start": 374,
+      "end": 383
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Zhi Hao",
+      "start": 2117,
+      "end": 2129
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8928 1106",
+      "start": 2156,
+      "end": 2169
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Hassan",
+      "start": 2197,
+      "end": 2212
+    },
+    {
+      "type": "DATE",
+      "text": "03/02/2025",
+      "start": 2241,
+      "end": 2251
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Wei Ling",
+      "start": 2268,
+      "end": 2280
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4903402",
+      "start": 2285,
+      "end": 2295
+    }
+  ]
+}

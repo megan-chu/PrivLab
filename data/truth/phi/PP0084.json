@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0084",
+  "source": "TCGA-CJ-4899.549913d4-c8d1-42d1-9da6-a7a10480e210",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Fletcher",
+      "start": 111,
+      "end": 126
+    },
+    {
+      "type": "ID",
+      "text": "858 078 3615",
+      "start": 138,
+      "end": 150
+    },
+    {
+      "type": "DOB",
+      "text": "17/03/1962",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "MRN",
+      "text": "H5409307",
+      "start": 175,
+      "end": 183
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 193,
+      "end": 225
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7269 746081",
+      "start": 233,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-12401",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "01/11/2025",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "03/11/2025",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Mei Xuan",
+      "start": 343,
+      "end": 357
+    },
+    {
+      "type": "NAME",
+      "text": "George Clarke",
+      "start": 2729,
+      "end": 2742
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7269 746081",
+      "start": 2769,
+      "end": 2784
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Pemberton",
+      "start": 2812,
+      "end": 2830
+    },
+    {
+      "type": "DATE",
+      "text": "03/11/2025",
+      "start": 2859,
+      "end": 2869
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Fletcher",
+      "start": 2886,
+      "end": 2901
+    },
+    {
+      "type": "MRN",
+      "text": "H5409307",
+      "start": 2906,
+      "end": 2914
+    }
+  ]
+}

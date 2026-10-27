@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0144",
+  "source": "TCGA-MP-A4TA.B8573F06-EEC4-49A8-943E-7F2EFF3AFBEE",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Ananya Subramaniam",
+      "start": 100,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "G5987622N",
+      "start": 128,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "26/01/1942",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "P5221936",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 180,
+      "end": 228
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6999 8752",
+      "start": 236,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-92841",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "09/05/2025",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "14/05/2025",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Mei Xuan",
+      "start": 344,
+      "end": 359
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Mei Xuan",
+      "start": 1679,
+      "end": 1694
+    },
+    {
+      "type": "DATE",
+      "text": "14 May 2025",
+      "start": 1698,
+      "end": 1709
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Michael Johnson",
+      "start": 1737,
+      "end": 1755
+    },
+    {
+      "type": "DATE",
+      "text": "14/05/2025",
+      "start": 1784,
+      "end": 1794
+    },
+    {
+      "type": "NAME",
+      "text": "Ananya Subramaniam",
+      "start": 1811,
+      "end": 1829
+    },
+    {
+      "type": "MRN",
+      "text": "P5221936",
+      "start": 1834,
+      "end": 1842
+    }
+  ]
+}

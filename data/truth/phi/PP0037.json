@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0037",
+  "source": "TCGA-E9-A1RD.EDDEB48B-B712-40B0-9DE5-9F5B5791AF4D",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Ismail",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "F1656049U",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "12/01/1968",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P9512969",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8687 4705",
+      "start": 183,
+      "end": 196
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-21280",
+      "start": 211,
+      "end": 220
+    },
+    {
+      "type": "DATE",
+      "text": "27/12/2025",
+      "start": 235,
+      "end": 245
+    },
+    {
+      "type": "DATE",
+      "text": "30/12/2025",
+      "start": 259,
+      "end": 269
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Johnson",
+      "start": 290,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Pillai",
+      "start": 1585,
+      "end": 1601
+    },
+    {
+      "type": "DATE",
+      "text": "30/12/2025",
+      "start": 1630,
+      "end": 1640
+    }
+  ]
+}

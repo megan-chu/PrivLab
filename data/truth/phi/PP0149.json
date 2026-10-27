@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0149",
+  "source": "TCGA-73-4658.37bb6a7b-4f9e-4690-b904-4eebc3189562",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "James Anderson",
+      "start": 105,
+      "end": 119
+    },
+    {
+      "type": "ID",
+      "text": "914-35-8550",
+      "start": 128,
+      "end": 139
+    },
+    {
+      "type": "DOB",
+      "text": "06/05/1948",
+      "start": 145,
+      "end": 155
+    },
+    {
+      "type": "MRN",
+      "text": "H7528399",
+      "start": 164,
+      "end": 172
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 182,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "(326) 555-5150",
+      "start": 235,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-41908",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "06/18/2026",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "06/23/2026",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Salleh",
+      "start": 344,
+      "end": 358
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2641908",
+      "start": 360,
+      "end": 369
+    },
+    {
+      "type": "ID",
+      "text": "914-35-8550",
+      "start": 370,
+      "end": 381
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Salleh",
+      "start": 5599,
+      "end": 5613
+    },
+    {
+      "type": "DATE",
+      "text": "23 Jun 2026",
+      "start": 5617,
+      "end": 5628
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Chee Keong",
+      "start": 5656,
+      "end": 5673
+    },
+    {
+      "type": "DATE",
+      "text": "06/23/2026",
+      "start": 5702,
+      "end": 5712
+    },
+    {
+      "type": "NAME",
+      "text": "James Anderson",
+      "start": 5729,
+      "end": 5743
+    },
+    {
+      "type": "MRN",
+      "text": "H7528399",
+      "start": 5748,
+      "end": 5756
+    }
+  ]
+}

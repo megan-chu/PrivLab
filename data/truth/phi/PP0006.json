@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0006",
+  "source": "TCGA-GM-A3XL.E8583D11-D6F7-41AC-8CD5-53437CBD8820",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Rao",
+      "start": 98,
+      "end": 108
+    },
+    {
+      "type": "ID",
+      "text": "S3315098I",
+      "start": 118,
+      "end": 127
+    },
+    {
+      "type": "DOB",
+      "text": "23/08/1960",
+      "start": 133,
+      "end": 143
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1987737",
+      "start": 152,
+      "end": 162
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 172,
+      "end": 225
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9235 8744",
+      "start": 233,
+      "end": 246
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-09834",
+      "start": 261,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "14/08/2025",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "16/08/2025",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Raman",
+      "start": 340,
+      "end": 354
+    },
+    {
+      "type": "NAME",
+      "text": "Ananya Raman",
+      "start": 6509,
+      "end": 6521
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9235 8744",
+      "start": 6548,
+      "end": 6561
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Raman",
+      "start": 6589,
+      "end": 6604
+    },
+    {
+      "type": "DATE",
+      "text": "16/08/2025",
+      "start": 6633,
+      "end": 6643
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Rao",
+      "start": 6660,
+      "end": 6670
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1987737",
+      "start": 6675,
+      "end": 6685
+    }
+  ]
+}

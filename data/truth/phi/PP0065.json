@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0065",
+  "source": "TCGA-AY-6196.e6e1533f-49e4-4e98-ae67-540b48beddfd",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Martinez",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "919-82-2838",
+      "start": 120,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "07/16/1945",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "P3514105",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 174,
+      "end": 217
+    },
+    {
+      "type": "PHONE",
+      "text": "(723) 555-8298",
+      "start": 225,
+      "end": 239
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-44007",
+      "start": 254,
+      "end": 263
+    },
+    {
+      "type": "DATE",
+      "text": "07/15/2026",
+      "start": 278,
+      "end": 288
+    },
+    {
+      "type": "DATE",
+      "text": "07/20/2026",
+      "start": 302,
+      "end": 312
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Michael Anderson",
+      "start": 333,
+      "end": 352
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Michael Anderson",
+      "start": 4791,
+      "end": 4810
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Clark",
+      "start": 5823,
+      "end": 5834
+    },
+    {
+      "type": "PHONE",
+      "text": "(723) 555-8298",
+      "start": 5861,
+      "end": 5875
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Hughes",
+      "start": 5903,
+      "end": 5920
+    },
+    {
+      "type": "DATE",
+      "text": "07/20/2026",
+      "start": 5949,
+      "end": 5959
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Martinez",
+      "start": 5976,
+      "end": 5990
+    },
+    {
+      "type": "MRN",
+      "text": "P3514105",
+      "start": 5995,
+      "end": 6003
+    }
+  ]
+}

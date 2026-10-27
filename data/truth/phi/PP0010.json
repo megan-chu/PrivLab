@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0010",
+  "source": "TCGA-A2-A0CL.17950062-E052-4FC2-A437-A17669B4DD01",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Subramaniam",
+      "start": 94,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "G4016400L",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "03/12/1969",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8412769",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 176,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6954 7049",
+      "start": 232,
+      "end": 245
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-93493",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "14/05/2025",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "20/05/2025",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Hughes",
+      "start": 340,
+      "end": 355
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2593493",
+      "start": 357,
+      "end": 366
+    },
+    {
+      "type": "ID",
+      "text": "G4016400L",
+      "start": 367,
+      "end": 376
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Kok Wah",
+      "start": 3295,
+      "end": 3309
+    },
+    {
+      "type": "DATE",
+      "text": "20/05/2025",
+      "start": 3338,
+      "end": 3348
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Subramaniam",
+      "start": 3365,
+      "end": 3383
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8412769",
+      "start": 3388,
+      "end": 3398
+    }
+  ]
+}

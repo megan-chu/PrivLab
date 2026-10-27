@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0013",
+  "source": "TCGA-A2-A04V.7D84A145-19AF-48D0-A5D9-F5724068CB26",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Kavitha Menon",
+      "start": 98,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "F6482366M",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "12/08/1955",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H1006810",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 173,
+      "end": 221
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8791 4501",
+      "start": 229,
+      "end": 242
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-38606",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2026",
+      "start": 282,
+      "end": 292
+    },
+    {
+      "type": "DATE",
+      "text": "12/08/2026",
+      "start": 306,
+      "end": 316
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Thomas Lewis",
+      "start": 337,
+      "end": 352
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Thomas Lewis",
+      "start": 9049,
+      "end": 9064
+    },
+    {
+      "type": "DATE",
+      "text": "12 Aug 2026",
+      "start": 9068,
+      "end": 9079
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Rao",
+      "start": 9107,
+      "end": 9120
+    },
+    {
+      "type": "DATE",
+      "text": "12/08/2026",
+      "start": 9149,
+      "end": 9159
+    }
+  ]
+}

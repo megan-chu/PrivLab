@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0104",
+  "source": "TCGA-BP-5186.6e5e9368-8df2-488e-8514-cb05a639a3fc",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Hui Min",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "G9380686M",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "16/01/1988",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H6013906",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 173,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8277 3738",
+      "start": 234,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-52747",
+      "start": 262,
+      "end": 271
+    },
+    {
+      "type": "DATE",
+      "text": "02/05/2026",
+      "start": 286,
+      "end": 296
+    },
+    {
+      "type": "DATE",
+      "text": "07/05/2026",
+      "start": 310,
+      "end": 320
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Teo Chee Keong",
+      "start": 341,
+      "end": 358
+    },
+    {
+      "type": "EMAIL",
+      "text": "koh.min25@mailbox.example",
+      "start": 3040,
+      "end": 3065
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Hui Min",
+      "start": 3084,
+      "end": 3095
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Hughes",
+      "start": 3123,
+      "end": 3142
+    },
+    {
+      "type": "DATE",
+      "text": "07/05/2026",
+      "start": 3171,
+      "end": 3181
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Hui Min",
+      "start": 3198,
+      "end": 3209
+    },
+    {
+      "type": "MRN",
+      "text": "H6013906",
+      "start": 3214,
+      "end": 3222
+    }
+  ]
+}

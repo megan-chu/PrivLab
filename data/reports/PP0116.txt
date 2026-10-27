@@ -1,0 +1,14 @@
+Lakeshore Regional Medical Center
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Linda Johnson    SSN: 926-99-1960
+DOB: 04/20/1954    MRN: P9097940
+Address: 1847 Willow Creek Dr, Springfield, OH 45503
+Phone: (695) 555-8997
+Accession No: PA25-89918    Collected: 04/17/2025    Reported: 04/25/2025
+Requesting surgeon: Dr Nurul Abdullah
+
+DIAGNOSIS. (A) RIGHT KIDNEY AND ADRENAL GLAND: RENAL CELL CARCINOMA (10.0 CM MAXIMUM DIMENSION), CONVENTIONAL TYPE. (70% CLEAR. CELLS, 30% EOSINOPHILIC CELLS), FUHRMAN NUCLEAR GRADE 3,. CONFINED TO THE KIDNEY. (SEE COMMENT). Margins of resection free of tumor. Adrenal gland, no tumor present. (B) GONADAL VEIN RIGHT: Blood vessels and fibroadipose tissue, no tumor present. COMMENT. The renal cell carcinoma in the right kidney appears to be confined to. the kidney and does not invade into the perinephric adipose tissue or. the renal vein. The tumor pushes against the renal sinus but there is. no unequivocal invasion into the renal sinus adipose tissue. Multiple. additional deeper sections were also examined. GROSS DESCRIPTION. (A) RIGHT KIDNEY AND ADRENAL GLAND - A radical nephrectomy specimen. (23.0 X 14.0 X 9.5 cm) with a kidney (14.0 X 9.0 X 9.0 cm) and adrenal. gland (6.0 X 2.5 X 2.0 cm). The kidney reveals a 10.0 X 8.5 X 8.5 cm tumor within the upper pole. The tumor is close to the Gerota's fascia and perinephric fat in focal. areas (0.6 cm nearest). The tumor is also close to the pelvicalyceal. system and the renal sinus. The renal vein and ureter are unremarkable. The tumor reveals overall pale yellow lobular surface with focal areas. of hemorrhage, and myxoid degeneration centrally. The rest of the. kidney and adrenal gland is unremarkable. Tumor is submitted for the vaccine protocol. INK CODE: Black - Gerota's fascia. SECTION CODE: A1-A3, tumor closest to Gerota's fascia; A4-A9, tumor. close to the renal sinus; A10-A14, different areas of the tumor; A15,. representative sections of the adrenal gland; A16, representative. section from kidney; A17, renal vein and ureter. (B) GONADAL VEIN RIGHT - A single unoriented fragment of tissue. measuring approximately 10.0 X 3.0 X 0.3 cm. The vein is identified and. shows no evidence of tumor thrombi or other abnormalities. The. surrounding soft tissue shows focal hemorrhage but otherwise. unremarkable. SECTION CODE: B1-B3, representative sections. CLINICAL HISTORY. Right renal mass. SNOMED CODES. T-71000, M-83123. 1. 2.
+
+Electronically signed by Dr Priya Nair, Consultant Pathologist, on 04/25/2025

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0150",
+  "source": "TCGA-55-8614.f443d31b-ee7f-4285-9529-6f04a8dad0d5",
+  "cancer_type": "LUAD",
+  "split": "dev",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "David Miller",
+      "start": 103,
+      "end": 115
+    },
+    {
+      "type": "ID",
+      "text": "931-45-2960",
+      "start": 124,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "07/05/1975",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8973718",
+      "start": 160,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "(903) 555-6544",
+      "start": 178,
+      "end": 192
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-79146",
+      "start": 207,
+      "end": 217
+    },
+    {
+      "type": "DATE",
+      "text": "09/06/2025",
+      "start": 232,
+      "end": 242
+    },
+    {
+      "type": "DATE",
+      "text": "09/08/2025",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Raman",
+      "start": 287,
+      "end": 301
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Raman",
+      "start": 5820,
+      "end": 5834
+    },
+    {
+      "type": "DATE",
+      "text": "08 Sep 2025",
+      "start": 5838,
+      "end": 5849
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Ismail",
+      "start": 5877,
+      "end": 5892
+    },
+    {
+      "type": "DATE",
+      "text": "09/08/2025",
+      "start": 5921,
+      "end": 5931
+    },
+    {
+      "type": "NAME",
+      "text": "David Miller",
+      "start": 5948,
+      "end": 5960
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8973718",
+      "start": 5965,
+      "end": 5975
+    }
+  ]
+}

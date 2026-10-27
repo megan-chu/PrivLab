@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0103",
+  "source": "TCGA-B0-4833.6331b3ca-ba2f-4ccd-bbf0-1513489f8a22",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Zhi Hao",
+      "start": 94,
+      "end": 105
+    },
+    {
+      "type": "ID",
+      "text": "F9731032R",
+      "start": 115,
+      "end": 124
+    },
+    {
+      "type": "DOB",
+      "text": "07/03/1966",
+      "start": 130,
+      "end": 140
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6173311",
+      "start": 149,
+      "end": 159
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 169,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8291 8303",
+      "start": 230,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-62727",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "25/03/2025",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "03/04/2025",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Menon",
+      "start": 338,
+      "end": 352
+    },
+    {
+      "type": "EMAIL",
+      "text": "lim.hao34@mailbox.example",
+      "start": 1111,
+      "end": 1136
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Zhi Hao",
+      "start": 1155,
+      "end": 1166
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Abdullah",
+      "start": 1194,
+      "end": 1210
+    },
+    {
+      "type": "DATE",
+      "text": "03/04/2025",
+      "start": 1239,
+      "end": 1249
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0045",
+  "source": "TCGA-CM-4747.da76cc38-102a-4f1c-ab04-430b9eef7899",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Holloway",
+      "start": 111,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "929 622 2923",
+      "start": 137,
+      "end": 149
+    },
+    {
+      "type": "DOB",
+      "text": "07/04/1979",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "MRN",
+      "text": "H4985095",
+      "start": 174,
+      "end": 182
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7955 303440",
+      "start": 190,
+      "end": 205
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-81031",
+      "start": 220,
+      "end": 230
+    },
+    {
+      "type": "DATE",
+      "text": "14/02/2025",
+      "start": 245,
+      "end": 255
+    },
+    {
+      "type": "DATE",
+      "text": "22/02/2025",
+      "start": 269,
+      "end": 279
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Clark",
+      "start": 300,
+      "end": 315
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Clark",
+      "start": 4630,
+      "end": 4645
+    },
+    {
+      "type": "DATE",
+      "text": "22 Feb 2025",
+      "start": 4649,
+      "end": 4660
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Abdullah",
+      "start": 4688,
+      "end": 4704
+    },
+    {
+      "type": "DATE",
+      "text": "22/02/2025",
+      "start": 4733,
+      "end": 4743
+    }
+  ]
+}

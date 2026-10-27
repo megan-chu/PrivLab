@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0102",
+  "source": "TCGA-DV-A4VZ.61267C95-C3D4-4262-AB1B-BB21029C18CD",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Lee Hui Min",
+      "start": 98,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "G2181599W",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "23/04/1983",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "P3768193",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 171,
+      "end": 207
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9667 9849",
+      "start": 215,
+      "end": 228
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-57911",
+      "start": 243,
+      "end": 253
+    },
+    {
+      "type": "DATE",
+      "text": "01/02/2025",
+      "start": 268,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "09/02/2025",
+      "start": 292,
+      "end": 302
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Jia Hui",
+      "start": 323,
+      "end": 338
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2557911",
+      "start": 340,
+      "end": 349
+    },
+    {
+      "type": "ID",
+      "text": "G2181599W",
+      "start": 350,
+      "end": 359
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Jun Jie",
+      "start": 4398,
+      "end": 4409
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9667 9849",
+      "start": 4436,
+      "end": 4449
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Abdullah",
+      "start": 4477,
+      "end": 4497
+    },
+    {
+      "type": "DATE",
+      "text": "09/02/2025",
+      "start": 4526,
+      "end": 4536
+    },
+    {
+      "type": "NAME",
+      "text": "Lee Hui Min",
+      "start": 4553,
+      "end": 4564
+    },
+    {
+      "type": "MRN",
+      "text": "P3768193",
+      "start": 4569,
+      "end": 4577
+    }
+  ]
+}

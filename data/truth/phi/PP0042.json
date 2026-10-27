@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0042",
+  "source": "TCGA-AA-3511.d91b5111-c16e-4409-9381-40abd88730a7",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Lewis",
+      "start": 105,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "967-97-6295",
+      "start": 126,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "05/12/1968",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8867190",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 182,
+      "end": 225
+    },
+    {
+      "type": "PHONE",
+      "text": "(673) 555-8404",
+      "start": 233,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-83756",
+      "start": 262,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "06/04/2025",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "06/13/2025",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Iyer",
+      "start": 342,
+      "end": 355
+    },
+    {
+      "type": "EMAIL",
+      "text": "thomas.lewis8@mailbox.example",
+      "start": 825,
+      "end": 854
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Lewis",
+      "start": 873,
+      "end": 885
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Fletcher",
+      "start": 913,
+      "end": 931
+    },
+    {
+      "type": "DATE",
+      "text": "06/13/2025",
+      "start": 960,
+      "end": 970
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Lewis",
+      "start": 987,
+      "end": 999
+    },
+    {
+      "type": "MRN",
+      "text": "MRN8867190",
+      "start": 1004,
+      "end": 1014
+    }
+  ]
+}

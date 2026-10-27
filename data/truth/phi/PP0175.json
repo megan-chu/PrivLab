@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0175",
+  "source": "TCGA-EJ-7783.8c4eab7f-e0e2-4cad-b06c-ae2d3ed11052",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Subramaniam",
+      "start": 100,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "G6963938R",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "07/04/1954",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6716235",
+      "start": 161,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 181,
+      "end": 229
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9785 2276",
+      "start": 237,
+      "end": 250
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-91971",
+      "start": 265,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "09/05/2026",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "17/05/2026",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Lewis",
+      "start": 344,
+      "end": 358
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Pillai",
+      "start": 2919,
+      "end": 2932
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9785 2276",
+      "start": 2959,
+      "end": 2972
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Rajesh Nair",
+      "start": 3000,
+      "end": 3014
+    },
+    {
+      "type": "DATE",
+      "text": "17/05/2026",
+      "start": 3043,
+      "end": 3053
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Subramaniam",
+      "start": 3070,
+      "end": 3087
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6716235",
+      "start": 3092,
+      "end": 3102
+    }
+  ]
+}

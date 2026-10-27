@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0089",
+  "source": "TCGA-BP-5196.3a401225-55b7-4a41-b747-bcccc905435f",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Raman",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "G4037613K",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "26/10/1984",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "H6309530",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6701 2106",
+      "start": 172,
+      "end": 185
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-51703",
+      "start": 200,
+      "end": 209
+    },
+    {
+      "type": "DATE",
+      "text": "14/03/2025",
+      "start": 224,
+      "end": 234
+    },
+    {
+      "type": "DATE",
+      "text": "16/03/2025",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Clark",
+      "start": 279,
+      "end": 293
+    },
+    {
+      "type": "EMAIL",
+      "text": "rajesh.raman34@mailbox.example",
+      "start": 2338,
+      "end": 2368
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Raman",
+      "start": 2387,
+      "end": 2399
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Ismail",
+      "start": 2427,
+      "end": 2442
+    },
+    {
+      "type": "DATE",
+      "text": "16/03/2025",
+      "start": 2471,
+      "end": 2481
+    }
+  ]
+}

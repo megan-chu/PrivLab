@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0107",
+  "source": "TCGA-BP-5184.2e8c6858-5b76-416c-bc73-ec8359565e0c",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah bin Osman",
+      "start": 94,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "S7053457F",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "25/04/1985",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "P1512765",
+      "start": 158,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 176,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8452 3679",
+      "start": 220,
+      "end": 233
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-49819",
+      "start": 248,
+      "end": 257
+    },
+    {
+      "type": "DATE",
+      "text": "11/02/2026",
+      "start": 272,
+      "end": 282
+    },
+    {
+      "type": "DATE",
+      "text": "14/02/2026",
+      "start": 296,
+      "end": 306
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Turner",
+      "start": 327,
+      "end": 344
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2649819",
+      "start": 346,
+      "end": 354
+    },
+    {
+      "type": "ID",
+      "text": "S7053457F",
+      "start": 355,
+      "end": 364
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Thomas Clark",
+      "start": 2398,
+      "end": 2413
+    },
+    {
+      "type": "DATE",
+      "text": "14/02/2026",
+      "start": 2442,
+      "end": 2452
+    }
+  ]
+}

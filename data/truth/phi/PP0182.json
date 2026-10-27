@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0182",
+  "source": "TCGA-YL-A8SA.F837EF53-FF44-4F51-8764-27B00168B113",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Jia Hui",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "F6945441X",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "28/11/1962",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H5056679",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 173,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6788 1138",
+      "start": 234,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-89065",
+      "start": 262,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "22/08/2026",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "30/08/2026",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Rahman",
+      "start": 342,
+      "end": 357
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Zhi Hao",
+      "start": 1744,
+      "end": 1755
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6788 1138",
+      "start": 1782,
+      "end": 1795
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Hassan",
+      "start": 1823,
+      "end": 1837
+    },
+    {
+      "type": "DATE",
+      "text": "30/08/2026",
+      "start": 1866,
+      "end": 1876
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Jia Hui",
+      "start": 1893,
+      "end": 1904
+    },
+    {
+      "type": "MRN",
+      "text": "H5056679",
+      "start": 1909,
+      "end": 1917
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0118",
+  "source": "TCGA-CZ-5989.9fa904a6-4377-4faa-82b0-f0b313602c42",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "James Martinez",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "925-73-1291",
+      "start": 120,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "03/17/1949",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1002847",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 176,
+      "end": 221
+    },
+    {
+      "type": "PHONE",
+      "text": "(429) 555-8445",
+      "start": 229,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-80194",
+      "start": 258,
+      "end": 267
+    },
+    {
+      "type": "DATE",
+      "text": "02/18/2026",
+      "start": 282,
+      "end": 292
+    },
+    {
+      "type": "DATE",
+      "text": "02/26/2026",
+      "start": 306,
+      "end": 316
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Rajesh Rao",
+      "start": 337,
+      "end": 350
+    },
+    {
+      "type": "EMAIL",
+      "text": "james.martinez72@mailbox.example",
+      "start": 4442,
+      "end": 4474
+    },
+    {
+      "type": "NAME",
+      "text": "James Martinez",
+      "start": 4493,
+      "end": 4507
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Krishnan",
+      "start": 4535,
+      "end": 4553
+    },
+    {
+      "type": "DATE",
+      "text": "02/26/2026",
+      "start": 4582,
+      "end": 4592
+    },
+    {
+      "type": "NAME",
+      "text": "James Martinez",
+      "start": 4609,
+      "end": 4623
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1002847",
+      "start": 4628,
+      "end": 4638
+    }
+  ]
+}

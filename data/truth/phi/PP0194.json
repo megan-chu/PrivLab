@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0194",
+  "source": "TCGA-CH-5741.87c977cc-2a28-49c9-adaf-f67c0bc208c2",
+  "cancer_type": "PRAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Siew Lan",
+      "start": 98,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "S8501657A",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "01/09/1943",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2124172",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 175,
+      "end": 223
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9870 4437",
+      "start": 231,
+      "end": 244
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-93974",
+      "start": 259,
+      "end": 269
+    },
+    {
+      "type": "DATE",
+      "text": "10/01/2026",
+      "start": 284,
+      "end": 294
+    },
+    {
+      "type": "DATE",
+      "text": "17/01/2026",
+      "start": 308,
+      "end": 318
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Osman",
+      "start": 339,
+      "end": 352
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2693974",
+      "start": 354,
+      "end": 363
+    },
+    {
+      "type": "ID",
+      "text": "S8501657A",
+      "start": 364,
+      "end": 373
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Osman",
+      "start": 2177,
+      "end": 2190
+    },
+    {
+      "type": "DATE",
+      "text": "17 Jan 2026",
+      "start": 2194,
+      "end": 2205
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Whitaker",
+      "start": 2233,
+      "end": 2251
+    },
+    {
+      "type": "DATE",
+      "text": "17/01/2026",
+      "start": 2280,
+      "end": 2290
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Siew Lan",
+      "start": 2307,
+      "end": 2320
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2124172",
+      "start": 2325,
+      "end": 2335
+    }
+  ]
+}

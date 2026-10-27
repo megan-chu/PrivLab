@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0027",
+  "source": "TCGA-B6-A0X5.29811BAC-AFD1-4951-BDF8-7B859941B634",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Ananya Rao",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "G3782639T",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "06/08/1985",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "H7961578",
+      "start": 148,
+      "end": 156
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8651 8935",
+      "start": 164,
+      "end": 177
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-67550",
+      "start": 192,
+      "end": 202
+    },
+    {
+      "type": "DATE",
+      "text": "20/05/2025",
+      "start": 217,
+      "end": 227
+    },
+    {
+      "type": "DATE",
+      "text": "23/05/2025",
+      "start": 241,
+      "end": 251
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Jun Jie",
+      "start": 272,
+      "end": 286
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Jun Jie",
+      "start": 4039,
+      "end": 4053
+    },
+    {
+      "type": "DATE",
+      "text": "23 May 2025",
+      "start": 4057,
+      "end": 4068
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Turner",
+      "start": 4096,
+      "end": 4113
+    },
+    {
+      "type": "DATE",
+      "text": "23/05/2025",
+      "start": 4142,
+      "end": 4152
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0085",
+  "source": "TCGA-BP-4982.9b725cc0-38f5-4dd1-9cf9-ee3de8b66f8c",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Hughes",
+      "start": 111,
+      "end": 124
+    },
+    {
+      "type": "ID",
+      "text": "260 422 3252",
+      "start": 136,
+      "end": 148
+    },
+    {
+      "type": "DOB",
+      "text": "17/03/1962",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5508325",
+      "start": 173,
+      "end": 183
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7811 486999",
+      "start": 191,
+      "end": 206
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-55293",
+      "start": 221,
+      "end": 231
+    },
+    {
+      "type": "DATE",
+      "text": "07/02/2026",
+      "start": 246,
+      "end": 256
+    },
+    {
+      "type": "DATE",
+      "text": "16/02/2026",
+      "start": 270,
+      "end": 280
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Michael Johnson",
+      "start": 301,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Thompson",
+      "start": 2551,
+      "end": 2568
+    },
+    {
+      "type": "DATE",
+      "text": "16/02/2026",
+      "start": 2597,
+      "end": 2607
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Hughes",
+      "start": 2624,
+      "end": 2637
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5508325",
+      "start": 2642,
+      "end": 2652
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0147",
+  "source": "TCGA-49-6744.9a6d2cc6-3d78-42ec-b747-74bb6e96d22b",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Anderson",
+      "start": 103,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "943-20-7917",
+      "start": 126,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "06/28/1961",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "H9924543",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 180,
+      "end": 225
+    },
+    {
+      "type": "PHONE",
+      "text": "(833) 555-8418",
+      "start": 233,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-55120",
+      "start": 262,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "06/14/2026",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "06/20/2026",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Kok Wah",
+      "start": 342,
+      "end": 356
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2655120",
+      "start": 358,
+      "end": 367
+    },
+    {
+      "type": "ID",
+      "text": "943-20-7917",
+      "start": 368,
+      "end": 379
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Kok Wah",
+      "start": 474,
+      "end": 488
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Rao",
+      "start": 2525,
+      "end": 2537
+    },
+    {
+      "type": "DATE",
+      "text": "06/20/2026",
+      "start": 2566,
+      "end": 2576
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Anderson",
+      "start": 2593,
+      "end": 2607
+    },
+    {
+      "type": "MRN",
+      "text": "H9924543",
+      "start": 2612,
+      "end": 2620
+    }
+  ]
+}

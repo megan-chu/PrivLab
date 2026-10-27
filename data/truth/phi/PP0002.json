@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0002",
+  "source": "TCGA-A8-A079.81ADDBAB-C02F-4DA8-9429-76293FB42E42",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Kavitha Krishnan",
+      "start": 98,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "G8161849L",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "11/06/1972",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "P2166941",
+      "start": 158,
+      "end": 166
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8750 6977",
+      "start": 174,
+      "end": 187
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-87673",
+      "start": 202,
+      "end": 211
+    },
+    {
+      "type": "DATE",
+      "text": "15/08/2026",
+      "start": 226,
+      "end": 236
+    },
+    {
+      "type": "DATE",
+      "text": "20/08/2026",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Raman",
+      "start": 281,
+      "end": 295
+    },
+    {
+      "type": "EMAIL",
+      "text": "kavitha.krishnan48@mailbox.example",
+      "start": 753,
+      "end": 787
+    },
+    {
+      "type": "NAME",
+      "text": "Kavitha Krishnan",
+      "start": 806,
+      "end": 822
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Zhi Hao",
+      "start": 850,
+      "end": 864
+    },
+    {
+      "type": "DATE",
+      "text": "20/08/2026",
+      "start": 893,
+      "end": 903
+    },
+    {
+      "type": "NAME",
+      "text": "Kavitha Krishnan",
+      "start": 920,
+      "end": 936
+    },
+    {
+      "type": "MRN",
+      "text": "P2166941",
+      "start": 941,
+      "end": 949
+    }
+  ]
+}

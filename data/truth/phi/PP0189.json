@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0189",
+  "source": "TCGA-V1-A9O9.6AEA4F7C-2680-4BCE-BB38-AF8DF5ED7DE8",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Menon",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "T2909279B",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "24/11/1947",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "H1076672",
+      "start": 154,
+      "end": 162
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8888 4409",
+      "start": 170,
+      "end": 183
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-31885",
+      "start": 198,
+      "end": 208
+    },
+    {
+      "type": "DATE",
+      "text": "05/11/2025",
+      "start": 223,
+      "end": 233
+    },
+    {
+      "type": "DATE",
+      "text": "12/11/2025",
+      "start": 247,
+      "end": 257
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Chee Keong",
+      "start": 278,
+      "end": 295
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Chee Keong",
+      "start": 7859,
+      "end": 7876
+    },
+    {
+      "type": "DATE",
+      "text": "12 Nov 2025",
+      "start": 7880,
+      "end": 7891
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Bennett",
+      "start": 7919,
+      "end": 7935
+    },
+    {
+      "type": "DATE",
+      "text": "12/11/2025",
+      "start": 7964,
+      "end": 7974
+    }
+  ]
+}

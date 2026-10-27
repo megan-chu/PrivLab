@@ -1,0 +1,17 @@
+Whitfield NHS Foundation Trust Hospital
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: George Pemberton    NHS No: 183 242 1023
+DOB: 06/08/1967    MRN: H3086308
+Address: 14 Hawthorn Close, Leeds LS6 2QT
+Phone: +44 7182 727086
+Accession No: SP26-91266    Collected: 06/08/2026    Reported: 12/08/2026
+Requesting surgeon: Dr Patricia Clark
+*SP2691266*1832421023*
+
+Final Diagnosis. A. Breast, right, mastectomy: Infiltrating lobular carcinoma, Nottingham grade II (of III). [tubules 3/3, nuclei 2/3, mitoses 1/3; Nottingham score 5/9], forming a 2.8 x 2.0 x 1.2 cm mass. located in the upper outer quadrant of the breast [AJCC, 7th ed., pT2]. Angiolymphatic invasion. is present. The non-neoplastic breast parenchyma shows proliferative fibrocystic changes. Biopsy site changes present. The tumor does not involve the nipple, overlying skin, or underlying. chest wall. A seborrheic keratosis is identified in the skin. All surgical resection margins,. including deep margin, are negative for tumor (minimum tumor free margin, 2.0 cm, anterior-. superior margin). B. Lymph node, right axillary, sentinel biopsy: One (of1) axillary sentinel lymph node is. positive for metastatic carcinoma, the largest measuring 2.0 cm. Extranodal extension is present. [AJCC, 7th ed., pN1]. C. Breast, left, mastectomy: Infiltrating lobular carcinoma, Nottingham grade II (of III) [tubules. 3/3, nuclei 2/3, mitoses 1/3; Nottingham score 6/9], and lobular carcinoma in situ, forming a 4.1. x 3.8 x 2.4 cm mass located in the upper subareolar aspect of the breast [AJCC, 7th ed., pT2]. Angiolymphatic invasion is absent. The non-neoplastic breast parenchyma shows proliferative. fibrocystic changes. Biopsy site changes present. The tumor involves the nipple. The overlying. skin and underlying chest wall are uninvolved. All surgical resection margins, including deep. margin, are negative for tumor (minimum tumor free margin, 1.6 cm, anterior-superior margin). D. Lymph node, left axillary, sentinel biopsy: One axillary sentinel lymph node is negative for. metastatic carcinoma. Blue dye is identified. Immunohistochemical cytokeratin stain was. performed on the paraffin embedded sentinel lymph node tissue and confirms the H&E. impression. E. Lymph node, left axillary #2, sentinel biopsy: One axillary sentinel lymph node is negative. for metastatic carcinoma. Blue dye is not identified. Immunohistochemical cytokeratin stain was. performed on the paraffin embedded sentinel lymph node tissue and confirms the H&E. impression. [AJCC, 7th ed., pN0(i-)(sn)]. F. Lymph nodes, right axillary, dissection: Multiple (14) axillary lymph nodes are negative for. metastatic carcinoma.
+
+COMMENT: Results discussed by phone with Dr Patricia Clark on 12 Aug 2026.
+
+Electronically signed by Dr William Whitaker, Consultant Pathologist, on 12/08/2026

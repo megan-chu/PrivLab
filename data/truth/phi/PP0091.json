@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0091",
+  "source": "TCGA-BP-4331.7a8e6bf9-0756-49bf-8911-aa43247e1544",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Ismail",
+      "start": 98,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "T0275884E",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "24/12/1954",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "P5509119",
+      "start": 165,
+      "end": 173
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 183,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9690 2262",
+      "start": 227,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-16473",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "16/01/2026",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2026",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Subramaniam",
+      "start": 335,
+      "end": 356
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Rahman",
+      "start": 2645,
+      "end": 2668
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9690 2262",
+      "start": 2695,
+      "end": 2708
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Fletcher",
+      "start": 2736,
+      "end": 2754
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2026",
+      "start": 2783,
+      "end": 2793
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0135",
+  "source": "TCGA-53-7626.23a82f88-d450-4546-88e0-c26cf8de267e",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Robert Martinez",
+      "start": 105,
+      "end": 120
+    },
+    {
+      "type": "ID",
+      "text": "962-56-2746",
+      "start": 129,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "11/19/1953",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "H9994347",
+      "start": 165,
+      "end": 173
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 183,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "(771) 555-8904",
+      "start": 234,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-75012",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "03/13/2026",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "03/19/2026",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Pemberton",
+      "start": 343,
+      "end": 362
+    },
+    {
+      "type": "EMAIL",
+      "text": "robert.martinez48@mailbox.example",
+      "start": 6571,
+      "end": 6604
+    },
+    {
+      "type": "NAME",
+      "text": "Robert Martinez",
+      "start": 6623,
+      "end": 6638
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Hassan",
+      "start": 6666,
+      "end": 6681
+    },
+    {
+      "type": "DATE",
+      "text": "03/19/2026",
+      "start": 6710,
+      "end": 6720
+    },
+    {
+      "type": "NAME",
+      "text": "Robert Martinez",
+      "start": 6737,
+      "end": 6752
+    },
+    {
+      "type": "MRN",
+      "text": "H9994347",
+      "start": 6757,
+      "end": 6765
+    }
+  ]
+}

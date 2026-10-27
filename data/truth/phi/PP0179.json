@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0179",
+  "source": "TCGA-J9-A8CM.7B7CB375-6046-437F-8513-9F713EA6407A",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Rao",
+      "start": 100,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "S2847818F",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "08/12/1947",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "P2309997",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 171,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8624 8687",
+      "start": 227,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-84058",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "09/09/2025",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "18/09/2025",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Clarke",
+      "start": 335,
+      "end": 351
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Clarke",
+      "start": 3654,
+      "end": 3670
+    },
+    {
+      "type": "DATE",
+      "text": "18 Sep 2025",
+      "start": 3674,
+      "end": 3685
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Rao",
+      "start": 3713,
+      "end": 3725
+    },
+    {
+      "type": "DATE",
+      "text": "18/09/2025",
+      "start": 3754,
+      "end": 3764
+    }
+  ]
+}

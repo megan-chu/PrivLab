@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0166",
+  "source": "TCGA-FC-7961.38213CCD-4ED4-43B8-BFA0-38300DD35095",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Osman",
+      "start": 94,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "T0644742I",
+      "start": 128,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "19/07/1950",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5246497",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6702 8794",
+      "start": 180,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-61115",
+      "start": 208,
+      "end": 217
+    },
+    {
+      "type": "DATE",
+      "text": "15/05/2025",
+      "start": 232,
+      "end": 242
+    },
+    {
+      "type": "DATE",
+      "text": "20/05/2025",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Miller",
+      "start": 287,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2561115",
+      "start": 304,
+      "end": 312
+    },
+    {
+      "type": "ID",
+      "text": "T0644742I",
+      "start": 313,
+      "end": 322
+    },
+    {
+      "type": "EMAIL",
+      "text": "muhammad.osman53@mailbox.example",
+      "start": 3356,
+      "end": 3388
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Osman",
+      "start": 3407,
+      "end": 3431
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Bennett",
+      "start": 3459,
+      "end": 3477
+    },
+    {
+      "type": "DATE",
+      "text": "20/05/2025",
+      "start": 3506,
+      "end": 3516
+    }
+  ]
+}

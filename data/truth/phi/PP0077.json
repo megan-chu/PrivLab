@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0077",
+  "source": "TCGA-A6-2681.ec4bb62b-edf5-4051-8240-4e9d89fd928f",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Lewis",
+      "start": 105,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "935-68-2752",
+      "start": 126,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "02/26/1952",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "H6573679",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "(529) 555-4290",
+      "start": 178,
+      "end": 192
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-50792",
+      "start": 207,
+      "end": 217
+    },
+    {
+      "type": "DATE",
+      "text": "11/08/2025",
+      "start": 232,
+      "end": 242
+    },
+    {
+      "type": "DATE",
+      "text": "11/10/2025",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Walker",
+      "start": 287,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2550792",
+      "start": 304,
+      "end": 313
+    },
+    {
+      "type": "ID",
+      "text": "935-68-2752",
+      "start": 314,
+      "end": 325
+    },
+    {
+      "type": "EMAIL",
+      "text": "thomas.lewis41@mailbox.example",
+      "start": 2795,
+      "end": 2825
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Lewis",
+      "start": 2844,
+      "end": 2856
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Fletcher",
+      "start": 2884,
+      "end": 2905
+    },
+    {
+      "type": "DATE",
+      "text": "11/10/2025",
+      "start": 2934,
+      "end": 2944
+    }
+  ]
+}

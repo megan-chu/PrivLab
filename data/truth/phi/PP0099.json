@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0099",
+  "source": "TCGA-AK-3456.1ba28891-0047-424f-917d-542a9ca90343",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Thompson",
+      "start": 105,
+      "end": 119
+    },
+    {
+      "type": "ID",
+      "text": "932-72-1621",
+      "start": 128,
+      "end": 139
+    },
+    {
+      "type": "DOB",
+      "text": "02/05/1948",
+      "start": 145,
+      "end": 155
+    },
+    {
+      "type": "MRN",
+      "text": "P4671004",
+      "start": 164,
+      "end": 172
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 182,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "(935) 555-3907",
+      "start": 235,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-70002",
+      "start": 264,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "02/27/2025",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "03/04/2025",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Teo Hui Min",
+      "start": 343,
+      "end": 357
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Rahman",
+      "start": 6275,
+      "end": 6293
+    },
+    {
+      "type": "DATE",
+      "text": "03/04/2025",
+      "start": 6322,
+      "end": 6332
+    }
+  ]
+}

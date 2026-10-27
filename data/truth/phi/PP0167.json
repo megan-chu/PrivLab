@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0167",
+  "source": "TCGA-J4-A67K.F8FF8077-8922-4CC8-95DD-4AF68CCC7EEC",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah bin Osman",
+      "start": 98,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "T0502099E",
+      "start": 128,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "10/10/1966",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2826831",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6886 5903",
+      "start": 180,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-24363",
+      "start": 208,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "06/12/2025",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "09/12/2025",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Rao",
+      "start": 288,
+      "end": 302
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Rao",
+      "start": 3846,
+      "end": 3860
+    },
+    {
+      "type": "DATE",
+      "text": "09 Dec 2025",
+      "start": 3864,
+      "end": 3875
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Clarke",
+      "start": 3903,
+      "end": 3918
+    },
+    {
+      "type": "DATE",
+      "text": "09/12/2025",
+      "start": 3947,
+      "end": 3957
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah bin Osman",
+      "start": 3974,
+      "end": 3994
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2826831",
+      "start": 3999,
+      "end": 4009
+    }
+  ]
+}

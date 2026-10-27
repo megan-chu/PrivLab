@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0009",
+  "source": "TCGA-E2-A14T.6C8B56C1-330B-4116-8B60-7A81A1983277",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Iyer",
+      "start": 94,
+      "end": 105
+    },
+    {
+      "type": "ID",
+      "text": "S0799118E",
+      "start": 115,
+      "end": 124
+    },
+    {
+      "type": "DOB",
+      "text": "14/02/1959",
+      "start": 130,
+      "end": 140
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6855396",
+      "start": 149,
+      "end": 159
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 169,
+      "end": 217
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9936 5905",
+      "start": 225,
+      "end": 238
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-33018",
+      "start": 253,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "03/06/2026",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "09/06/2026",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Rao",
+      "start": 332,
+      "end": 346
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2633018",
+      "start": 348,
+      "end": 356
+    },
+    {
+      "type": "ID",
+      "text": "S0799118E",
+      "start": 357,
+      "end": 366
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Subramaniam",
+      "start": 9230,
+      "end": 9249
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9936 5905",
+      "start": 9276,
+      "end": 9289
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Clarke",
+      "start": 9317,
+      "end": 9333
+    },
+    {
+      "type": "DATE",
+      "text": "09/06/2026",
+      "start": 9362,
+      "end": 9372
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Iyer",
+      "start": 9389,
+      "end": 9400
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6855396",
+      "start": 9405,
+      "end": 9415
+    }
+  ]
+}

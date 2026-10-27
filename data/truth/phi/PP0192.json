@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0192",
+  "source": "TCGA-V1-A8MJ.5BF9CF4D-B724-4FFD-A336-ECE60FC80E0D",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 97,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "687 397 7403",
+      "start": 122,
+      "end": 134
+    },
+    {
+      "type": "DOB",
+      "text": "29/05/1978",
+      "start": 140,
+      "end": 150
+    },
+    {
+      "type": "MRN",
+      "text": "H8285484",
+      "start": 159,
+      "end": 167
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 177,
+      "end": 214
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7581 869105",
+      "start": 222,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-30151",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "10/09/2025",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "15/09/2025",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Ismail",
+      "start": 332,
+      "end": 347
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Ismail",
+      "start": 7342,
+      "end": 7357
+    },
+    {
+      "type": "DATE",
+      "text": "15 Sep 2025",
+      "start": 7361,
+      "end": 7372
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Miller",
+      "start": 7400,
+      "end": 7418
+    },
+    {
+      "type": "DATE",
+      "text": "15/09/2025",
+      "start": 7447,
+      "end": 7457
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 7474,
+      "end": 7487
+    },
+    {
+      "type": "MRN",
+      "text": "H8285484",
+      "start": 7492,
+      "end": 7500
+    }
+  ]
+}

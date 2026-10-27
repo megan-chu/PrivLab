@@ -1,0 +1,15 @@
+Northbridge Royal Infirmary
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Eleanor Clarke    NHS No: 444 713 2478
+DOB: 14/10/1968    MRN: P2497984
+Phone: +44 7167 426236
+Accession No: S25-58896    Collected: 03/10/2025    Reported: 11/10/2025
+Requesting surgeon: Dr James Clark
+
+DIAGNOSIS. (A) LEFT KIDNEY AND ADRENAL GLAND: RENAL CELL CARCINOMA, CONVENTIONAL (CLEAR CELL TYPE), FUHRMAN'S NUCLEAR GRADE 4. TUMOR INVOLVING RENAL VEIN. TUMOR MEASURES 6.0 CM IN MAXIMUM DIMENSION. Vascular, ureteral and soft tissue margins, free of tumor. Adrenal gland, no tumor present. GROSS DESCRIPTION. (A) LEFT KIDNEY AND ADRENAL GLAND - A left kidney (12.0 X 6.0 X 6.0 cm), a portion of left renal vein (4.0 cm in length),. portion of ureter (11.0 cm in length), and portion of renal artery (1.0 cm in length). Also, received is a separate fragment of. fibroadipose tissue (9.0 X 3.5 X 1.5 cm) that contains the adrenal gland (4.0 X 1.0 X 0.7 cm). In the upper pole of the kidney is a lobular bright-yellow mass (6.0 X 3.5 X 4.0 cm). The mass appears to be completely. surrounded by kidney parenchyma. It does not involve the perinephric adipose tissue. The tumor does extend into the renal sinus. and involves the renal vein within the hilum of the kidney. The tumor within the renal vein is located at 2.0 cm from the renal vein. margin. A portion of the tumor appears to be firm and white. The uninvolved renal parenchyma, adrenal gland and the perinephric adipose tissue appear unremarkable. A portion of tumor and normal kidney is submitted to the Tissue Bank. A portion of the tumor including the right fibrous. area is submitted for. SECTION CODE: A1, renal vein, artery and ureter margin, en face; A2, A3, tumor adherent to renal vein; A4, tumor within. the renal pelvis; A5-A7, representative sections of tumor to include renal capsule and adjacent normal parenchyma; A8, white. fibrous area of tumor; A9, tumor in renal pelvis; A10, representative section of tumor; A11, representative section of uninvolved. kidney; A12, representative sections of adrenal gland; A13, hilar tissue. CLINICAL HISTORY. None given. SNOMED CODES. T-71000, M-83123.
+
+COMMENT: Results discussed by phone with Dr James Clark on 11 Oct 2025.
+
+Electronically signed by Dr Priya Nair, Consultant Pathologist, on 11/10/2025

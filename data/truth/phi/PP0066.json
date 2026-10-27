@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0066",
+  "source": "TCGA-G4-6298.bf7b5bf6-9223-412a-b98f-5e89761c5c8a",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Priya Raman",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "S0651801Z",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "08/05/1982",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H4019585",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 173,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6799 9835",
+      "start": 234,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-85085",
+      "start": 262,
+      "end": 271
+    },
+    {
+      "type": "DATE",
+      "text": "02/02/2025",
+      "start": 286,
+      "end": 296
+    },
+    {
+      "type": "DATE",
+      "text": "08/02/2025",
+      "start": 310,
+      "end": 320
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Walker",
+      "start": 341,
+      "end": 356
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Walker",
+      "start": 3082,
+      "end": 3097
+    },
+    {
+      "type": "DATE",
+      "text": "08 Feb 2025",
+      "start": 3101,
+      "end": 3112
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Walker",
+      "start": 3140,
+      "end": 3155
+    },
+    {
+      "type": "DATE",
+      "text": "08/02/2025",
+      "start": 3184,
+      "end": 3194
+    }
+  ]
+}

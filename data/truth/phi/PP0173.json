@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0173",
+  "source": "TCGA-ZG-A8QW.6883BDF0-68B9-4D35-8A55-025C98AD2FCA",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "George Turner",
+      "start": 111,
+      "end": 124
+    },
+    {
+      "type": "ID",
+      "text": "149 587 0200",
+      "start": 136,
+      "end": 148
+    },
+    {
+      "type": "DOB",
+      "text": "26/03/1982",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "MRN",
+      "text": "H1902612",
+      "start": 173,
+      "end": 181
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 191,
+      "end": 223
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7419 448475",
+      "start": 231,
+      "end": 246
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-56897",
+      "start": 261,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "21/02/2025",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "24/02/2025",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Hassan",
+      "start": 340,
+      "end": 354
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2556897",
+      "start": 356,
+      "end": 364
+    },
+    {
+      "type": "ID",
+      "text": "1495870200",
+      "start": 365,
+      "end": 375
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Whitaker",
+      "start": 3461,
+      "end": 3476
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7419 448475",
+      "start": 3503,
+      "end": 3518
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Holloway",
+      "start": 3546,
+      "end": 3565
+    },
+    {
+      "type": "DATE",
+      "text": "24/02/2025",
+      "start": 3594,
+      "end": 3604
+    }
+  ]
+}

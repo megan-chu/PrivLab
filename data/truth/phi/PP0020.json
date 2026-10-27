@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0020",
+  "source": "TCGA-AQ-A1H3.6EB1A616-E99C-4AF6-9C0A-0FDC521A79CD",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Holloway",
+      "start": 97,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "075 273 5454",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "01/02/1965",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "P4205394",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "ADDRESS",
+      "text": "7 Station Road, Ashford TN23 1PP",
+      "start": 180,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7761 846420",
+      "start": 220,
+      "end": 235
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-32635",
+      "start": 250,
+      "end": 259
+    },
+    {
+      "type": "DATE",
+      "text": "10/10/2025",
+      "start": 274,
+      "end": 284
+    },
+    {
+      "type": "DATE",
+      "text": "12/10/2025",
+      "start": 298,
+      "end": 308
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 329,
+      "end": 343
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 4452,
+      "end": 4466
+    },
+    {
+      "type": "EMAIL",
+      "text": "eleanor.holloway58@mailbox.example",
+      "start": 9926,
+      "end": 9960
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Holloway",
+      "start": 9979,
+      "end": 9995
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 10023,
+      "end": 10039
+    },
+    {
+      "type": "DATE",
+      "text": "12/10/2025",
+      "start": 10068,
+      "end": 10078
+    },
+    {
+      "type": "NAME",
+      "text": "Eleanor Holloway",
+      "start": 10095,
+      "end": 10111
+    },
+    {
+      "type": "MRN",
+      "text": "P4205394",
+      "start": 10116,
+      "end": 10124
+    }
+  ]
+}

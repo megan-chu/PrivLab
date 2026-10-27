@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0018",
+  "source": "TCGA-BH-A1F2.FA781D93-C180-4453-BF95-B2D01B6CDB5C",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Hassan",
+      "start": 98,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "T3271937B",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "27/12/1962",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "P2921542",
+      "start": 165,
+      "end": 173
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 183,
+      "end": 231
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9303 2245",
+      "start": 239,
+      "end": 252
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-41768",
+      "start": 267,
+      "end": 276
+    },
+    {
+      "type": "DATE",
+      "text": "13/01/2026",
+      "start": 291,
+      "end": 301
+    },
+    {
+      "type": "DATE",
+      "text": "17/01/2026",
+      "start": 315,
+      "end": 325
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Fletcher",
+      "start": 346,
+      "end": 363
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Pemberton",
+      "start": 2381,
+      "end": 2401
+    },
+    {
+      "type": "DATE",
+      "text": "17/01/2026",
+      "start": 2430,
+      "end": 2440
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0120",
+  "source": "TCGA-B8-A7U6.27B82B1D-9142-4A49-9C30-5D052D216233",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Hassan",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "T2169958B",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "05/07/1974",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "H7675150",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 179,
+      "end": 232
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9854 4560",
+      "start": 240,
+      "end": 253
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-39557",
+      "start": 268,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "05/03/2026",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "10/03/2026",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Abdullah",
+      "start": 348,
+      "end": 368
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2639557",
+      "start": 370,
+      "end": 379
+    },
+    {
+      "type": "ID",
+      "text": "T2169958B",
+      "start": 380,
+      "end": 389
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Holloway",
+      "start": 2620,
+      "end": 2638
+    },
+    {
+      "type": "DATE",
+      "text": "10/03/2026",
+      "start": 2667,
+      "end": 2677
+    }
+  ]
+}

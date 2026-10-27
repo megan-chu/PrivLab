@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0092",
+  "source": "TCGA-BP-4349.c4dfd356-3eb6-404d-beb1-0fa7647b60a2",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Mei Xuan",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "S0030756D",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "18/06/1953",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "P8035849",
+      "start": 154,
+      "end": 162
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6614 1862",
+      "start": 170,
+      "end": 183
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-43179",
+      "start": 198,
+      "end": 207
+    },
+    {
+      "type": "DATE",
+      "text": "03/07/2025",
+      "start": 222,
+      "end": 232
+    },
+    {
+      "type": "DATE",
+      "text": "05/07/2025",
+      "start": 246,
+      "end": 256
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Thompson",
+      "start": 277,
+      "end": 294
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2543179",
+      "start": 296,
+      "end": 304
+    },
+    {
+      "type": "ID",
+      "text": "S0030756D",
+      "start": 305,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Siew Lan",
+      "start": 1959,
+      "end": 1975
+    },
+    {
+      "type": "DATE",
+      "text": "05/07/2025",
+      "start": 2004,
+      "end": 2014
+    }
+  ]
+}

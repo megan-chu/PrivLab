@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0146",
+  "source": "TCGA-55-A48Y.3542521A-EA16-4CD1-A61A-1FB3AE928FC9",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Rao",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "T1745642Z",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "27/03/1967",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "P3286742",
+      "start": 148,
+      "end": 156
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 166,
+      "end": 214
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8917 5799",
+      "start": 222,
+      "end": 235
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-38586",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DATE",
+      "text": "11/01/2025",
+      "start": 275,
+      "end": 285
+    },
+    {
+      "type": "DATE",
+      "text": "13/01/2025",
+      "start": 299,
+      "end": 309
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Whitaker",
+      "start": 330,
+      "end": 347
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Whitaker",
+      "start": 5939,
+      "end": 5956
+    },
+    {
+      "type": "DATE",
+      "text": "13 Jan 2025",
+      "start": 5960,
+      "end": 5971
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Miller",
+      "start": 5999,
+      "end": 6017
+    },
+    {
+      "type": "DATE",
+      "text": "13/01/2025",
+      "start": 6046,
+      "end": 6056
+    }
+  ]
+}

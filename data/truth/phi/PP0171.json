@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0171",
+  "source": "TCGA-J9-A8CN.3D3F5AFD-4DA0-43EC-B6B9-D2F16B6206E8",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah bin Abdullah",
+      "start": 98,
+      "end": 122
+    },
+    {
+      "type": "ID",
+      "text": "F3842150Q",
+      "start": 132,
+      "end": 141
+    },
+    {
+      "type": "DOB",
+      "text": "17/02/1958",
+      "start": 147,
+      "end": 157
+    },
+    {
+      "type": "MRN",
+      "text": "P1418336",
+      "start": 166,
+      "end": 174
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6887 2609",
+      "start": 182,
+      "end": 195
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-66543",
+      "start": 210,
+      "end": 220
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2025",
+      "start": 235,
+      "end": 245
+    },
+    {
+      "type": "DATE",
+      "text": "14/04/2025",
+      "start": 259,
+      "end": 269
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Abdullah",
+      "start": 290,
+      "end": 306
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Osman",
+      "start": 2021,
+      "end": 2045
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6887 2609",
+      "start": 2072,
+      "end": 2085
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Holloway",
+      "start": 2113,
+      "end": 2131
+    },
+    {
+      "type": "DATE",
+      "text": "14/04/2025",
+      "start": 2160,
+      "end": 2170
+    }
+  ]
+}

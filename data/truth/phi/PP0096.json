@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0096",
+  "source": "TCGA-AK-3433.60318ebc-051c-4587-82bc-8df91f8edf53",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 99,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "712 100 3236",
+      "start": 124,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "09/12/1975",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "P5342289",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7225 144770",
+      "start": 177,
+      "end": 192
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-03857",
+      "start": 207,
+      "end": 216
+    },
+    {
+      "type": "DATE",
+      "text": "17/01/2026",
+      "start": 231,
+      "end": 241
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2026",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 286,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2603857",
+      "start": 304,
+      "end": 312
+    },
+    {
+      "type": "ID",
+      "text": "7121003236",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Pemberton",
+      "start": 3643,
+      "end": 3662
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7225 144770",
+      "start": 3689,
+      "end": 3704
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Rahman",
+      "start": 3732,
+      "end": 3745
+    },
+    {
+      "type": "DATE",
+      "text": "20/01/2026",
+      "start": 3774,
+      "end": 3784
+    },
+    {
+      "type": "NAME",
+      "text": "George Hughes",
+      "start": 3801,
+      "end": 3814
+    },
+    {
+      "type": "MRN",
+      "text": "P5342289",
+      "start": 3819,
+      "end": 3827
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0169",
+  "source": "TCGA-G9-6494.9aad0222-0731-498b-a9c2-400ce0ccfa0d",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda bin Abdullah",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "G0558303P",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "07/04/1965",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "H6037929",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6298 6415",
+      "start": 177,
+      "end": 190
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-73088",
+      "start": 205,
+      "end": 215
+    },
+    {
+      "type": "DATE",
+      "text": "18/09/2025",
+      "start": 230,
+      "end": 240
+    },
+    {
+      "type": "DATE",
+      "text": "21/09/2025",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Wong Jia Hui",
+      "start": 285,
+      "end": 300
+    },
+    {
+      "type": "NAME",
+      "text": "Ahmad Faizal bin Abdullah",
+      "start": 4544,
+      "end": 4569
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6298 6415",
+      "start": 4596,
+      "end": 4609
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Krishnan",
+      "start": 4637,
+      "end": 4655
+    },
+    {
+      "type": "DATE",
+      "text": "21/09/2025",
+      "start": 4684,
+      "end": 4694
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0022",
+  "source": "TCGA-PE-A5DD.7A2719FC-1CA2-4D58-9EF7-594926D1FF66",
+  "cancer_type": "BRCA",
+  "split": "dev",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal bin Abdullah",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "S0947775F",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "16/07/1956",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "H2914064",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 179,
+      "end": 232
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8187 5066",
+      "start": 240,
+      "end": 253
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-53521",
+      "start": 268,
+      "end": 277
+    },
+    {
+      "type": "DATE",
+      "text": "22/02/2025",
+      "start": 292,
+      "end": 302
+    },
+    {
+      "type": "DATE",
+      "text": "28/02/2025",
+      "start": 316,
+      "end": 326
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Siew Lan",
+      "start": 347,
+      "end": 362
+    },
+    {
+      "type": "NAME",
+      "text": "Ahmad Faizal binte Hassan",
+      "start": 5815,
+      "end": 5840
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8187 5066",
+      "start": 5867,
+      "end": 5880
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Hassan",
+      "start": 5908,
+      "end": 5926
+    },
+    {
+      "type": "DATE",
+      "text": "28/02/2025",
+      "start": 5955,
+      "end": 5965
+    }
+  ]
+}

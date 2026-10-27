@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0033",
+  "source": "TCGA-E2-A1BD.DF746E32-AD2F-49CB-9AA6-4F8494C16B20",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Vikram Pillai",
+      "start": 94,
+      "end": 107
+    },
+    {
+      "type": "ID",
+      "text": "S3826758B",
+      "start": 117,
+      "end": 126
+    },
+    {
+      "type": "DOB",
+      "text": "07/08/1977",
+      "start": 132,
+      "end": 142
+    },
+    {
+      "type": "MRN",
+      "text": "P2661307",
+      "start": 151,
+      "end": 159
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 169,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6975 6942",
+      "start": 230,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-81694",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "08/06/2025",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "16/06/2025",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Iyer",
+      "start": 338,
+      "end": 351
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2581694",
+      "start": 353,
+      "end": 362
+    },
+    {
+      "type": "ID",
+      "text": "S3826758B",
+      "start": 363,
+      "end": 372
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Abdullah",
+      "start": 3930,
+      "end": 3947
+    },
+    {
+      "type": "DATE",
+      "text": "16/06/2025",
+      "start": 3976,
+      "end": 3986
+    }
+  ]
+}

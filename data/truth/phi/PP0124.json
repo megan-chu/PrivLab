@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0124",
+  "source": "TCGA-93-A4JN.BA9DB454-6107-4F98-8646-89129230D602",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Jia Hui",
+      "start": 94,
+      "end": 106
+    },
+    {
+      "type": "ID",
+      "text": "G3993056R",
+      "start": 116,
+      "end": 125
+    },
+    {
+      "type": "DOB",
+      "text": "04/03/1950",
+      "start": 131,
+      "end": 141
+    },
+    {
+      "type": "MRN",
+      "text": "P5745083",
+      "start": 150,
+      "end": 158
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 168,
+      "end": 221
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8626 2349",
+      "start": 229,
+      "end": 242
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-68746",
+      "start": 257,
+      "end": 266
+    },
+    {
+      "type": "DATE",
+      "text": "31/01/2026",
+      "start": 281,
+      "end": 291
+    },
+    {
+      "type": "DATE",
+      "text": "06/02/2026",
+      "start": 305,
+      "end": 315
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Whitaker",
+      "start": 336,
+      "end": 355
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2668746",
+      "start": 357,
+      "end": 365
+    },
+    {
+      "type": "ID",
+      "text": "G3993056R",
+      "start": 366,
+      "end": 375
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Whitaker",
+      "start": 8561,
+      "end": 8580
+    },
+    {
+      "type": "DATE",
+      "text": "06 Feb 2026",
+      "start": 8584,
+      "end": 8595
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Jun Jie",
+      "start": 8623,
+      "end": 8636
+    },
+    {
+      "type": "DATE",
+      "text": "06/02/2026",
+      "start": 8665,
+      "end": 8675
+    }
+  ]
+}

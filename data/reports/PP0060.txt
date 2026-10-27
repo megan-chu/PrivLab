@@ -1,0 +1,17 @@
+Bukit Timah Cancer Institute
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Koh Kok Wah    NRIC: T8578652G
+DOB: 28/03/1981    MRN: P6943949
+Address: 27 Jalan Kembangan, Singapore 419122
+Phone: +65 8330 5876
+Accession No: PA26-95493    Collected: 30/06/2026    Reported: 07/07/2026
+Requesting surgeon: Dr Vikram Raman
+*PA2695493*T8578652G*
+
+Diagnosis/Diagnoses: 1. Sections of a polypoid neoplasm of the colonic mucosa with the structure of a tubular. adenoma with high-grade dysplasia or transition to at least intramucosal adenocarcinoma in situ. (synonym according to WHO: high-grade intra-epithelial neoplasia, according to IUCC: pTis). 2.: Small, or only small portions of, tubular adenomas of the colonic mucosa with slight. dysplasia (synonym: low-grade intra-epithelial neoplasia). 3.: Tubular adenoma of the colonic mucosa with high-grade dysplasia and transition to an. intramucosal adenocarcinoma (synonym according to WHO: high-grade intra-epithelial. neoplasia, according to IUCC: pTis). In 1. and 3., no detectable transition to a manifest, deeper colon carcinoma infiltrating the wall. layers. Complete tumor resection - where not already done - is recommended. Diagnosis/Diagnoses. Right hemicolectomy specimen with an ulcerated colon carcinoma in the area of the cecal pole. measuring 4 cm in the largest diameter and displacing the appendiceal orifice, arising from a. tubulovillous adenoma with severe epithelial dysplasia (synonym: high-grade intra-epithelial. neoplasia). Invasive tumor spread as far as the muscularis propria. Appendix with formation of. an obstructive type of mucocele and with persistent or florid chronic appendicitis and. perityphlitis. Oral and aboral resection margin and greater omentum tumor-free. Twenty-four mesocolic and mesenteric lymph nodes tumor-free and with uncharacteristically. reactive changes. Tumor stage therefore pT2 pNO (0/24) L0 V0; G2.
+
+COMMENT: Report copy sent to koh.wah91@mailbox.example at the request of Koh Kok Wah.
+
+Electronically signed by Dr Siti Hassan, Consultant Pathologist, on 07/07/2026

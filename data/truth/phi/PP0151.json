@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0151",
+  "source": "TCGA-86-8075.7988f9a9-584e-4ce9-b12c-f3e289af1d6d",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Harry Whitaker",
+      "start": 111,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "306 524 0777",
+      "start": 137,
+      "end": 149
+    },
+    {
+      "type": "DOB",
+      "text": "10/06/1966",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4131076",
+      "start": 174,
+      "end": 184
+    },
+    {
+      "type": "ADDRESS",
+      "text": "7 Station Road, Ashford TN23 1PP",
+      "start": 194,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7643 262555",
+      "start": 234,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-46569",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "10/07/2026",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "19/07/2026",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Lewis",
+      "start": 344,
+      "end": 361
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Lewis",
+      "start": 1020,
+      "end": 1037
+    },
+    {
+      "type": "DATE",
+      "text": "19 Jul 2026",
+      "start": 1041,
+      "end": 1052
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Hughes",
+      "start": 1080,
+      "end": 1099
+    },
+    {
+      "type": "DATE",
+      "text": "19/07/2026",
+      "start": 1128,
+      "end": 1138
+    }
+  ]
+}

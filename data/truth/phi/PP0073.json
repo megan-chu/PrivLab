@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0073",
+  "source": "TCGA-D5-6927.c667b580-1814-4ef9-9b00-6803e665a94c",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "James Lewis",
+      "start": 97,
+      "end": 108
+    },
+    {
+      "type": "ID",
+      "text": "941-99-4700",
+      "start": 117,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "11/29/1966",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7799441",
+      "start": 153,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "3310 Elm Park Ave, Madison, WI 53711",
+      "start": 173,
+      "end": 209
+    },
+    {
+      "type": "PHONE",
+      "text": "(645) 555-6427",
+      "start": 217,
+      "end": 231
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-50436",
+      "start": 246,
+      "end": 256
+    },
+    {
+      "type": "DATE",
+      "text": "03/24/2025",
+      "start": 271,
+      "end": 281
+    },
+    {
+      "type": "DATE",
+      "text": "03/26/2025",
+      "start": 295,
+      "end": 305
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Miller",
+      "start": 326,
+      "end": 344
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Miller",
+      "start": 1327,
+      "end": 1345
+    },
+    {
+      "type": "DATE",
+      "text": "26 Mar 2025",
+      "start": 1349,
+      "end": 1360
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Abdullah",
+      "start": 1388,
+      "end": 1403
+    },
+    {
+      "type": "DATE",
+      "text": "03/26/2025",
+      "start": 1432,
+      "end": 1442
+    }
+  ]
+}

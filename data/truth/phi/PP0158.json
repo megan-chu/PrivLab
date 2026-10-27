@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0158",
+  "source": "TCGA-69-7974.f2c5dd0c-88d1-4c68-abd0-c5ee5fbade8b",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Susan Martinez",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "954-34-6254",
+      "start": 120,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "11/28/1970",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6867267",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "3310 Elm Park Ave, Madison, WI 53711",
+      "start": 176,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "(583) 555-3555",
+      "start": 220,
+      "end": 234
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-58961",
+      "start": 249,
+      "end": 259
+    },
+    {
+      "type": "DATE",
+      "text": "01/25/2025",
+      "start": 274,
+      "end": 284
+    },
+    {
+      "type": "DATE",
+      "text": "01/31/2025",
+      "start": 298,
+      "end": 308
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Ismail",
+      "start": 329,
+      "end": 344
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Salleh",
+      "start": 4528,
+      "end": 4546
+    },
+    {
+      "type": "DATE",
+      "text": "01/31/2025",
+      "start": 4575,
+      "end": 4585
+    }
+  ]
+}

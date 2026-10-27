@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0153",
+  "source": "TCGA-86-7955.d6a25f15-9117-43b7-bbd4-132914a24d16",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Ng Wei Ling",
+      "start": 98,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "G1705865M",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "25/03/1945",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "P2180916",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 171,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6297 9621",
+      "start": 227,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-11215",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "30/09/2025",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "02/10/2025",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Hughes",
+      "start": 335,
+      "end": 351
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Abdullah",
+      "start": 975,
+      "end": 992
+    },
+    {
+      "type": "DATE",
+      "text": "02/10/2025",
+      "start": 1021,
+      "end": 1031
+    }
+  ]
+}

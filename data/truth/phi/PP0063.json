@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0063",
+  "source": "TCGA-D5-5539.1cfcf7e7-0886-4a24-9ab4-fcc10e998779",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Anderson",
+      "start": 97,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "924-52-3662",
+      "start": 123,
+      "end": 134
+    },
+    {
+      "type": "DOB",
+      "text": "03/03/1981",
+      "start": 140,
+      "end": 150
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6655803",
+      "start": 159,
+      "end": 169
+    },
+    {
+      "type": "PHONE",
+      "text": "(536) 555-2421",
+      "start": 177,
+      "end": 191
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-75420",
+      "start": 206,
+      "end": 216
+    },
+    {
+      "type": "DATE",
+      "text": "09/21/2025",
+      "start": 231,
+      "end": 241
+    },
+    {
+      "type": "DATE",
+      "text": "09/25/2025",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Hassan",
+      "start": 286,
+      "end": 304
+    },
+    {
+      "type": "NAME",
+      "text": "Michael Garcia",
+      "start": 1544,
+      "end": 1558
+    },
+    {
+      "type": "PHONE",
+      "text": "(536) 555-2421",
+      "start": 1585,
+      "end": 1599
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Clark",
+      "start": 1627,
+      "end": 1641
+    },
+    {
+      "type": "DATE",
+      "text": "09/25/2025",
+      "start": 1670,
+      "end": 1680
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Anderson",
+      "start": 1697,
+      "end": 1714
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6655803",
+      "start": 1719,
+      "end": 1729
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+St. Brendan Cancer Center
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Linda Garcia    SSN: 918-68-1605
+DOB: 04/29/1966    MRN: MRN1703065
+Address: 1847 Willow Creek Dr, Springfield, OH 45503
+Phone: (493) 555-6848
+Accession No: SP25-41642    Collected: 07/26/2025    Reported: 07/28/2025
+Requesting surgeon: Dr Karen Harris
+*SP2541642*918-68-1605*
+
+LARGE INTESTINE TISSUE CHECKLIST. Specimen type: Colectomy. Specimen size: Not specified. Tumor site: Transverse colon. Tumor size: 2.5 X 4 X 3 cm. Tumor features: None specified. Histologic type: Mucinous adenocarcinoma. Histologic grade: Moderately differentiated. Tumor extent: Pericolonic tissues. Lymph nodes: Not specified. Margins: Not specified. Evidence of neo-adjuvant treatment: Not specified. Additional pathologic findings: Not specified. Comments: None.
+
+Electronically signed by Dr Priya Raman, Consultant Pathologist, on 07/28/2025

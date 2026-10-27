@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0086",
+  "source": "TCGA-CZ-5984.d9612fed-e194-4538-a4e3-093e5bfeca53",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Menon",
+      "start": 98,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "T6374545B",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "06/02/1989",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "P9142618",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 171,
+      "end": 207
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8567 1011",
+      "start": 215,
+      "end": 228
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-90463",
+      "start": 243,
+      "end": 253
+    },
+    {
+      "type": "DATE",
+      "text": "15/08/2026",
+      "start": 268,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "19/08/2026",
+      "start": 292,
+      "end": 302
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Jia Hui",
+      "start": 323,
+      "end": 338
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Subramaniam",
+      "start": 6746,
+      "end": 6765
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8567 1011",
+      "start": 6792,
+      "end": 6805
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Jia Hui",
+      "start": 6833,
+      "end": 6847
+    },
+    {
+      "type": "DATE",
+      "text": "19/08/2026",
+      "start": 6876,
+      "end": 6886
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Menon",
+      "start": 6903,
+      "end": 6914
+    },
+    {
+      "type": "MRN",
+      "text": "P9142618",
+      "start": 6919,
+      "end": 6927
+    }
+  ]
+}

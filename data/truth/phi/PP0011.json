@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0011",
+  "source": "TCGA-E9-A54Y.3F43AE57-0EB8-4F40-980F-6E2C8C2B3A74",
+  "cancer_type": "BRCA",
+  "split": "dev",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal binte Ismail",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "F8692322W",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "27/12/1976",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P6573147",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 185,
+      "end": 221
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8327 4269",
+      "start": 229,
+      "end": 242
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-88806",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DATE",
+      "text": "26/01/2025",
+      "start": 282,
+      "end": 292
+    },
+    {
+      "type": "DATE",
+      "text": "30/01/2025",
+      "start": 306,
+      "end": 316
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Osman",
+      "start": 337,
+      "end": 350
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Osman",
+      "start": 2587,
+      "end": 2600
+    },
+    {
+      "type": "DATE",
+      "text": "30 Jan 2025",
+      "start": 2604,
+      "end": 2615
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Zhi Hao",
+      "start": 2643,
+      "end": 2657
+    },
+    {
+      "type": "DATE",
+      "text": "30/01/2025",
+      "start": 2686,
+      "end": 2696
+    }
+  ]
+}
