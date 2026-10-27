@@ -1,0 +1,70 @@
+"""Pattern recognisers: one hand-written example each, plus the edge cases found on dev/extra."""
+import pytest
+
+from common.data import load_phi_truth, load_report
+from deid.patterns import find_pattern_phi
+
+
+def found(text: str) -> list[tuple[str, str]]:
+    return [(s.type, s.text) for s in find_pattern_phi(text)]
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("NRIC: S1234567D", ("ID", "S1234567D")),
+    ("NHS No: 943 476 5919", ("ID", "943 476 5919")),
+    ("SSN: 918-79-4700", ("ID", "918-79-4700")),
+    ("sent to jo.tan12@mailbox.example today", ("EMAIL", "jo.tan12@mailbox.example")),
+    ("Phone: +65 6999 8752", ("PHONE", "+65 6999 8752")),
+    ("Phone: +44 7112 398477", ("PHONE", "+44 7112 398477")),
+    ("contact (549) 555-2318.", ("PHONE", "(549) 555-2318")),
+    ("Collected: 09/05/2025", ("DATE", "09/05/2025")),
+    ("discussed on 14 May 2025.", ("DATE", "14 May 2025")),
+    ("DOB: 26/01/1942", ("DOB", "26/01/1942")),
+    ("Accession No: PA25-92841", ("ACCESSION", "PA25-92841")),
+    ("ref MRN9980912", ("MRN", "MRN9980912")),
+    ("MRN: H1088762", ("MRN", "H1088762")),
+    ("ACCT # : 92071195", ("ACCOUNT", "92071195")),
+    ("Patient: Ong Wei Ling    NRIC", ("NAME", "Ong Wei Ling")),
+    ("Patient's husband Ahmad Faizal binte Hassan requested", ("NAME", "Ahmad Faizal binte Hassan")),
+    ("signed by Dr Lee Mei Xuan, Consultant", ("DOCTOR", "Dr Lee Mei Xuan")),
+    ("Address: 14 Hawthorn Close, Leeds LS6 2QT\n", ("ADDRESS", "14 Hawthorn Close, Leeds LS6 2QT")),
+    ("Whitfield NHS Foundation Trust Hospital\n", ("HOSPITAL", "Whitfield NHS Foundation Trust Hospital")),
+])
+def test_recogniser_examples(text, expected):
+    assert expected in found(text)
+
+
+def test_checksum_rejects_lookalike_ids():
+    assert found("NRIC: S1234567E") == []          # wrong check letter
+    assert found("NHS No: 943 476 5918") == []     # wrong check digit
+
+
+def test_case_sensitive_ids():
+    assert found("code s1234567d") == []
+
+
+@pytest.mark.parametrize("text", [
+    "performed by Dr. In Surgical Pathology, the specimen",
+    "Diagnosis called to Dr. GROSS DESCRIPTION: A. 4R",
+    "Dictated by Dr. This information is subject",
+])
+def test_tcga_placeholders_are_not_doctors(text):
+    assert not [t for t, _ in found(text) if t == "DOCTOR"]
+
+
+def test_doctor_name_stops_before_heading():
+    assert ("DOCTOR", "Dr Oliver Turner") in found("by Dr Oliver Turner FROZEN SECTION DIAGNOSIS")
+
+
+def test_footer_name_and_mrn():
+    assert found("Page 1 of 1  |  Ananya Subramaniam  |  P5221936") == [
+        ("NAME", "Ananya Subramaniam"), ("MRN", "P5221936")]
+
+
+def test_pp0144_every_identifier_found_with_its_type():
+    # PP0144 is in the extra split.
+    text = load_report("PP0144")
+    spans = find_pattern_phi(text)
+    for s in load_phi_truth("PP0144")["phi"]:
+        assert any(p.start == s["start"] and p.end == s["end"] and p.type == s["type"] for p in spans), s
+    assert len(spans) == 17
