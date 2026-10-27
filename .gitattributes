@@ -1,0 +1,5 @@
+# PHI and evidence offsets are character offsets into LF text.
+# Never let git rewrite line endings in data/, or every offset breaks on checkout.
+* text=auto eol=lf
+data/** -text
+*.pdf binary
