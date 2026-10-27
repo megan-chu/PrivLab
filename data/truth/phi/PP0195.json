@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0195",
+  "source": "TCGA-CH-5751.c4240096-b982-4b8a-b871-677a94cfd6cc",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "James Clark",
+      "start": 103,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "977-25-8703",
+      "start": 123,
+      "end": 134
+    },
+    {
+      "type": "DOB",
+      "text": "09/20/1987",
+      "start": 140,
+      "end": 150
+    },
+    {
+      "type": "MRN",
+      "text": "H7176462",
+      "start": 159,
+      "end": 167
+    },
+    {
+      "type": "PHONE",
+      "text": "(496) 555-2260",
+      "start": 175,
+      "end": 189
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-91862",
+      "start": 204,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "06/30/2026",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "07/06/2026",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Ismail",
+      "start": 284,
+      "end": 299
+    },
+    {
+      "type": "EMAIL",
+      "text": "james.clark22@mailbox.example",
+      "start": 966,
+      "end": 995
+    },
+    {
+      "type": "NAME",
+      "text": "James Clark",
+      "start": 1014,
+      "end": 1025
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Zhi Hao",
+      "start": 1053,
+      "end": 1067
+    },
+    {
+      "type": "DATE",
+      "text": "07/06/2026",
+      "start": 1096,
+      "end": 1106
+    },
+    {
+      "type": "NAME",
+      "text": "James Clark",
+      "start": 1123,
+      "end": 1134
+    },
+    {
+      "type": "MRN",
+      "text": "H7176462",
+      "start": 1139,
+      "end": 1147
+    }
+  ]
+}

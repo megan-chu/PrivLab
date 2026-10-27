@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0039",
+  "source": "TCGA-D8-A1J9.D80E9389-AAD8-4EEB-9DE0-5DE57B5E5F6B",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Harris",
+      "start": 97,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "963-44-4531",
+      "start": 119,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "12/18/1985",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H2860421",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "PHONE",
+      "text": "(814) 555-1897",
+      "start": 171,
+      "end": 185
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-89895",
+      "start": 200,
+      "end": 210
+    },
+    {
+      "type": "DATE",
+      "text": "04/27/2025",
+      "start": 225,
+      "end": 235
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2025",
+      "start": 249,
+      "end": 259
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Fletcher",
+      "start": 280,
+      "end": 299
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Fletcher",
+      "start": 1729,
+      "end": 1748
+    },
+    {
+      "type": "DATE",
+      "text": "04 May 2025",
+      "start": 1752,
+      "end": 1763
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Goh Mei Xuan",
+      "start": 1791,
+      "end": 1806
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2025",
+      "start": 1835,
+      "end": 1845
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Harris",
+      "start": 1862,
+      "end": 1875
+    },
+    {
+      "type": "MRN",
+      "text": "H2860421",
+      "start": 1880,
+      "end": 1888
+    }
+  ]
+}

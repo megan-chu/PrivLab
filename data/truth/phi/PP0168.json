@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0168",
+  "source": "TCGA-G9-7510.11c8711a-57c0-41fe-82fa-2e9592fef570",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Menon",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "T3901981C",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "23/05/1983",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "P6309796",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 174,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8927 3947",
+      "start": 230,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-69864",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "22/10/2025",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "30/10/2025",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Turner",
+      "start": 338,
+      "end": 353
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2569864",
+      "start": 355,
+      "end": 364
+    },
+    {
+      "type": "ID",
+      "text": "T3901981C",
+      "start": 365,
+      "end": 374
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Whitaker",
+      "start": 4825,
+      "end": 4844
+    },
+    {
+      "type": "DATE",
+      "text": "30/10/2025",
+      "start": 4873,
+      "end": 4883
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0141",
+  "source": "TCGA-55-7227.7910979d-a635-4ef5-ab00-84df0455df66",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "David Miller",
+      "start": 103,
+      "end": 115
+    },
+    {
+      "type": "ID",
+      "text": "911-96-4452",
+      "start": 124,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "01/15/1974",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "H7066680",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "(575) 555-4013",
+      "start": 176,
+      "end": 190
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-35039",
+      "start": 205,
+      "end": 215
+    },
+    {
+      "type": "DATE",
+      "text": "08/18/2026",
+      "start": 230,
+      "end": 240
+    },
+    {
+      "type": "DATE",
+      "text": "08/21/2026",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Bennett",
+      "start": 285,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2635039",
+      "start": 304,
+      "end": 313
+    },
+    {
+      "type": "ID",
+      "text": "911-96-4452",
+      "start": 314,
+      "end": 325
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Bennett",
+      "start": 5762,
+      "end": 5779
+    },
+    {
+      "type": "DATE",
+      "text": "21 Aug 2026",
+      "start": 5783,
+      "end": 5794
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Iyer",
+      "start": 5822,
+      "end": 5836
+    },
+    {
+      "type": "DATE",
+      "text": "08/21/2026",
+      "start": 5865,
+      "end": 5875
+    }
+  ]
+}

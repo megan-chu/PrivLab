@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0087",
+  "source": "TCGA-B0-4712.01d92a98-9f18-44bf-83b6-ccc968d25c21",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah bin Abdullah",
+      "start": 100,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "F3611037Q",
+      "start": 133,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "28/12/1946",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P8466983",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 185,
+      "end": 233
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6492 2463",
+      "start": 241,
+      "end": 254
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-02056",
+      "start": 269,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "16/05/2025",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "21/05/2025",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Menon",
+      "start": 348,
+      "end": 362
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2502056",
+      "start": 364,
+      "end": 372
+    },
+    {
+      "type": "ID",
+      "text": "F3611037Q",
+      "start": 373,
+      "end": 382
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Ismail",
+      "start": 1745,
+      "end": 1760
+    },
+    {
+      "type": "DATE",
+      "text": "21/05/2025",
+      "start": 1789,
+      "end": 1799
+    }
+  ]
+}

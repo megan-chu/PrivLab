@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0076",
+  "source": "TCGA-AA-3534.55d94e20-9f25-4e4e-a7c1-13a21d2620fc",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Wei Ling",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "F8199560P",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "08/03/1966",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5072543",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8249 2036",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-69302",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "28/02/2026",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "08/03/2026",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Garcia",
+      "start": 343,
+      "end": 358
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Garcia",
+      "start": 837,
+      "end": 852
+    },
+    {
+      "type": "DATE",
+      "text": "08 Mar 2026",
+      "start": 856,
+      "end": 867
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Subramaniam",
+      "start": 895,
+      "end": 917
+    },
+    {
+      "type": "DATE",
+      "text": "08/03/2026",
+      "start": 946,
+      "end": 956
+    }
+  ]
+}

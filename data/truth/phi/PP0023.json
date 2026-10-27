@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0023",
+  "source": "TCGA-BH-A0W3.801A4E2F-E26E-424F-BF42-CD0D9CD62BCE",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Lewis",
+      "start": 103,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "989-17-2625",
+      "start": 126,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "08/22/1958",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "P2362099",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "(906) 555-8699",
+      "start": 178,
+      "end": 192
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-32439",
+      "start": 207,
+      "end": 216
+    },
+    {
+      "type": "DATE",
+      "text": "08/05/2025",
+      "start": 231,
+      "end": 241
+    },
+    {
+      "type": "DATE",
+      "text": "08/11/2025",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 286,
+      "end": 302
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 4834,
+      "end": 4850
+    },
+    {
+      "type": "DATE",
+      "text": "11 Aug 2025",
+      "start": 4854,
+      "end": 4865
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Zhi Hao",
+      "start": 4893,
+      "end": 4908
+    },
+    {
+      "type": "DATE",
+      "text": "08/11/2025",
+      "start": 4937,
+      "end": 4947
+    }
+  ]
+}

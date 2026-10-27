@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0064",
+  "source": "TCGA-D5-6931.d58ae578-e4c3-4ae4-9b5d-a7831f976ff7",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Subramaniam",
+      "start": 94,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "S4530174E",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "30/04/1954",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "P2969909",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8865 7121",
+      "start": 172,
+      "end": 185
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-39671",
+      "start": 200,
+      "end": 210
+    },
+    {
+      "type": "DATE",
+      "text": "20/02/2026",
+      "start": 225,
+      "end": 235
+    },
+    {
+      "type": "DATE",
+      "text": "26/02/2026",
+      "start": 249,
+      "end": 259
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Bennett",
+      "start": 280,
+      "end": 297
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Osman",
+      "start": 2085,
+      "end": 2099
+    },
+    {
+      "type": "DATE",
+      "text": "26/02/2026",
+      "start": 2128,
+      "end": 2138
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Subramaniam",
+      "start": 2155,
+      "end": 2173
+    },
+    {
+      "type": "MRN",
+      "text": "P2969909",
+      "start": 2178,
+      "end": 2186
+    }
+  ]
+}

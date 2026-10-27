@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0159",
+  "source": "TCGA-95-A4VN.D348711A-FD65-4771-A604-D761C96F5C48",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Hui Min",
+      "start": 98,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "F7705383L",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "14/04/1958",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "P9103837",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 171,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6161 5653",
+      "start": 232,
+      "end": 245
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-96672",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "14/07/2026",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "20/07/2026",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Teo Zhi Hao",
+      "start": 340,
+      "end": 354
+    },
+    {
+      "type": "EMAIL",
+      "text": "lim.min90@mailbox.example",
+      "start": 8570,
+      "end": 8595
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Hui Min",
+      "start": 8614,
+      "end": 8625
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Fletcher",
+      "start": 8653,
+      "end": 8670
+    },
+    {
+      "type": "DATE",
+      "text": "20/07/2026",
+      "start": 8699,
+      "end": 8709
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Hui Min",
+      "start": 8726,
+      "end": 8737
+    },
+    {
+      "type": "MRN",
+      "text": "P9103837",
+      "start": 8742,
+      "end": 8750
+    }
+  ]
+}

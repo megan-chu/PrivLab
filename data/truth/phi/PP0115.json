@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0115",
+  "source": "TCGA-BP-4801.c4bfdccf-e1ac-4bca-bbd6-5e6c20fa40fa",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Rao",
+      "start": 98,
+      "end": 108
+    },
+    {
+      "type": "ID",
+      "text": "F4701204W",
+      "start": 118,
+      "end": 127
+    },
+    {
+      "type": "DOB",
+      "text": "25/04/1972",
+      "start": 133,
+      "end": 143
+    },
+    {
+      "type": "MRN",
+      "text": "P2944497",
+      "start": 152,
+      "end": 160
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 170,
+      "end": 218
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8736 5395",
+      "start": 226,
+      "end": 239
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-07014",
+      "start": 254,
+      "end": 263
+    },
+    {
+      "type": "DATE",
+      "text": "17/11/2025",
+      "start": 278,
+      "end": 288
+    },
+    {
+      "type": "DATE",
+      "text": "25/11/2025",
+      "start": 302,
+      "end": 312
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Salleh",
+      "start": 333,
+      "end": 347
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Iyer",
+      "start": 2467,
+      "end": 2478
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8736 5395",
+      "start": 2505,
+      "end": 2518
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Rahman",
+      "start": 2546,
+      "end": 2560
+    },
+    {
+      "type": "DATE",
+      "text": "25/11/2025",
+      "start": 2589,
+      "end": 2599
+    }
+  ]
+}

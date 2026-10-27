@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0075",
+  "source": "TCGA-NH-A5IV.F7280EE2-0A62-4DE5-8A20-17B6FBB51F41",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Lewis",
+      "start": 97,
+      "end": 108
+    },
+    {
+      "type": "ID",
+      "text": "994-58-2404",
+      "start": 117,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "07/01/1966",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5495824",
+      "start": 153,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 173,
+      "end": 218
+    },
+    {
+      "type": "PHONE",
+      "text": "(294) 555-1085",
+      "start": 226,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-50807",
+      "start": 255,
+      "end": 264
+    },
+    {
+      "type": "DATE",
+      "text": "09/10/2025",
+      "start": 279,
+      "end": 289
+    },
+    {
+      "type": "DATE",
+      "text": "09/13/2025",
+      "start": 303,
+      "end": 313
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 334,
+      "end": 350
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2550807",
+      "start": 352,
+      "end": 360
+    },
+    {
+      "type": "ID",
+      "text": "994-58-2404",
+      "start": 361,
+      "end": 372
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 461,
+      "end": 477
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-50807",
+      "start": 1984,
+      "end": 1993
+    },
+    {
+      "type": "EMAIL",
+      "text": "linda.lewis57@mailbox.example",
+      "start": 3354,
+      "end": 3383
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Lewis",
+      "start": 3402,
+      "end": 3413
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Pillai",
+      "start": 3441,
+      "end": 3457
+    },
+    {
+      "type": "DATE",
+      "text": "09/13/2025",
+      "start": 3486,
+      "end": 3496
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0163",
+  "source": "TCGA-HC-8213.E6CE4E34-DE42-455C-AD93-CCE42FCFE049",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Hassan",
+      "start": 98,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "G5267722Q",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "03/05/1957",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "H1251897",
+      "start": 165,
+      "end": 173
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8804 6323",
+      "start": 181,
+      "end": 194
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-55138",
+      "start": 209,
+      "end": 219
+    },
+    {
+      "type": "DATE",
+      "text": "20/08/2025",
+      "start": 234,
+      "end": 244
+    },
+    {
+      "type": "DATE",
+      "text": "22/08/2025",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Ismail",
+      "start": 289,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Hassan",
+      "start": 2720,
+      "end": 2735
+    },
+    {
+      "type": "DATE",
+      "text": "22/08/2025",
+      "start": 2764,
+      "end": 2774
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Hassan",
+      "start": 2791,
+      "end": 2814
+    },
+    {
+      "type": "MRN",
+      "text": "H1251897",
+      "start": 2819,
+      "end": 2827
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0119",
+  "source": "TCGA-CJ-4904.48aadd82-1ecc-4d20-b34e-1c0f96baf3f7",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Subramaniam",
+      "start": 98,
+      "end": 116
+    },
+    {
+      "type": "ID",
+      "text": "F1027261X",
+      "start": 126,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "24/10/1962",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7591709",
+      "start": 160,
+      "end": 170
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 180,
+      "end": 233
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8568 9260",
+      "start": 241,
+      "end": 254
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-60905",
+      "start": 269,
+      "end": 278
+    },
+    {
+      "type": "DATE",
+      "text": "20/07/2025",
+      "start": 293,
+      "end": 303
+    },
+    {
+      "type": "DATE",
+      "text": "25/07/2025",
+      "start": 317,
+      "end": 327
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Menon",
+      "start": 348,
+      "end": 362
+    },
+    {
+      "type": "EMAIL",
+      "text": "suresh.subramaniam64@mailbox.example",
+      "start": 3534,
+      "end": 3570
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Subramaniam",
+      "start": 3589,
+      "end": 3607
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Siew Lan",
+      "start": 3635,
+      "end": 3650
+    },
+    {
+      "type": "DATE",
+      "text": "25/07/2025",
+      "start": 3679,
+      "end": 3689
+    }
+  ]
+}

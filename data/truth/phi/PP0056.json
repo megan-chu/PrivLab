@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0056",
+  "source": "TCGA-AA-A00U.670DA42C-A894-45FC-9785-17BB52AE81F7",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Michael Thompson",
+      "start": 105,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "967-41-3308",
+      "start": 130,
+      "end": 141
+    },
+    {
+      "type": "DOB",
+      "text": "09/07/1948",
+      "start": 147,
+      "end": 157
+    },
+    {
+      "type": "MRN",
+      "text": "H8015136",
+      "start": 166,
+      "end": 174
+    },
+    {
+      "type": "PHONE",
+      "text": "(679) 555-9171",
+      "start": 182,
+      "end": 196
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-21932",
+      "start": 211,
+      "end": 220
+    },
+    {
+      "type": "DATE",
+      "text": "02/21/2025",
+      "start": 235,
+      "end": 245
+    },
+    {
+      "type": "DATE",
+      "text": "02/27/2025",
+      "start": 259,
+      "end": 269
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Bennett",
+      "start": 290,
+      "end": 306
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Johnson",
+      "start": 844,
+      "end": 860
+    },
+    {
+      "type": "PHONE",
+      "text": "(679) 555-9171",
+      "start": 887,
+      "end": 901
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Hassan",
+      "start": 929,
+      "end": 944
+    },
+    {
+      "type": "DATE",
+      "text": "02/27/2025",
+      "start": 973,
+      "end": 983
+    },
+    {
+      "type": "NAME",
+      "text": "Michael Thompson",
+      "start": 1000,
+      "end": 1016
+    },
+    {
+      "type": "MRN",
+      "text": "H8015136",
+      "start": 1021,
+      "end": 1029
+    }
+  ]
+}

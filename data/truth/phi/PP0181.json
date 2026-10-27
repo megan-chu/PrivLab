@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0181",
+  "source": "TCGA-J4-A67N.70E5E77E-6B59-40A7-8E87-456EF28AED98",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Nair",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "T7663723C",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "16/12/1970",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1881193",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 168,
+      "end": 204
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9822 7390",
+      "start": 212,
+      "end": 225
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-61819",
+      "start": 240,
+      "end": 249
+    },
+    {
+      "type": "DATE",
+      "text": "25/02/2025",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "03/03/2025",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Harris",
+      "start": 319,
+      "end": 337
+    },
+    {
+      "type": "NAME",
+      "text": "Lakshmi Menon",
+      "start": 5941,
+      "end": 5954
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9822 7390",
+      "start": 5981,
+      "end": 5994
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Pemberton",
+      "start": 6022,
+      "end": 6041
+    },
+    {
+      "type": "DATE",
+      "text": "03/03/2025",
+      "start": 6070,
+      "end": 6080
+    }
+  ]
+}

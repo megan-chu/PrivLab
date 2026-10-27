@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0161",
+  "source": "TCGA-EJ-7218.D1D8A1D3-24B1-4787-8925-A5A8FC19DF74",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Clark",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "945-38-3485",
+      "start": 120,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "08/30/1970",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7412371",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "PHONE",
+      "text": "(520) 555-6395",
+      "start": 174,
+      "end": 188
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-89866",
+      "start": 203,
+      "end": 213
+    },
+    {
+      "type": "DATE",
+      "text": "02/07/2026",
+      "start": 228,
+      "end": 238
+    },
+    {
+      "type": "DATE",
+      "text": "02/11/2026",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Osman",
+      "start": 283,
+      "end": 297
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Pemberton",
+      "start": 2320,
+      "end": 2342
+    },
+    {
+      "type": "DATE",
+      "text": "02/11/2026",
+      "start": 2371,
+      "end": 2381
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Clark",
+      "start": 2398,
+      "end": 2412
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7412371",
+      "start": 2417,
+      "end": 2427
+    }
+  ]
+}

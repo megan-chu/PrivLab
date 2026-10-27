@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0113",
+  "source": "TCGA-CZ-5465.0c23f13d-0910-4835-b9fa-06f10736b2dd",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Rahman",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "S6489090E",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "12/09/1949",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "P2942630",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9802 1152",
+      "start": 177,
+      "end": 190
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-59237",
+      "start": 205,
+      "end": 215
+    },
+    {
+      "type": "DATE",
+      "text": "21/01/2025",
+      "start": 230,
+      "end": 240
+    },
+    {
+      "type": "DATE",
+      "text": "23/01/2025",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Chee Keong",
+      "start": 285,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2559237",
+      "start": 304,
+      "end": 313
+    },
+    {
+      "type": "ID",
+      "text": "S6489090E",
+      "start": 314,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Anderson",
+      "start": 3477,
+      "end": 3494
+    },
+    {
+      "type": "DATE",
+      "text": "23/01/2025",
+      "start": 3523,
+      "end": 3533
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Rahman",
+      "start": 3550,
+      "end": 3573
+    },
+    {
+      "type": "MRN",
+      "text": "P2942630",
+      "start": 3578,
+      "end": 3586
+    }
+  ]
+}

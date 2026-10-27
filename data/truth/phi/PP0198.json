@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0198",
+  "source": "TCGA-KK-A6DY.3C4C5AAE-6F27-4ECE-8F72-91DC9EF477C0",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "James Garcia",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "968-50-3556",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "05/20/1940",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "P5958621",
+      "start": 154,
+      "end": 162
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 172,
+      "end": 215
+    },
+    {
+      "type": "PHONE",
+      "text": "(950) 555-8847",
+      "start": 223,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-38988",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "07/14/2026",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "07/21/2026",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Salleh",
+      "start": 332,
+      "end": 347
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Salleh",
+      "start": 4911,
+      "end": 4926
+    },
+    {
+      "type": "DATE",
+      "text": "21 Jul 2026",
+      "start": 4930,
+      "end": 4941
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Johnson",
+      "start": 4969,
+      "end": 4985
+    },
+    {
+      "type": "DATE",
+      "text": "07/21/2026",
+      "start": 5014,
+      "end": 5024
+    },
+    {
+      "type": "NAME",
+      "text": "James Garcia",
+      "start": 5041,
+      "end": 5053
+    },
+    {
+      "type": "MRN",
+      "text": "P5958621",
+      "start": 5058,
+      "end": 5066
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0127",
+  "source": "TCGA-55-6982.54e65072-9bea-41d0-b976-5f5723379c51",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Oliver Fletcher",
+      "start": 97,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "353 682 2231",
+      "start": 124,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "03/09/1962",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1912484",
+      "start": 161,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 181,
+      "end": 218
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7302 860835",
+      "start": 226,
+      "end": 241
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-61458",
+      "start": 256,
+      "end": 266
+    },
+    {
+      "type": "DATE",
+      "text": "18/07/2025",
+      "start": 281,
+      "end": 291
+    },
+    {
+      "type": "DATE",
+      "text": "21/07/2025",
+      "start": 305,
+      "end": 315
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Fletcher",
+      "start": 336,
+      "end": 354
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Fletcher",
+      "start": 8187,
+      "end": 8205
+    },
+    {
+      "type": "DATE",
+      "text": "21 Jul 2025",
+      "start": 8209,
+      "end": 8220
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Jun Jie",
+      "start": 8248,
+      "end": 8262
+    },
+    {
+      "type": "DATE",
+      "text": "21/07/2025",
+      "start": 8291,
+      "end": 8301
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0032",
+  "source": "TCGA-Z7-A8R6.9A5C8EDF-9243-4F55-9036-A400CF3F4CC1",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Rao",
+      "start": 100,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "S2368516G",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "01/04/1941",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "H7183841",
+      "start": 153,
+      "end": 161
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6734 6374",
+      "start": 169,
+      "end": 182
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-99174",
+      "start": 197,
+      "end": 207
+    },
+    {
+      "type": "DATE",
+      "text": "28/09/2025",
+      "start": 222,
+      "end": 232
+    },
+    {
+      "type": "DATE",
+      "text": "01/10/2025",
+      "start": 246,
+      "end": 256
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Iyer",
+      "start": 277,
+      "end": 291
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2599174",
+      "start": 293,
+      "end": 302
+    },
+    {
+      "type": "ID",
+      "text": "S2368516G",
+      "start": 303,
+      "end": 312
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Iyer",
+      "start": 7947,
+      "end": 7961
+    },
+    {
+      "type": "DATE",
+      "text": "01 Oct 2025",
+      "start": 7965,
+      "end": 7976
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Mei Xuan",
+      "start": 8004,
+      "end": 8020
+    },
+    {
+      "type": "DATE",
+      "text": "01/10/2025",
+      "start": 8049,
+      "end": 8059
+    }
+  ]
+}

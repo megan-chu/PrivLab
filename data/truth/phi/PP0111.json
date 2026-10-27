@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0111",
+  "source": "TCGA-CJ-5683.3426104c-95a8-4bc0-a323-106f558aa306",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "William Turner",
+      "start": 99,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "521 752 5002",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "21/07/1980",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3658100",
+      "start": 162,
+      "end": 172
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7492 104895",
+      "start": 180,
+      "end": 195
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-12539",
+      "start": 210,
+      "end": 220
+    },
+    {
+      "type": "DATE",
+      "text": "08/10/2025",
+      "start": 235,
+      "end": 245
+    },
+    {
+      "type": "DATE",
+      "text": "13/10/2025",
+      "start": 259,
+      "end": 269
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Pemberton",
+      "start": 290,
+      "end": 310
+    },
+    {
+      "type": "EMAIL",
+      "text": "william.turner69@mailbox.example",
+      "start": 1870,
+      "end": 1902
+    },
+    {
+      "type": "NAME",
+      "text": "William Turner",
+      "start": 1921,
+      "end": 1935
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Harris",
+      "start": 1963,
+      "end": 1978
+    },
+    {
+      "type": "DATE",
+      "text": "13/10/2025",
+      "start": 2007,
+      "end": 2017
+    },
+    {
+      "type": "NAME",
+      "text": "William Turner",
+      "start": 2034,
+      "end": 2048
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3658100",
+      "start": 2053,
+      "end": 2063
+    }
+  ]
+}

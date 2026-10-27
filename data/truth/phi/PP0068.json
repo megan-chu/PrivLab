@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0068",
+  "source": "TCGA-NH-A6GA.53BA96AA-B755-460C-83CF-ED5BCCD031F6",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Harry Holloway",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "342 836 4406",
+      "start": 123,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "11/12/1989",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "P9315137",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7407 494747",
+      "start": 176,
+      "end": 191
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-46143",
+      "start": 206,
+      "end": 215
+    },
+    {
+      "type": "DATE",
+      "text": "29/06/2025",
+      "start": 230,
+      "end": 240
+    },
+    {
+      "type": "DATE",
+      "text": "07/07/2025",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Martinez",
+      "start": 285,
+      "end": 302
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2546143",
+      "start": 304,
+      "end": 312
+    },
+    {
+      "type": "ID",
+      "text": "3428364406",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Martinez",
+      "start": 429,
+      "end": 446
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Martinez",
+      "start": 4286,
+      "end": 4303
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Martinez",
+      "start": 5192,
+      "end": 5209
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Garcia",
+      "start": 5734,
+      "end": 5749
+    },
+    {
+      "type": "DATE",
+      "text": "07/07/2025",
+      "start": 5778,
+      "end": 5788
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0003",
+  "source": "TCGA-B6-A0RL.6C50D456-A828-4514-92D2-01A5900B74F1",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Abdullah",
+      "start": 94,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "G4835030K",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "19/04/1968",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4539704",
+      "start": 165,
+      "end": 175
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8242 5040",
+      "start": 183,
+      "end": 196
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-95098",
+      "start": 211,
+      "end": 221
+    },
+    {
+      "type": "DATE",
+      "text": "15/02/2026",
+      "start": 236,
+      "end": 246
+    },
+    {
+      "type": "DATE",
+      "text": "21/02/2026",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 291,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 3186,
+      "end": 3202
+    },
+    {
+      "type": "DATE",
+      "text": "21 Feb 2026",
+      "start": 3206,
+      "end": 3217
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Garcia",
+      "start": 3245,
+      "end": 3260
+    },
+    {
+      "type": "DATE",
+      "text": "21/02/2026",
+      "start": 3289,
+      "end": 3299
+    }
+  ]
+}

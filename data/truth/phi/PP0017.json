@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0017",
+  "source": "TCGA-BH-A0EB.C6B0D463-9389-4BAE-93CA-3EE4717D20EC",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Ahmad Faizal bin Osman",
+      "start": 94,
+      "end": 116
+    },
+    {
+      "type": "ID",
+      "text": "S6990162Z",
+      "start": 126,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "02/06/1981",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "H7360307",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 178,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6581 1317",
+      "start": 234,
+      "end": 247
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-28742",
+      "start": 262,
+      "end": 272
+    },
+    {
+      "type": "DATE",
+      "text": "06/07/2025",
+      "start": 287,
+      "end": 297
+    },
+    {
+      "type": "DATE",
+      "text": "08/07/2025",
+      "start": 311,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Menon",
+      "start": 342,
+      "end": 357
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2528742",
+      "start": 359,
+      "end": 368
+    },
+    {
+      "type": "ID",
+      "text": "S6990162Z",
+      "start": 369,
+      "end": 378
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Suresh Menon",
+      "start": 2507,
+      "end": 2522
+    },
+    {
+      "type": "DATE",
+      "text": "08 Jul 2025",
+      "start": 2526,
+      "end": 2537
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Subramaniam",
+      "start": 2565,
+      "end": 2586
+    },
+    {
+      "type": "DATE",
+      "text": "08/07/2025",
+      "start": 2615,
+      "end": 2625
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0059",
+  "source": "TCGA-NH-A50V.A745029F-98FE-44AA-8006-A06CEB09F560",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Hui Min",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "S6940974A",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "31/05/1960",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9795159",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6119 8225",
+      "start": 174,
+      "end": 187
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-95526",
+      "start": 202,
+      "end": 212
+    },
+    {
+      "type": "DATE",
+      "text": "22/02/2025",
+      "start": 227,
+      "end": 237
+    },
+    {
+      "type": "DATE",
+      "text": "03/03/2025",
+      "start": 251,
+      "end": 261
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Anderson",
+      "start": 282,
+      "end": 299
+    },
+    {
+      "type": "ACCOUNT",
+      "text": "92071195",
+      "start": 340,
+      "end": 348
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Anderson",
+      "start": 376,
+      "end": 393
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-95526",
+      "start": 407,
+      "end": 417
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-95526",
+      "start": 4459,
+      "end": 4469
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Siew Lan",
+      "start": 4769,
+      "end": 4784
+    },
+    {
+      "type": "DATE",
+      "text": "03/03/2025",
+      "start": 4813,
+      "end": 4823
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0014",
+  "source": "TCGA-A8-A08J.C1D59BA7-FC3E-46EA-B095-3B6DF42892B0",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Osman",
+      "start": 100,
+      "end": 124
+    },
+    {
+      "type": "ID",
+      "text": "S0379176I",
+      "start": 134,
+      "end": 143
+    },
+    {
+      "type": "DOB",
+      "text": "11/06/1957",
+      "start": 149,
+      "end": 159
+    },
+    {
+      "type": "MRN",
+      "text": "H5093379",
+      "start": 168,
+      "end": 176
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 186,
+      "end": 234
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9575 1822",
+      "start": 242,
+      "end": 255
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-86990",
+      "start": 270,
+      "end": 279
+    },
+    {
+      "type": "DATE",
+      "text": "29/01/2026",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DATE",
+      "text": "07/02/2026",
+      "start": 318,
+      "end": 328
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Goh Jia Hui",
+      "start": 349,
+      "end": 363
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Salleh",
+      "start": 724,
+      "end": 742
+    },
+    {
+      "type": "DATE",
+      "text": "07/02/2026",
+      "start": 771,
+      "end": 781
+    }
+  ]
+}

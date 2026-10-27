@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0047",
+  "source": "TCGA-A6-2674.8d42a0be-1995-4889-94db-eef5528759c0",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz binte Ismail",
+      "start": 94,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "F7277901X",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "14/09/1941",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9854536",
+      "start": 165,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 185,
+      "end": 238
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9912 8489",
+      "start": 246,
+      "end": 259
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-15573",
+      "start": 274,
+      "end": 284
+    },
+    {
+      "type": "DATE",
+      "text": "20/09/2025",
+      "start": 299,
+      "end": 309
+    },
+    {
+      "type": "DATE",
+      "text": "25/09/2025",
+      "start": 323,
+      "end": 333
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 354,
+      "end": 368
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 4470,
+      "end": 4484
+    },
+    {
+      "type": "DATE",
+      "text": "25 Sep 2025",
+      "start": 4488,
+      "end": 4499
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Goh Mei Xuan",
+      "start": 4527,
+      "end": 4542
+    },
+    {
+      "type": "DATE",
+      "text": "25/09/2025",
+      "start": 4571,
+      "end": 4581
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz binte Ismail",
+      "start": 4598,
+      "end": 4625
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9854536",
+      "start": 4630,
+      "end": 4640
+    }
+  ]
+}

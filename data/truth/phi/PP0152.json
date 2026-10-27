@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0152",
+  "source": "TCGA-05-4426.0c54267d-6868-4aa3-a2a3-6c2eb309f6a7",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Harry Bennett",
+      "start": 97,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "518 638 7827",
+      "start": 122,
+      "end": 134
+    },
+    {
+      "type": "DOB",
+      "text": "26/05/1965",
+      "start": 140,
+      "end": 150
+    },
+    {
+      "type": "MRN",
+      "text": "P6402667",
+      "start": 159,
+      "end": 167
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7209 608947",
+      "start": 175,
+      "end": 190
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-13616",
+      "start": 205,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "27/11/2025",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "05/12/2025",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Wei Ling",
+      "start": 284,
+      "end": 299
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Pemberton",
+      "start": 762,
+      "end": 777
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7209 608947",
+      "start": 804,
+      "end": 819
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Osman",
+      "start": 847,
+      "end": 859
+    },
+    {
+      "type": "DATE",
+      "text": "05/12/2025",
+      "start": 888,
+      "end": 898
+    }
+  ]
+}

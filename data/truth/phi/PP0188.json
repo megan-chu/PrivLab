@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0188",
+  "source": "TCGA-V1-A9OT.40B928AE-1977-4077-9F44-282E85273EF2",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Holloway",
+      "start": 111,
+      "end": 129
+    },
+    {
+      "type": "ID",
+      "text": "114 262 5826",
+      "start": 141,
+      "end": 153
+    },
+    {
+      "type": "DOB",
+      "text": "10/05/1979",
+      "start": 159,
+      "end": 169
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2677182",
+      "start": 178,
+      "end": 188
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7283 193471",
+      "start": 196,
+      "end": 211
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-81273",
+      "start": 226,
+      "end": 236
+    },
+    {
+      "type": "DATE",
+      "text": "07/09/2025",
+      "start": 251,
+      "end": 261
+    },
+    {
+      "type": "DATE",
+      "text": "09/09/2025",
+      "start": 275,
+      "end": 285
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Abdullah",
+      "start": 306,
+      "end": 321
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Abdullah",
+      "start": 4956,
+      "end": 4971
+    },
+    {
+      "type": "DATE",
+      "text": "09 Sep 2025",
+      "start": 4975,
+      "end": 4986
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Tan Wei Ling",
+      "start": 5014,
+      "end": 5029
+    },
+    {
+      "type": "DATE",
+      "text": "09/09/2025",
+      "start": 5058,
+      "end": 5068
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Holloway",
+      "start": 5085,
+      "end": 5103
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2677182",
+      "start": 5108,
+      "end": 5118
+    }
+  ]
+}

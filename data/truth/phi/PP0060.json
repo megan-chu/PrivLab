@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0060",
+  "source": "TCGA-AA-3530.76035d5d-d2bb-4616-a9a2-5794a6f1373d",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Kok Wah",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "T8578652G",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "28/03/1981",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "P6943949",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 173,
+      "end": 209
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8330 5876",
+      "start": 217,
+      "end": 230
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-95493",
+      "start": 245,
+      "end": 255
+    },
+    {
+      "type": "DATE",
+      "text": "30/06/2026",
+      "start": 270,
+      "end": 280
+    },
+    {
+      "type": "DATE",
+      "text": "07/07/2026",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Raman",
+      "start": 325,
+      "end": 340
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2695493",
+      "start": 342,
+      "end": 351
+    },
+    {
+      "type": "ID",
+      "text": "T8578652G",
+      "start": 352,
+      "end": 361
+    },
+    {
+      "type": "EMAIL",
+      "text": "koh.wah91@mailbox.example",
+      "start": 1955,
+      "end": 1980
+    },
+    {
+      "type": "NAME",
+      "text": "Koh Kok Wah",
+      "start": 1999,
+      "end": 2010
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Hassan",
+      "start": 2038,
+      "end": 2052
+    },
+    {
+      "type": "DATE",
+      "text": "07/07/2026",
+      "start": 2081,
+      "end": 2091
+    }
+  ]
+}

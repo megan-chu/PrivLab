@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0051",
+  "source": "TCGA-AY-6386.42afbc8e-3c33-4e57-b9ff-68bcaa3efa94",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Priya Pillai",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "G5820297K",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "14/02/1943",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7145971",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 176,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8881 2259",
+      "start": 232,
+      "end": 245
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-51181",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "10/05/2025",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "13/05/2025",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Siew Lan",
+      "start": 340,
+      "end": 355
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2551181",
+      "start": 357,
+      "end": 366
+    },
+    {
+      "type": "ID",
+      "text": "G5820297K",
+      "start": 367,
+      "end": 376
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Siew Lan",
+      "start": 4959,
+      "end": 4974
+    },
+    {
+      "type": "DATE",
+      "text": "13 May 2025",
+      "start": 4978,
+      "end": 4989
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Martinez",
+      "start": 5017,
+      "end": 5034
+    },
+    {
+      "type": "DATE",
+      "text": "13/05/2025",
+      "start": 5063,
+      "end": 5073
+    },
+    {
+      "type": "NAME",
+      "text": "Priya Pillai",
+      "start": 5090,
+      "end": 5102
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7145971",
+      "start": 5107,
+      "end": 5117
+    }
+  ]
+}

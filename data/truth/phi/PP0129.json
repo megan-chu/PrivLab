@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0129",
+  "source": "TCGA-J2-8192.ab6bb598-f1a2-4691-90c4-e8d63dea8772",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah bin Salleh",
+      "start": 94,
+      "end": 116
+    },
+    {
+      "type": "ID",
+      "text": "S1080996G",
+      "start": 126,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "01/02/1959",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "P8920589",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9622 2483",
+      "start": 176,
+      "end": 189
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-20481",
+      "start": 204,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "07/02/2025",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "13/02/2025",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Lewis",
+      "start": 284,
+      "end": 299
+    },
+    {
+      "type": "EMAIL",
+      "text": "siti.salleh47@mailbox.example",
+      "start": 6408,
+      "end": 6437
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah bin Salleh",
+      "start": 6456,
+      "end": 6478
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Rao",
+      "start": 6506,
+      "end": 6520
+    },
+    {
+      "type": "DATE",
+      "text": "13/02/2025",
+      "start": 6549,
+      "end": 6559
+    },
+    {
+      "type": "NAME",
+      "text": "Siti Rahmah bin Salleh",
+      "start": 6576,
+      "end": 6598
+    },
+    {
+      "type": "MRN",
+      "text": "P8920589",
+      "start": 6603,
+      "end": 6611
+    }
+  ]
+}

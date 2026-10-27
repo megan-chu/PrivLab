@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0082",
+  "source": "TCGA-CJ-4643.1a9fa2bc-9999-404d-87b0-667935744bce",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Thomas Walker",
+      "start": 103,
+      "end": 116
+    },
+    {
+      "type": "ID",
+      "text": "985-24-6700",
+      "start": 125,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "07/30/1971",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "P5990296",
+      "start": 161,
+      "end": 169
+    },
+    {
+      "type": "ADDRESS",
+      "text": "3310 Elm Park Ave, Madison, WI 53711",
+      "start": 179,
+      "end": 215
+    },
+    {
+      "type": "PHONE",
+      "text": "(388) 555-7116",
+      "start": 223,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-78354",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "04/14/2026",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "04/18/2026",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 332,
+      "end": 346
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2678354",
+      "start": 348,
+      "end": 357
+    },
+    {
+      "type": "ID",
+      "text": "985-24-6700",
+      "start": 358,
+      "end": 369
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Walker",
+      "start": 2467,
+      "end": 2479
+    },
+    {
+      "type": "PHONE",
+      "text": "(388) 555-7116",
+      "start": 2506,
+      "end": 2520
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 2548,
+      "end": 2562
+    },
+    {
+      "type": "DATE",
+      "text": "04/18/2026",
+      "start": 2591,
+      "end": 2601
+    }
+  ]
+}

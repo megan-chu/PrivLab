@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0145",
+  "source": "TCGA-97-8171.71aa5cff-eda0-47d0-97d8-caf4c02f5626",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Anderson",
+      "start": 105,
+      "end": 122
+    },
+    {
+      "type": "ID",
+      "text": "941-46-8260",
+      "start": 131,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "05/05/1951",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1589802",
+      "start": 167,
+      "end": 177
+    },
+    {
+      "type": "PHONE",
+      "text": "(915) 555-9835",
+      "start": 185,
+      "end": 199
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-47771",
+      "start": 214,
+      "end": 224
+    },
+    {
+      "type": "DATE",
+      "text": "05/15/2025",
+      "start": 239,
+      "end": 249
+    },
+    {
+      "type": "DATE",
+      "text": "05/19/2025",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 294,
+      "end": 308
+    },
+    {
+      "type": "EMAIL",
+      "text": "patricia.anderson76@mailbox.example",
+      "start": 17300,
+      "end": 17335
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Anderson",
+      "start": 17354,
+      "end": 17371
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Nair",
+      "start": 17399,
+      "end": 17413
+    },
+    {
+      "type": "DATE",
+      "text": "05/19/2025",
+      "start": 17442,
+      "end": 17452
+    }
+  ]
+}

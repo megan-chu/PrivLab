@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0081",
+  "source": "TCGA-BP-4992.fae1e9ce-eea7-4278-8519-21225010f1f5",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Turner",
+      "start": 97,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "586 736 2264",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "28/06/1975",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "H8206700",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 180,
+      "end": 212
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7918 662968",
+      "start": 220,
+      "end": 235
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-01583",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DATE",
+      "text": "30/01/2025",
+      "start": 275,
+      "end": 285
+    },
+    {
+      "type": "DATE",
+      "text": "04/02/2025",
+      "start": 299,
+      "end": 309
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Rahman",
+      "start": 330,
+      "end": 348
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2501583",
+      "start": 350,
+      "end": 359
+    },
+    {
+      "type": "ID",
+      "text": "5867362264",
+      "start": 360,
+      "end": 370
+    },
+    {
+      "type": "EMAIL",
+      "text": "charlotte.turner47@mailbox.example",
+      "start": 4040,
+      "end": 4074
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Turner",
+      "start": 4093,
+      "end": 4109
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Siew Lan",
+      "start": 4137,
+      "end": 4152
+    },
+    {
+      "type": "DATE",
+      "text": "04/02/2025",
+      "start": 4181,
+      "end": 4191
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Turner",
+      "start": 4208,
+      "end": 4224
+    },
+    {
+      "type": "MRN",
+      "text": "H8206700",
+      "start": 4229,
+      "end": 4237
+    }
+  ]
+}

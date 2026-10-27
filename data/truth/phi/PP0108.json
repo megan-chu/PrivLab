@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0108",
+  "source": "TCGA-CJ-4881.36725c29-f964-4ab9-92e6-776d85380d62",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Muhammad Hafiz bin Salleh",
+      "start": 100,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "T3468007D",
+      "start": 135,
+      "end": 144
+    },
+    {
+      "type": "DOB",
+      "text": "14/11/1951",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5234408",
+      "start": 169,
+      "end": 179
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 189,
+      "end": 237
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6577 5950",
+      "start": 245,
+      "end": 258
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-41037",
+      "start": 273,
+      "end": 283
+    },
+    {
+      "type": "DATE",
+      "text": "27/06/2025",
+      "start": 298,
+      "end": 308
+    },
+    {
+      "type": "DATE",
+      "text": "29/06/2025",
+      "start": 322,
+      "end": 332
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Menon",
+      "start": 353,
+      "end": 368
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2541037",
+      "start": 370,
+      "end": 379
+    },
+    {
+      "type": "ID",
+      "text": "T3468007D",
+      "start": 380,
+      "end": 389
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Subramaniam",
+      "start": 2130,
+      "end": 2151
+    },
+    {
+      "type": "DATE",
+      "text": "29/06/2025",
+      "start": 2180,
+      "end": 2190
+    }
+  ]
+}

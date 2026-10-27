@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0121",
+  "source": "TCGA-55-8085.16f4298e-d5f3-4503-bdad-a15531c3635c",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Hassan",
+      "start": 94,
+      "end": 117
+    },
+    {
+      "type": "ID",
+      "text": "F1587996M",
+      "start": 127,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "24/11/1987",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9769953",
+      "start": 161,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 181,
+      "end": 234
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6393 5105",
+      "start": 242,
+      "end": 255
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-04312",
+      "start": 270,
+      "end": 279
+    },
+    {
+      "type": "DATE",
+      "text": "20/10/2025",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DATE",
+      "text": "28/10/2025",
+      "start": 318,
+      "end": 328
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Salleh",
+      "start": 349,
+      "end": 362
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Mei Xuan",
+      "start": 6805,
+      "end": 6820
+    },
+    {
+      "type": "DATE",
+      "text": "28/10/2025",
+      "start": 6849,
+      "end": 6859
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda binte Hassan",
+      "start": 6876,
+      "end": 6899
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9769953",
+      "start": 6904,
+      "end": 6914
+    }
+  ]
+}

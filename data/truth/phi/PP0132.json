@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0132",
+  "source": "TCGA-78-8648.a439594e-b536-4bd3-a77a-fb50304de9a2",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Anderson",
+      "start": 105,
+      "end": 122
+    },
+    {
+      "type": "ID",
+      "text": "915-26-3639",
+      "start": 131,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "02/01/1952",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P3463987",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "92 Harbor View Rd, Apt 4B, Portland, ME 04101",
+      "start": 185,
+      "end": 230
+    },
+    {
+      "type": "PHONE",
+      "text": "(288) 555-4548",
+      "start": 238,
+      "end": 252
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-22802",
+      "start": 267,
+      "end": 276
+    },
+    {
+      "type": "DATE",
+      "text": "06/09/2026",
+      "start": 291,
+      "end": 301
+    },
+    {
+      "type": "DATE",
+      "text": "06/11/2026",
+      "start": 315,
+      "end": 325
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Abdullah",
+      "start": 346,
+      "end": 363
+    },
+    {
+      "type": "EMAIL",
+      "text": "jennifer.anderson78@mailbox.example",
+      "start": 4712,
+      "end": 4747
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Anderson",
+      "start": 4766,
+      "end": 4783
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Fletcher",
+      "start": 4811,
+      "end": 4828
+    },
+    {
+      "type": "DATE",
+      "text": "06/11/2026",
+      "start": 4857,
+      "end": 4867
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0021",
+  "source": "TCGA-EW-A1PF.0D24479F-2F86-43AC-AAB1-83AAD99542C4",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Harry Pemberton",
+      "start": 99,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "855 744 4311",
+      "start": 126,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "11/04/1957",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "P9990305",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "7 Station Road, Ashford TN23 1PP",
+      "start": 181,
+      "end": 213
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7952 303547",
+      "start": 221,
+      "end": 236
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-25267",
+      "start": 251,
+      "end": 261
+    },
+    {
+      "type": "DATE",
+      "text": "20/11/2025",
+      "start": 276,
+      "end": 286
+    },
+    {
+      "type": "DATE",
+      "text": "23/11/2025",
+      "start": 300,
+      "end": 310
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 331,
+      "end": 347
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Abdullah",
+      "start": 9126,
+      "end": 9142
+    },
+    {
+      "type": "DATE",
+      "text": "23 Nov 2025",
+      "start": 9146,
+      "end": 9157
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Pillai",
+      "start": 9185,
+      "end": 9202
+    },
+    {
+      "type": "DATE",
+      "text": "23/11/2025",
+      "start": 9231,
+      "end": 9241
+    }
+  ]
+}

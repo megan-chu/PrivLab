@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0165",
+  "source": "TCGA-YL-A9WK.B963A02D-0AE8-494C-A522-376AFABA374A",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Pemberton",
+      "start": 99,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "657 027 9378",
+      "start": 130,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "03/02/1948",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P3751363",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 185,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7844 929493",
+      "start": 230,
+      "end": 245
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-97110",
+      "start": 260,
+      "end": 270
+    },
+    {
+      "type": "DATE",
+      "text": "14/09/2025",
+      "start": 285,
+      "end": 295
+    },
+    {
+      "type": "DATE",
+      "text": "21/09/2025",
+      "start": 309,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Jia Hui",
+      "start": 340,
+      "end": 355
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2597110",
+      "start": 357,
+      "end": 366
+    },
+    {
+      "type": "ID",
+      "text": "6570279378",
+      "start": 367,
+      "end": 377
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Arjun Menon",
+      "start": 1615,
+      "end": 1629
+    },
+    {
+      "type": "DATE",
+      "text": "21/09/2025",
+      "start": 1658,
+      "end": 1668
+    }
+  ]
+}

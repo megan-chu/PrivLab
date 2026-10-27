@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0193",
+  "source": "TCGA-KC-A4BR.E44796E6-0446-4706-8B8F-A21D417EAB43",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Ng Zhi Hao",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "T5431074E",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "07/07/1954",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "H8780612",
+      "start": 148,
+      "end": 156
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8807 6454",
+      "start": 164,
+      "end": 177
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-93161",
+      "start": 192,
+      "end": 201
+    },
+    {
+      "type": "DATE",
+      "text": "16/04/2026",
+      "start": 216,
+      "end": 226
+    },
+    {
+      "type": "DATE",
+      "text": "18/04/2026",
+      "start": 240,
+      "end": 250
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Salleh",
+      "start": 271,
+      "end": 285
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Salleh",
+      "start": 6515,
+      "end": 6529
+    },
+    {
+      "type": "DATE",
+      "text": "18 Apr 2026",
+      "start": 6533,
+      "end": 6544
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Johnson",
+      "start": 6572,
+      "end": 6591
+    },
+    {
+      "type": "DATE",
+      "text": "18/04/2026",
+      "start": 6620,
+      "end": 6630
+    }
+  ]
+}

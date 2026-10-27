@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0114",
+  "source": "TCGA-DV-5566.15bf8dae-3bbf-4d5e-a0e4-4654c581a188",
+  "cancer_type": "KIRC",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Teo Chee Keong",
+      "start": 98,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "S4117393I",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "05/08/1963",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "H7874568",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6113 2458",
+      "start": 172,
+      "end": 185
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-22020",
+      "start": 200,
+      "end": 210
+    },
+    {
+      "type": "DATE",
+      "text": "20/06/2026",
+      "start": 225,
+      "end": 235
+    },
+    {
+      "type": "DATE",
+      "text": "25/06/2026",
+      "start": 249,
+      "end": 259
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Bennett",
+      "start": 280,
+      "end": 298
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Anderson",
+      "start": 6716,
+      "end": 6733
+    },
+    {
+      "type": "DATE",
+      "text": "25/06/2026",
+      "start": 6762,
+      "end": 6772
+    },
+    {
+      "type": "NAME",
+      "text": "Teo Chee Keong",
+      "start": 6789,
+      "end": 6803
+    },
+    {
+      "type": "MRN",
+      "text": "H7874568",
+      "start": 6808,
+      "end": 6816
+    }
+  ]
+}

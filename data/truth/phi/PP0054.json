@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0054",
+  "source": "TCGA-D5-5540.4b0d96b0-30bd-416c-825a-349509305a6e",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Ahmad Faizal binte Hassan",
+      "start": 100,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "S1824225G",
+      "start": 135,
+      "end": 144
+    },
+    {
+      "type": "DOB",
+      "text": "24/03/1960",
+      "start": 150,
+      "end": 160
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5204459",
+      "start": 169,
+      "end": 179
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9694 3526",
+      "start": 187,
+      "end": 200
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-84238",
+      "start": 215,
+      "end": 224
+    },
+    {
+      "type": "DATE",
+      "text": "21/12/2025",
+      "start": 239,
+      "end": 249
+    },
+    {
+      "type": "DATE",
+      "text": "27/12/2025",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Subramaniam",
+      "start": 294,
+      "end": 316
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2584238",
+      "start": 318,
+      "end": 326
+    },
+    {
+      "type": "ID",
+      "text": "S1824225G",
+      "start": 327,
+      "end": 336
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Subramaniam",
+      "start": 1264,
+      "end": 1286
+    },
+    {
+      "type": "DATE",
+      "text": "27 Dec 2025",
+      "start": 1290,
+      "end": 1301
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 1329,
+      "end": 1345
+    },
+    {
+      "type": "DATE",
+      "text": "27/12/2025",
+      "start": 1374,
+      "end": 1384
+    },
+    {
+      "type": "NAME",
+      "text": "Ahmad Faizal binte Hassan",
+      "start": 1401,
+      "end": 1426
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5204459",
+      "start": 1431,
+      "end": 1441
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0105",
+  "source": "TCGA-B0-5104.b8335d43-8b5e-4d00-974f-c37642aa0d7b",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Holloway",
+      "start": 97,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "116 868 5486",
+      "start": 124,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "06/02/1981",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7953189",
+      "start": 161,
+      "end": 171
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7988 661652",
+      "start": 179,
+      "end": 194
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-20424",
+      "start": 209,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "13/01/2025",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "21/01/2025",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Hughes",
+      "start": 288,
+      "end": 304
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Pemberton",
+      "start": 747,
+      "end": 763
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7988 661652",
+      "start": 790,
+      "end": 805
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Fletcher",
+      "start": 833,
+      "end": 851
+    },
+    {
+      "type": "DATE",
+      "text": "21/01/2025",
+      "start": 880,
+      "end": 890
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Holloway",
+      "start": 907,
+      "end": 922
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7953189",
+      "start": 927,
+      "end": 937
+    }
+  ]
+}

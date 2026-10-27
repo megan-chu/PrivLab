@@ -1,0 +1,15 @@
+Lakeshore Regional Medical Center
+Department of Anatomical Pathology
+SURGICAL PATHOLOGY REPORT
+
+Patient: Jennifer Anderson    SSN: 994-76-5685
+DOB: 06/21/1957    MRN: P3843451
+Address: 3310 Elm Park Ave, Madison, WI 53711
+Phone: (610) 555-6785
+Accession No: PA25-05726    Collected: 02/04/2025    Reported: 02/09/2025
+Requesting surgeon: Dr Mohd Ismail
+*PA2505726*994-76-5685*
+
+Gross. Microsc. Diagnos. Comme. Descript. opic. is. nts. ion. Descript. Details. ion. OpenCli. nica ID. LUNG TISSUE CHECKLIST. Specimen type: Excision of tumor. Tumor site: Lung. Tumor size: 3 X 3 X 3 cm. Histologic type: Adenocarcinoma. Histologic grade: Poorly differentiated. Tumor extent: Visceral pleura. Other tumor nodules: Not specified. Lymph nodes: 1/1 positive for metastasis (Intrathoracical 1/1). Lymphatic invasion: Not specified. Venous invasion: Not specified. Margins: Not specified. Evidence of neo-adjuvant treatment: Not specified. Additional pathologic findings: Not specified. Comments: Positive for CD15, CK7, TTF1, CEA; negative for CK20,. CDX2. Lateralit. y. Right-. upper.
+
+Electronically signed by Dr Nur Rahman, Consultant Pathologist, on 02/09/2025

@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0055",
+  "source": "TCGA-AA-3552.8e12a8a9-9717-4533-969f-1d9545de70f0",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Bennett",
+      "start": 99,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "969 078 4471",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "20/12/1961",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "H2224284",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7721 250647",
+      "start": 178,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-08852",
+      "start": 208,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "20/02/2026",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "26/02/2026",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Harris",
+      "start": 288,
+      "end": 303
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2608852",
+      "start": 305,
+      "end": 314
+    },
+    {
+      "type": "ID",
+      "text": "9690784471",
+      "start": 315,
+      "end": 325
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Harris",
+      "start": 1777,
+      "end": 1792
+    },
+    {
+      "type": "DATE",
+      "text": "26 Feb 2026",
+      "start": 1796,
+      "end": 1807
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Robert Martinez",
+      "start": 1835,
+      "end": 1853
+    },
+    {
+      "type": "DATE",
+      "text": "26/02/2026",
+      "start": 1882,
+      "end": 1892
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Bennett",
+      "start": 1909,
+      "end": 1923
+    },
+    {
+      "type": "MRN",
+      "text": "H2224284",
+      "start": 1928,
+      "end": 1936
+    }
+  ]
+}

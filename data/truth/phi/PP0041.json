@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0041",
+  "source": "TCGA-CM-5864.0fc4d13c-efcf-413f-a922-0e88089fa055",
+  "cancer_type": "COAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Lim Zhi Hao",
+      "start": 98,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "T6968164B",
+      "start": 119,
+      "end": 128
+    },
+    {
+      "type": "DOB",
+      "text": "17/06/1970",
+      "start": 134,
+      "end": 144
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2281433",
+      "start": 153,
+      "end": 163
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6249 5193",
+      "start": 171,
+      "end": 184
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-83998",
+      "start": 199,
+      "end": 209
+    },
+    {
+      "type": "DATE",
+      "text": "15/08/2025",
+      "start": 224,
+      "end": 234
+    },
+    {
+      "type": "DATE",
+      "text": "22/08/2025",
+      "start": 248,
+      "end": 258
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Holloway",
+      "start": 279,
+      "end": 297
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Raman",
+      "start": 4829,
+      "end": 4845
+    },
+    {
+      "type": "DATE",
+      "text": "22/08/2025",
+      "start": 4874,
+      "end": 4884
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0196",
+  "source": "TCGA-CH-5745.43e941e9-cfbd-45bc-91bb-28e5f5d9b767",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Garcia",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "970-54-7883",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "10/27/1979",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN2056117",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "PHONE",
+      "text": "(669) 555-5982",
+      "start": 172,
+      "end": 186
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-31451",
+      "start": 201,
+      "end": 210
+    },
+    {
+      "type": "DATE",
+      "text": "01/22/2025",
+      "start": 225,
+      "end": 235
+    },
+    {
+      "type": "DATE",
+      "text": "01/28/2025",
+      "start": 249,
+      "end": 259
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Iyer",
+      "start": 280,
+      "end": 294
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2531451",
+      "start": 296,
+      "end": 304
+    },
+    {
+      "type": "ID",
+      "text": "970-54-7883",
+      "start": 305,
+      "end": 316
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Rao",
+      "start": 2163,
+      "end": 2176
+    },
+    {
+      "type": "DATE",
+      "text": "01/28/2025",
+      "start": 2205,
+      "end": 2215
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0176",
+  "source": "TCGA-EJ-7125.3565cc83-8305-490f-a47a-dc71b36a9044",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Michael Lewis",
+      "start": 97,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "923-97-7208",
+      "start": 119,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "05/16/1969",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4650919",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 175,
+      "end": 218
+    },
+    {
+      "type": "PHONE",
+      "text": "(600) 555-8326",
+      "start": 226,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-77122",
+      "start": 255,
+      "end": 264
+    },
+    {
+      "type": "DATE",
+      "text": "05/22/2026",
+      "start": 279,
+      "end": 289
+    },
+    {
+      "type": "DATE",
+      "text": "05/24/2026",
+      "start": 303,
+      "end": 313
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Kok Wah",
+      "start": 334,
+      "end": 348
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Thompson",
+      "start": 2029,
+      "end": 2046
+    },
+    {
+      "type": "DATE",
+      "text": "05/24/2026",
+      "start": 2075,
+      "end": 2085
+    }
+  ]
+}

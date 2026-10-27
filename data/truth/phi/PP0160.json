@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0160",
+  "source": "TCGA-67-6216.9f6ac234-e3d8-44a9-b82d-0552e49224be",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Krishnan",
+      "start": 100,
+      "end": 114
+    },
+    {
+      "type": "ID",
+      "text": "F6368157K",
+      "start": 124,
+      "end": 133
+    },
+    {
+      "type": "DOB",
+      "text": "09/09/1987",
+      "start": 139,
+      "end": 149
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9399526",
+      "start": 158,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8502 3572",
+      "start": 176,
+      "end": 189
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-74490",
+      "start": 204,
+      "end": 214
+    },
+    {
+      "type": "DATE",
+      "text": "01/04/2025",
+      "start": 229,
+      "end": 239
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2025",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Wei Ling",
+      "start": 284,
+      "end": 298
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2574490",
+      "start": 300,
+      "end": 309
+    },
+    {
+      "type": "ID",
+      "text": "F6368157K",
+      "start": 310,
+      "end": 319
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ng Wei Ling",
+      "start": 3771,
+      "end": 3785
+    },
+    {
+      "type": "DATE",
+      "text": "05 Apr 2025",
+      "start": 3789,
+      "end": 3800
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Sophie Holloway",
+      "start": 3828,
+      "end": 3846
+    },
+    {
+      "type": "DATE",
+      "text": "05/04/2025",
+      "start": 3875,
+      "end": 3885
+    }
+  ]
+}

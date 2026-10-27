@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0038",
+  "source": "TCGA-D8-A1Y3.E8D4229D-5049-4991-BDE0-AFC2CBC1827E",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Priya Nair",
+      "start": 100,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "F4550229P",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "15/12/1975",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "P1514340",
+      "start": 154,
+      "end": 162
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 172,
+      "end": 220
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8419 6314",
+      "start": 228,
+      "end": 241
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-98794",
+      "start": 256,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "13/03/2025",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "17/03/2025",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ahmad Abdullah",
+      "start": 335,
+      "end": 352
+    },
+    {
+      "type": "NAME",
+      "text": "Arjun Krishnan",
+      "start": 2263,
+      "end": 2277
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8419 6314",
+      "start": 2304,
+      "end": 2317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Garcia",
+      "start": 2345,
+      "end": 2360
+    },
+    {
+      "type": "DATE",
+      "text": "17/03/2025",
+      "start": 2389,
+      "end": 2399
+    }
+  ]
+}

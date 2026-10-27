@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0062",
+  "source": "TCGA-AA-A00L.3A6D9A07-C421-4C87-AC68-2A6FC3BFD05D",
+  "cancer_type": "COAD",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Hassan",
+      "start": 98,
+      "end": 121
+    },
+    {
+      "type": "ID",
+      "text": "T6773454D",
+      "start": 131,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "22/04/1945",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "P1625760",
+      "start": 165,
+      "end": 173
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 183,
+      "end": 231
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6109 5888",
+      "start": 239,
+      "end": 252
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-55773",
+      "start": 267,
+      "end": 276
+    },
+    {
+      "type": "DATE",
+      "text": "02/04/2025",
+      "start": 291,
+      "end": 301
+    },
+    {
+      "type": "DATE",
+      "text": "07/04/2025",
+      "start": 315,
+      "end": 325
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Zhi Hao",
+      "start": 346,
+      "end": 361
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Zhi Hao",
+      "start": 791,
+      "end": 806
+    },
+    {
+      "type": "DATE",
+      "text": "07 Apr 2025",
+      "start": 810,
+      "end": 821
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Rahman",
+      "start": 849,
+      "end": 863
+    },
+    {
+      "type": "DATE",
+      "text": "07/04/2025",
+      "start": 892,
+      "end": 902
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0200",
+  "source": "TCGA-KK-A8II.0C940BA1-22F7-412D-AD58-84B950157601",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Patricia Garcia",
+      "start": 103,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "964-63-3286",
+      "start": 127,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "09/21/1947",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "H8962686",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "3310 Elm Park Ave, Madison, WI 53711",
+      "start": 181,
+      "end": 217
+    },
+    {
+      "type": "PHONE",
+      "text": "(625) 555-3865",
+      "start": 225,
+      "end": 239
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-44963",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DATE",
+      "text": "05/28/2025",
+      "start": 279,
+      "end": 289
+    },
+    {
+      "type": "DATE",
+      "text": "06/02/2025",
+      "start": 303,
+      "end": 313
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Hughes",
+      "start": 334,
+      "end": 351
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Eleanor Hughes",
+      "start": 6565,
+      "end": 6582
+    },
+    {
+      "type": "DATE",
+      "text": "02 Jun 2025",
+      "start": 6586,
+      "end": 6597
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ong Zhi Hao",
+      "start": 6625,
+      "end": 6639
+    },
+    {
+      "type": "DATE",
+      "text": "06/02/2025",
+      "start": 6668,
+      "end": 6678
+    }
+  ]
+}

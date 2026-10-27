@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0024",
+  "source": "TCGA-AR-A2LN.128D4F7D-017D-459F-9664-AF509AE4555E",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "George Pemberton",
+      "start": 111,
+      "end": 127
+    },
+    {
+      "type": "ID",
+      "text": "183 242 1023",
+      "start": 139,
+      "end": 151
+    },
+    {
+      "type": "DOB",
+      "text": "06/08/1967",
+      "start": 157,
+      "end": 167
+    },
+    {
+      "type": "MRN",
+      "text": "H3086308",
+      "start": 176,
+      "end": 184
+    },
+    {
+      "type": "ADDRESS",
+      "text": "14 Hawthorn Close, Leeds LS6 2QT",
+      "start": 194,
+      "end": 226
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7182 727086",
+      "start": 234,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-91266",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2026",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "12/08/2026",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Clark",
+      "start": 344,
+      "end": 361
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2691266",
+      "start": 363,
+      "end": 372
+    },
+    {
+      "type": "ID",
+      "text": "1832421023",
+      "start": 373,
+      "end": 383
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Clark",
+      "start": 2729,
+      "end": 2746
+    },
+    {
+      "type": "DATE",
+      "text": "12 Aug 2026",
+      "start": 2750,
+      "end": 2761
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr William Whitaker",
+      "start": 2789,
+      "end": 2808
+    },
+    {
+      "type": "DATE",
+      "text": "12/08/2026",
+      "start": 2837,
+      "end": 2847
+    }
+  ]
+}

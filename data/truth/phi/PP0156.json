@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0156",
+  "source": "TCGA-S2-AA1A.83A6F838-3F30-411F-9982-B8985C7FA52E",
+  "cancer_type": "LUAD",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Ong Siew Lan",
+      "start": 94,
+      "end": 106
+    },
+    {
+      "type": "ID",
+      "text": "S9610556H",
+      "start": 116,
+      "end": 125
+    },
+    {
+      "type": "DOB",
+      "text": "14/05/1977",
+      "start": 131,
+      "end": 141
+    },
+    {
+      "type": "MRN",
+      "text": "P1191837",
+      "start": 150,
+      "end": 158
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 168,
+      "end": 216
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9253 6354",
+      "start": 224,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-83862",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "04/05/2025",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "09/05/2025",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Jun Jie",
+      "start": 332,
+      "end": 346
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Koh Hui Min",
+      "start": 4978,
+      "end": 4992
+    },
+    {
+      "type": "DATE",
+      "text": "09/05/2025",
+      "start": 5021,
+      "end": 5031
+    }
+  ]
+}

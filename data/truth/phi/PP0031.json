@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0031",
+  "source": "TCGA-BH-A1EY.2ED10396-96FF-4705-93AE-82FB9A80EC28",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Siew Lan",
+      "start": 94,
+      "end": 107
+    },
+    {
+      "type": "ID",
+      "text": "F3953394N",
+      "start": 117,
+      "end": 126
+    },
+    {
+      "type": "DOB",
+      "text": "08/04/1952",
+      "start": 132,
+      "end": 142
+    },
+    {
+      "type": "MRN",
+      "text": "H8395785",
+      "start": 151,
+      "end": 159
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6235 9837",
+      "start": 167,
+      "end": 180
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-76965",
+      "start": 195,
+      "end": 204
+    },
+    {
+      "type": "DATE",
+      "text": "10/04/2025",
+      "start": 219,
+      "end": 229
+    },
+    {
+      "type": "DATE",
+      "text": "12/04/2025",
+      "start": 243,
+      "end": 253
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Rahman",
+      "start": 274,
+      "end": 287
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2576965",
+      "start": 289,
+      "end": 297
+    },
+    {
+      "type": "ID",
+      "text": "F3953394N",
+      "start": 298,
+      "end": 307
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Nair",
+      "start": 2295,
+      "end": 2309
+    },
+    {
+      "type": "DATE",
+      "text": "12/04/2025",
+      "start": 2338,
+      "end": 2348
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Siew Lan",
+      "start": 2365,
+      "end": 2378
+    },
+    {
+      "type": "MRN",
+      "text": "H8395785",
+      "start": 2383,
+      "end": 2391
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0074",
+  "source": "TCGA-AA-3875.8e2d005b-0201-41ef-9118-15fa334b7cc7",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Kallang Medical Centre",
+      "start": 0,
+      "end": 22
+    },
+    {
+      "type": "NAME",
+      "text": "Priya Nair",
+      "start": 94,
+      "end": 104
+    },
+    {
+      "type": "ID",
+      "text": "F0392614K",
+      "start": 114,
+      "end": 123
+    },
+    {
+      "type": "DOB",
+      "text": "29/07/1954",
+      "start": 129,
+      "end": 139
+    },
+    {
+      "type": "MRN",
+      "text": "P7528964",
+      "start": 148,
+      "end": 156
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 166,
+      "end": 219
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6547 4803",
+      "start": 227,
+      "end": 240
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-71852",
+      "start": 255,
+      "end": 265
+    },
+    {
+      "type": "DATE",
+      "text": "01/08/2026",
+      "start": 280,
+      "end": 290
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2026",
+      "start": 304,
+      "end": 314
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Johnson",
+      "start": 335,
+      "end": 351
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2671852",
+      "start": 353,
+      "end": 362
+    },
+    {
+      "type": "ID",
+      "text": "F0392614K",
+      "start": 363,
+      "end": 372
+    },
+    {
+      "type": "NAME",
+      "text": "Ananya Iyer",
+      "start": 1029,
+      "end": 1040
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6547 4803",
+      "start": 1067,
+      "end": 1080
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Clarke",
+      "start": 1108,
+      "end": 1123
+    },
+    {
+      "type": "DATE",
+      "text": "06/08/2026",
+      "start": 1152,
+      "end": 1162
+    }
+  ]
+}

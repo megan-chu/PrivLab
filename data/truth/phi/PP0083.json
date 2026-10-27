@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0083",
+  "source": "TCGA-BP-5009.4268ceeb-4906-412a-9dad-8fc041c9c6f2",
+  "cancer_type": "KIRC",
+  "split": "dev",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Nurul Huda bin Osman",
+      "start": 100,
+      "end": 120
+    },
+    {
+      "type": "ID",
+      "text": "G4225790M",
+      "start": 130,
+      "end": 139
+    },
+    {
+      "type": "DOB",
+      "text": "17/03/1972",
+      "start": 145,
+      "end": 155
+    },
+    {
+      "type": "MRN",
+      "text": "MRN4273712",
+      "start": 164,
+      "end": 174
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 184,
+      "end": 237
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6184 1505",
+      "start": 245,
+      "end": 258
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-74607",
+      "start": 273,
+      "end": 283
+    },
+    {
+      "type": "DATE",
+      "text": "10/01/2025",
+      "start": 298,
+      "end": 308
+    },
+    {
+      "type": "DATE",
+      "text": "19/01/2025",
+      "start": 322,
+      "end": 332
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Susan Harris",
+      "start": 353,
+      "end": 368
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2574607",
+      "start": 370,
+      "end": 379
+    },
+    {
+      "type": "ID",
+      "text": "G4225790M",
+      "start": 380,
+      "end": 389
+    },
+    {
+      "type": "NAME",
+      "text": "Nur Aisyah binte Rahman",
+      "start": 2947,
+      "end": 2970
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6184 1505",
+      "start": 2997,
+      "end": 3010
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Harris",
+      "start": 3038,
+      "end": 3053
+    },
+    {
+      "type": "DATE",
+      "text": "19/01/2025",
+      "start": 3082,
+      "end": 3092
+    }
+  ]
+}

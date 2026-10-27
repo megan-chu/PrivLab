@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0028",
+  "source": "TCGA-A2-A3Y0.0FEAEEBA-A72C-4207-AC21-6AF5B5ED1AFC",
+  "cancer_type": "BRCA",
+  "split": "dev",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Maple Grove University Hospital",
+      "start": 0,
+      "end": 31
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Martinez",
+      "start": 103,
+      "end": 120
+    },
+    {
+      "type": "ID",
+      "text": "970-58-7325",
+      "start": 129,
+      "end": 140
+    },
+    {
+      "type": "DOB",
+      "text": "08/24/1953",
+      "start": 146,
+      "end": 156
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9427047",
+      "start": 165,
+      "end": 175
+    },
+    {
+      "type": "PHONE",
+      "text": "(620) 555-3529",
+      "start": 183,
+      "end": 197
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-44515",
+      "start": 212,
+      "end": 222
+    },
+    {
+      "type": "DATE",
+      "text": "05/23/2026",
+      "start": 237,
+      "end": 247
+    },
+    {
+      "type": "DATE",
+      "text": "05/25/2026",
+      "start": 261,
+      "end": 271
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Michael Clark",
+      "start": 292,
+      "end": 308
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2644515",
+      "start": 310,
+      "end": 319
+    },
+    {
+      "type": "ID",
+      "text": "970-58-7325",
+      "start": 320,
+      "end": 331
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Garcia",
+      "start": 5797,
+      "end": 5815
+    },
+    {
+      "type": "DATE",
+      "text": "05/25/2026",
+      "start": 5844,
+      "end": 5854
+    }
+  ]
+}

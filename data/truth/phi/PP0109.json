@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0109",
+  "source": "TCGA-BP-4759.57eef023-e30d-4812-a959-40a8ddc65da0",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Fletcher",
+      "start": 97,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "171 545 4448",
+      "start": 124,
+      "end": 136
+    },
+    {
+      "type": "DOB",
+      "text": "24/11/1956",
+      "start": 142,
+      "end": 152
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7779646",
+      "start": 161,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "7 Station Road, Ashford TN23 1PP",
+      "start": 181,
+      "end": 213
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7528 524252",
+      "start": 221,
+      "end": 236
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-42888",
+      "start": 251,
+      "end": 261
+    },
+    {
+      "type": "DATE",
+      "text": "03/06/2025",
+      "start": 276,
+      "end": 286
+    },
+    {
+      "type": "DATE",
+      "text": "08/06/2025",
+      "start": 300,
+      "end": 310
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Ismail",
+      "start": 331,
+      "end": 345
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Bennett",
+      "start": 2432,
+      "end": 2445
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7528 524252",
+      "start": 2472,
+      "end": 2487
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Thompson",
+      "start": 2515,
+      "end": 2535
+    },
+    {
+      "type": "DATE",
+      "text": "08/06/2025",
+      "start": 2564,
+      "end": 2574
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Fletcher",
+      "start": 2591,
+      "end": 2606
+    },
+    {
+      "type": "MRN",
+      "text": "MRN7779646",
+      "start": 2611,
+      "end": 2621
+    }
+  ]
+}

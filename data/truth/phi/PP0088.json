@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0088",
+  "source": "TCGA-BP-4165.f7d646c1-9055-46c2-a557-3f518f5ffe39",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "sg_malay",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal bin Salleh",
+      "start": 98,
+      "end": 119
+    },
+    {
+      "type": "ID",
+      "text": "T1890927D",
+      "start": 129,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "04/07/1971",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "H8421969",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 181,
+      "end": 234
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8910 3290",
+      "start": 242,
+      "end": 255
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-12362",
+      "start": 270,
+      "end": 279
+    },
+    {
+      "type": "DATE",
+      "text": "07/08/2025",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DATE",
+      "text": "11/08/2025",
+      "start": 318,
+      "end": 328
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Hassan",
+      "start": 349,
+      "end": 362
+    },
+    {
+      "type": "EMAIL",
+      "text": "mohd.salleh36@mailbox.example",
+      "start": 3374,
+      "end": 3403
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal bin Salleh",
+      "start": 3422,
+      "end": 3443
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr David Walker",
+      "start": 3471,
+      "end": 3486
+    },
+    {
+      "type": "DATE",
+      "text": "11/08/2025",
+      "start": 3515,
+      "end": 3525
+    },
+    {
+      "type": "NAME",
+      "text": "Mohd Rizal bin Salleh",
+      "start": 3542,
+      "end": 3563
+    },
+    {
+      "type": "MRN",
+      "text": "H8421969",
+      "start": 3568,
+      "end": 3576
+    }
+  ]
+}

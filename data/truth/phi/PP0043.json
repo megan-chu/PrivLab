@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0043",
+  "source": "TCGA-NH-A8F8.0D65923F-583D-42C2-8CA3-0A209D5F0490",
+  "cancer_type": "COAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Whitaker",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "935 978 2076",
+      "start": 123,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "14/04/1949",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "P3895058",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7481 396635",
+      "start": 176,
+      "end": 191
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-33472",
+      "start": 206,
+      "end": 215
+    },
+    {
+      "type": "DATE",
+      "text": "18/12/2025",
+      "start": 230,
+      "end": 240
+    },
+    {
+      "type": "DATE",
+      "text": "21/12/2025",
+      "start": 254,
+      "end": 264
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 285,
+      "end": 299
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr James Clark",
+      "start": 361,
+      "end": 375
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-33472",
+      "start": 395,
+      "end": 404
+    },
+    {
+      "type": "DATE",
+      "text": "18/12/2025",
+      "start": 429,
+      "end": 439
+    },
+    {
+      "type": "EMAIL",
+      "text": "emily.whitaker53@mailbox.example",
+      "start": 4462,
+      "end": 4494
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Whitaker",
+      "start": 4513,
+      "end": 4527
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Charlotte Holloway",
+      "start": 4555,
+      "end": 4576
+    },
+    {
+      "type": "DATE",
+      "text": "21/12/2025",
+      "start": 4605,
+      "end": 4615
+    }
+  ]
+}

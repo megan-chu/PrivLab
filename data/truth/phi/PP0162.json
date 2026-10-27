@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0162",
+  "source": "TCGA-XJ-A9DI.8D5547ED-4864-4CE1-87D0-2FE7621B9B7C",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Pemberton",
+      "start": 111,
+      "end": 130
+    },
+    {
+      "type": "ID",
+      "text": "292 518 8125",
+      "start": 142,
+      "end": 154
+    },
+    {
+      "type": "DOB",
+      "text": "29/06/1968",
+      "start": 160,
+      "end": 170
+    },
+    {
+      "type": "MRN",
+      "text": "H7946441",
+      "start": 179,
+      "end": 187
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 197,
+      "end": 234
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7126 899484",
+      "start": 242,
+      "end": 257
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-40760",
+      "start": 272,
+      "end": 282
+    },
+    {
+      "type": "DATE",
+      "text": "30/05/2025",
+      "start": 297,
+      "end": 307
+    },
+    {
+      "type": "DATE",
+      "text": "01/06/2025",
+      "start": 321,
+      "end": 331
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Raman",
+      "start": 352,
+      "end": 368
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2540760",
+      "start": 370,
+      "end": 379
+    },
+    {
+      "type": "ID",
+      "text": "2925188125",
+      "start": 380,
+      "end": 390
+    },
+    {
+      "type": "EMAIL",
+      "text": "charlotte.pemberton79@mailbox.example",
+      "start": 5280,
+      "end": 5317
+    },
+    {
+      "type": "NAME",
+      "text": "Charlotte Pemberton",
+      "start": 5336,
+      "end": 5355
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Kok Wah",
+      "start": 5383,
+      "end": 5397
+    },
+    {
+      "type": "DATE",
+      "text": "01/06/2025",
+      "start": 5426,
+      "end": 5436
+    }
+  ]
+}

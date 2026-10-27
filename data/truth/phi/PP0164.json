@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0164",
+  "source": "TCGA-EJ-7325.6E9EC98C-FD89-47DA-BF8A-B7F4229C9E09",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Hughes",
+      "start": 111,
+      "end": 123
+    },
+    {
+      "type": "ID",
+      "text": "770 388 6084",
+      "start": 135,
+      "end": 147
+    },
+    {
+      "type": "DOB",
+      "text": "03/10/1974",
+      "start": 153,
+      "end": 163
+    },
+    {
+      "type": "MRN",
+      "text": "MRN5885179",
+      "start": 172,
+      "end": 182
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 192,
+      "end": 229
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7155 823468",
+      "start": 237,
+      "end": 252
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-53171",
+      "start": 267,
+      "end": 277
+    },
+    {
+      "type": "DATE",
+      "text": "13/06/2026",
+      "start": 292,
+      "end": 302
+    },
+    {
+      "type": "DATE",
+      "text": "15/06/2026",
+      "start": 316,
+      "end": 326
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Vikram Nair",
+      "start": 347,
+      "end": 361
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Patricia Lewis",
+      "start": 2089,
+      "end": 2106
+    },
+    {
+      "type": "DATE",
+      "text": "15/06/2026",
+      "start": 2135,
+      "end": 2145
+    }
+  ]
+}

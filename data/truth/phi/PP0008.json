@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0008",
+  "source": "TCGA-A2-A04Q.726B60CA-1B1C-440D-82FA-A4C978C4D484",
+  "cancer_type": "BRCA",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Ashcombe General Hospital",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "William Turner",
+      "start": 97,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "097 882 0819",
+      "start": 123,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "02/09/1956",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "P4946066",
+      "start": 160,
+      "end": 168
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 178,
+      "end": 215
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7529 789305",
+      "start": 223,
+      "end": 238
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-16713",
+      "start": 253,
+      "end": 263
+    },
+    {
+      "type": "DATE",
+      "text": "12/03/2025",
+      "start": 278,
+      "end": 288
+    },
+    {
+      "type": "DATE",
+      "text": "15/03/2025",
+      "start": 302,
+      "end": 312
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Hassan",
+      "start": 333,
+      "end": 348
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Hassan",
+      "start": 4221,
+      "end": 4236
+    },
+    {
+      "type": "DATE",
+      "text": "15 Mar 2025",
+      "start": 4240,
+      "end": 4251
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lim Siew Lan",
+      "start": 4279,
+      "end": 4294
+    },
+    {
+      "type": "DATE",
+      "text": "15/03/2025",
+      "start": 4323,
+      "end": 4333
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "report_id": "PP0123",
+  "source": "TCGA-49-AAR4.8982CE18-FA5A-4882-AAC4-F2AC6ED60C49",
+  "cancer_type": "LUAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Hui Min",
+      "start": 98,
+      "end": 110
+    },
+    {
+      "type": "ID",
+      "text": "T0259094D",
+      "start": 120,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "04/01/1984",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "MRN6332789",
+      "start": 154,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 174,
+      "end": 227
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 8194 6724",
+      "start": 235,
+      "end": 248
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA26-29830",
+      "start": 263,
+      "end": 273
+    },
+    {
+      "type": "DATE",
+      "text": "10/08/2026",
+      "start": 288,
+      "end": 298
+    },
+    {
+      "type": "DATE",
+      "text": "17/08/2026",
+      "start": 312,
+      "end": 322
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 343,
+      "end": 359
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2629830",
+      "start": 361,
+      "end": 370
+    },
+    {
+      "type": "ID",
+      "text": "T0259094D",
+      "start": 371,
+      "end": 380
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 2032,
+      "end": 2048
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Turner",
+      "start": 3192,
+      "end": 3208
+    },
+    {
+      "type": "EMAIL",
+      "text": "chua.min28@mailbox.example",
+      "start": 8421,
+      "end": 8447
+    },
+    {
+      "type": "NAME",
+      "text": "Chua Hui Min",
+      "start": 8466,
+      "end": 8478
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Karen Clark",
+      "start": 8506,
+      "end": 8520
+    },
+    {
+      "type": "DATE",
+      "text": "17/08/2026",
+      "start": 8549,
+      "end": 8559
+    }
+  ]
+}

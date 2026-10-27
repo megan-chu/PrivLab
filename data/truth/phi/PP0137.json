@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0137",
+  "source": "TCGA-86-8279.e7e4b4fd-f47d-4aab-826c-0ef1f620a739",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Jennifer Anderson",
+      "start": 105,
+      "end": 122
+    },
+    {
+      "type": "ID",
+      "text": "994-76-5685",
+      "start": 131,
+      "end": 142
+    },
+    {
+      "type": "DOB",
+      "text": "06/21/1957",
+      "start": 148,
+      "end": 158
+    },
+    {
+      "type": "MRN",
+      "text": "P3843451",
+      "start": 167,
+      "end": 175
+    },
+    {
+      "type": "ADDRESS",
+      "text": "3310 Elm Park Ave, Madison, WI 53711",
+      "start": 185,
+      "end": 221
+    },
+    {
+      "type": "PHONE",
+      "text": "(610) 555-6785",
+      "start": 229,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-05726",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "02/04/2025",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "02/09/2025",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Mohd Ismail",
+      "start": 338,
+      "end": 352
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2505726",
+      "start": 354,
+      "end": 363
+    },
+    {
+      "type": "ID",
+      "text": "994-76-5685",
+      "start": 364,
+      "end": 375
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Rahman",
+      "start": 1103,
+      "end": 1116
+    },
+    {
+      "type": "DATE",
+      "text": "02/09/2025",
+      "start": 1145,
+      "end": 1155
+    }
+  ]
+}

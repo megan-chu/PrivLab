@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0180",
+  "source": "TCGA-HC-7736.d5cb57cb-ff9a-4c83-b019-7b5ed2cd7494",
+  "cancer_type": "PRAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Fletcher",
+      "start": 111,
+      "end": 126
+    },
+    {
+      "type": "ID",
+      "text": "079 290 4907",
+      "start": 138,
+      "end": 150
+    },
+    {
+      "type": "DOB",
+      "text": "24/09/1965",
+      "start": 156,
+      "end": 166
+    },
+    {
+      "type": "MRN",
+      "text": "MRN9482495",
+      "start": 175,
+      "end": 185
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Flat 3, 22 Mill Lane, Bristol BS3 4LE",
+      "start": 195,
+      "end": 232
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7859 216968",
+      "start": 240,
+      "end": 255
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-37418",
+      "start": 270,
+      "end": 279
+    },
+    {
+      "type": "DATE",
+      "text": "12/05/2026",
+      "start": 294,
+      "end": 304
+    },
+    {
+      "type": "DATE",
+      "text": "15/05/2026",
+      "start": 318,
+      "end": 328
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Rahman",
+      "start": 349,
+      "end": 364
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2637418",
+      "start": 366,
+      "end": 374
+    },
+    {
+      "type": "ID",
+      "text": "0792904907",
+      "start": 375,
+      "end": 385
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Rahman",
+      "start": 404,
+      "end": 419
+    },
+    {
+      "type": "EMAIL",
+      "text": "sophie.fletcher23@mailbox.example",
+      "start": 4658,
+      "end": 4691
+    },
+    {
+      "type": "NAME",
+      "text": "Sophie Fletcher",
+      "start": 4710,
+      "end": 4725
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Kavitha Krishnan",
+      "start": 4753,
+      "end": 4772
+    },
+    {
+      "type": "DATE",
+      "text": "15/05/2026",
+      "start": 4801,
+      "end": 4811
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0134",
+  "source": "TCGA-95-A4VK.0B713E19-EE67-4C3B-8319-4C69019C00D0",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "St. Brendan Cancer Center",
+      "start": 0,
+      "end": 25
+    },
+    {
+      "type": "NAME",
+      "text": "Karen Walker",
+      "start": 97,
+      "end": 109
+    },
+    {
+      "type": "ID",
+      "text": "957-15-9680",
+      "start": 118,
+      "end": 129
+    },
+    {
+      "type": "DOB",
+      "text": "06/26/1978",
+      "start": 135,
+      "end": 145
+    },
+    {
+      "type": "MRN",
+      "text": "H6880713",
+      "start": 154,
+      "end": 162
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 172,
+      "end": 215
+    },
+    {
+      "type": "PHONE",
+      "text": "(985) 555-4809",
+      "start": 223,
+      "end": 237
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-98175",
+      "start": 252,
+      "end": 262
+    },
+    {
+      "type": "DATE",
+      "text": "08/23/2025",
+      "start": 277,
+      "end": 287
+    },
+    {
+      "type": "DATE",
+      "text": "09/01/2025",
+      "start": 301,
+      "end": 311
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Pemberton",
+      "start": 332,
+      "end": 351
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA2598175",
+      "start": 353,
+      "end": 362
+    },
+    {
+      "type": "ID",
+      "text": "957-15-9680",
+      "start": 363,
+      "end": 374
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Oliver Pemberton",
+      "start": 10025,
+      "end": 10044
+    },
+    {
+      "type": "DATE",
+      "text": "01 Sep 2025",
+      "start": 10048,
+      "end": 10059
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Abdullah",
+      "start": 10087,
+      "end": 10103
+    },
+    {
+      "type": "DATE",
+      "text": "09/01/2025",
+      "start": 10132,
+      "end": 10142
+    }
+  ]
+}

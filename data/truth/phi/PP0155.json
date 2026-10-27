@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0155",
+  "source": "TCGA-97-7552.201ed2f1-c4ed-42ac-81eb-b5a725c36b47",
+  "cancer_type": "LUAD",
+  "split": "extra",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Turner",
+      "start": 99,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "404 335 0481",
+      "start": 123,
+      "end": 135
+    },
+    {
+      "type": "DOB",
+      "text": "13/11/1985",
+      "start": 141,
+      "end": 151
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1633110",
+      "start": 160,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7362 950472",
+      "start": 178,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-47616",
+      "start": 208,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "24/07/2026",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "28/07/2026",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Rahman",
+      "start": 288,
+      "end": 302
+    },
+    {
+      "type": "EMAIL",
+      "text": "emily.turner12@mailbox.example",
+      "start": 3816,
+      "end": 3846
+    },
+    {
+      "type": "NAME",
+      "text": "Emily Turner",
+      "start": 3865,
+      "end": 3877
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr George Bennett",
+      "start": 3905,
+      "end": 3922
+    },
+    {
+      "type": "DATE",
+      "text": "28/07/2026",
+      "start": 3951,
+      "end": 3961
+    }
+  ]
+}

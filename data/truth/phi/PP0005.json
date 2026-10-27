@@ -1,0 +1,95 @@
+{
+  "report_id": "PP0005",
+  "source": "TCGA-AR-A1AQ.FC236604-AAE5-4394-9D39-270FFEFB635A",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Nair",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "F2880957M",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "30/09/1941",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "H5017343",
+      "start": 155,
+      "end": 163
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6775 8787",
+      "start": 171,
+      "end": 184
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S25-32571",
+      "start": 199,
+      "end": 208
+    },
+    {
+      "type": "DATE",
+      "text": "25/04/2025",
+      "start": 223,
+      "end": 233
+    },
+    {
+      "type": "DATE",
+      "text": "02/05/2025",
+      "start": 247,
+      "end": 257
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Jia Hui",
+      "start": 278,
+      "end": 293
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lee Chee Keong",
+      "start": 1241,
+      "end": 1258
+    },
+    {
+      "type": "DATE",
+      "text": "02/05/2025",
+      "start": 1287,
+      "end": 1297
+    },
+    {
+      "type": "NAME",
+      "text": "Rajesh Nair",
+      "start": 1314,
+      "end": 1325
+    },
+    {
+      "type": "MRN",
+      "text": "H5017343",
+      "start": 1330,
+      "end": 1338
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "report_id": "PP0100",
+  "source": "TCGA-AK-3453.deae80af-a4e4-4413-82e9-f1f49a3b387b",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Hui Min",
+      "start": 100,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "S5452267C",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "18/06/1968",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3941912",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9133 3983",
+      "start": 173,
+      "end": 186
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-41215",
+      "start": 201,
+      "end": 211
+    },
+    {
+      "type": "DATE",
+      "text": "28/06/2025",
+      "start": 226,
+      "end": 236
+    },
+    {
+      "type": "DATE",
+      "text": "05/07/2025",
+      "start": 250,
+      "end": 260
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Lakshmi Nair",
+      "start": 281,
+      "end": 296
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP2541215",
+      "start": 298,
+      "end": 307
+    },
+    {
+      "type": "ID",
+      "text": "S5452267C",
+      "start": 308,
+      "end": 317
+    },
+    {
+      "type": "EMAIL",
+      "text": "goh.min41@mailbox.example",
+      "start": 3872,
+      "end": 3897
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Hui Min",
+      "start": 3916,
+      "end": 3927
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Goh Siew Lan",
+      "start": 3955,
+      "end": 3970
+    },
+    {
+      "type": "DATE",
+      "text": "05/07/2025",
+      "start": 3999,
+      "end": 4009
+    },
+    {
+      "type": "NAME",
+      "text": "Goh Hui Min",
+      "start": 4026,
+      "end": 4037
+    },
+    {
+      "type": "MRN",
+      "text": "MRN3941912",
+      "start": 4042,
+      "end": 4052
+    }
+  ]
+}

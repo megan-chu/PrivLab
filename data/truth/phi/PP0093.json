@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0093",
+  "source": "TCGA-AK-3455.f8cccb1a-e98f-4bad-bb7a-0078b919f56e",
+  "cancer_type": "KIRC",
+  "split": "test",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Pillai",
+      "start": 100,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "G0534949X",
+      "start": 123,
+      "end": 132
+    },
+    {
+      "type": "DOB",
+      "text": "05/10/1961",
+      "start": 138,
+      "end": 148
+    },
+    {
+      "type": "MRN",
+      "text": "P9277218",
+      "start": 157,
+      "end": 165
+    },
+    {
+      "type": "ADDRESS",
+      "text": "27 Jalan Kembangan, Singapore 419122",
+      "start": 175,
+      "end": 211
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9454 1157",
+      "start": 219,
+      "end": 232
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-97005",
+      "start": 247,
+      "end": 256
+    },
+    {
+      "type": "DATE",
+      "text": "21/04/2026",
+      "start": 271,
+      "end": 281
+    },
+    {
+      "type": "DATE",
+      "text": "28/04/2026",
+      "start": 295,
+      "end": 305
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Ismail",
+      "start": 326,
+      "end": 344
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Muhammad Ismail",
+      "start": 1808,
+      "end": 1826
+    },
+    {
+      "type": "DATE",
+      "text": "28 Apr 2026",
+      "start": 1830,
+      "end": 1841
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Jennifer Anderson",
+      "start": 1869,
+      "end": 1889
+    },
+    {
+      "type": "DATE",
+      "text": "28/04/2026",
+      "start": 1918,
+      "end": 1928
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "report_id": "PP0190",
+  "source": "TCGA-J4-A6G1.6758B6C3-61B6-4D4F-9018-CDC2E932ACC7",
+  "cancer_type": "PRAD",
+  "split": "dev",
+  "locale": "sg_chinese",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Riverside General Hospital",
+      "start": 0,
+      "end": 26
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Wei Ling",
+      "start": 98,
+      "end": 111
+    },
+    {
+      "type": "ID",
+      "text": "F3645970X",
+      "start": 121,
+      "end": 130
+    },
+    {
+      "type": "DOB",
+      "text": "14/05/1949",
+      "start": 136,
+      "end": 146
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1487633",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412",
+      "start": 175,
+      "end": 228
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 6865 6336",
+      "start": 236,
+      "end": 249
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-68489",
+      "start": 264,
+      "end": 274
+    },
+    {
+      "type": "DATE",
+      "text": "23/02/2025",
+      "start": 289,
+      "end": 299
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 313,
+      "end": 323
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Mei Xuan",
+      "start": 344,
+      "end": 360
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Chua Mei Xuan",
+      "start": 6021,
+      "end": 6037
+    },
+    {
+      "type": "DATE",
+      "text": "27 Feb 2025",
+      "start": 6041,
+      "end": 6052
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Harry Pemberton",
+      "start": 6080,
+      "end": 6098
+    },
+    {
+      "type": "DATE",
+      "text": "27/02/2025",
+      "start": 6127,
+      "end": 6137
+    },
+    {
+      "type": "NAME",
+      "text": "Wong Wei Ling",
+      "start": 6154,
+      "end": 6167
+    },
+    {
+      "type": "MRN",
+      "text": "MRN1487633",
+      "start": 6172,
+      "end": 6182
+    }
+  ]
+}

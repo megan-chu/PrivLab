@@ -1,0 +1,83 @@
+{
+  "report_id": "PP0191",
+  "source": "TCGA-EJ-5518.8299ff67-bed6-462f-87ad-3c8be45e1453",
+  "cancer_type": "PRAD",
+  "split": "test",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Northbridge Royal Infirmary",
+      "start": 0,
+      "end": 27
+    },
+    {
+      "type": "NAME",
+      "text": "William Clarke",
+      "start": 99,
+      "end": 113
+    },
+    {
+      "type": "ID",
+      "text": "623 972 6524",
+      "start": 125,
+      "end": 137
+    },
+    {
+      "type": "DOB",
+      "text": "24/01/1981",
+      "start": 143,
+      "end": 153
+    },
+    {
+      "type": "MRN",
+      "text": "H4392535",
+      "start": 162,
+      "end": 170
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7569 538539",
+      "start": 178,
+      "end": 193
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP25-17673",
+      "start": 208,
+      "end": 218
+    },
+    {
+      "type": "DATE",
+      "text": "18/07/2025",
+      "start": 233,
+      "end": 243
+    },
+    {
+      "type": "DATE",
+      "text": "25/07/2025",
+      "start": 257,
+      "end": 267
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Emily Fletcher",
+      "start": 288,
+      "end": 305
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nur Abdullah",
+      "start": 3718,
+      "end": 3733
+    },
+    {
+      "type": "DATE",
+      "text": "25/07/2025",
+      "start": 3762,
+      "end": 3772
+    }
+  ]
+}

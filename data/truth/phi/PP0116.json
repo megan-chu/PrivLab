@@ -1,0 +1,89 @@
+{
+  "report_id": "PP0116",
+  "source": "TCGA-CJ-5675.d6d422ec-85a9-47f1-bfe5-c4b958515e3a",
+  "cancer_type": "KIRC",
+  "split": "extra",
+  "locale": "us",
+  "country": "US",
+  "date_style": "mdy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Lakeshore Regional Medical Center",
+      "start": 0,
+      "end": 33
+    },
+    {
+      "type": "NAME",
+      "text": "Linda Johnson",
+      "start": 105,
+      "end": 118
+    },
+    {
+      "type": "ID",
+      "text": "926-99-1960",
+      "start": 127,
+      "end": 138
+    },
+    {
+      "type": "DOB",
+      "text": "04/20/1954",
+      "start": 144,
+      "end": 154
+    },
+    {
+      "type": "MRN",
+      "text": "P9097940",
+      "start": 163,
+      "end": 171
+    },
+    {
+      "type": "ADDRESS",
+      "text": "1847 Willow Creek Dr, Springfield, OH 45503",
+      "start": 181,
+      "end": 224
+    },
+    {
+      "type": "PHONE",
+      "text": "(695) 555-8997",
+      "start": 232,
+      "end": 246
+    },
+    {
+      "type": "ACCESSION",
+      "text": "PA25-89918",
+      "start": 261,
+      "end": 271
+    },
+    {
+      "type": "DATE",
+      "text": "04/17/2025",
+      "start": 286,
+      "end": 296
+    },
+    {
+      "type": "DATE",
+      "text": "04/25/2025",
+      "start": 310,
+      "end": 320
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Nurul Abdullah",
+      "start": 341,
+      "end": 358
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Priya Nair",
+      "start": 2489,
+      "end": 2502
+    },
+    {
+      "type": "DATE",
+      "text": "04/25/2025",
+      "start": 2531,
+      "end": 2541
+    }
+  ]
+}

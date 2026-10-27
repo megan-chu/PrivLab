@@ -1,0 +1,101 @@
+{
+  "report_id": "PP0012",
+  "source": "TCGA-A8-A08I.F2077079-D683-4D18-94B9-84C760674AF6",
+  "cancer_type": "BRCA",
+  "split": "extra",
+  "locale": "in",
+  "country": "SG",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Bukit Timah Cancer Institute",
+      "start": 0,
+      "end": 28
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Menon",
+      "start": 100,
+      "end": 112
+    },
+    {
+      "type": "ID",
+      "text": "F0142940W",
+      "start": 122,
+      "end": 131
+    },
+    {
+      "type": "DOB",
+      "text": "22/09/1949",
+      "start": 137,
+      "end": 147
+    },
+    {
+      "type": "MRN",
+      "text": "P6262632",
+      "start": 156,
+      "end": 164
+    },
+    {
+      "type": "ADDRESS",
+      "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
+      "start": 174,
+      "end": 222
+    },
+    {
+      "type": "PHONE",
+      "text": "+65 9546 1027",
+      "start": 230,
+      "end": 243
+    },
+    {
+      "type": "ACCESSION",
+      "text": "SP26-80457",
+      "start": 258,
+      "end": 268
+    },
+    {
+      "type": "DATE",
+      "text": "21/03/2026",
+      "start": 283,
+      "end": 293
+    },
+    {
+      "type": "DATE",
+      "text": "28/03/2026",
+      "start": 307,
+      "end": 317
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Teo Zhi Hao",
+      "start": 338,
+      "end": 352
+    },
+    {
+      "type": "EMAIL",
+      "text": "suresh.menon69@mailbox.example",
+      "start": 776,
+      "end": 806
+    },
+    {
+      "type": "NAME",
+      "text": "Suresh Menon",
+      "start": 825,
+      "end": 837
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Siti Ismail",
+      "start": 865,
+      "end": 879
+    },
+    {
+      "type": "DATE",
+      "text": "28/03/2026",
+      "start": 908,
+      "end": 918
+    }
+  ]
+}

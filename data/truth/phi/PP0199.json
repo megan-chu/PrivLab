@@ -1,0 +1,107 @@
+{
+  "report_id": "PP0199",
+  "source": "TCGA-WW-A8ZI.91350D32-096F-4839-ABE4-6AC4354E7B68",
+  "cancer_type": "PRAD",
+  "split": "dev",
+  "locale": "uk",
+  "country": "UK",
+  "date_style": "dmy",
+  "phi": [
+    {
+      "type": "HOSPITAL",
+      "text": "Whitfield NHS Foundation Trust Hospital",
+      "start": 0,
+      "end": 39
+    },
+    {
+      "type": "NAME",
+      "text": "George Bennett",
+      "start": 111,
+      "end": 125
+    },
+    {
+      "type": "ID",
+      "text": "430 187 1861",
+      "start": 137,
+      "end": 149
+    },
+    {
+      "type": "DOB",
+      "text": "11/06/1957",
+      "start": 155,
+      "end": 165
+    },
+    {
+      "type": "MRN",
+      "text": "P9582482",
+      "start": 174,
+      "end": 182
+    },
+    {
+      "type": "PHONE",
+      "text": "+44 7112 398477",
+      "start": 190,
+      "end": 205
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S26-88394",
+      "start": 220,
+      "end": 229
+    },
+    {
+      "type": "DATE",
+      "text": "18/05/2026",
+      "start": 244,
+      "end": 254
+    },
+    {
+      "type": "DATE",
+      "text": "25/05/2026",
+      "start": 268,
+      "end": 278
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Linda Walker",
+      "start": 299,
+      "end": 314
+    },
+    {
+      "type": "ACCESSION",
+      "text": "S2688394",
+      "start": 316,
+      "end": 324
+    },
+    {
+      "type": "ID",
+      "text": "4301871861",
+      "start": 325,
+      "end": 335
+    },
+    {
+      "type": "DOCTOR",
+      "text": "Dr Ananya Iyer",
+      "start": 4259,
+      "end": 4273
+    },
+    {
+      "type": "DATE",
+      "text": "25/05/2026",
+      "start": 4302,
+      "end": 4312
+    },
+    {
+      "type": "NAME",
+      "text": "George Bennett",
+      "start": 4329,
+      "end": 4343
+    },
+    {
+      "type": "MRN",
+      "text": "P9582482",
+      "start": 4348,
+      "end": 4356
+    }
+  ]
+}
