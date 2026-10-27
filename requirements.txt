@@ -14,9 +14,11 @@ pydantic~=2.14
 python-dotenv~=1.2
 pyyaml~=6.0
 
+# Encrypted vault and Muse Spark cache (PRIVLAB_VAULT_KEY)
+cryptography~=50.0
+
 # Tests
 pytest~=9.1
 
 # Added later in the plan:
 # mcp            Day 5, MCP server
-# cryptography   Day 2, encrypted vault

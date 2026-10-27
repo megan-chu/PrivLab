@@ -84,22 +84,23 @@ class DeidResult:
 @dataclass
 class PrivacyProfile:
     version: int = 1
-    remove: dict = field(default_factory=lambda: {k: True for k in CHECKLIST})
+    remove: dict = field(default_factory=lambda: {k: v[3] for k, v in CHECKLIST.items()})
     replace_with_tags: bool = True
     shift_dates: bool = False
     allow_list: list[str] = field(default_factory=list)
     always_remove: list[str] = field(default_factory=list)
 
 
-# First-time checklist: key -> (label, PHI types it covers, warn if unticked)
+# First-time checklist: key -> (label, PHI types it covers, warn if unticked, ticked by default).
+# Clinical dates (collected, reported, diagnosis) are kept by default; only DOB is masked.
 CHECKLIST = {
-    "patient_names": ("Patient names", ("NAME",), True),
-    "relative_names": ("Names of relatives and others", ("NAME",), True),
-    "doctor_names": ("Doctor names", ("DOCTOR",), False),
-    "national_ids": ("NRIC/FIN, NHS and SSN numbers", ("ID",), True),
-    "dob": ("Date of birth", ("DOB",), True),
-    "other_dates": ("Other dates", ("DATE",), False),
-    "mrn_accession": ("MRN, accession and account numbers", ("MRN", "ACCESSION", "ACCOUNT"), False),
-    "phone_email_address": ("Phone, email and address", ("PHONE", "EMAIL", "ADDRESS"), True),
-    "hospital": ("Hospital name", ("HOSPITAL",), False),
+    "patient_names": ("Patient names", ("NAME",), True, True),
+    "relative_names": ("Names of relatives and others", ("NAME",), True, True),
+    "doctor_names": ("Doctor names", ("DOCTOR",), False, True),
+    "national_ids": ("NRIC/FIN, NHS and SSN numbers", ("ID",), True, True),
+    "dob": ("Date of birth", ("DOB",), True, True),
+    "other_dates": ("Other dates (collected, reported, diagnosis)", ("DATE",), False, False),
+    "mrn_accession": ("MRN, accession and account numbers", ("MRN", "ACCESSION", "ACCOUNT"), False, True),
+    "phone_email_address": ("Phone, email and address", ("PHONE", "EMAIL", "ADDRESS"), True, True),
+    "hospital": ("Hospital name", ("HOSPITAL",), False, True),
 }
