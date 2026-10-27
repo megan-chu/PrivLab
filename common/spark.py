@@ -8,9 +8,10 @@ logged to runs/spark_usage.log with tokens and a running total (no report text).
 
   call(safe, instructions=..., schema=MyModel, step="names", report_id="PP0001") -> MyModel
 
-PLACEHOLDER: the response shape (choices[0].message.content, usage.prompt_tokens /
-completion_tokens) and json_schema support assume full OpenAI compatibility;
-eval/smoke_spark.py checks them.
+Verified by eval/smoke_spark.py (27 Oct): strict json_schema output works; the
+response shape is OpenAI-style (choices[0].message.content, usage.prompt_tokens /
+completion_tokens). Latency ~8-11 s per call; output tokens ~1.3-1.7k even for a
+tiny reply (likely hidden reasoning), so output tokens dominate cost.
 """
 import hashlib
 import json
@@ -49,7 +50,7 @@ class SparkReplyError(RuntimeError):
 # Public entry point
 # --------------------------------------------------------------------------
 def call(safe, *, instructions: str, schema: type[BaseModel], step: str,
-         report_id: str | None = None) -> BaseModel:
+         report_id: str | None = None, effort: str = "minimal") -> BaseModel:
     """Send de-identified or masked text to Muse Spark and return a validated reply."""
     from deid.types import DeidResult, MaskedText   # deid imports nothing from here
 
@@ -58,7 +59,7 @@ def call(safe, *, instructions: str, schema: type[BaseModel], step: str,
     # Day 2: verify safe.seal here (HMAC with PRIVLAB_SEAL_KEY) once deid/ creates seals.
     check_no_leak(safe.text)
     prompt = f"{instructions}\n\nText:\n{safe.text}"
-    return _call_raw(prompt, schema, step=step, report_id=report_id)
+    return _call_raw(prompt, schema, step=step, report_id=report_id, effort=effort)
 
 
 def check_no_leak(text: str) -> None:
@@ -75,35 +76,39 @@ def check_no_leak(text: str) -> None:
 # Raw call: cache, structured output, usage log
 # --------------------------------------------------------------------------
 def _call_raw(prompt: str, schema: type[BaseModel], *, step: str, report_id: str | None = None,
-              use_cache: bool = True) -> BaseModel:
-    """Only call() and eval/smoke_spark.py (hand-written text) may use this directly."""
+              use_cache: bool = True, effort: str = "minimal") -> BaseModel:
+    """Only call() and eval/smoke_spark.py (hand-written text) may use this directly.
+
+    effort: reasoning_effort sent to the API. Muse Spark always reasons ("none" is
+    rejected); reasoning tokens are billed as output, so default to "minimal".
+    """
     settings = load_config()
     settings.require("meta_api_key")
     key = hashlib.sha256(json.dumps(
-        [settings.meta_model, step, SYSTEM, prompt, schema.model_json_schema()], sort_keys=True
+        [settings.meta_model, step, effort, SYSTEM, prompt, schema.model_json_schema()], sort_keys=True
     ).encode("utf-8")).hexdigest()
     cache_path = CACHE_DIR / step / f"{key}.json"
 
     if use_cache and cache_path.exists():
         cached = json.loads(cache_path.read_text(encoding="utf-8"))
-        _log_usage(step, report_id, cached["mode"], 0, 0, cached=True)
+        _log_usage(step, report_id, effort, cached["mode"], 0, 0, cached=True)
         return schema.model_validate(cached["reply"])
 
-    with timed("spark", step=step, report_id=report_id):
-        content, usage, mode = _request(settings, prompt, schema)
+    with timed("spark", step=step, report_id=report_id, effort=effort):
+        content, usage, mode = _request(settings, prompt, schema, effort)
     try:
         reply = schema.model_validate_json(_strip_fence(content))
     except ValidationError as e:
         raise SparkReplyError(f"reply does not match {schema.__name__}: {e}") from e
 
     in_tok, out_tok = usage
-    _log_usage(step, report_id, mode, in_tok, out_tok, cached=False)
+    _log_usage(step, report_id, effort, mode, in_tok, out_tok, cached=False)
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text(json.dumps({"mode": mode, "reply": reply.model_dump()}, indent=2), encoding="utf-8")
     return reply
 
 
-def _request(settings, prompt: str, schema: type[BaseModel]) -> tuple[str, tuple[int, int], str]:
+def _request(settings, prompt: str, schema: type[BaseModel], effort: str) -> tuple[str, tuple[int, int], str]:
     """Try strict json_schema output first; fall back to json_object if the API rejects it."""
     import openai
 
@@ -126,7 +131,8 @@ def _request(settings, prompt: str, schema: type[BaseModel]) -> tuple[str, tuple
         ]
         try:
             resp = _client.chat.completions.create(model=settings.meta_model, messages=msgs,
-                                                   response_format=response_format, temperature=0)
+                                                   response_format=response_format, temperature=0,
+                                                   reasoning_effort=effort)
         except openai.BadRequestError as e:   # format not supported: try the next one
             last_error = e
             continue
@@ -161,7 +167,8 @@ def _strip_fence(text: str) -> str:
     return text
 
 
-def _log_usage(step: str, report_id: str | None, mode: str, in_tok: int, out_tok: int, cached: bool) -> None:
+def _log_usage(step: str, report_id: str | None, effort: str, mode: str, in_tok: int, out_tok: int,
+               cached: bool) -> None:
     USAGE_LOG.parent.mkdir(exist_ok=True)
     totals = json.loads(USAGE_TOTALS.read_text(encoding="utf-8")) if USAGE_TOTALS.exists() else \
         {"calls": 0, "cached_hits": 0, "input_tokens": 0, "output_tokens": 0}
@@ -174,7 +181,8 @@ def _log_usage(step: str, report_id: str | None, mode: str, in_tok: int, out_tok
     cost = estimate_usd(totals["input_tokens"], totals["output_tokens"])
     USAGE_TOTALS.write_text(json.dumps(totals, indent=2), encoding="utf-8")
 
-    line = (f"{datetime.now(SGT).isoformat(timespec='seconds')}\t{step}\t{report_id or '-'}\t{mode}\t"
+    line = (f"{datetime.now(SGT).isoformat(timespec='seconds')}\t{step}\t{report_id or '-'}\t"
+            f"effort={effort}\t{mode}\t"
             f"{'cached' if cached else 'live'}\tin={in_tok}\tout={out_tok}\t"
             f"total_in={totals['input_tokens']}\ttotal_out={totals['output_tokens']}\t"
             f"total_usd={'?' if cost is None else f'{cost:.2f}'}\n")
