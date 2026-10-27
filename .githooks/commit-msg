@@ -1,0 +1,16 @@
+#!/bin/sh
+# Enforce the commit format described in .gitmessage.
+subject=$(grep -v '^#' "$1" | sed '/^[[:space:]]*$/d' | head -n 1)
+
+case "$subject" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *) exit 0 ;;
+esac
+
+pattern='^(feat|fix|eval|test|docs|refactor|chore)(\((deid|extract|mcp|viewer|eval|data|docs|config)\))?: [^ ].{0,70}[^.]$'
+if ! printf '%s\n' "$subject" | grep -Eq "$pattern"; then
+  echo "commit-msg: subject does not match the PrivLab format:" >&2
+  echo "  $subject" >&2
+  echo "expected: <type>(<scope>): <summary>  (see .gitmessage)" >&2
+  echo "  e.g. feat(deid): add NRIC/FIN recogniser with checksum" >&2
+  exit 1
+fi
