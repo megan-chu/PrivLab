@@ -1,0 +1,51 @@
+flowchart LR
+    A(["User: 'Extract tumour size'<br/>(pack starts empty)"]) --> P1
+
+    subgraph P1["1 · Define"]
+        direction TB
+        C["AI asks, with a suggestion:<br/>'Largest tumour dimension<br/>on the surgical specimen?'"]
+        D["User defines it in own words:<br/>'Measurement of the tumour<br/>taken from surgery'"]
+        E["AI drafts the field<br/>number + unit (cm), range 0.1 to 30"]
+        C --> D --> E
+    end
+
+    subgraph P2["2 · Teach and verify (repeat as many rounds as wanted)"]
+        direction TB
+        F["AI highlights candidate spans<br/>ranked, each with a reason"]
+        G["User ticks the right span,<br/>or clicks to correct it"]
+        H["AI saves good + bad examples,<br/>re-runs automatic checks,<br/>tries 2 to 3 other reports"]
+        I{"User happy?"}
+        F --> G --> H --> I
+        I -->|"Another round"| F
+    end
+
+    subgraph P3["3 · Use every day"]
+        direction TB
+        R["AI finds value + evidence<br/>using the pack"]
+        V["Automatic checks<br/>evidence, value, type, range, conflicts"]
+        S{"Result"}
+        GR["Green: auto-filled"]
+        AM["Amber: flagged for review<br/>one-line reason<br/>(two tumours, conflict, no unit)"]
+        R --> V --> S
+        S -->|"All checks pass"| GR
+        S -->|"Complex or uncertain"| AM
+    end
+
+    E --> F
+    I -->|"Yes: save to pack"| R
+    GR --> OUT(["Saved to registry"])
+    AM -->|"User's answer becomes<br/>a new example"| H
+
+    NOTE["Field readiness: Draft → Learning → Ready<br/>(Ready = e.g. 4 of last 5 accepted unchanged)"]
+    P2 ~~~ NOTE
+
+    classDef user fill:#EEF2F7,stroke:#1E3A5F,color:#111827
+    classDef ai fill:#EFF6FF,stroke:#2563EB,color:#1E3A8A
+    classDef good fill:#ECFDF5,stroke:#059669,color:#065F46
+    classDef warn fill:#FFFBEB,stroke:#B45309,color:#92400E
+    classDef note fill:#FFFFFF,stroke:#9CA3AF,color:#374151,stroke-dasharray: 4 3
+    class A,D,G user
+    class C,E,F,H,R,V ai
+    class GR,OUT good
+    class AM warn
+    class NOTE note
