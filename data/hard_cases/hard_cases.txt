@@ -1,0 +1,67 @@
+# Hard cases: identifiers without the cues the synthetic reports always have.
+# One case per line. Mark each identifier inline as [[TYPE:text]]; "\n" inside a line is a line break.
+# Lines starting with "# " name the category. Cases with no markers are negatives (false-alarm check).
+# All names, numbers and places are invented.
+
+# Mid-sentence mentions
+Mr. [[NAME:Tan]] has received two cycles of chemotherapy before this resection.
+On review, [[NAME:Tan]] has received treatment at another centre.
+The specimen from Mdm [[NAME:Lim]] shows residual tumour after therapy.
+History given by [[NAME:Rajesh Kumar]], who brought the patient in.
+Seen in clinic with [[NAME:Tan Ah Kow]], who consented on her behalf.
+
+# Next of kin with contact number
+Next of kin: [[NAME:Tan Ah Wing]] ([[PHONE:86743890]]), son of Mr.[[NAME:Tan]].
+NOK [[NAME:Siti Rahmah]] (daughter), tel [[PHONE:9123 4567]].
+Contact the patient's sister [[NAME:Priya Nair]] on [[PHONE:+65 8123 4567]] if unreachable.
+Emergency contact: husband, [[NAME:Ong Kok Wah]], [[PHONE:6123-4567]].
+
+# Repeat and partial mentions
+[[NAME:Tan Ah Kow]] attended with his wife. Mr. [[NAME:Tan]] was informed of the result.
+Report copy for [[NAME:Nurul Huda binte Osman]]; Mdm [[NAME:Nurul]] asked for a second opinion.
+[[NAME:Arjun Pillai]] (husband) called. [[NAME:Arjun]] will collect the report.
+Mrs [[NAME:Wong]] phoned again; [[NAME:Wong]] prefers email.
+
+# Titles other than "Dr"
+Prof [[DOCTOR:Lim Boon Huat]] reviewed the slides.
+Ms [[NAME:Ong]] was informed of the result.
+Sister [[NAME:Mary Lee]] (ward nurse) handed over the specimen.
+Dr [[DOCTOR:Koh]] agrees with the diagnosis.
+
+# Relatives without "Patient's"
+Her son, [[NAME:Kevin Tan]], requested a copy.
+Accompanied by daughter [[NAME:Priya]] and son-in-law [[NAME:Suresh Nair]].
+
+# Malay and Indian naming
+Next of kin: [[NAME:Muthu s/o Raman]].
+Specimen labelled for [[NAME:Nur Aisyah bte Rahman]].
+Consent signed by [[NAME:Kumar a/l Subramaniam]].
+
+# Case, initials and line breaks
+[[NAME:TAN AH KOW]] - copy to GP.
+Report reviewed by Dr [[DOCTOR:A. Kumar]].
+Report handed to [[NAME:siti binte ali]] at the counter.
+Results discussed with Mr [[NAME:Tan\nAh Kow]] by phone.
+
+# Names that look like English words (partial masking risk)
+Mr [[NAME:Low Ten Young]] was seen in clinic today.
+[[NAME:Low Ten Young]] consented; Mr [[NAME:Low]] understands the low-grade findings.
+Mdm [[NAME:Young]] reports that the young patient is her grandson.
+Next of kin: [[NAME:Hope Lee]] ([[PHONE:91234567]]), wife of Mr [[NAME:Lee]].
+Specimen from Ms [[NAME:Rose Tan]]; rose-coloured mucosa noted.
+[[NAME:Mark Chan]] will mark the margins for the surgeon.
+Mr [[NAME:Will Ng]] will return for review.
+
+# Places and organisations
+The patient lives in [[ADDRESS:Jurong West]] and travels alone.
+Transferred from [[HOSPITAL:Tan Tock Seng Hospital]] for surgery.
+Slides sent to [[HOSPITAL:Raffles Medical]] for review.
+
+# Negatives: medical words that look like names
+Nottingham grade 2 (tubules 3, pleomorphism 2, mitoses 1).
+Gleason score 4+3=7, Grade Group 3.
+Bloom-Richardson grade II, modified by Elston and Ellis.
+Hodgkin lymphoma is excluded; Paget disease of the nipple is absent.
+Margins clear; a tan-coloured nodule measuring 2.1 cm. Tan, firm cut surface.
+Specimen received in formalin labelled "Right breast".
+Low-grade dysplasia in a young patient; hope for a good response.
