@@ -10,6 +10,7 @@ common eponyms.
 """
 import csv
 import re
+import unicodedata
 from functools import lru_cache
 
 from common.data import DATA, manifest
@@ -24,8 +25,11 @@ MONTHS = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept",
           "february", "march", "april", "june", "july", "august", "september", "october", "november", "december"}
 TITLES = {"mr", "mrs", "ms", "mdm", "madam", "miss", "sister", "dr", "prof", "professor"}
 PARTICLES = {"bin", "binte", "binti", "bte", "s/o", "d/o", "a/l", "a/p"}
-TOKEN = re.compile(r"(?:s/o|d/o|a/l|a/p)(?![A-Za-z])|[A-Za-z][A-Za-z'\-]*")
+LETTER = r"[^\W\d_]"                                   # any letter: José, Muñoz
+TOKEN = re.compile(rf"(?:s/o|d/o|a/l|a/p)(?![A-Za-z])|{LETTER}(?:{LETTER}|['’\-])*")
 TAG = re.compile(r"\[[A-Z]+-\d+\]")
+INITIALS_BEFORE = re.compile(r"(?:\b[A-Z]\.[ \t]*)+$")   # "L. " before "Kumar"
+INITIALS_AFTER = re.compile(r"^(?:[ \t]*[A-Z]\.)+")       # " B. H." after "Lim"
 
 
 @lru_cache(maxsize=1)
@@ -39,8 +43,16 @@ def vocabulary() -> frozenset[str]:
     return frozenset(words)
 
 
+def _plain(word: str) -> str:
+    """Lower case without accents: "Surgiçal" (OCR) -> "surgical"."""
+    return "".join(c for c in unicodedata.normalize("NFKD", word.lower()) if not unicodedata.combining(c))
+
+
 def _unknown(word: str, vocab, allowed) -> bool:
-    return word.lower() not in allowed and any(p and p.lower() not in vocab for p in word.split("-"))
+    if word.lower() in allowed or _plain(word).replace("’", "'") in vocab:    # "Gerota's" as a whole
+        return False
+    parts = [p for p in re.split(r"[-’']", word) if len(p) > 1]          # "O’Brien" -> "Brien"
+    return any(_plain(p) not in vocab for p in parts)
 
 
 def _title(word: str) -> bool:
@@ -65,6 +77,9 @@ def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
     tags: PrivLab's own TagSpans for this text. Bracketed tokens that look like tags but are not
     ours (e.g. "[ONGKOKWAH-1]" typed into a report) are flagged, not skipped.
     """
+    from deid.normalise import fold
+
+    text = fold(text)                     # Cyrillic look-alikes etc.; same length, so offsets hold
     vocab, allowed = vocabulary(), {a.lower() for a in allowed}
     if tags is None:
         tag_spans = [(m.start(), m.end()) for m in TAG.finditer(text)]
@@ -98,5 +113,10 @@ def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
             continue
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
-        flags.append((run[0].start(), run[-1].end()))
+        start, end = run[0].start(), run[-1].end()
+        if m := INITIALS_BEFORE.search(text[:start]):     # include initials, so none are left visible
+            start = m.start()
+        if m := INITIALS_AFTER.match(text[end:]):
+            end += m.end()
+        flags.append((start, end))
     return sorted(flags + fake)
