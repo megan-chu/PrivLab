@@ -48,15 +48,32 @@ def _title(word: str) -> bool:
 
 
 def _sentence_start(text: str, pos: int) -> bool:
+    """Only a new line or . ! ? start a sentence; "Consultant: Kumar", "L. Kumar", "Dr. Kumar" do not."""
     before = text[:pos].rstrip(" \t")
-    return not before or before[-1] in ".!?:;\n|" or before.endswith("\n")
+    if not before or before.endswith("\n") or before[-1] in "!?":
+        return True
+    if before[-1] == ".":
+        prev = re.search(r"(\S+)\.$", before)
+        word = prev.group(1) if prev else ""
+        return not ((len(word) == 1 and word.isalpha()) or word.lower() in TITLES)
+    return False
 
 
-def hold_flags(text: str, allowed=()) -> list[tuple[int, int]]:
-    """Spans (offsets in the given masked text) that look like names."""
+def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
+    """Spans (offsets in the given masked text) that look like names.
+
+    tags: PrivLab's own TagSpans for this text. Bracketed tokens that look like tags but are not
+    ours (e.g. "[ONGKOKWAH-1]" typed into a report) are flagged, not skipped.
+    """
     vocab, allowed = vocabulary(), {a.lower() for a in allowed}
-    tag_spans = [(m.start(), m.end()) for m in TAG.finditer(text)]
-    tokens = [m for m in TOKEN.finditer(text) if not any(a <= m.start() < b for a, b in tag_spans)]
+    if tags is None:
+        tag_spans = [(m.start(), m.end()) for m in TAG.finditer(text)]
+        fake = []
+    else:
+        tag_spans = [(t.start, t.end) for t in tags]
+        fake = [(m.start(), m.end()) for m in TAG.finditer(text) if (m.start(), m.end()) not in tag_spans]
+    tokens = [m for m in TOKEN.finditer(text)
+              if not any(a <= m.start() < b for a, b in tag_spans + fake)]
 
     runs, current = [], []
     for m in tokens:
@@ -82,4 +99,4 @@ def hold_flags(text: str, allowed=()) -> list[tuple[int, int]]:
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
         flags.append((run[0].start(), run[-1].end()))
-    return flags
+    return sorted(flags + fake)

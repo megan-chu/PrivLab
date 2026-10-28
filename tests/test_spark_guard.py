@@ -39,7 +39,7 @@ def test_tags_pass_leak_check():
 def test_only_spark_module_imports_openai():
     importers = []
     for path in ROOT.rglob("*.py"):
-        if ".venv" in path.parts or "tests" in path.parts:   # tests may import openai error types
+        if {".venv", "runs", "tests"} & set(path.parts):   # tests may import openai error types; runs/ is scratch
             continue
         for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
             names = ([a.name for a in node.names] if isinstance(node, ast.Import)
@@ -51,7 +51,7 @@ def test_only_spark_module_imports_openai():
 
 def test_only_smoke_test_uses_raw_call():
     users = [p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*.py")
-             if ".venv" not in p.parts and "_call_raw" in p.read_text(encoding="utf-8")]
+             if not {".venv", "runs"} & set(p.parts) and "_call_raw" in p.read_text(encoding="utf-8")]
     assert sorted(users) == ["common/spark.py", "eval/smoke_spark.py", "tests/test_spark_guard.py"]
 
 

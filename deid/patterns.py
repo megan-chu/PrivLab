@@ -170,15 +170,21 @@ def resolve_overlaps(results: list[tuple[str, RecognizerResult]]) -> list[tuple[
 TAG_ONLY = re.compile(r"(?:\s*\[[A-Z]+-\d+\]\s*[,;]?)+")
 
 
-def leftover_identifiers(text: str, kept_types=(), allowed=()) -> list[PhiSpan]:
+def leftover_identifiers(text: str, kept_types=(), allowed=(), tags=None) -> list[PhiSpan]:
     """Identifiers the patterns still find in tagged text (the leak check and output scan).
 
     Ignores types the profile keeps, user-confirmed false alarms, and spans that are only tags
-    (e.g. "Address: [ADDRESS-1]").
+    (e.g. "Address: [ADDRESS-1]"). With tags (PrivLab's own TagSpans), only real tags count;
+    a look-alike tag typed into the report does not.
     """
     allow = {a.lower() for a in allowed}
+    if tags is None:
+        only_tags = lambda h: bool(TAG_ONLY.fullmatch(h.text))
+    else:
+        tag_chars = {i for t in tags for i in range(t.start, t.end)}
+        only_tags = lambda h: all(i in tag_chars or text[i] in " \t\n,;" for i in range(h.start, h.end))
     return [h for h in find_pattern_phi(text)
-            if h.type not in kept_types and h.text.lower() not in allow and not TAG_ONLY.fullmatch(h.text)]
+            if h.type not in kept_types and h.text.lower() not in allow and not only_tags(h)]
 
 
 def learned_recognisers(terms) -> list[PatternRecognizer]:
