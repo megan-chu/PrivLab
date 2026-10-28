@@ -90,3 +90,9 @@ def test_repeat_mentions_of_a_found_name():
 
 def test_doctor_name_stops_at_section_heading():
     assert ("DOCTOR", "Dr Michael Anderson") in found("by Dr Michael Anderson Light Microscopy: Light microscopic")
+
+
+def test_learned_names_skip_single_words():
+    learned = [{"text": "Tan", "type": "NAME"}, {"text": "Rajesh Kumar", "type": "NAME"}]
+    text = "A tan-coloured nodule. Tan, firm. RAJESH KUMAR phoned."
+    assert [(s.type, s.text) for s in find_pattern_phi(text, learned=learned)] == [("NAME", "RAJESH KUMAR")]
