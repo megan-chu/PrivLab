@@ -18,7 +18,8 @@ from pathlib import Path
 from common.config import ROOT
 from common.timing import timed
 from deid import profile as prof
-from deid.mask import apply_tags, mask, merge_spans
+from deid.hold import hold_flags
+from deid.mask import apply_tags, mask, merge_spans, to_original
 from deid.names import find_names, locate
 from deid.patterns import find_pattern_phi, leftover_identifiers
 from deid.seal import make_seal
@@ -68,26 +69,56 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
 
 def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spark: bool = True,
                  show_text: bool = False) -> dict:
-    """unmark: detection ids that are false alarms. add: [{"text", "type"}] the user marked as missed."""
+    """Call 1: unmark (false-alarm ids), add ([{"text", "type"}] missed text).
+    Call 2, only if the reply was next="hold": hold_answers={"keep": [ids of words that are not names]}.
+    """
     run = _RUNS.get(deid_id)
-    if run is None or run["step"] != "review":
+    if run is None or run["step"] not in ("review", "hold"):
         return _error(deid_id, "nothing to confirm for this deid_id")
-    text, unmark = run["text"], set(unmark)
-    kept = [s for s in run["spans"] if s.id in unmark]
-    spans = [s for s in run["spans"] if s.id not in unmark]
-    for a in add:
-        hits = locate(text, a["text"])
-        if not hits:
-            run["warnings"].append(f"Marked text not found in the report (type {a['type']}).")
-        for start, end in hits:
-            spans.append(PhiSpan(id=f"u{len(spans) + 1}", type=a["type"], start=start, end=end,
-                                 text=text[start:end], source="user"))
-    spans = merge_spans(spans)
-    prof.learn(run["profile"], allow=[s.text for s in kept], remove=[{"text": a["text"], "type": a["type"]} for a in add])
-    run["allowed"] += [s.text for s in kept]
-    run["layer1_final"] = spans
-    _trace(run, "review", f"You confirmed {len(spans)} identifiers ({len(kept)} unmarked, {len(add)} added).")
-    # Hold rule (likely names left in the masked text) is built next: PLAN.md §3C.
+    text = run["text"]
+
+    if run["step"] == "review":
+        unmark = set(unmark)
+        kept = [s for s in run["spans"] if s.id in unmark]
+        spans = [s for s in run["spans"] if s.id not in unmark]
+        for a in add:
+            hits = locate(text, a["text"])
+            if not hits:
+                run["warnings"].append(f"Marked text not found in the report (type {a['type']}).")
+            for start, end in hits:
+                spans.append(PhiSpan(id=f"u{len(spans) + 1}", type=a["type"], start=start, end=end,
+                                     text=text[start:end], source="user"))
+        spans = merge_spans(spans)
+        prof.learn(run["profile"], allow=[s.text for s in kept],
+                   remove=[{"text": a["text"], "type": a["type"]} for a in add])
+        run["allowed"] += [s.text for s in kept]
+        run["confirmed"] = spans
+        _trace(run, "review", f"You confirmed {len(spans)} identifiers ({len(kept)} unmarked, {len(add)} added).")
+
+        # Hold rule: before any API call, pause on words that still look like names.
+        tagged, tags = apply_tags(text, spans)
+        holds = []
+        for start, end in hold_flags(tagged, run["allowed"]):
+            o_start, o_end = to_original(tags, start, end)
+            holds.append(PhiSpan(id=f"h{len(holds) + 1}", type="NAME", start=o_start, end=o_end,
+                                 text=text[o_start:o_end], source="hold"))
+        if holds:
+            run.update(step="hold", holds=holds)
+            _trace(run, "hold", f"Paused before any API call: {len(holds)} words look like names.", ok=False)
+            _save(run)
+            return {"deid_id": deid_id, "next": "hold",
+                    "hold": [_detection(text, spans + holds, h, show_text) for h in holds],
+                    "note": "These look like names. All are ticked to hide; send the ids of any that are not names as keep."}
+    else:
+        keep = set((hold_answers or {}).get("keep", ()))
+        hide = [h for h in run["holds"] if h.id not in keep]
+        kept = [h for h in run["holds"] if h.id in keep]
+        prof.learn(run["profile"], allow=[h.text for h in kept], remove=[{"text": h.text, "type": "NAME"} for h in hide])
+        run["allowed"] += [h.text for h in kept]
+        spans = merge_spans(run["confirmed"] + hide)
+        _trace(run, "hold", f"You hid {len(hide)} and kept {len(kept)} of the held words.")
+
+    run["layer1_final"] = spans          # what is masked when Muse Spark is called (exposure)
 
     if not use_spark:
         run["layer2"] = "skipped"
@@ -194,7 +225,7 @@ def _save(run: dict) -> None:
     """Encrypted state for audit and replay (contains report text and identifiers)."""
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     state = {k: run[k] for k in ("deid_id", "report_id", "step", "text", "allowed", "layer2", "warnings", "trace")}
-    for key in ("spans", "layer1_final", "flags", "final_spans"):
+    for key in ("spans", "confirmed", "holds", "layer1_final", "flags", "final_spans"):
         if key in run:
             state[key] = [s.to_dict() for s in run[key]]
     (STATE_DIR / f"{run['deid_id']}.enc").write_bytes(encrypt_json(state))

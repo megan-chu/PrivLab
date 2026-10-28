@@ -57,13 +57,17 @@ def load_cases(split: str) -> list[dict]:
 def predict(case: dict, mode: str, profile) -> dict:
     if mode == "patterns":
         spans = [s for s in find_pattern_phi(case["text"], case["id"]) if s.type in removed_types(profile)]
-        return {"layer1": spans, "final": spans, "layer2": "skipped"}
+        return {"layer1": spans, "final": spans, "layer2": "skipped", "holds": 0}
+    use_spark = mode == "spark"
     r = pipeline.deidentify_report(text=case["text"], report_id=case["id"], profile=profile)
-    done = pipeline.confirm_deid(r["deid_id"], use_spark=(mode == "spark"))
+    done = pipeline.confirm_deid(r["deid_id"], use_spark=use_spark)
+    holds = len(done.get("hold", []))
+    if done["next"] == "hold":                                     # simulated user: hide all
+        done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []}, use_spark=use_spark)
     if done["next"] == "flags":
-        done = pipeline.confirm_deid_flags(r["deid_id"])         # simulated user: hide all
+        done = pipeline.confirm_deid_flags(r["deid_id"])
     run = pipeline._RUNS.pop(r["deid_id"])
-    return {"layer1": run["layer1_final"], "final": run["final_spans"], "layer2": run["layer2"]}
+    return {"layer1": run["layer1_final"], "final": run["final_spans"], "layer2": run["layer2"], "holds": holds}
 
 
 def score(cases: list[dict], mode: str) -> dict:
@@ -72,7 +76,7 @@ def score(cases: list[dict], mode: str) -> dict:
     stats = defaultdict(Counter)                    # type -> truth, leak, typed, exact, reached_api
     by_category = defaultdict(Counter)
     fp_by_source, kept_by_choice, layer2 = Counter(), Counter(), Counter()
-    repeat_misses, misses, false_pos, slowest = 0, [], [], 0.0
+    repeat_misses, misses, false_pos, slowest, hold_total = 0, [], [], 0.0, 0
 
     for case in cases:
         text = case["text"]
@@ -81,6 +85,7 @@ def score(cases: list[dict], mode: str) -> dict:
         out = predict(case, mode, profile)
         slowest = max(slowest, time.perf_counter() - t0)
         layer2[out["layer2"]] += 1
+        hold_total += out["holds"]
         truth = [s for s in case["phi"] if s["type"] in removed]
         kept_by_choice.update(s["type"] for s in case["phi"] if s["type"] not in removed)
 
@@ -111,7 +116,8 @@ def score(cases: list[dict], mode: str) -> dict:
         "overall": {"truth": total["truth"], "leak_recall": pct("leak"), "typed_recall": pct("typed"),
                     "exact_recall": pct("exact"), "reached_api": pct("reached_api"),
                     "remaining": round(1 - pct("leak"), 4) if total["truth"] else None,
-                    "false_alarms": len(false_pos), "repeat_misses": repeat_misses},
+                    "false_alarms": len(false_pos), "repeat_misses": repeat_misses,
+                    "hold_flags_per_case": round(hold_total / len(cases), 2) if cases else 0},
         "by_type": {t: {"truth": st["truth"], "leak_recall": round(st["leak"] / st["truth"], 4),
                         "reached_api": st["reached_api"], "missed": st["truth"] - st["leak"]}
                     for t in PHI_TYPES if (st := stats.get(t))},
@@ -132,6 +138,7 @@ def print_report(r: dict, split: str) -> None:
     print(f"{'ALL':10} {o['truth']:>5} {o['leak_recall']:>7.1%}")
     print(f"\nreached the API (Layer 1 misses): {o['reached_api']:.1%}   remaining after all layers: {o['remaining']:.1%}")
     print(f"false alarms: {o['false_alarms']}   repeat misses: {o['repeat_misses']}   "
+          f"hold flags/case: {o['hold_flags_per_case']}   "
           f"learned entries: {r['learned_entries']}   Muse Spark: {r['layer2']}")
     if r["kept_by_choice"]:
         print(f"kept by choice (not scored): {r['kept_by_choice']}")
