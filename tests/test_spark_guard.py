@@ -13,14 +13,27 @@ def test_plain_string_refused():
         call("Patient: Mary Tan", instructions="x", schema=None, step="test")
 
 
-def test_identifier_left_in_masked_text_refused():
-    leaky = MaskedText(deid_id="d_test", text="Patient: [PATIENT-A]  NRIC: S1234567D", tags=())
+def test_identifier_left_in_masked_text_refused(local_keys):
+    from deid.seal import make_seal
+    text = "Patient: [PATIENT-1]  NRIC: S1234567D"
+    leaky = MaskedText(deid_id="d_test", text=text, tags=(), seal=make_seal("d_test", text))
     with pytest.raises(PhiLeakError, match="ID"):
         call(leaky, instructions="x", schema=None, step="test")
 
 
+def test_unsealed_or_tampered_text_refused(local_keys):
+    from deid.seal import make_seal
+    forged = MaskedText(deid_id="d_test", text="Patient: Mary Tan", tags=())
+    with pytest.raises(PhiLeakError, match="seal"):
+        call(forged, instructions="x", schema=None, step="test")
+    sealed = MaskedText(deid_id="d_test", text="[PATIENT-1]", tags=(), seal=make_seal("d_test", "[PATIENT-1]"))
+    widened = MaskedText(deid_id="d_test", text=sealed.text, tags=(), seal=sealed.seal, kept_types=("NAME",))
+    with pytest.raises(PhiLeakError, match="seal"):
+        call(widened, instructions="x", schema=None, step="test")
+
+
 def test_tags_pass_leak_check():
-    check_no_leak("Patient: [PATIENT-A]  NRIC: [ID-1]  DOB: [DOB-1]  Phone: [PHONE-1]")
+    check_no_leak("Patient: [PATIENT-1]  NRIC: [ID-1]  DOB: [DOB-1]  Phone: [PHONE-1]")
 
 
 def test_only_spark_module_imports_openai():
