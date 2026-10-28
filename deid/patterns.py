@@ -159,9 +159,15 @@ def leftover_identifiers(text: str, kept_types=(), allowed=()) -> list[PhiSpan]:
 
 
 def learned_recognisers(terms) -> list[PatternRecognizer]:
-    """Presidio deny-list recognisers from the profile's always_remove list ({"text", "type"})."""
+    """Presidio deny-list recognisers from the profile's always_remove list ({"text", "type"}).
+
+    Single-word names ("Tan") are not reused across reports: matched in any case they also hit
+    ordinary words ("tan-coloured"). Within a report, repeat mentions handle them.
+    """
     by_type = {}
     for t in terms:
+        if t["type"] in ("NAME", "DOCTOR") and len(t["text"].split()) < 2:
+            continue
         by_type.setdefault(t["type"], []).append(t["text"])
     return [PatternRecognizer(supported_entity=t, name="learned", deny_list=words, deny_list_score=0.95,
                               global_regex_flags=re.MULTILINE | re.IGNORECASE)
