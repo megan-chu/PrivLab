@@ -34,13 +34,14 @@ def test_recogniser_examples(text, expected):
     assert expected in found(text)
 
 
-def test_checksum_rejects_lookalike_ids():
-    assert found("NRIC: S1234567E") == []          # wrong check letter
-    assert found("NHS No: 943 476 5918") == []     # wrong check digit
+def test_checksum_rejects_unlabelled_lookalike_ids():
+    assert found("code S1234567E") == []           # wrong check letter, no label
+    assert found("ref 943 476 5918") == []         # wrong check digit, no label
 
 
-def test_case_sensitive_ids():
-    assert found("code s1234567d") == []
+def test_labelled_or_lowercase_ids_are_caught():
+    assert found("NRIC: S1234567E") == [("ID", "S1234567E")]   # after a label: masked even if mistyped
+    assert found("code s1234567d") == [("ID", "s1234567d")]    # valid checksum in lower case
 
 
 @pytest.mark.parametrize("text", [
