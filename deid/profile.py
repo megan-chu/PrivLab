@@ -39,6 +39,12 @@ def kept_types(profile: PrivacyProfile) -> tuple[str, ...]:
     return tuple(sorted(set(PHI_TYPES) - removed_types(profile)))
 
 
+def reusable_allow_list(profile: PrivacyProfile) -> list[str]:
+    """False alarms to skip in later reports. Single words are not reused: keeping "Barrett"
+    once (Barrett oesophagus) must not unmask "Mr Barrett" in another report."""
+    return [a for a in profile.allow_list if len(a.split()) >= 2]
+
+
 def learn(profile: PrivacyProfile, allow=(), remove=()) -> None:
     """allow: false-alarm texts; remove: {"text", "type"} to catch locally next time."""
     allowed = {a.lower() for a in profile.allow_list}

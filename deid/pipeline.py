@@ -52,12 +52,13 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
 
     with timed("deid_layer1", report_id=report_id):
         removed = prof.removed_types(profile)
-        allow = {a.lower() for a in profile.allow_list}
+        reusable = prof.reusable_allow_list(profile)
+        allow = {a.lower() for a in reusable}
         spans = [s for s in find_pattern_phi(text, report_id, learned=profile.always_remove)
                  if s.type in removed and s.text.lower() not in allow]
     deid_id = "d_" + secrets.token_hex(4)
     run = {"deid_id": deid_id, "report_id": report_id, "text": text, "profile": profile, "persist": persist,
-           "step": "review", "spans": spans, "allowed": list(profile.allow_list), "layer2": "not run",
+           "step": "review", "spans": spans, "allowed": list(reusable), "layer2": "not run",
            "warnings": warnings, "trace": []}
     _trace(run, "layer1", f"Presidio found {len(spans)} identifiers on the laptop. Nothing sent.")
     _RUNS[deid_id] = run
@@ -98,7 +99,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         # Hold rule: before any API call, pause on words that still look like names.
         tagged, tags = apply_tags(text, spans)
         holds = []
-        for start, end in hold_flags(tagged, run["allowed"]):
+        for start, end in hold_flags(tagged, run["allowed"], tags):
             o_start, o_end = to_original(tags, start, end)
             holds.append(PhiSpan(id=f"h{len(holds) + 1}", type="NAME", start=o_start, end=o_end,
                                  text=text[o_start:o_end], source="hold"))
@@ -168,7 +169,7 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     kept, allowed = prof.kept_types(profile), tuple(sorted(run["allowed"]))
 
     # Output scan: nothing the patterns recognise may survive in the final text.
-    leftovers = leftover_identifiers(tagged, kept, allowed)
+    leftovers = leftover_identifiers(tagged, kept, allowed, tags)
     if leftovers:
         run["warnings"].append(f"{len(leftovers)} identifier pattern(s) still in the output. Review manually.")
 
