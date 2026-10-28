@@ -28,11 +28,16 @@ FLAGS = re.MULTILINE
 # --------------------------------------------------------------------------
 # A name word is Title-case (not ALL CAPS, which in TCGA text is a section heading) and not a common word.
 NOT_NAME = (r"(?!(?:In|The|This|That|Of|And|For|To|On|At|By|With|Surgical|Pathology|Pathologist|"
-            r"Department|Microscopic|Attending|Specimen|Diagnosis)\b)")
+            r"Department|Microscopic|Microscopy|Light|Gross|Final|Clinical|History|Comment|Report|"
+            r"Frozen|Section|Attending|Specimen|Diagnosis)\b)")
 WORD = rf"{NOT_NAME}[A-Z](?:[a-z]|'[A-Z])[A-Za-z'\-]*"
-PARTICLE = r"(?:binte|binti|bin|bte|a/l|a/p|van|von|de|da)\b"   # longest first
-NAME = rf"{WORD}(?: (?:{PARTICLE}|{WORD}))+"            # two or more words
-DR_NAME = rf"Dr\.? {WORD}(?: (?:{PARTICLE}|{WORD}))*"   # "Dr" + one or more words
+PARTICLE = r"(?:binte|binti|bin|bte|s/o|d/o|a/l|a/p|van|von|de|da)\b"   # longest first
+SEP = r"(?:[ \t]+|[ \t]*\n[ \t]*)"                       # spaces, or one line break
+INITIALS = r"(?:[A-Z]\.[ \t]*)*"                          # "A. ", "L. M. "
+NAME = rf"{WORD}(?:{SEP}(?:{PARTICLE}|{WORD}))+"         # two or more words
+ONE_OR_MORE = rf"{INITIALS}{WORD}(?:{SEP}(?:{PARTICLE}|{WORD}))*"
+DR_NAME = rf"Dr\.?[ \t]*{ONE_OR_MORE}"                    # "Dr" + one or more words
+TITLES = ("Mr", "Mrs", "Ms", "Mdm", "Madam", "Miss", "Sister")
 MONTHS = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?"
 RELATIONS = (r"(?:son|daughter|wife|husband|brother|sister|mother|father|partner|niece|nephew|"
              r"friend|carer|caregiver|guardian|relative|cousin|aunt|uncle)")
@@ -74,8 +79,14 @@ class LabelledRecognizer(EntityRecognizer):
         ("NAME", "patient", rf"^Patient:[ \t]*(?P<v>{NAME})"),
         ("NAME", "relative", rf"\b[Pp]atient's {RELATIONS} (?P<v>{NAME})"),
         ("NAME", "request_of", rf"\bat the request of (?P<v>{NAME})"),
+        ("NAME", "next_of_kin", rf"\b(?:Next of kin|NOK|Emergency contact)\b:?[ \t]*(?:{RELATIONS},?[ \t]+)?"
+                                rf"(?P<v>{ONE_OR_MORE})"),
+        ("NAME", "relation_before", rf"\b{RELATIONS}(?:-in-law)?,?[ \t]+(?P<v>{ONE_OR_MORE})"),
+        ("NAME", "relation_after", rf"(?P<v>{NAME})[ \t]*\({RELATIONS}(?:-in-law)?\)"),
         ("NAME", "footer", rf"^Page \d+ of \d+ *\| *(?P<v>{NAME}) *\|"),
         ("DOCTOR", "dr", rf"\b(?P<v>{DR_NAME})"),
+        ("DOCTOR", "prof", rf"\bProf(?:essor)?\.?[ \t]*(?P<v>{ONE_OR_MORE})"),
+        ("NAME", "title", rf"\b(?:{'|'.join(TITLES)})\.?[ \t]*(?P<v>{ONE_OR_MORE})"),
         ("ADDRESS", "address", r"^Address:[ \t]*(?P<v>[^\n]*[^\s])"),
         ("HOSPITAL", "hospital", rf"\b(?P<v>{HOSPITAL})\b"),
         ("DOB", "dob", r"\bDOB:[ \t]*(?P<v>\d{1,2}/\d{1,2}/\d{4})"),
@@ -107,7 +118,8 @@ RECOGNISERS = [
     simple("email", "EMAIL", 0.9, r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b"),
     simple("phone", "PHONE", 0.7,
            r"\+\d{1,3}(?:[ -]?\d{2,5}){2,4}\b",
-           r"\(\d{3}\) ?\d{3}-\d{4}\b"),
+           r"\(\d{3}\) ?\d{3}-\d{4}\b",
+           r"(?<![\d+\-])\b[689]\d{3}[ -]?\d{4}\b(?![\-\d])"),   # Singapore local, no +65
     simple("date", "DATE", 0.6,
            r"\b\d{1,2}/\d{1,2}/\d{4}\b",
            r"\b\d{4}-\d{2}-\d{2}\b",
@@ -132,19 +144,70 @@ def resolve_overlaps(results: list[tuple[str, RecognizerResult]]) -> list[tuple[
     return sorted(kept, key=lambda x: x[1].start)
 
 
-def find_pattern_phi(text: str, report_id: str | None = None) -> list[PhiSpan]:
+TAG_ONLY = re.compile(r"(?:\s*\[[A-Z]+-\d+\]\s*[,;]?)+")
+
+
+def leftover_identifiers(text: str, kept_types=(), allowed=()) -> list[PhiSpan]:
+    """Identifiers the patterns still find in tagged text (the leak check and output scan).
+
+    Ignores types the profile keeps, user-confirmed false alarms, and spans that are only tags
+    (e.g. "Address: [ADDRESS-1]").
+    """
+    allow = {a.lower() for a in allowed}
+    return [h for h in find_pattern_phi(text)
+            if h.type not in kept_types and h.text.lower() not in allow and not TAG_ONLY.fullmatch(h.text)]
+
+
+def learned_recognisers(terms) -> list[PatternRecognizer]:
+    """Presidio deny-list recognisers from the profile's always_remove list ({"text", "type"})."""
+    by_type = {}
+    for t in terms:
+        by_type.setdefault(t["type"], []).append(t["text"])
+    return [PatternRecognizer(supported_entity=t, name="learned", deny_list=words, deny_list_score=0.95,
+                              global_regex_flags=re.MULTILINE | re.IGNORECASE)
+            for t, words in by_type.items()]
+
+
+def find_pattern_phi(text: str, report_id: str | None = None, learned=()) -> list[PhiSpan]:
+    """learned: the profile's always_remove entries, matched as whole words, any case."""
     with timed("presidio", report_id=report_id, chars=len(text)):
         results = []
-        for rec in RECOGNISERS:
+        for rec in RECOGNISERS + learned_recognisers(learned):
             for r in rec.analyze(text, rec.supported_entities, nlp_artifacts=None):
                 rule = (r.recognition_metadata or {}).get("rule") or rec.name
                 results.append((f"pattern:{rule}", r))
         kept = resolve_overlaps(results)
+        found = [(r.entity_type, r.start, r.end, source, round(r.score, 2)) for source, r in kept]
+        found += propagate_names(text, found)
     return [
-        PhiSpan(id=f"p{i}", type=r.entity_type,
-                start=r.start, end=r.end, text=text[r.start:r.end], source=source, score=round(r.score, 2))
-        for i, (source, r) in enumerate(kept, 1)
+        PhiSpan(id=f"p{i}", type=t, start=s, end=e, text=text[s:e], source=source, score=score)
+        for i, (t, s, e, source, score) in enumerate(sorted(found, key=lambda x: x[1]), 1)
     ]
+
+
+NAME_PART = re.compile(r"[A-Za-z][A-Za-z'\-]+")
+NOT_A_PART = set(TITLES) | {"Dr", "Prof", "Professor", "bin", "binte", "binti", "bte", "van", "von", "de", "da"}
+
+
+def propagate_names(text: str, found: list[tuple]) -> list[tuple]:
+    """Same report: once a name is found, its other mentions ("Tan" after "Tan Ah Kow") are too.
+
+    found: (type, start, end, source, score). Matches each name part as a whole, case-sensitive word.
+    """
+    taken = [(s, e) for _, s, e, _, _ in found]
+    parts = {}
+    for t, s, e, _, _ in found:
+        if t in ("NAME", "DOCTOR"):
+            for part in NAME_PART.findall(text[s:e]):
+                if part not in NOT_A_PART:
+                    parts.setdefault(part, t)
+    extra = []
+    for part, t in parts.items():
+        for m in re.finditer(rf"(?<![A-Za-z]){re.escape(part)}(?![A-Za-z])", text):
+            if not any(a <= m.start() < b or a < m.end() <= b for a, b in taken):
+                extra.append((t, m.start(), m.end(), "pattern:repeat", 0.8))
+                taken.append((m.start(), m.end()))
+    return extra
 
 
 def main(report_id: str) -> int:

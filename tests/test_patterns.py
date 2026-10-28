@@ -68,3 +68,25 @@ def test_pp0144_every_identifier_found_with_its_type():
     for s in load_phi_truth("PP0144")["phi"]:
         assert any(p.start == s["start"] and p.end == s["end"] and p.type == s["type"] for p in spans), s
     assert len(spans) == 17
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("Next of kin: Tan Ah Wing (86743890), son of Mr.Tan.", [("NAME", "Tan Ah Wing"), ("PHONE", "86743890"), ("NAME", "Tan")]),
+    ("NOK Siti Rahmah (daughter), tel 9123 4567.", [("NAME", "Siti Rahmah"), ("PHONE", "9123 4567")]),
+    ("Emergency contact: husband, Ong Kok Wah, 6123-4567.", [("NAME", "Ong Kok Wah"), ("PHONE", "6123-4567")]),
+    ("Her son, Kevin Tan, requested a copy.", [("NAME", "Kevin Tan")]),
+    ("Prof Lim Boon Huat reviewed the slides.", [("DOCTOR", "Lim Boon Huat")]),
+    ("Mdm Young reports that the young patient is her grandson.", [("NAME", "Young")]),
+    ("Report reviewed by Dr A. Kumar.", [("DOCTOR", "Dr A. Kumar")]),
+])
+def test_uncommon_cues(text, expected):
+    assert found(text) == expected
+
+
+def test_repeat_mentions_of_a_found_name():
+    text = "Mr Low Ten Young was seen. Low Ten Young consented later."
+    assert [t for t, _ in found(text)] == ["NAME", "NAME", "NAME", "NAME"]   # every part covered
+
+
+def test_doctor_name_stops_at_section_heading():
+    assert ("DOCTOR", "Dr Michael Anderson") in found("by Dr Michael Anderson Light Microscopy: Light microscopic")
