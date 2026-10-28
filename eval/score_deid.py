@@ -47,9 +47,10 @@ def context(text: str, start: int, end: int, width: int = 40) -> str:
 
 
 def load_cases(split: str) -> list[dict]:
-    if split == "hard":
-        from eval.hard_cases import parse
-        return [{"id": f"H{i:02d}", **c} for i, c in enumerate(parse(), 1)]
+    if split in ("hard", "redteam"):
+        from eval.hard_cases import CASES_FILE, parse
+        path = CASES_FILE if split == "hard" else CASES_FILE.with_name("redteam.txt")
+        return [{"id": f"{split[0].upper()}{i:02d}", **c} for i, c in enumerate(parse(path), 1)]
     return [{"id": r["report_id"], "category": r["cancer_type"], "text": load_report(r["report_id"]),
              "phi": load_phi_truth(r["report_id"])["phi"]} for r in manifest(split)]
 
@@ -142,7 +143,7 @@ def print_report(r: dict, split: str) -> None:
           f"learned entries: {r['learned_entries']}   Muse Spark: {r['layer2']}")
     if r["kept_by_choice"]:
         print(f"kept by choice (not scored): {r['kept_by_choice']}")
-    if split == "hard":
+    if split in ("hard", "redteam"):
         print(f"\n{'category':58} {'ids':>4} {'caught':>7} {'false alarms':>13}")
         for c, v in r["by_category"].items():
             print(f"{c:58} {v.get('truth', 0):>4} {v.get('caught', 0):>7} {v.get('false_alarms', 0):>13}")
@@ -150,7 +151,7 @@ def print_report(r: dict, split: str) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Score de-identification against the answer key.")
-    ap.add_argument("--split", default="dev", choices=["dev", "extra", "test", "hard"])
+    ap.add_argument("--split", default="dev", choices=["dev", "extra", "test", "hard", "redteam"])
     ap.add_argument("--mode", default="pipeline", choices=["patterns", "pipeline", "spark"])
     ap.add_argument("--final", action="store_true", help="required to score the test split")
     ap.add_argument("--allow-api", action="store_true", help="required for --mode spark (live calls)")

@@ -30,7 +30,8 @@ FLAGS = re.MULTILINE
 NOT_NAME = (r"(?!(?:In|The|This|That|Of|And|For|To|On|At|By|With|Surgical|Pathology|Pathologist|"
             r"Department|Microscopic|Microscopy|Light|Gross|Final|Clinical|History|Comment|Report|"
             r"Frozen|Section|Attending|Specimen|Diagnosis)\b)")
-WORD = rf"{NOT_NAME}[A-Z](?:[a-z]|'[A-Z])[A-Za-z'\-]*"
+# OCR tolerant: "0ng" (O read as 0), "L1m" (i read as 1) still count as name words.
+WORD = rf"{NOT_NAME}(?:[A-Z]|0(?=[a-z]))(?:[a-z]|[01](?=[a-z])|'[A-Z])[A-Za-z'\-]*"
 PARTICLE = r"(?:binte|binti|bin|bte|s/o|d/o|a/l|a/p|van|von|de|da)\b"   # longest first
 SEP = r"(?:[ \t]+|[ \t]*\n[ \t]*)"                       # spaces, or one line break
 INITIALS = r"(?:[A-Z]\.[ \t]*)*"                          # "A. ", "L. M. "
@@ -44,6 +45,10 @@ RELATIONS = (r"(?:son|daughter|wife|husband|brother|sister|mother|father|partner
 HOSPITAL = (r"(?:St\.? )?(?:[A-Z][A-Za-z'\-]+ ){1,5}(?:General Hospital|Hospital|Cancer Institute|"
             rf"Cancer Cent(?:er|re)|Medical Cent(?:er|re)|Infirmary)")
 MRN_VALUE = r"[A-Z]{0,3}\d{6,8}"
+ORDINAL = r"(?:st|nd|rd|th)?"
+DATE_ANY = (rf"(?:\d{{1,2}}[/.\-]\d{{1,2}}[/.\-](?:\d{{4}}|\d{{2}})|\d{{4}}-\d{{2}}-\d{{2}}|"
+            rf"\d{{1,2}}{ORDINAL} {MONTHS},? \d{{4}}|{MONTHS} \d{{1,2}}{ORDINAL},? \d{{4}})")
+STREET = r"(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Close|Lane|Ln|Way|Cres|Crescent)"
 
 
 # --------------------------------------------------------------------------
@@ -52,10 +57,10 @@ MRN_VALUE = r"[A-Z]{0,3}\d{6,8}"
 class NricRecognizer(PatternRecognizer):
     def __init__(self):
         super().__init__(supported_entity="ID", name="sg_nric", global_regex_flags=FLAGS,
-                         patterns=[Pattern("nric", r"\b[STFGM]\d{7}[A-Z]\b", 0.5)])
+                         patterns=[Pattern("nric", r"(?i:\b[STFGM] ?\d{7}[ -]?[A-Z]\b)", 0.5)])
 
     def validate_result(self, pattern_text: str) -> bool:
-        return nric_valid(pattern_text)
+        return nric_valid(re.sub(r"[ -]", "", pattern_text))
 
 
 class NhsRecognizer(PatternRecognizer):
@@ -89,8 +94,17 @@ class LabelledRecognizer(EntityRecognizer):
         ("NAME", "title", rf"\b(?:{'|'.join(TITLES)})\.?[ \t]*(?P<v>{ONE_OR_MORE})"),
         ("ADDRESS", "address", r"^Address:[ \t]*(?P<v>[^\n]*[^\s])"),
         ("HOSPITAL", "hospital", rf"\b(?P<v>{HOSPITAL})\b"),
-        ("DOB", "dob", r"\bDOB:[ \t]*(?P<v>\d{1,2}/\d{1,2}/\d{4})"),
-        ("MRN", "mrn_label", rf"\bMRN:[ \t]*(?P<v>{MRN_VALUE})\b"),
+        # DOB in any format: dates are kept by default, so an unlabelled DOB would stay in the text.
+        ("DOB", "dob", rf"\b(?i:DOB|D\.O\.B\.?|Date of birth|Birth ?date|Born)(?:[ \t]*[:.])?[ \t]*(?:on[ \t]+)?"
+                       rf"(?P<v>{DATE_ANY})"),
+        ("ID", "nric_label", r"\b(?i:NRIC|FIN|IC(?: no\.?)?)(?:[ \t]*[:.])?[ \t]*"
+                             r"(?P<v>[STFGMstfgm][ -]?[\dOoIl]{7}[ -]?[A-Za-z0-9])(?![A-Za-z0-9])"),
+        ("MRN", "mrn_label", rf"\b(?i:MRN|Hosp(?:ital)? no\.?|Patient no\.?|Case no\.?|Med\.? ?Rec(?:ord)?\.?,?(?: no\.?)?)"
+                             rf"(?:[ \t]*[:#.])?[ \t]*(?P<v>{MRN_VALUE})\b"),
+        ("ACCESSION", "lab_label", r"\b(?i:Lab(?:oratory)? no\.?|Accession(?: no\.?)?)(?:[ \t]*[:.])?[ \t]*"
+                                  r"(?P<v>[A-Z]{1,3} ?\d{2}[ -]?\d{4,6})\b"),
+        ("ADDRESS", "postal", r"\b(?i:postal code|post ?code|zip(?: code)?)(?:[ \t]*[:.])?[ \t]*"
+                              r"(?P<v>\d{5,6}|[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})\b"),
         ("MRN", "footer_mrn", rf"^Page \d+ of \d+ *\|[^|\n]*\| *(?P<v>{MRN_VALUE}) *$"),
         ("ACCOUNT", "account", r"\bACCT *#? *: *(?P<v>\d{5,})"),
     ]
@@ -114,18 +128,27 @@ class LabelledRecognizer(EntityRecognizer):
 RECOGNISERS = [
     NricRecognizer(),
     NhsRecognizer(),
-    simple("ssn_format", "ID", 0.6, r"\b\d{3}-\d{2}-\d{4}\b"),
-    simple("email", "EMAIL", 0.9, r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b"),
+    simple("ssn_format", "ID", 0.6, r"\b\d{3}[- ]\d{2}[- ]\d{4}\b"),
+    simple("email", "EMAIL", 0.9, r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b",
+           r"\b[\w.+-]+ ?(?:\(at\)|\[at\]) ?[\w-]+(?:\.[\w-]+)+\b"),      # "name (at) domain"
     simple("phone", "PHONE", 0.7,
            r"\+\d{1,3}(?:[ -]?\d{2,5}){2,4}\b",
            r"\(\d{3}\) ?\d{3}-\d{4}\b",
-           r"(?<![\d+\-])\b[689]\d{3}[ -]?\d{4}\b(?![\-\d])"),   # Singapore local, no +65
+           r"(?<![\d+\-])\b[689]\d{3}[ -]?\d{4}\b(?![\-\d])",   # Singapore local, no +65
+           r"\(\+\d{1,3}\) ?\d{3,4}[ -]?\d{4}\b",                  # (+65) 9123 4567
+           r"\b07\d{3} ?\d{6}\b",                                   # UK mobile
+           r"\b\d{3}-\d{3}-\d{4}\b"),                               # US 555-231-8846
     simple("date", "DATE", 0.6,
            r"\b\d{1,2}/\d{1,2}/\d{4}\b",
            r"\b\d{4}-\d{2}-\d{2}\b",
            rf"\b\d{{1,2}} {MONTHS} \d{{4}}\b",
-           rf"\b{MONTHS} \d{{1,2}},? \d{{4}}\b"),
-    simple("accession", "ACCESSION", 0.8, r"\b(?:PA|SP|S)\d{2}-?\d{5}\b"),
+           rf"\b{MONTHS} \d{{1,2}}{ORDINAL},? \d{{4}}\b",
+           r"\b\d{1,2}\.\d{1,2}\.\d{4}\b"),
+    simple("accession", "ACCESSION", 0.8, r"\b(?:PA|SP|S) ?\d{2}-?\d{5}\b"),
+    simple("street", "ADDRESS", 0.75,
+           rf"\bBlk\.? ?\d+[A-Z]? (?:[A-Z][a-z]+ ){{1,4}}{STREET}\.?(?: \d+)?(?:,? ?#\d{{2}}-\d{{1,4}})?",
+           rf"\b\d{{1,5}} (?:[A-Z][a-z]+ ){{1,3}}{STREET}\b",
+           r"\bSingapore \d{6}\b"),
     simple("mrn", "MRN", 0.9, r"\bMRN\d{6,8}\b"),
     LabelledRecognizer(),
 ]
