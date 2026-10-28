@@ -85,8 +85,8 @@ def test_uncommon_cues(text, expected):
 
 
 def test_repeat_mentions_of_a_found_name():
-    text = "Mr Low Ten Young was seen. Low Ten Young consented later."
-    assert [t for t, _ in found(text)] == ["NAME", "NAME", "NAME", "NAME"]   # every part covered
+    text = "Mr Low Ten Young was seen. LOW TEN YOUNG consented later."
+    assert found(text) == [("NAME", "Low Ten Young"), ("NAME", "LOW TEN YOUNG")]   # repeat in any case
 
 
 def test_doctor_name_stops_at_section_heading():
@@ -97,3 +97,27 @@ def test_learned_names_skip_single_words():
     learned = [{"text": "Tan", "type": "NAME"}, {"text": "Rajesh Kumar", "type": "NAME"}]
     text = "A tan-coloured nodule. Tan, firm. RAJESH KUMAR phoned."
     assert [(s.type, s.text) for s in find_pattern_phi(text, learned=learned)] == [("NAME", "RAJESH KUMAR")]
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("DOB: 14-May-1952", ("DOB", "14-May-1952")),
+    ("DOB (dd/mm/yyyy): 14/05/1952", ("DOB", "14/05/1952")),
+    ("Age 72 (b. 14/05/1952).", ("DOB", "14/05/1952")),
+    ("MRN-4903402", ("MRN", "4903402")),
+    ("Medical record number 4903402.", ("MRN", "4903402")),
+    ("Acct # 1234567", ("ACCOUNT", "1234567")),
+    ("Call 6999.8752 for results.", ("PHONE", "6999.8752")),
+    ("Contact hp91234567 after 5 pm.", ("PHONE", "91234567")),
+    ("NHS number 401.023.2137.", ("ID", "401.023.2137")),
+    ("NRIC S  7654321  F (double spaces).", ("ID", "S  7654321  F")),
+    ("NRIC Ѕ7654321F (Cyrillic S).", ("ID", "Ѕ7654321F")),
+    ("Results discussed with Mr TAN AH KOW.", ("NAME", "TAN AH KOW")),
+    ("Signed out by DR LIM BOON HUAT.", ("DOCTOR", "DR LIM BOON HUAT")),
+    ("Home: Block 88 Tampines Street 81, #03-214.", ("ADDRESS", "Block 88 Tampines Street 81, #03-214")),
+])
+def test_red_team_formats(text, expected):
+    assert expected in found(text)
+
+
+def test_capitalised_report_words_are_not_doctors():
+    assert not [t for t, _ in found("REPORTED TO: DR. REPORTED BY: DR. # BLOCKS : 2.") if t == "DOCTOR"]
