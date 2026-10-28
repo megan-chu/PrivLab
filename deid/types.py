@@ -48,7 +48,7 @@ class TagSpan:
     id: str
     type: str
     source: str
-    surrogate: str       # e.g. "[PATIENT-A]", "[ID-1]"
+    surrogate: str       # e.g. "[PATIENT-1]", "[NRIC-1]"
     orig_start: int
     orig_end: int
     start: int           # offsets in the output text
@@ -57,11 +57,17 @@ class TagSpan:
 
 @dataclass(frozen=True)
 class MaskedText:
-    """Pattern hits replaced by type tags; names may still be present. Input to the name pass."""
+    """Confirmed identifiers replaced by tags; uncued names may remain. Input to the Muse Spark check.
+
+    kept_types / allowed: what the leak check may ignore (types the profile keeps, e.g. DATE;
+    terms the user marked as false alarms). Both are covered by the seal.
+    """
     deid_id: str
     text: str
     tags: tuple[TagSpan, ...]
     seal: str = ""
+    kept_types: tuple[str, ...] = ()
+    allowed: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -75,6 +81,8 @@ class DeidResult:
     profile_version: int
     vault_ref: str | None = None
     seal: str = ""
+    kept_types: tuple[str, ...] = ()
+    allowed: tuple[str, ...] = ()
 
     def to_dict(self) -> dict:
         """Public view: contains no original identifier text."""
@@ -85,10 +93,8 @@ class DeidResult:
 class PrivacyProfile:
     version: int = 1
     remove: dict = field(default_factory=lambda: {k: v[3] for k, v in CHECKLIST.items()})
-    replace_with_tags: bool = True
-    shift_dates: bool = False
-    allow_list: list[str] = field(default_factory=list)
-    always_remove: list[str] = field(default_factory=list)
+    allow_list: list[str] = field(default_factory=list)       # false alarms the user unmarked
+    always_remove: list[dict] = field(default_factory=list)   # {"text", "type"}: learned, fed to Layer 1
 
 
 # First-time checklist: key -> (label, PHI types it covers, warn if unticked, ticked by default).
