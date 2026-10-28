@@ -1,0 +1,9 @@
+#!/bin/sh
+# Block commits that change the read-only dataset (see CLAUDE.md).
+blocked=$(git diff --cached --name-only | grep -E '^data/(raw|reports|truth/phi)/')
+if [ -n "$blocked" ]; then
+  echo "pre-commit: these files are read-only:" >&2
+  echo "$blocked" | sed 's/^/  /' >&2
+  echo "Unstage them with: git restore --staged <file>" >&2
+  exit 1
+fi
