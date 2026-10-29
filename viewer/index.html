@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrivLab</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #fff; --ink: #1c2330; --muted: #667085; --line: #e3e6ea;
+  --accent: #2f5bea; --green: #0f7b4d; --green-bg: #e6f5ee; --amber: #a15c00; --amber-bg: #fff4e0;
+  --red: #b42318; --red-bg: #fdecea; --local: #ecfdf5; --cloud: #eff6ff;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+header { display: flex; align-items: center; gap: 14px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
+header h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
+header .tag { color: var(--muted); }
+header .spacer { flex: 1; }
+.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #eef1f5; color: var(--muted); white-space: nowrap; }
+.badge.green { background: var(--green-bg); color: var(--green); }
+.badge.amber { background: var(--amber-bg); color: var(--amber); }
+.badge.red { background: var(--red-bg); color: var(--red); }
+.badge.blue { background: var(--cloud); color: var(--accent); }
+main { display: grid; grid-template-columns: 250px minmax(0, 1fr) 380px; gap: 14px; padding: 14px 20px; height: calc(100vh - 53px); }
+.col { min-height: 0; overflow: auto; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0 0 10px; }
+.card h3 { font-size: 15px; margin: 0 0 6px; }
+select, input, textarea { font: inherit; width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+button { font: inherit; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+button:hover { border-color: #c5cad1; }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+button.primary:hover { filter: brightness(1.05); }
+button.small { padding: 3px 8px; font-size: 12px; }
+button:disabled { opacity: .5; cursor: default; }
+.row { display: flex; gap: 8px; align-items: center; }
+.row.wrap { flex-wrap: wrap; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.steps { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.step { padding: 4px 10px; border-radius: 999px; background: #eef1f5; color: var(--muted); font-size: 12px; font-weight: 600; }
+.step.on { background: var(--accent); color: #fff; }
+.step.done { background: var(--green-bg); color: var(--green); }
+.where { display: flex; gap: 8px; margin-bottom: 10px; font-size: 12px; }
+.where span { padding: 3px 8px; border-radius: 6px; }
+.where .local { background: var(--local); color: #065f46; }
+.where .cloud { background: var(--cloud); color: #1e3a8a; }
+#doc { white-space: pre-wrap; font: 13px/1.65 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; min-height: 300px; }
+#doc .empty { font-family: system-ui, sans-serif; color: var(--muted); }
+mark { border-radius: 3px; padding: 0 1px; cursor: pointer; color: inherit; }
+mark.off { background: transparent !important; text-decoration: line-through; outline: 1px dashed #b0b6bf; }
+mark.added { outline: 2px dashed var(--accent); }
+mark.hold { background: #ffe1a8; outline: 2px solid #f0a020; }
+mark.flag { background: #ffd2cc; outline: 2px solid var(--red); }
+mark.suspect { background: #fff; outline: 2px dashed var(--red); }
+mark.tagged { background: #e8ecf3; color: #3d4a5c; font-weight: 600; cursor: default; }
+mark.ev { background: #cfe0ff; outline: 2px solid var(--accent); }
+mark.ev.green { background: #c9efdb; outline-color: var(--green); }
+mark.ev.amber { background: #ffe7bf; outline-color: #e09a1f; }
+mark.flash { animation: flash 1s ease-out 1; }
+@keyframes flash { from { box-shadow: 0 0 0 6px rgba(47,91,234,.35); } to { box-shadow: 0 0 0 0 rgba(47,91,234,0); } }
+.t-NAME, .t-PATIENT, .t-PERSON { background: #fde2e4; }
+.t-DOCTOR { background: #e5e0ff; }
+.t-ID, .t-NRIC, .t-NHS, .t-SSN { background: #ffe4c4; }
+.t-DOB, .t-DATE { background: #d9f2e6; }
+.t-MRN, .t-ACCESSION, .t-ACCOUNT { background: #dcecff; }
+.t-PHONE, .t-EMAIL, .t-ADDRESS { background: #fff0b3; }
+.t-HOSPITAL { background: #e2f0d9; }
+.list { list-style: none; margin: 0; padding: 0; }
+.list li { display: flex; gap: 8px; align-items: flex-start; padding: 6px 4px; border-bottom: 1px solid #f0f2f4; }
+.list li:last-child { border-bottom: 0; }
+.list li .grow { flex: 1; min-width: 0; }
+.ctx { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); overflow-wrap: anywhere; }
+.counts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.chip { font-size: 12px; padding: 2px 8px; border-radius: 6px; }
+.big { font-size: 22px; font-weight: 700; }
+.field { border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+.field.green { border-left: 4px solid var(--green); }
+.field.amber { border-left: 4px solid #e09a1f; }
+.field.missing { border-left: 4px solid #b0b6bf; }
+.field.saved { opacity: .85; }
+.value { font-size: 18px; font-weight: 700; }
+.cand { font-size: 12px; padding: 6px; border-radius: 6px; border: 1px solid #f0f2f4; margin-top: 6px; cursor: pointer; }
+.cand:hover { border-color: var(--accent); }
+.checks span { margin-right: 6px; }
+.ok { color: var(--green); } .bad { color: var(--red); }
+.trace { font-size: 12px; }
+.trace li { padding: 4px 0; border-bottom: 1px dashed #eceef1; }
+.fieldlist li { justify-content: space-between; }
+#busy { position: fixed; inset: 0; background: rgba(246,247,249,.75); display: none; align-items: center; justify-content: center; z-index: 10; }
+#busy .box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 24px; display: flex; gap: 12px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.08); }
+.spin { width: 20px; height: 20px; border: 3px solid #dbe3ff; border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 14px; border-radius: 8px; display: none; z-index: 11; }
+.warn { background: var(--amber-bg); color: var(--amber); padding: 6px 8px; border-radius: 6px; font-size: 12px; margin: 6px 0; }
+.err { background: var(--red-bg); color: var(--red); padding: 6px 8px; border-radius: 6px; font-size: 12px; margin: 6px 0; }
+label.check { display: flex; gap: 8px; align-items: flex-start; padding: 3px 0; }
+label.check input { width: auto; margin-top: 3px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>PrivLab</h1>
+  <span class="tag">De-identify a pathology report, then fill registry fields from it</span>
+  <span class="spacer"></span>
+  <span id="mode" class="badge"></span>
+  <button id="reset" class="small" style="display:none">Start over</button>
+</header>
+<main>
+  <div class="col">
+    <div class="card">
+      <h2>Report</h2>
+      <select id="reportSel"></select>
+      <div class="row" style="margin-top:8px">
+        <button id="openBtn" class="primary" style="flex:1">Open report</button>
+      </div>
+      <div class="muted small" style="margin-top:6px">Synthetic identifiers on real TCGA reports. Test reports are never listed.</div>
+    </div>
+    <div class="card">
+      <h2>Fields</h2>
+      <ul id="fieldList" class="list fieldlist"></ul>
+      <div id="defineBox" style="margin-top:8px">
+        <input id="fieldName" placeholder="New field, e.g. tumour size">
+        <input id="fieldDesc" placeholder="Optional: what you mean" style="margin-top:6px">
+        <button id="defineBtn" style="margin-top:6px;width:100%">Add field</button>
+      </div>
+      <div id="draftBox"></div>
+    </div>
+    <div class="card small muted" id="profileInfo"></div>
+  </div>
+
+  <div class="col">
+    <div class="steps" id="steps"></div>
+    <div class="where" id="where"></div>
+    <div id="doc"><div class="empty">Choose a report and press <b>Open report</b>.</div></div>
+  </div>
+
+  <div class="col">
+    <div class="card" id="panel"><h2>Start</h2><div class="muted">Open a report to begin. Nothing leaves this laptop until you confirm.</div></div>
+    <div class="card"><h2>Trace</h2><ul class="list trace" id="trace"></ul></div>
+  </div>
+</main>
+<div id="busy"><div class="box"><div class="spin"></div><div id="busyMsg">Working…</div></div></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const TYPES = ["NAME", "DOCTOR", "ID", "DOB", "DATE", "MRN", "ACCESSION", "ACCOUNT", "PHONE", "EMAIL", "ADDRESS", "HOSPITAL"];
+const STEPS = ["Report", "Review", "Hold", "Name check", "De-identified", "Extract"];
+
+let S = {};          // current report state
+let fields = [];     // pack fields
+
+// ---------------------------------------------------------------- helpers
+async function api(path, body, busyMsg) {
+  if (busyMsg) { $("busyMsg").textContent = busyMsg; $("busy").style.display = "flex"; }
+  try {
+    const r = await fetch(path, body === undefined ? {} : {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+    const data = await r.json();
+    if (data.error) toast(data.error);
+    return data;
+  } catch (e) {
+    toast("Viewer server not reachable: is python -m viewer.server running?");
+    return {error: String(e)};
+  } finally { $("busy").style.display = "none"; }
+}
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 4000); }
+function trace(msg, ok = true, where = "") {
+  const li = document.createElement("li");
+  li.innerHTML = `<span class="${ok ? "ok" : "bad"}">${ok ? "✓" : "!"}</span> ${where ? `<span class="badge ${where === "cloud" ? "blue" : "green"}">${where === "cloud" ? "Muse Spark" : "laptop"}</span> ` : ""}${esc(msg)}`;
+  $("trace").appendChild(li);
+}
+function setStep(i, doneUpTo = i - 1) {
+  $("steps").innerHTML = STEPS.map((s, k) => `<span class="step ${k === i ? "on" : k <= doneUpTo ? "done" : ""}">${k + 1}. ${s}</span>`).join("");
+}
+function setWhere(text) { $("where").innerHTML = text; }
+
+// Render text with non-overlapping marks: [{start, end, cls, id, title}]
+function renderDoc(text, marks) {
+  marks = marks.filter((m) => m.start != null && m.end > m.start).sort((a, b) => a.start - b.start || b.end - a.end);
+  let out = "", pos = 0;
+  for (const m of marks) {
+    if (m.start < pos) continue;
+    out += esc(text.slice(pos, m.start));
+    out += `<mark class="${m.cls}" data-id="${esc(m.id || "")}" title="${esc(m.title || "")}">${esc(text.slice(m.start, m.end))}</mark>`;
+    pos = m.end;
+  }
+  $("doc").innerHTML = out + esc(text.slice(pos));
+}
+document.addEventListener("selectionchange", () => {
+  const t = selectionInDoc();
+  if (!t) return;
+  S.lastSel = t;
+  document.querySelectorAll(".evsel").forEach((e) => e.innerHTML = `Evidence: <b>“${esc(t.slice(0, 80))}”</b>`);
+});
+function selectionInDoc() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return null;
+  const range = sel.getRangeAt(0);
+  if (!$("doc").contains(range.commonAncestorContainer)) return null;
+  // Snap to whole words, so a slightly short drag (".9 x 1.3" for "1.9 x 1.3") still works.
+  const full = $("doc").textContent, pre = document.createRange();
+  pre.setStart($("doc"), 0); pre.setEnd(range.startContainer, range.startOffset);
+  let a = pre.toString().length, b = a + range.toString().length;
+  while (a > 0 && /\S/.test(full[a - 1]) && /\S/.test(full[a])) a--;
+  while (b < full.length && /\S/.test(full[b]) && /\S/.test(full[b - 1])) b++;
+  const text = full.slice(a, b).trim().replace(/[.,;:]+$/, "");
+  return text || null;
+}
+function scrollToMark(id) {
+  const m = $("doc").querySelector(`mark[data-id="${CSS.escape(id)}"]`);
+  if (!m) return;
+  const col = $("doc").parentElement, top = m.getBoundingClientRect().top - col.getBoundingClientRect().top;
+  if (top < 40 || top > col.clientHeight - 40) col.scrollTo({top: col.scrollTop + top - col.clientHeight / 2, behavior: "smooth"});
+  m.classList.remove("flash"); void m.offsetWidth; m.classList.add("flash");
+}
+
+// ---------------------------------------------------------------- start
+async function init() {
+  const r = await api("/api/reports");
+  if (r.error) return;
+  const groups = {dev: [], extra: []};
+  r.reports.forEach((x) => groups[x.split].push(x));
+  $("reportSel").innerHTML = Object.entries(groups).map(([g, xs]) =>
+    `<optgroup label="${g === "dev" ? "Dev (teaching)" : "Extra (demo)"}">${xs.map((x) => `<option value="${x.id}">${x.id} · ${esc(x.cancer)}</option>`).join("")}</optgroup>`).join("");
+  $("mode").textContent = r.demo ? "demo mode" : "live profile";
+  $("mode").className = "badge " + (r.demo ? "amber" : "");
+  $("reset").style.display = r.demo ? "" : "none";
+  setStep(-1);
+  await refreshFields();
+  await refreshProfile();
+}
+async function refreshProfile() {
+  const p = await api("/api/profile");
+  $("profileInfo").innerHTML = p.exists
+    ? `Privacy profile: <b>${p.allow}</b> learned false alarms, <b>${p.learned}</b> learned identifiers (encrypted).`
+    : "No privacy profile yet: the first report asks what to remove.";
+  return p;
+}
+async function refreshFields() {
+  const p = await api("/api/pack");
+  fields = p.fields || [];
+  $("fieldList").innerHTML = fields.length ? fields.map((f) => `<li><span>${esc(f.name)}${f.unit ? ` <span class="muted small">(${esc(f.unit)})</span>` : ""}</span>${readinessBadge(f.readiness)}</li>`).join("")
+    : `<li class="muted small">No fields yet. Packs start empty.</li>`;
+}
+function readinessBadge(r) {
+  const cls = r === "ready" ? "green" : r === "learning" ? "amber" : "";
+  return `<span class="badge ${cls}">${r === "ready" ? "Ready" : r === "learning" ? "Learning" : "Draft"}</span>`;
+}
+
+$("openBtn").onclick = async () => {
+  const id = $("reportSel").value;
+  const r = await api("/api/report?id=" + encodeURIComponent(id));
+  if (r.error) return;
+  S = {id, text: r.text, unmark: new Set(), add: [], results: {}};
+  $("trace").innerHTML = "";
+  renderDoc(S.text, []);
+  setStep(0);
+  setWhere(`<span class="local">On this laptop: nothing has been sent</span>`);
+  const p = await refreshProfile();
+  if (!p.exists) return showChecklist(p.checklist);
+  runDeid(null);
+};
+
+function showChecklist(items) {
+  $("panel").innerHTML = `<h2>First use: what should be removed?</h2>
+    <div class="muted small" style="margin-bottom:8px">Saved as your privacy profile. Clinical dates stay: registries need them.</div>
+    ${items.map((c) => `<label class="check"><input type="checkbox" data-key="${c.key}" ${c.default ? "checked" : ""}> <span>${esc(c.label)}${c.warn_if_unticked ? "" : ' <span class="muted small">(optional)</span>'}</span></label>`).join("")}
+    <label class="check"><input type="checkbox" checked disabled> <span>Replace with tags like [PATIENT-1]</span></label>
+    <button class="primary" id="ckBtn" style="margin-top:10px;width:100%">Save and find identifiers</button>`;
+  $("ckBtn").onclick = () => {
+    const choices = {};
+    $("panel").querySelectorAll("input[data-key]").forEach((i) => choices[i.dataset.key] = i.checked);
+    runDeid(choices);
+  };
+}
+
+// ---------------------------------------------------------------- de-id
+async function runDeid(choices) {
+  const r = await api("/api/deid", {report_id: S.id, choices});
+  if (r.error || r.next === "error") return;
+  S.deid = r.deid_id; S.dets = r.detections;
+  (r.warnings || []).forEach((w) => toast(w));
+  trace(`Presidio found ${r.detections.length} identifiers. Nothing sent.`, true, "local");
+  showReview();
+}
+
+function reviewMarks() {
+  const marks = S.dets.map((d) => ({start: d.start, end: d.end, id: d.id, title: `${d.type} · click to unmark`,
+    cls: `t-${d.type}` + (S.unmark.has(d.id) ? " off" : "")}));
+  S.add.forEach((a, i) => { let k = -1; while ((k = S.text.indexOf(a.text, k + 1)) >= 0) marks.push({start: k, end: k + a.text.length, id: "add" + i, cls: `t-${a.type} added`, title: "added by you"}); });
+  return marks;
+}
+function showReview() {
+  S.step = "review"; setStep(1);
+  renderDoc(S.text, reviewMarks());
+  const counts = {};
+  S.dets.forEach((d) => counts[d.type] = (counts[d.type] || 0) + 1);
+  const kept = S.dets.length - S.unmark.size + S.add.length;
+  $("panel").innerHTML = `<h2>Review what will be hidden</h2>
+    <div class="row"><span class="big">${kept}</span><span class="muted">identifiers found on this laptop</span></div>
+    <div class="counts">${Object.entries(counts).map(([t, n]) => `<span class="chip t-${t}">${t} ${n}</span>`).join("")}</div>
+    <div class="muted small">Click a highlight to unmark a false alarm. To add something missed, select it in the report.</div>
+    <div class="row" style="margin:8px 0"><select id="addType" style="width:auto">${TYPES.map((t) => `<option>${t}</option>`).join("")}</select>
+      <button id="addBtn" class="small">Hide selected text</button></div>
+    <ul class="list" style="max-height:300px;overflow:auto">${S.dets.map((d) => `<li><input type="checkbox" data-id="${d.id}" ${S.unmark.has(d.id) ? "" : "checked"} style="width:auto">
+      <div class="grow"><span class="chip t-${d.type}">${d.type}</span> <b>${esc(d.text)}</b><div class="ctx">${esc(d.context)}</div></div></li>`).join("")}
+      ${S.add.map((a, i) => `<li><input type="checkbox" checked data-add="${i}" style="width:auto" title="untick to remove"><div class="grow"><span class="chip t-${a.type}">${a.type}</span> <b>${esc(a.text)}</b> <span class="muted small">added</span></div></li>`).join("")}</ul>
+    <button class="primary" id="confirmBtn" style="margin-top:10px;width:100%">Confirm and run the name check</button>
+    <div class="muted small" style="margin-top:6px">After this, only the masked text goes to Muse Spark.</div>`;
+  $("panel").querySelectorAll("input[data-id]").forEach((i) => i.onchange = () => { toggleUnmark(i.dataset.id); });
+  $("panel").querySelectorAll("input[data-add]").forEach((i) => i.onchange = () => { S.add.splice(+i.dataset.add, 1); showReview(); });
+  $("addBtn").onclick = () => {
+    const t = S.lastSel;
+    if (!t) return toast("Select the missed text in the report first.");
+    S.lastSel = null;
+    S.add.push({text: t, type: $("addType").value});
+    showReview();
+  };
+  $("confirmBtn").onclick = confirmReview;
+}
+function toggleUnmark(id) { S.unmark.has(id) ? S.unmark.delete(id) : S.unmark.add(id); showReview(); }
+$("doc").addEventListener("click", (e) => {
+  const m = e.target.closest("mark");
+  if (!m || !m.dataset.id) return;
+  if (S.step === "hold" || S.step === "flags") {
+    const box = $("panel").querySelector(`input[data-id="${CSS.escape(m.dataset.id)}"]`);
+    if (box) { box.checked = !box.checked; box.dispatchEvent(new Event("change")); }
+  } else if (S.step === "extract") {
+    selectCandidate(m.dataset.id);
+  } else if (S.step === "review" && m.dataset.id.startsWith("add")) {
+    S.add.splice(+m.dataset.id.slice(3), 1); showReview();
+  } else if (S.step === "review" && S.dets.some((d) => d.id === m.dataset.id)) toggleUnmark(m.dataset.id);
+});
+
+async function confirmReview() {
+  const r = await api("/api/confirm", {deid_id: S.deid, unmark: [...S.unmark], add: S.add}, "Checking the masked text…");
+  trace(`You confirmed: ${S.unmark.size} unmarked, ${S.add.length} added.`, true, "local");
+  handleNext(r);
+}
+function handleNext(r) {
+  if (r.error || r.next === "error") return;
+  if (r.next === "hold") return showHold(r);
+  if (r.next === "flags") return showFlags(r);
+  if (r.next === "done") return showDone(r);
+}
+
+function showChoiceList(title, intro, items, defaultFor, button, onConfirm, cls) {
+  renderDoc(S.text, [...S.dets.filter((d) => !S.unmark.has(d.id)).map((d) => ({start: d.start, end: d.end, cls: `t-${d.type}`})),
+    ...items.map((h) => ({start: h.start, end: h.end, id: h.id, cls: cls(h), title: "click to toggle"}))]);
+  $("panel").innerHTML = `<h2>${title}</h2><div class="muted small" style="margin-bottom:8px">${intro}</div>
+    <ul class="list">${items.map((h) => `<li><label class="check grow"><input type="checkbox" data-id="${h.id}" ${defaultFor(h) ? "checked" : ""}>
+      <span><b>${esc(h.text)}</b> <span class="muted small">${h.source === "suspect" ? "model did not rule on it" : h.type}</span>
+      <div class="ctx">${esc(h.context)}</div></span></label>
+      <button class="small" data-go="${h.id}">show</button></li>`).join("")}</ul>
+    <button class="primary" id="choiceBtn" style="margin-top:10px;width:100%">${button}</button>`;
+  $("panel").querySelectorAll("[data-go]").forEach((b) => b.onclick = () => scrollToMark(b.dataset.go));
+  $("choiceBtn").onclick = () => {
+    const checked = new Set([...$("panel").querySelectorAll("input[data-id]")].filter((i) => i.checked).map((i) => i.dataset.id));
+    onConfirm(checked);
+  };
+}
+function showHold(r) {
+  S.step = "hold"; setStep(2);
+  setWhere(`<span class="local">Still on this laptop: paused before any API call</span>`);
+  trace(`Hold rule: ${r.hold.length} words still look like names. Paused before any API call.`, false, "local");
+  showChoiceList("These look like names. Hide them?", "Ticked = hide. Untick any that are not names; that is learned.",
+    r.hold, () => true, "Hide ticked and run the name check",
+    async (hide) => {
+      const keep = r.hold.filter((h) => !hide.has(h.id)).map((h) => h.id);
+      trace(`You hid ${hide.size} and kept ${keep.length}.`, true, "local");
+      handleNext(await api("/api/hold", {deid_id: S.deid, keep}, "Muse Spark is double-checking the masked text…"));
+    }, () => "hold");
+}
+function showFlags(r) {
+  S.step = "flags"; setStep(3, 2);
+  setWhere(`<span class="local">Laptop</span><span class="cloud">Muse Spark saw masked text only</span>`);
+  trace(`Muse Spark name check: ${r.flags.filter((f) => f.ticked).length} more possible identifiers, ${r.flags.filter((f) => !f.ticked).length} words to check.`, false, "cloud");
+  showChoiceList("Second review", "Model finds are ticked to hide. Words it did not rule on are unticked: tick any that are identifiers.",
+    r.flags, (f) => f.ticked, "Apply and de-identify",
+    async (checked) => {
+      const keep = r.flags.filter((f) => f.ticked && !checked.has(f.id)).map((f) => f.id);
+      const hide = r.flags.filter((f) => !f.ticked && checked.has(f.id)).map((f) => f.id);
+      showDone(await api("/api/flags", {deid_id: S.deid, keep, hide}, "Applying tags…"));
+    }, (f) => f.ticked ? "flag" : "suspect");
+}
+
+const LAYER2 = {clean: ["green", "Muse Spark: nothing new found"], flagged: ["amber", "Muse Spark found more; you reviewed them"],
+  unavailable: ["red", "Name check unavailable: review manually"], skipped: ["amber", "Name check not run"]};
+function showDone(r) {
+  if (r.error || r.next === "error") return;
+  S.done = r; S.step = "done"; S.dtext = r.text; setStep(4);
+  setWhere(`<span class="local">De-identified · originals in the encrypted vault</span>`);
+  const tags = [];
+  const re = /\[[A-Z]+-\d+\]/g; let m;
+  while ((m = re.exec(r.text))) tags.push({start: m.index, end: m.index + m[0].length, cls: "tagged"});
+  renderDoc(r.text, tags);
+  const [l2cls, l2msg] = LAYER2[r.layer2] || ["", r.layer2];
+  trace(l2msg, l2cls === "green", r.layer2 === "skipped" ? "local" : "cloud");
+  trace(`${r.summary.total} identifiers replaced with tags; encrypted vault saved.`, true, "local");
+  const pr = r.review_priority || {level: "low", reasons: []};
+  const prCls = {high: "red", medium: "amber", low: "green"}[pr.level];
+  $("panel").innerHTML = `<h2>De-identified</h2>
+    <div class="row"><span class="big">${r.summary.total}</span><span class="muted">identifiers replaced with tags</span></div>
+    <div class="counts">${Object.entries(r.summary.by_type).map(([t, n]) => `<span class="chip t-${t}">${t} ${n}</span>`).join("")}</div>
+    <div class="row wrap"><span class="badge ${l2cls}">${esc(l2msg)}</span>
+      <span class="badge ${prCls}">Review priority: ${pr.level}</span></div>
+    ${pr.reasons.map((x) => `<div class="warn">${esc(x)}</div>`).join("")}
+    ${(r.warnings || []).map((w) => `<div class="warn">${esc(w)}</div>`).join("")}
+    <button class="primary" id="toExtract" style="margin-top:12px;width:100%">Fill registry fields →</button>`;
+  $("toExtract").onclick = showExtract;
+  refreshProfile();
+}
+
+// ---------------------------------------------------------------- extract
+function showExtract() {
+  S.step = "extract"; setStep(5, 4);
+  setWhere(`<span class="local">De-identified text only</span><span class="cloud">Muse Spark proposes · code checks</span>`);
+  if (!fields.length) {
+    $("panel").innerHTML = `<h2>Fill registry fields</h2><div class="muted">Add a field on the left first (e.g. "tumour size").</div>`;
+    return;
+  }
+  drawFields();
+}
+function drawFields() {
+  const pending = fields.filter((f) => !S.results[f.key]);
+  $("panel").innerHTML = `<h2>Fill registry fields</h2>
+    <button class="primary" id="fillAll" style="width:100%;margin-bottom:10px" ${pending.length ? "" : "disabled"}>${pending.length ? `Find ${pending.length === fields.length ? "all" : "remaining"} fields` : "All fields found"}</button>
+    <div id="fieldCards">${fields.map(fieldCard).join("")}</div>`;
+  $("fillAll").onclick = fillAll;
+  $("panel").querySelectorAll("[data-act]").forEach((b) => b.onclick = () => fieldAction(b.dataset.act, b.dataset.key, b.dataset.cid));
+  $("panel").querySelectorAll(".cand").forEach((c) => c.onclick = (e) => { if (!e.target.closest("button")) highlightCandidate(c.dataset.key, c.dataset.cid); });
+  showEvidence();
+}
+function fieldCard(f) {
+  const r = S.results[f.key];
+  const head = `<div class="row" style="justify-content:space-between"><h3>${esc(f.name)}</h3>${readinessBadge(f.readiness)}</div>`;
+  if (!r) return `<div class="field">${head}<div class="muted small">${esc(f.meaning)}</div>
+    <button class="small" data-act="find" data-key="${f.key}" style="margin-top:6px">Find</button></div>`;
+  if (r.saved) return `<div class="field saved ${r.status}">${head}<div class="value">${r.saved.value ?? "Not in report"} ${r.saved.value != null && f.type === "number" && f.unit ? esc(f.unit) : ""}</div>
+    <div class="small"><span class="badge ${r.saved.outcome === "correct" || r.saved.outcome === "true_empty" ? "green" : "amber"}">${esc(outcomeText(r.saved.outcome))}</span> saved; PrivLab learned from it.</div></div>`;
+  const statusText = {green: "Confident", amber: "Check this", missing: "Not stated"}[r.status] || r.status;
+  const cands = (r.candidates || []).map((c) => `<div class="cand" data-key="${f.key}" data-cid="${c.id}">
+      <div class="row" style="justify-content:space-between"><b>${esc(c.value ?? "?")} ${c.value != null && c.unit ? esc(c.unit) : ""}</b>
+        <span class="muted">${esc(c.section || "?")} · ${Math.round((c.confidence || 0) * 100)}%</span></div>
+      <div class="ctx">“${esc(c.evidence_text)}”</div>
+      <div class="checks small">${Object.entries(c.checks).map(([k, ok]) => `<span class="${ok ? "ok" : "bad"}">${ok ? "✓" : "✗"} ${k.replace(/_/g, " ")}</span>`).join("")}</div>
+      ${c.fail ? "" : `<button class="small" data-act="pick" data-key="${f.key}" data-cid="${c.id}" style="margin-top:4px">Use this</button>`}</div>`).join("");
+  return `<div class="field ${r.status}">${head}
+    <div class="row"><span class="badge ${r.status === "green" ? "green" : r.status === "amber" ? "amber" : ""}">${statusText}</span>
+      <span class="value">${r.value != null ? esc(r.value) + (r.unit ? " " + esc(r.unit) : "") : ""}</span></div>
+    ${r.reason ? `<div class="warn">${esc(plainReason(r.reason))}</div>` : ""}
+    <div class="row wrap" style="margin-top:6px">
+      ${r.candidate_id ? `<button class="small primary" data-act="accept" data-key="${f.key}" data-cid="${r.candidate_id}">Accept</button>` : ""}
+      ${r.status === "missing" ? `<button class="small primary" data-act="missing" data-key="${f.key}">Confirm not stated</button>` : `<button class="small" data-act="missing" data-key="${f.key}">Not in report</button>`}
+      </div>
+    <div class="row" style="margin-top:6px"><input data-val="${f.key}" placeholder="Other value (select its evidence in the report)">
+      <button class="small" data-act="type" data-key="${f.key}">Save</button></div>
+    <div class="small muted evsel">${S.lastSel ? `Evidence: <b>“${esc(S.lastSel.slice(0, 80))}”</b>` : "Select the evidence in the report first."}</div>
+    ${cands ? `<details ${r.status !== "green" ? "open" : ""}><summary class="small muted" style="margin-top:6px;cursor:pointer">${r.candidates.length} candidate(s)</summary>${cands}</details>` : ""}</div>`;
+}
+const CHECK = {evidence_found: "evidence", type_ok: "type", value_in_evidence: "value in evidence",
+  section_ok: "section", no_identifiers: "no identifiers"};
+const FAIL = {evidence_found: "the quoted evidence is not in the report", type_ok: "the value is the wrong type or out of range",
+  value_in_evidence: "the value does not appear in its evidence", no_identifiers: "the evidence contains an identifier",
+  section_ok: "it comes from a weak section"};
+function plainReason(r) {
+  return r.replace(/No candidate passed the checks \((\w+)\)/, (_, k) => "Nothing passed the checks: " + (FAIL[k] || k.replace(/_/g, " ")) + ". Pick the value yourself.");
+}
+function outcomeText(o) { return {correct: "Correct", true_empty: "Correct (not stated)", wrong: "Corrected", missed: "Missed, now learned", extra: "Was not in report"}[o] || o; }
+
+async function findField(key) {
+  const r = await api("/api/find", {deid_id: S.deid, field: key}, "Muse Spark is reading the de-identified report…");
+  if (r.status === "error" || r.error) return false;
+  S.results[key] = r;
+  const f = fields.find((x) => x.key === key);
+  const top = (r.candidates || [])[0];
+  trace(`${f ? f.name : key}: ${r.status}${r.value != null ? " " + r.value : ""}` + (top ? ` (${Object.entries(top.checks).map(([k, ok]) => (ok ? "✓ " : "✗ ") + CHECK[k]).join(", ")})` : ""),
+    r.status === "green", r.model_ms ? "cloud" : "local");
+  return true;
+}
+async function fillAll() {
+  for (const f of fields) if (!S.results[f.key]) { if (!(await findField(f.key))) break; }
+  drawFields();
+}
+async function fieldAction(act, key, cid) {
+  if (act === "find") { await findField(key); return drawFields(); }
+  const body = {deid_id: S.deid, field: key};
+  if (act === "accept" || act === "pick") body.candidate_id = cid;
+  else if (act === "missing") body.missing = true;
+  else if (act === "type") {
+    const v = ($("panel").querySelector(`input[data-val="${CSS.escape(key)}"]`).value || "").trim();
+    if (!v) return toast("Type the value first.");
+    if (!S.lastSel) return toast("Select the evidence for this value in the report, then press Save.");
+    body.value = v; body.evidence_text = S.lastSel;
+  }
+  const out = await api("/api/confirm_field", body, "Saving and learning…");
+  if (out.status !== "saved") return toast(out.reason || "not saved");
+  S.results[key].saved = out;
+  trace(`${(fields.find((x) => x.key === key) || {}).name || key}: ${outcomeText(out.outcome)}; readiness ${out.readiness}.`, true, "local");
+  await refreshFields();
+  drawFields();
+}
+function showEvidence(focus) {
+  const marks = [];
+  for (const f of fields) {
+    const r = S.results[f.key];
+    if (!r || r.saved) continue;
+    (r.candidates || []).forEach((c) => {
+      if (c.start == null) return;
+      const isTop = c.id === r.candidate_id;
+      if (focus ? (focus.key === f.key && focus.cid === c.id) : isTop)
+        marks.push({start: c.start, end: c.end, id: `${f.key}:${c.id}`, cls: `ev ${isTop ? r.status : ""}`, title: `${f.name}: ${c.value}`});
+    });
+  }
+  const re = /\[[A-Z]+-\d+\]/g; let m;
+  while ((m = re.exec(S.dtext))) marks.push({start: m.index, end: m.index + m[0].length, cls: "tagged"});
+  renderDoc(S.dtext, marks);
+}
+function highlightCandidate(key, cid) { showEvidence({key, cid}); scrollToMark(`${key}:${cid}`); }
+function selectCandidate(markId) { const [key, cid] = markId.split(":"); if (cid) highlightCandidate(key, cid); }
+
+// ---------------------------------------------------------------- define a field
+$("defineBtn").onclick = async () => {
+  const name = $("fieldName").value.trim();
+  if (!name) return toast("Type a field name first.");
+  const r = await api("/api/define", {name, description: $("fieldDesc").value.trim() || null}, "Muse Spark is drafting the field (no report text is sent)…");
+  if (r.error || !r.draft) return;
+  const d = r.draft;
+  $("draftBox").innerHTML = `<div class="field" style="margin-top:10px"><div class="small muted">Did you mean:</div>
+    <textarea id="dQ" rows="3">${esc(d.meaning_question)}</textarea>
+    <div class="row" style="margin-top:6px"><select id="dType" style="width:auto"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
+      <input id="dUnit" placeholder="unit" value="${esc(d.unit || "")}"></div>
+    <input id="dChoices" placeholder="choices, comma separated" value="${esc((d.choices || []).join(", "))}" style="margin-top:6px">
+    <div class="row" style="margin-top:8px"><button class="primary small" id="dOk">Yes, save</button><button class="small" id="dNo">Cancel</button></div></div>`;
+  $("dNo").onclick = () => $("draftBox").innerHTML = "";
+  $("dOk").onclick = async () => {
+    const accept = {...d, meaning_question: $("dQ").value, type: $("dType").value, unit: $("dUnit").value || null,
+      choices: $("dChoices").value.split(",").map((s) => s.trim()).filter(Boolean)};
+    const s = await api("/api/define", {name, description: $("fieldDesc").value.trim() || null, accept});
+    if (s.error) return;
+    $("draftBox").innerHTML = ""; $("fieldName").value = ""; $("fieldDesc").value = "";
+    trace(`Field "${name}" saved to your knowledge pack.`, true, "local");
+    await refreshFields();
+    if (S.step === "extract") drawFields();
+  };
+};
+
+$("reset").onclick = async () => {
+  const b = $("reset");
+  if (!b.dataset.armed) {                 // two clicks instead of a browser dialog
+    b.dataset.armed = "1"; b.textContent = "Click again: delete demo profile, pack and log";
+    setTimeout(() => { delete b.dataset.armed; b.textContent = "Start over"; }, 4000);
+    return;
+  }
+  delete b.dataset.armed; b.textContent = "Start over";
+  const r = await api("/api/reset", {});
+  if (r.ok) { S = {}; $("doc").innerHTML = '<div class="empty">Choose a report and press <b>Open report</b>.</div>'; $("trace").innerHTML = "";
+    $("panel").innerHTML = "<h2>Start</h2><div class='muted'>Clean first use.</div>"; setStep(-1); setWhere(""); await refreshFields(); await refreshProfile(); }
+};
+
+init();
+</script>
+</body>
+</html>

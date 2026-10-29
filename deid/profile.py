@@ -61,7 +61,8 @@ def learn(profile: PrivacyProfile, allow=(), remove=()) -> None:
         profile.version += 1
 
 
-def load_profile(path=PROFILE_PATH) -> PrivacyProfile | None:
+def load_profile(path=None) -> PrivacyProfile | None:
+    path = path or PROFILE_PATH
     if not path.exists():
         return None
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -69,8 +70,9 @@ def load_profile(path=PROFILE_PATH) -> PrivacyProfile | None:
     return PrivacyProfile(**data, always_remove=decrypt_json(token.encode()) if token else [])
 
 
-def save_profile(profile: PrivacyProfile, path=PROFILE_PATH) -> None:
-    path.parent.mkdir(exist_ok=True)
+def save_profile(profile: PrivacyProfile, path=None) -> None:
+    path = path or PROFILE_PATH
+    path.parent.mkdir(parents=True, exist_ok=True)
     data = {"version": profile.version, "remove": profile.remove, "allow_list": profile.allow_list,
             "always_remove_encrypted": encrypt_json(profile.always_remove).decode()}
     path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
