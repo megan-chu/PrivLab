@@ -20,18 +20,21 @@ For real hospital data, the two layers alone are not enough, because an identifi
 
 | Measure | Status |
 |---|---|
-| **Code-level guard.** Only one module can call the API, it accepts only masked or de-identified objects (never raw text), and it re-scans every outgoing text, refusing to send if an identifier pattern is still present. | Built |
-| **Measured exposure.** Evaluation reports the share of planted identifiers that reach Muse Spark (missed by Presidio) and the share left after both layers. | Presidio layer measured; Muse Spark layer planned |
-| **Human review before anything leaves the laptop.** The user reviews and corrects the local highlights first; Muse Spark only sees text a person has approved, and anything new it flags gets a second, short review. | Planned |
-| **Hold rule.** If masked text still contains something that looks like a name (capitalised words not in a medical or English word list), PrivLab pauses and asks before calling the API. | Planned |
-| **Share structured output only.** Registry exports contain the extracted fields and a case tag, never the free text, so a missed name does not travel onward. | Planned |
-| **Self-hosted second layer.** For production, run the name check on Muse Glimmer (Meta open weights) on the hospital's own servers, so nothing reaches an outside API. | Roadmap |
+| **Code-level guard.** Only one module can call the API. Report text reaches it only as a sealed, masked or de-identified object (never a plain string); the one plain-text prompt is a field definition the user types. Every outgoing prompt, including learned examples, is re-scanned, and sending is refused if an identifier pattern is still present. | Built |
+| **Human review before anything leaves the laptop.** The user reviews and corrects the local highlights first; Muse Spark only sees text a person has approved, and anything new it flags gets a second, short review (pre-ticked "hide"). | Built |
+| **Hold rule.** If masked text still contains something that looks like a name (capitalised words not in the report vocabulary, lower-case "x binte y" names), PrivLab pauses and asks before calling the API. | Built |
+| **Share structured output only.** Registry exports contain a random case id, report id, field values and evidence positions, never free text, so a missed name does not travel onward. | Built |
+| **Measured exposure.** Evaluation reports the share of planted identifiers that reach the API (missed locally) and the share left after both layers. | Built |
+| **Learns from corrections without leaking.** Confirmed values become examples for later prompts; an example that still contains an identifier pattern is never stored. | Built |
+| **Self-hosted second layer.** For production, run the name check on an open-weights model (Muse Spark Open or Muse Glimmer) on the hospital's own servers, so nothing reaches an outside API. | Roadmap |
 | **Governance.** Real use needs hospital approval, a data-processing agreement with the API provider and a review of its data terms. | Out of scope for the hackathon |
 
-**Current results (synthetic data).** Presidio alone covers 100% of the planted identifiers on the
-dev and extra splits, so none of them would reach Muse Spark. This is partly an artefact of the data:
-every planted name follows a cue such as "Patient:" or "Dr". Names written in free text without a cue
-are missed by patterns alone; that is the job of the Muse Spark layer and the human review step.
+**Current results (synthetic data, development sets).** Locally (patterns + hold rule, no API call), PrivLab
+catches 100% of the 1,876 planted identifiers in the dev and extra reports, with no false alarms. That is
+partly an artefact of the data: every planted name follows a cue such as "Patient:" or "Dr". On hand-written
+hard cases (names and places without cues) Presidio alone caught 8%; with the hold rule and Muse Spark 1.3,
+0% remain. The hard cases were also used to improve the rules, so these are development numbers; the
+held-out test reports give the final figures.
 The name check could run on Muse Spark Open, which a hospital could host itself; in our tests it was
 not yet stable on hard names (single surnames, lower case), so today PrivLab uses Muse Spark 1.3,
 which caught all of them. Self-hosting is on the roadmap once the open model matches.
