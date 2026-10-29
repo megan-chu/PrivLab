@@ -49,16 +49,36 @@ def test_detections_hide_identifier_text_by_default(fake_spark):
 
 def test_flags_prechecked_hide_and_layer1_learns(fake_spark):
     p = profile()
-    # lower case: neither the patterns nor the hold rule catch it, only Muse Spark
-    fake_spark["state"]["reply"] = {"findings": [{"text": "siti binte ali", "kind": "PERSON"}]}
-    r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=p)
+    # lower case, no particle: neither the patterns nor the hold rule catch it, only Muse Spark
+    fake_spark["state"]["reply"] = {"findings": [{"text": "ah kow", "kind": "PERSON"}]}
+    r = pipeline.deidentify_report(text="Report handed to ah kow at the counter.", profile=p)
     flags = confirm(r["deid_id"])
     assert flags["next"] == "flags" and len(flags["flags"]) == 1
     done = pipeline.confirm_deid_flags(r["deid_id"])          # nothing kept = all hidden
-    assert done["next"] == "done" and "siti" not in done["text"]
+    assert done["next"] == "done" and "ah kow" not in done["text"]
     # Next report: caught locally by Layer 1, before any API call
-    r2 = pipeline.deidentify_report(text="SITI BINTE ALI phoned again.", profile=p)
+    r2 = pipeline.deidentify_report(text="AH KOW phoned again.", profile=p)
     assert r2["counts"] == {"NAME": 1}
+
+
+def test_lowercase_particle_name_is_held_not_sent(fake_spark):
+    r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=profile())
+    held = pipeline.confirm_deid(r["deid_id"])
+    assert held["next"] == "hold" and fake_spark["sent"] == []       # held locally, nothing sent
+    done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []})
+    assert done["next"] == "done" and "siti binte ali" not in done["text"]
+    assert all("siti binte ali" not in p for p in fake_spark["sent"])
+
+
+def test_bare_surname_english_word_is_held(fake_spark):
+    r = pipeline.deidentify_report(text="On review, Tan has received treatment at another centre.", profile=profile())
+    held = pipeline.confirm_deid(r["deid_id"])
+    assert held["next"] == "hold" and fake_spark["sent"] == []       # "Tan" collides with a vocab word
+
+
+def test_surname_word_at_sentence_start_not_held(fake_spark):
+    r = pipeline.deidentify_report(text="Margins clear. Tan, firm cut surface.", profile=profile())
+    assert pipeline.confirm_deid(r["deid_id"])["next"] != "hold"     # lone sentence-initial word stays exempt
 
 
 def test_keep_goes_to_allow_list(fake_spark):

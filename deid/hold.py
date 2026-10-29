@@ -25,11 +25,24 @@ MONTHS = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept",
           "february", "march", "april", "june", "july", "august", "september", "october", "november", "december"}
 TITLES = {"mr", "mrs", "ms", "mdm", "madam", "miss", "sister", "dr", "prof", "professor"}
 PARTICLES = {"bin", "binte", "binti", "bte", "s/o", "d/o", "a/l", "a/p"}
+SURNAMES = {"tan", "hope", "rose", "mark"}
+# Common surnames that are also ordinary English words: a Title-case mention flags for review
+# even though the word is in the vocabulary. Sentence-start and allow-list exemptions still apply.
+# Kept only words that are rarely Title-case mid-sentence in clinical text. Dropped young, will,
+# long, hall, bell, stone: they held "Young patient", "Will repeat", "Long axis", "In Hall B";
+# Muse Spark still checks those names as the second layer.
+# No "low" (tumour grade, Title-case after labels: "Nuclear grade: Low") and no colour words
+# (white/black/brown/green: "A: White fibrous tissue"); both false-alarmed on dev/extra.
 LETTER = r"[^\W\d_]"                                   # any letter: José, Muñoz
 TOKEN = re.compile(rf"(?:s/o|d/o|a/l|a/p)(?![A-Za-z])|{LETTER}(?:{LETTER}|['’\-])*")
 TAG = re.compile(r"\[[A-Z]+-\d+\]")
 INITIALS_BEFORE = re.compile(r"(?:\b[A-Z]\.[ \t]*)+$")   # "L. " before "Kumar"
 INITIALS_AFTER = re.compile(r"^(?:[ \t]*[A-Z]\.)+")       # " B. H." after "Lim"
+WORDPART = rf"{LETTER}(?:{LETTER}|['’\-])*"
+PARTICLE_NAME = re.compile(rf"(?<![A-Za-z'])({WORDPART})[ \t]+"
+                           rf"(binte|binti|bin|bte|s/o|d/o|a/l|a/p)[ \t]+"
+                           rf"({WORDPART})(?![A-Za-z'])", re.IGNORECASE)
+# "X binte Y" in any case ("siti binte ali"); "de/da/van/von" are too noisy in lower case.
 
 
 @lru_cache(maxsize=1)
@@ -49,7 +62,11 @@ def _plain(word: str) -> str:
 
 
 def _unknown(word: str, vocab, allowed) -> bool:
-    if word.lower() in allowed or _plain(word).replace("’", "'") in vocab:    # "Gerota's" as a whole
+    if word.lower() in allowed:
+        return False
+    if word.lower().replace("’", "'").removesuffix("'s") in SURNAMES:          # "Tan", "Tan's"
+        return True
+    if _plain(word).replace("’", "'") in vocab:    # "Gerota's" as a whole
         return False
     parts = [p for p in re.split(r"[-’']", word) if len(p) > 1]          # "O’Brien" -> "Brien"
     return any(_plain(p) not in vocab for p in parts)
@@ -118,5 +135,19 @@ def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
             start = m.start()
         if m := INITIALS_AFTER.match(text[end:]):
             end += m.end()
+        flags.append((start, end))
+
+    for m in PARTICLE_NAME.finditer(text):
+        if any(a <= m.start() < b or a < m.end() <= b for a, b in tag_spans):
+            continue                                        # already masked
+        flankers = (m.group(1), m.group(3))
+        if any(w.lower() in allowed for w in flankers):
+            continue                                        # user confirmed this word is not a name
+        if not any(_unknown(w, vocab, allowed) for w in flankers):
+            continue                                        # "waste bin liner": ordinary words around "bin"
+        start, end = m.start(), m.end()
+        for a, b in [f for f in flags if not (f[1] <= start or f[0] >= end)]:
+            start, end = min(start, a), max(end, b)         # union: no part of the name stays visible
+            flags.remove((a, b))
         flags.append((start, end))
     return sorted(flags + fake)
