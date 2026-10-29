@@ -2,7 +2,7 @@ Ashcombe General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: George Hughes    NHS No: 687 397 7403
+Patient: Michael Whitaker    NHS No: 687 397 7403
 DOB: 29/05/1978    MRN: H8285484
 Address: Flat 3, 22 Mill Lane, Bristol BS3 4LE
 Phone: +44 7581 869105
@@ -14,4 +14,4 @@ WITH ADDENDUM. Visit # : Service Date: Male. Soc. Sec. #: Client: Physiclan(s): 
 COMMENT: Results discussed by phone with Dr Nurul Ismail on 15 Sep 2025.
 
 Electronically signed by Dr Jennifer Miller, Consultant Pathologist, on 15/09/2025
-Page 1 of 1  |  George Hughes  |  H8285484
+Page 1 of 1  |  Michael Whitaker  |  H8285484

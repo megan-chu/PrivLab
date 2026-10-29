@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Muhammad Hafiz bin Abdullah    NRIC: G4835030K
+Patient: Nurul Huda binte Osman    NRIC: G4835030K
 DOB: 19/04/1968    MRN: MRN4539704
 Phone: +65 8242 5040
 Accession No: PA26-95098    Collected: 15/02/2026    Reported: 21/02/2026

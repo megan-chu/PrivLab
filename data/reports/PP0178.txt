@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Tan Jia Hui    NRIC: T7621267D
+Patient: Goh Kah Wai    NRIC: T7621267D
 DOB: 11/03/1978    MRN: P8115631
 Phone: +65 9610 4878
 Accession No: PA25-59988    Collected: 04/07/2025    Reported: 13/07/2025

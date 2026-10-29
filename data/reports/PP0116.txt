@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Linda Johnson    SSN: 926-99-1960
+Patient: Daniel Garcia    SSN: 926-99-1960
 DOB: 04/20/1954    MRN: P9097940
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (695) 555-8997

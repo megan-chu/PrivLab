@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ng Wei Ling    NRIC: G1705865M
+Patient: Sim Hock Chye    NRIC: G1705865M
 DOB: 25/03/1945    MRN: P2180916
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 6297 9621

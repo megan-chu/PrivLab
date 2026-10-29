@@ -15,81 +15,81 @@
     },
     {
       "type": "NAME",
-      "text": "Suresh Subramaniam",
+      "text": "Kavitha Iyer",
       "start": 94,
-      "end": 112
+      "end": 106
     },
     {
       "type": "ID",
       "text": "S4530174E",
-      "start": 122,
-      "end": 131
+      "start": 116,
+      "end": 125
     },
     {
       "type": "DOB",
       "text": "30/04/1954",
-      "start": 137,
-      "end": 147
+      "start": 131,
+      "end": 141
     },
     {
       "type": "MRN",
       "text": "P2969909",
-      "start": 156,
-      "end": 164
+      "start": 150,
+      "end": 158
     },
     {
       "type": "PHONE",
       "text": "+65 8865 7121",
-      "start": 172,
-      "end": 185
+      "start": 166,
+      "end": 179
     },
     {
       "type": "ACCESSION",
       "text": "PA26-39671",
-      "start": 200,
-      "end": 210
+      "start": 194,
+      "end": 204
     },
     {
       "type": "DATE",
       "text": "20/02/2026",
-      "start": 225,
-      "end": 235
+      "start": 219,
+      "end": 229
     },
     {
       "type": "DATE",
       "text": "26/02/2026",
-      "start": 249,
-      "end": 259
+      "start": 243,
+      "end": 253
     },
     {
       "type": "DOCTOR",
       "text": "Dr George Bennett",
-      "start": 280,
-      "end": 297
+      "start": 274,
+      "end": 291
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ahmad Osman",
-      "start": 2085,
-      "end": 2099
+      "start": 2079,
+      "end": 2093
     },
     {
       "type": "DATE",
       "text": "26/02/2026",
-      "start": 2128,
-      "end": 2138
+      "start": 2122,
+      "end": 2132
     },
     {
       "type": "NAME",
-      "text": "Suresh Subramaniam",
-      "start": 2155,
-      "end": 2173
+      "text": "Kavitha Iyer",
+      "start": 2149,
+      "end": 2161
     },
     {
       "type": "MRN",
       "text": "P2969909",
-      "start": 2178,
-      "end": 2186
+      "start": 2166,
+      "end": 2174
     }
   ]
 }

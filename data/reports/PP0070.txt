@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ng Li Ting    NRIC: T6385467G
+Patient: Low Yan Ling    NRIC: T6385467G
 DOB: 16/11/1987    MRN: H7033835
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8146 4625
@@ -14,4 +14,4 @@ Findings and diagnosis relating to the problem: This is an invasive, mucinous ad
 COMMENT: Results discussed by phone with Dr Wong Li Ting on 09 Jan 2026.
 
 Electronically signed by Dr Siti Rahman, Consultant Pathologist, on 09/01/2026
-Page 1 of 1  |  Ng Li Ting  |  H7033835
+Page 1 of 1  |  Low Yan Ling  |  H7033835

@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Michael Lewis    SSN: 923-97-7208
+Patient: William Garcia    SSN: 923-97-7208
 DOB: 05/16/1969    MRN: MRN4650919
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (600) 555-8326

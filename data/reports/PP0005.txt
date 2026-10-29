@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Rajesh Nair    NRIC: F2880957M
+Patient: Kavitha Subramaniam    NRIC: F2880957M
 DOB: 30/09/1941    MRN: H5017343
 Phone: +65 6775 8787
 Accession No: S25-32571    Collected: 25/04/2025    Reported: 02/05/2025
@@ -11,4 +11,4 @@ Requesting surgeon: Dr Chua Jia Hui
 Final Diagnosis. Breast, right, wide local excision: Infiltrating ductal carcinoma, Nottingham grade III (of III),. [tubules 3/3, nuclei 3/3, mitoses 3/3; Nottingham score 9/9], forming a 3.5 x 2.5 x 2.5 cm mass. [AJCCpT2]. Angiolymphatic invasion is absent. The non-neoplastic breast parenchyma shows. nonproliferative fibrocystic changes. All surgical resection margins are negative for tumor. (minimum tumor free margin, 0.5 cm medial margin). Lymph nodes, right axillary sentinel, excision: Multiple (6) right axillary sentinel lymph nodes. with blue dye are negative for metastatic carcinoma (AJCCpN0(i-) (sn)]. Immunohistochemical. cytokeratin stain was performed on the paraffin embedded sentinel lymph node tissue and. confirms the H&E impression. Lymph node, right axillary non-sentinel, excision: A single right axillary non-sentinel lymph. node identified is negative for tumor. Seen in consultation with Dr.
 
 Electronically signed by Dr Lee Chee Keong, Consultant Pathologist, on 02/05/2025
-Page 1 of 1  |  Rajesh Nair  |  H5017343
+Page 1 of 1  |  Kavitha Subramaniam  |  H5017343

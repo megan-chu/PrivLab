@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Harry Holloway    NHS No: 268 181 8451
+Patient: Helen Wright    NHS No: 268 181 8451
 DOB: 01/07/1950    MRN: P5196677
 Address: 7 Station Road, Ashford TN23 1PP
 Phone: +44 7700 128679

@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ong Siew Lan    NRIC: S9610556H
+Patient: Tay Mei Ling    NRIC: S9610556H
 DOB: 14/05/1977    MRN: P1191837
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 9253 6354

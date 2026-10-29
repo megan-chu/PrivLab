@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Wong Jia Hui    NRIC: G3993056R
+Patient: Teo Yan Ling    NRIC: G3993056R
 DOB: 04/03/1950    MRN: P5745083
 Address: Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412
 Phone: +65 8626 2349

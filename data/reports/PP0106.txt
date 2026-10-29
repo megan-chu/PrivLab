@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Eleanor Clarke    NHS No: 444 713 2478
+Patient: Susan Walker    NHS No: 444 713 2478
 DOB: 14/10/1968    MRN: P2497984
 Phone: +44 7167 426236
 Accession No: S25-58896    Collected: 03/10/2025    Reported: 11/10/2025

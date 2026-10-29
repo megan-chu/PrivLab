@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Karen Johnson    SSN: 943-43-8311
+Patient: James Clark    SSN: 943-43-8311
 DOB: 04/02/1959    MRN: MRN3057514
 Phone: (927) 555-2063
 Accession No: S25-10706    Collected: 10/20/2025    Reported: 10/29/2025
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Mohd Abdullah
 
 PATIENT HISTORY: The patient is a. A colonoscopy showed partially obstructing. fungating tumor of the left colon close to splenic flexure. No other abnormalities seen. Bowel prep was suboptimal as a result of. partial obstruction of poor bowel prep, evaluation Mas not continued. Biopsy of this lesion revealed adenocarcinoma. PRE OP DIAGNOSIS: Colon cancer. POST OP DIAGNOSIS: Same. PROCEDURE: Not given,. ADDENDA: Addendum. At the request of. EGFR immuhostaining was performed on a section of the colon cancer (slide 1H). The immunohistochemical stain for EGFR is negative, but this interpretation is based on an altered method (an original. H&E stained slide from this case had to be de-stained in order to be stained for EGFR, a process that could potentially. interfere. with. the. immunohistochemical reaction). Thus, an additional EGFR stain has been requested on this patient's. metastatic tumor. and is pendino: the results will be reported as an addendum of. FINAL DIAGNOSIS: PART 1. AND 2: LARGE INTESTINE, PARTIAL RESECT ON WITH SUBSEQUENT REVISION OF "NEW PROXIMAL MARGIN" -. A. INVASIVE MODERATELY DIFFERI INTIATED COLONIC ADENOCARCINOMA EXTENDING THROUGH THE. MUSCULARIS PROPRIA INTO THE SEROSAL ADIPOSE TISSUE. DIAMETER 6.5 CM. NO EVIDENCE OF. ANGIOLYMPHATIC INVASION. PERINEURAL INVASION IDENTIFIED. ALL MARGINS FREE. PATHOLOGIC. STAGE T3N0MX, DUKES' B, ASTI ER COLLER B2. B. TWELVE (12) PERICOLONIC LYMAH NODES WITH NO EVIDENCE OF METASTATIC CARCINOMA.
 
-COMMENT: Patient's sister Patricia Thompson requested a copy; contact (927) 555-2063.
+COMMENT: Patient's sister Helen Clark requested a copy; contact (927) 555-2063.
 
 Electronically signed by Dr Wong Hui Min, Consultant Pathologist, on 10/29/2025
-Page 1 of 1  |  Karen Johnson  |  MRN3057514
+Page 1 of 1  |  James Clark  |  MRN3057514

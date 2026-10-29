@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Susan Miller    SSN: 976-48-6169
+Patient: George Taylor    SSN: 976-48-6169
 DOB: 10/22/1989    MRN: MRN6565326
 Phone: (785) 555-7382
 Accession No: SP26-09678    Collected: 07/03/2026    Reported: 07/05/2026
@@ -14,4 +14,4 @@ SPECIMENS: A. RIGHT PELVIC LYMPH NODES. B. LEFT PELVIC LYMPH NODES. C. PROSTATE.
 COMMENT: Results discussed by phone with Dr Priya Iyer on 05 Jul 2026.
 
 Electronically signed by Dr Karen Garcia, Consultant Pathologist, on 07/05/2026
-Page 1 of 1  |  Susan Miller  |  MRN6565326
+Page 1 of 1  |  George Taylor  |  MRN6565326

@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Emily Holloway    NHS No: 929 622 2923
+Patient: Susan Walker    NHS No: 929 622 2923
 DOB: 07/04/1979    MRN: H4985095
 Phone: +44 7955 303440
 Accession No: SP25-81031    Collected: 14/02/2025    Reported: 22/02/2025

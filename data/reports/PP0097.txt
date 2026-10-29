@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Siti Rahmah binte Rahman    NRIC: G2099934P
+Patient: Mohd Rizal bin Ibrahim    NRIC: G2099934P
 DOB: 03/10/1984    MRN: MRN2471723
 Phone: +65 6491 6883
 Accession No: SP26-51202    Collected: 26/02/2026    Reported: 07/03/2026
@@ -13,4 +13,4 @@ Report Status: Amend/Addenda. Type: Surgical Pathology. Specimen Type: Kidney. p
 COMMENT: Results discussed by phone with Dr Robert Clark on 07 Mar 2026.
 
 Electronically signed by Dr Mohd Hassan, Consultant Pathologist, on 07/03/2026
-Page 1 of 1  |  Siti Rahmah binte Rahman  |  MRN2471723
+Page 1 of 1  |  Mohd Rizal bin Ibrahim  |  MRN2471723

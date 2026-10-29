@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Sophie Hughes    NHS No: 260 422 3252
+Patient: William Thompson    NHS No: 260 422 3252
 DOB: 17/03/1962    MRN: MRN5508325
 Phone: +44 7811 486999
 Accession No: PA26-55293    Collected: 07/02/2026    Reported: 16/02/2026
@@ -11,4 +11,4 @@ Requesting surgeon: Dr Michael Johnson
 Clinical Diagnosis & History: with 5 cm mass identified on work-up for flank pain. Specimens Submitted: 1: SP: Kidney, left, partial nephrectomy. DIAGNOSIS: 1. SP: Kidney, left, partial nephrectamy. Tumor Type: Renal call carcinama - Conventional (clear cell) type. Fuhrman Nuclear Grade: Nuclear grade III/IV. Tumor Size: Greatest diameter is 4.5 cm. Local Invasion (for renal cortical types): Not Identified. Renal Vein Invasion: Not identified. Surgical Margins: Free of tumor. Non-Neoplastic Kidney: Interstitial fibrosis and chronic inflammation, tubular atrophy. Adrenal Gland: Not identified. Lymph Nodes: Not identified. Staging for renal cell carcinoma/oncocytoma: pT1 Tumor <= 7.0 cm in greatest dimension limitad to the kidney. IATTEST THAT THE ABOVE DIAGNOSIS|IS BASED UPON MY PERSONAL EXAMINATION OF THE SLIDES (AND/OR OTHER MATERIAL), AND THAT I HAVE. REVIEWED AND APPROVED THIS REPORT. Gross Description: 1) The specimen is received freshifor frozen sections consultation labeled "Left kidney tumor, stitch merks deep margin". It consists. of a 6 x 5 4 cm wedge sheped portion of kidney with a suture marking the deep margin. The margin is inked bleck, the rest is. inked in blue and the specimen is serially sectioned to reveal a golden yellow poorly circumscribed with focally hemorrhagic and. gelatinous areas. The tumor measures 4.5 x 4 x 3.7 cm. The clearance from the resection margin is 1 cm. A representative. section of the nearest margin is submitted for frozen section diagnosis. Representatively submitted. Portions of the tumor are. submitted for TPS. No lymph nodes is identified on the perinephric edipose tissue. The specimen is photographed. Summary of sections: FSC - frozen section control. T tumor. M margin. RS - representative sections. Summary of Sections: Part 1: SP: Kidney, left, partiali nephrectomy. Block. Sect. Site. PCs. 1. FSC. 1. 1. 5. RS. 5. 2. 2. Intraoperative Consultation: Note: The diagnoses given in this'section pertain only to the tissue semple examined at the time of the intraoperative consultation. 1). FROZEN SECTION DIAGNOSIS: RENAL CORTICAL NEOPLASM; ENCAPSULATED. THE DESIGNATED DEEP. MARGIN IS NEGATIVE (<1 MM). PERMANENT DIAGNOSIS: SAME.
 
 Electronically signed by Dr Karen Thompson, Consultant Pathologist, on 16/02/2026
-Page 1 of 1  |  Sophie Hughes  |  MRN5508325
+Page 1 of 1  |  William Thompson  |  MRN5508325

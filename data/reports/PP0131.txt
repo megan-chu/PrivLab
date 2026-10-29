@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ong Chee Keong    NRIC: G3865577P
+Patient: Toh Mei Xuan    NRIC: G3865577P
 DOB: 04/08/1940    MRN: H3778404
 Phone: +65 9834 2938
 Accession No: S26-11104    Collected: 29/05/2026    Reported: 02/06/2026
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Rajesh Nair
 
 FINAL DIAGNOSIS: Summary Statement. The right lower lobectomy reveals a 6.8 cm, moderately differentiated adenocarcinoma, with micropapillary growth and. psammoma bodies. Pathologic stage is T2 N1 MX. PART 1: LYMPH NODE, "LEVEL 11 LYMPH NODE", BIOPSY -. A. SOLITARY LYMPH NODE WITH NO EVIDENCE OF MALIGNANCY. B. FOCAL PSAMMOMATOUS CALCIFICATIONS IDENTIFIED (see comment). PART 2: LYMPH NODE, "LEVEL 7 LYMPH NODE", BIOPSY -. A. SOLITARY LYMPH NODE WITH NO EVIDENCE OF MALIGNANCY. B. FOCAL PSAMMOMATOUS CALCIFICATIONS IDENTIFIED. PART 3: LUNG, RIGHT LOWER LOBE, LOBECTOMY -. A. MODERATELY DIFFERENTIATED ADENOCARCINOMA OF LUNG DEMONSTRATING MICROPAPILLARY. GROWTH AND PSAMMOMA BODIES. DIAMETER 6,8 CM. NO EVIDENCE OF VISCERAL PLEURAL OR. ANGIOLYMPHATIC INVASION. MILD HOST LYMPHOCYTIC RESPONSE. PATHOLOGIC STAGE = T2 N1 MX. B. THREE OF THIRTEEN (3/13) N1 LYMPH NODES WITH METASTATIC ADENOCARCINOMA. C. SMOKER'S BRONCHIOLITIS WITH EMPHYSEMATOUS CHANGE AND SUBPLEURAL SCARRING.
 
-COMMENT: Report copy sent to ong.keong30@mailbox.example at the request of Ong Chee Keong.
+COMMENT: Report copy sent to toh.xuan30@mailbox.example at the request of Toh Mei Xuan.
 
 Electronically signed by Dr Muhammad Rahman, Consultant Pathologist, on 02/06/2026
-Page 1 of 1  |  Ong Chee Keong  |  H3778404
+Page 1 of 1  |  Toh Mei Xuan  |  H3778404

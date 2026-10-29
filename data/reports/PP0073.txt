@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: James Lewis    SSN: 941-99-4700
+Patient: Eleanor Jackson    SSN: 941-99-4700
 DOB: 11/29/1966    MRN: MRN7799441
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (645) 555-6427

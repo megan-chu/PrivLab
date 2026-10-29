@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Susan Johnson    SSN: 931-33-7579
+Patient: Linda Davis    SSN: 931-33-7579
 DOB: 04/11/1985    MRN: P8432510
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (447) 555-9939

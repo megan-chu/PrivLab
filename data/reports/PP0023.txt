@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Patricia Lewis    SSN: 989-17-2625
+Patient: Patricia Jackson    SSN: 989-17-2625
 DOB: 08/22/1958    MRN: P2362099
 Phone: (906) 555-8699
 Accession No: S25-32439    Collected: 08/05/2025    Reported: 08/11/2025

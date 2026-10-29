@@ -2,7 +2,7 @@ Ashcombe General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: William Turner    NHS No: 097 882 0819
+Patient: Helen Thompson    NHS No: 097 882 0819
 DOB: 02/09/1956    MRN: P4946066
 Address: Flat 3, 22 Mill Lane, Bristol BS3 4LE
 Phone: +44 7529 789305

@@ -15,81 +15,81 @@
     },
     {
       "type": "NAME",
-      "text": "Rajesh Nair",
+      "text": "Kavitha Subramaniam",
       "start": 100,
-      "end": 111
+      "end": 119
     },
     {
       "type": "ID",
       "text": "F2880957M",
-      "start": 121,
-      "end": 130
+      "start": 129,
+      "end": 138
     },
     {
       "type": "DOB",
       "text": "30/09/1941",
-      "start": 136,
-      "end": 146
+      "start": 144,
+      "end": 154
     },
     {
       "type": "MRN",
       "text": "H5017343",
-      "start": 155,
-      "end": 163
+      "start": 163,
+      "end": 171
     },
     {
       "type": "PHONE",
       "text": "+65 6775 8787",
-      "start": 171,
-      "end": 184
+      "start": 179,
+      "end": 192
     },
     {
       "type": "ACCESSION",
       "text": "S25-32571",
-      "start": 199,
-      "end": 208
+      "start": 207,
+      "end": 216
     },
     {
       "type": "DATE",
       "text": "25/04/2025",
-      "start": 223,
-      "end": 233
+      "start": 231,
+      "end": 241
     },
     {
       "type": "DATE",
       "text": "02/05/2025",
-      "start": 247,
-      "end": 257
+      "start": 255,
+      "end": 265
     },
     {
       "type": "DOCTOR",
       "text": "Dr Chua Jia Hui",
-      "start": 278,
-      "end": 293
+      "start": 286,
+      "end": 301
     },
     {
       "type": "DOCTOR",
       "text": "Dr Lee Chee Keong",
-      "start": 1241,
-      "end": 1258
+      "start": 1249,
+      "end": 1266
     },
     {
       "type": "DATE",
       "text": "02/05/2025",
-      "start": 1287,
-      "end": 1297
+      "start": 1295,
+      "end": 1305
     },
     {
       "type": "NAME",
-      "text": "Rajesh Nair",
-      "start": 1314,
-      "end": 1325
+      "text": "Kavitha Subramaniam",
+      "start": 1322,
+      "end": 1341
     },
     {
       "type": "MRN",
       "text": "H5017343",
-      "start": 1330,
-      "end": 1338
+      "start": 1346,
+      "end": 1354
     }
   ]
 }

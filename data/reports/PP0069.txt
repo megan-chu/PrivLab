@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Eleanor Pemberton    NHS No: 882 634 3519
+Patient: Helen Thompson    NHS No: 882 634 3519
 DOB: 08/05/1980    MRN: P4195751
 Address: 14 Hawthorn Close, Leeds LS6 2QT
 Phone: +44 7787 685997

@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Thomas Harris    SSN: 946-78-1133
+Patient: Charlotte Moore    SSN: 946-78-1133
 DOB: 08/23/1949    MRN: H7136730
 Phone: (767) 555-5728
 Accession No: SP26-48964    Collected: 03/18/2026    Reported: 03/22/2026
@@ -14,4 +14,4 @@ Date Coll: SPECIMEN. A. Subtotal colectomy. B. Small bowel mass. C. Appendectomy
 COMMENT: Results discussed by phone with Dr Jennifer Lewis on 22 Mar 2026.
 
 Electronically signed by Dr George Holloway, Consultant Pathologist, on 03/22/2026
-Page 1 of 1  |  Thomas Harris  |  H7136730
+Page 1 of 1  |  Charlotte Moore  |  H7136730

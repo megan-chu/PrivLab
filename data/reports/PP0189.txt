@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Vikram Menon    NRIC: T2909279B
+Patient: Suresh Krishnan    NRIC: T2909279B
 DOB: 24/11/1947    MRN: H1076672
 Phone: +65 8888 4409
 Accession No: PA25-31885    Collected: 05/11/2025    Reported: 12/11/2025

@@ -2,7 +2,7 @@ Ashcombe General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Charlotte Bennett    NHS No: 747 407 4826
+Patient: Margaret Harris    NHS No: 747 407 4826
 DOB: 17/08/1946    MRN: P6018975
 Phone: +44 7209 348728
 Accession No: PA26-56615    Collected: 29/03/2026    Reported: 05/04/2026

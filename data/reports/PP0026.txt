@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: William Pemberton    NHS No: 038 597 7034
+Patient: Jennifer Harris    NHS No: 038 597 7034
 DOB: 16/12/1963    MRN: H8350368
 Address: 7 Station Road, Ashford TN23 1PP
 Phone: +44 7114 679077
@@ -12,7 +12,7 @@ Requesting surgeon: Dr Ng Siew Lan
 
 Sex: Female. Diagnosis: Breast Cancer Histological description: Infiltrative ductal carcinoma. Anatomic Site: Right Breast Tumor location: Primary. Tissue Specification: Tumor Specimen Matrix: Tissue Specimen Format: Frozen. Container: cryomold Type of Procurement: Radical mastectomy Grade: 2. T Stage: 2 N Stage: 0 M Stage: 0 Treatment: none. Treatment Details: n/a. Normal Sample. Anatomic Site: Blood Sample Type: Normal Type of Procurement: blood draw. Matrix: Blood Specimen Format: frozen Container: tube.
 
-COMMENT: Report copy sent to william.pemberton12@mailbox.example at the request of William Pemberton.
+COMMENT: Report copy sent to jennifer.harris12@mailbox.example at the request of Jennifer Harris.
 
 Electronically signed by Dr Siti Hassan, Consultant Pathologist, on 21/07/2026
-Page 1 of 1  |  William Pemberton  |  H8350368
+Page 1 of 1  |  Jennifer Harris  |  H8350368

@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Arjun Krishnan    NRIC: F6368157K
+Patient: Sanjay Krishnan    NRIC: F6368157K
 DOB: 09/09/1987    MRN: MRN9399526
 Phone: +65 8502 3572
 Accession No: SP25-74490    Collected: 01/04/2025    Reported: 05/04/2025

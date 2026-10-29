@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Sophie Bennett    NHS No: 969 078 4471
+Patient: Daniel Hughes    NHS No: 969 078 4471
 DOB: 20/12/1961    MRN: H2224284
 Phone: +44 7721 250647
 Accession No: PA26-08852    Collected: 20/02/2026    Reported: 26/02/2026
@@ -14,4 +14,4 @@ Diagnosis: 1. : Resected ileocolic material with a moderately differentiated col
 COMMENT: Results discussed by phone with Dr Susan Harris on 26 Feb 2026.
 
 Electronically signed by Dr Robert Martinez, Consultant Pathologist, on 26/02/2026
-Page 1 of 1  |  Sophie Bennett  |  H2224284
+Page 1 of 1  |  Daniel Hughes  |  H2224284

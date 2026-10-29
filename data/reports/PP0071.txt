@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Thomas Anderson    SSN: 973-80-6530
+Patient: Patricia Lewis    SSN: 973-80-6530
 DOB: 02/01/1963    MRN: H3822492
 Phone: (858) 555-1962
 Accession No: PA26-47160    Collected: 05/16/2026    Reported: 05/25/2026
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Mohd Hassan
 
 Diagnosis: This is a poorly differentiated adenocarcinoma of the colon (right colon flexure) of. histopathological differentiation grade G3, with ulceration and erosions of the inner surface. of the tumor, peritumorous, chronic recurrent concomitant inflammation, accompanied by. an acute inflammatory flare, with carcinomatous lymphangitis, tumor infiltration in the. parietal layers of the colon as far as the extramuscular, subserous fatty connective tissue,. with tumor-free lymph nodes (0/20), moderate chronic lymphadenitis, with a diverticulum. in the tumor. Tumor-free overview slices from all other resection margins identified, from. the perivascular fatty tissue of the central ligature and the omental fatty tissue. According to the sections available, the tumor spread the colon carcinoma corresponds to a. tumor stage of pT3, pNO, MX, L1, R0. Tumor classification: ICDO-DA-M 8140/3.
 
-COMMENT: Report copy sent to thomas.anderson5@mailbox.example at the request of Thomas Anderson.
+COMMENT: Report copy sent to patricia.lewis5@mailbox.example at the request of Patricia Lewis.
 
 Electronically signed by Dr Linda Clark, Consultant Pathologist, on 05/25/2026
-Page 1 of 1  |  Thomas Anderson  |  H3822492
+Page 1 of 1  |  Patricia Lewis  |  H3822492

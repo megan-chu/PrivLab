@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Charlotte Holloway    NHS No: 071 461 1255
+Patient: Helen Harris    NHS No: 071 461 1255
 DOB: 25/12/1967    MRN: MRN9742856
 Phone: +44 7145 949541
 Accession No: SP25-46652    Collected: 18/12/2025    Reported: 27/12/2025

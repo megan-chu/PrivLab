@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: James Anderson    SSN: 938-28-5227
+Patient: David Anderson    SSN: 938-28-5227
 DOB: 08/09/1972    MRN: P6541983
 Address: 92 Harbor View Rd, Apt 4B, Portland, ME 04101
 Phone: (673) 555-3798

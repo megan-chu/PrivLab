@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: William Clarke    NHS No: 623 972 6524
+Patient: George Walker    NHS No: 623 972 6524
 DOB: 24/01/1981    MRN: H4392535
 Phone: +44 7569 538539
 Accession No: SP25-17673    Collected: 18/07/2025    Reported: 25/07/2025

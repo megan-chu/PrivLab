@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ananya Rao    NRIC: G3782639T
+Patient: Priya Reddy    NRIC: G3782639T
 DOB: 06/08/1985    MRN: H7961578
 Phone: +65 8651 8935
 Accession No: SP25-67550    Collected: 20/05/2025    Reported: 23/05/2025

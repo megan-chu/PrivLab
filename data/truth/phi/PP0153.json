@@ -15,75 +15,75 @@
     },
     {
       "type": "NAME",
-      "text": "Ng Wei Ling",
+      "text": "Sim Hock Chye",
       "start": 98,
-      "end": 109
+      "end": 111
     },
     {
       "type": "ID",
       "text": "G1705865M",
-      "start": 119,
-      "end": 128
+      "start": 121,
+      "end": 130
     },
     {
       "type": "DOB",
       "text": "25/03/1945",
-      "start": 134,
-      "end": 144
+      "start": 136,
+      "end": 146
     },
     {
       "type": "MRN",
       "text": "P2180916",
-      "start": 153,
-      "end": 161
+      "start": 155,
+      "end": 163
     },
     {
       "type": "ADDRESS",
       "text": "Blk 88 Tampines St 81, #03-214, Singapore 520088",
-      "start": 171,
-      "end": 219
+      "start": 173,
+      "end": 221
     },
     {
       "type": "PHONE",
       "text": "+65 6297 9621",
-      "start": 227,
-      "end": 240
+      "start": 229,
+      "end": 242
     },
     {
       "type": "ACCESSION",
       "text": "SP25-11215",
-      "start": 255,
-      "end": 265
+      "start": 257,
+      "end": 267
     },
     {
       "type": "DATE",
       "text": "30/09/2025",
-      "start": 280,
-      "end": 290
+      "start": 282,
+      "end": 292
     },
     {
       "type": "DATE",
       "text": "02/10/2025",
-      "start": 304,
-      "end": 314
+      "start": 306,
+      "end": 316
     },
     {
       "type": "DOCTOR",
       "text": "Dr Oliver Hughes",
-      "start": 335,
-      "end": 351
+      "start": 337,
+      "end": 353
     },
     {
       "type": "DOCTOR",
       "text": "Dr Nurul Abdullah",
-      "start": 975,
-      "end": 992
+      "start": 977,
+      "end": 994
     },
     {
       "type": "DATE",
       "text": "02/10/2025",
-      "start": 1021,
-      "end": 1031
+      "start": 1023,
+      "end": 1033
     }
   ]
 }

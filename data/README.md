@@ -3,6 +3,10 @@
 200 real cancer pathology reports from TCGA-Reports, with **fake** identifiers planted in them.
 No real patient data: TCGA text had its identifiers removed by the dataset authors, and every
 name, ID, date, phone, address and email here was randomly generated (seed 42).
+Names were made consistent on 29 Oct by `scripts/fix_family_names.py`: patient sex matches the
+report (PRAD male, "female"/"male" in the text), relatives match their relation's sex, and family
+names follow each community's custom (Chinese children take the father's surname; Malay bin/binte
+the father's name; UK/US/Indian children and spouses share the surname). Emails follow the new names.
 
 ## Files
 

@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Arjun Rao    NRIC: S2847818F
+Patient: Suresh Raman    NRIC: S2847818F
 DOB: 08/12/1947    MRN: P2309997
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8624 8687

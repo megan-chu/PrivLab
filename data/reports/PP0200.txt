@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Patricia Garcia    SSN: 964-63-3286
+Patient: Oliver Garcia    SSN: 964-63-3286
 DOB: 09/21/1947    MRN: H8962686
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (625) 555-3865

@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Linda Garcia    SSN: 918-68-1605
+Patient: Sarah Garcia    SSN: 918-68-1605
 DOB: 04/29/1966    MRN: MRN1703065
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (493) 555-6848

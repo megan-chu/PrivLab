@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Wong Siew Lan    NRIC: S8501657A
+Patient: Lim Chee Keong    NRIC: S8501657A
 DOB: 01/09/1943    MRN: MRN2124172
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 9870 4437
@@ -15,4 +15,4 @@ CCA-CH-5741. Diagnosis. 1. Poorly differentiated, bilateral adenocarcinoma of th
 COMMENT: Results discussed by phone with Dr Siti Osman on 17 Jan 2026.
 
 Electronically signed by Dr Oliver Whitaker, Consultant Pathologist, on 17/01/2026
-Page 1 of 1  |  Wong Siew Lan  |  MRN2124172
+Page 1 of 1  |  Lim Chee Keong  |  MRN2124172

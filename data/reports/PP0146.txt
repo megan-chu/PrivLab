@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Suresh Rao    NRIC: T1745642Z
+Patient: Anand Raman    NRIC: T1745642Z
 DOB: 27/03/1967    MRN: P3286742
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8917 5799

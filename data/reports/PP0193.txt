@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ng Zhi Hao    NRIC: T5431074E
+Patient: Tay Jun Jie    NRIC: T5431074E
 DOB: 07/07/1954    MRN: H8780612
 Phone: +65 8807 6454
 Accession No: S26-93161    Collected: 16/04/2026    Reported: 18/04/2026

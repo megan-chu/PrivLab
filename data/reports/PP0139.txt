@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: David Clark    SSN: 978-11-5314
+Patient: Sarah Davis    SSN: 978-11-5314
 DOB: 04/09/1962    MRN: H6737688
 Phone: (388) 555-4115
 Accession No: S25-73686    Collected: 10/22/2025    Reported: 10/25/2025

@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Karen Thompson    SSN: 932-72-1621
+Patient: Charlotte Anderson    SSN: 932-72-1621
 DOB: 02/05/1948    MRN: P4671004
 Address: 92 Harbor View Rd, Apt 4B, Portland, ME 04101
 Phone: (935) 555-3907
