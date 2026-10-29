@@ -1,13 +1,15 @@
 """
-smoke_spark.py - check Muse Spark 1.3 answers via the Meta Model API with valid
-structured JSON, and record latency, tokens and which JSON mode worked.
+smoke_spark.py - check a provider (Meta: muse-spark-1.3, or Baseten: Muse Spark Open)
+answers with valid structured JSON, and record latency, tokens and which JSON mode worked.
 
 Sends only the hand-written snippet below (no dataset text). Makes 3 live calls,
 deliberately skipping the cache to test reliability; cost is a few hundred tokens.
 
 Usage:
-  python -m eval.smoke_spark
+  python -m eval.smoke_spark --provider meta
+  python -m eval.smoke_spark --provider baseten
 """
+import argparse
 import sys
 import time
 from typing import Literal
@@ -35,11 +37,15 @@ class Entities(BaseModel):
 
 
 def main(runs: int = 3) -> int:
+    ap = argparse.ArgumentParser(description="Live smoke test: 3 calls to one provider.")
+    ap.add_argument("--provider", required=True, choices=["meta", "baseten"])
+    provider = ap.parse_args().provider
+    print(f"provider={provider}")
     ok = 0
     for i in range(1, runs + 1):
         t0 = time.perf_counter()
         try:
-            reply = _call_raw(PROMPT, Entities, step="smoke", use_cache=False)
+            reply = _call_raw(PROMPT, Entities, step="smoke", use_cache=False, provider=provider)
         except ConfigError as e:
             print(e)
             return 2

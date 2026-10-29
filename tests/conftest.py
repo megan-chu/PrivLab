@@ -31,12 +31,14 @@ def fake_spark(monkeypatch, local_keys):
     sent = []
     state = {"reply": {"findings": []}, "fail": None}
 
-    def fake_request(settings, prompt, schema, effort):
+    def fake_request(settings, provider, prompt, schema, effort):
         if state["fail"]:
             raise state["fail"]
         sent.append(prompt)
+        state.setdefault("providers", []).append(provider)
         return json.dumps(state["reply"]), (100, 20), "json_schema"
 
     monkeypatch.setenv("META_API_KEY", "test-key")
+    monkeypatch.setenv("BASETEN_API_KEY", "test-key")
     monkeypatch.setattr(spark, "_request", fake_request)
     return {"sent": sent, "state": state}

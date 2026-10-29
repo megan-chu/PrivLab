@@ -17,12 +17,17 @@ ENV_NAMES = {
     "meta_api_key": "META_API_KEY",
     "meta_api_base_url": "META_API_BASE_URL",
     "meta_model": "META_MODEL",
+    "baseten_api_key": "BASETEN_API_KEY",
+    "baseten_base_url": "BASETEN_BASE_URL",
+    "baseten_model": "BASETEN_MODEL",
     "seal_key": "PRIVLAB_SEAL_KEY",
     "vault_key": "PRIVLAB_VAULT_KEY",
 }
 DEFAULTS = {
     "meta_api_base_url": "https://api.meta.ai/v1",
     "meta_model": "muse-spark-1.3",
+    "baseten_base_url": "https://inference.baseten.co/v1",
+    "baseten_model": "meta-models/muse-spark-open-1026",
 }
 
 
@@ -35,6 +40,9 @@ class Settings:
     meta_api_key: str
     meta_api_base_url: str
     meta_model: str
+    baseten_api_key: str
+    baseten_base_url: str
+    baseten_model: str
     seal_key: str
     vault_key: str
 

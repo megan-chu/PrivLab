@@ -121,6 +121,8 @@ def test_profile_round_trip_encrypts_learned_names(local_keys):
 
 def test_local_steps_fast_and_crash_free_on_dev(fake_spark):
     from common.data import manifest
+    from deid.hold import vocabulary
+    vocabulary()                      # loaded once at start-up, like Presidio
     worst = 0.0
     for row in manifest("dev"):
         text = load_report(row["report_id"])
@@ -161,3 +163,9 @@ def test_report_cannot_close_the_prompt_data_block(fake_spark):
     prompt = fake_spark["sent"][0]
     marker = prompt.split("<<<", 2)[1].split()[0]        # the marker named in the instructions
     assert marker.startswith("REPORT-") and prompt.count(f"{marker}>>>") == 2   # instruction + real close
+
+
+def test_name_check_goes_to_baseten(fake_spark):
+    r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=profile())
+    confirm(r["deid_id"])
+    assert fake_spark["state"]["providers"] == ["baseten"]

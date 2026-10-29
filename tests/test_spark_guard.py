@@ -80,7 +80,7 @@ def test_request_path_with_fake_client(monkeypatch, tmp_path):
                 usage=SimpleNamespace(prompt_tokens=50, completion_tokens=10))
 
     monkeypatch.setenv("META_API_KEY", "test-key")
-    monkeypatch.setattr(spark, "_client", SimpleNamespace(chat=SimpleNamespace(completions=FakeCompletions())))
+    monkeypatch.setattr(spark, "_clients", {"meta": SimpleNamespace(chat=SimpleNamespace(completions=FakeCompletions()))})
     monkeypatch.setattr(spark, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(spark, "USAGE_LOG", tmp_path / "usage.log")
     monkeypatch.setattr(spark, "USAGE_TOTALS", tmp_path / "usage.json")
