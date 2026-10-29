@@ -253,8 +253,8 @@ def _detection(text: str, spans: list[PhiSpan], target: PhiSpan, show_text: bool
     context = "" if t is None else (tagged[max(0, t.start - width):t.start] + ">>" + tagged[t.start:t.end]
                                     + "<<" + tagged[t.end:t.end + width]).replace("\n", " ")
     d = {"id": target.id, "type": target.type, "source": target.source, "context": context}
-    if show_text:
-        d["text"] = target.text
+    if show_text:                        # local viewer only: the identifier and where it is
+        d.update(text=target.text, start=target.start, end=target.end)
     return d
 
 
