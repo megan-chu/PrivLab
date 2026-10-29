@@ -165,7 +165,7 @@ def test_report_cannot_close_the_prompt_data_block(fake_spark):
     assert marker.startswith("REPORT-") and prompt.count(f"{marker}>>>") == 2   # instruction + real close
 
 
-def test_name_check_goes_to_baseten(fake_spark):
+def test_name_check_provider(fake_spark):
     r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=profile())
     confirm(r["deid_id"])
-    assert fake_spark["state"]["providers"] == ["baseten"]
+    assert fake_spark["state"]["providers"] == ["meta"]          # hard cases: Meta 0% left, Baseten 4.1%
