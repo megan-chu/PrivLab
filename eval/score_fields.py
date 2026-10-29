@@ -53,13 +53,15 @@ def main() -> int:
     ap.add_argument("--phase", default="teach", choices=["teach", "test"])
     ap.add_argument("--split", default=None, choices=["dev", "extra", "test"])
     ap.add_argument("--final", action="store_true", help="required to score the test split")
+    ap.add_argument("--log", default=None, help="another score log, e.g. runs/try_score_log.jsonl")
     args = ap.parse_args()
     if args.split == "test" and not args.final:
         ap.error("the test split is for the final evaluation only; add --final if this is it")
 
-    entries = [e for e in read_log() if e["phase"] == args.phase and (args.split is None or e["split"] == args.split)]
+    log = (ROOT / args.log) if args.log else None
+    entries = [e for e in read_log(log) if e["phase"] == args.phase and (args.split is None or e["split"] == args.split)]
     if not entries:
-        print("no matching confirmations in runs/score_log.jsonl yet")
+        print(f"no matching confirmations in {args.log or 'runs/score_log.jsonl'} yet")
         return 1
     result = score(entries)
     print(f"{'field':16} {'n':>3} {'P':>6} {'R':>6} {'F1':>6} {'ready after':>12}  learning curve")
@@ -69,7 +71,7 @@ def main() -> int:
               f"{s['confirmations_to_ready'] or '-':>12}  {s['learning_curve']}")
 
     now = datetime.now(timezone(timedelta(hours=8)))
-    kind = f"fields_{args.phase}{'_' + args.split if args.split else ''}"
+    kind = f"fields_{args.phase}{'_' + args.split if args.split else ''}{'_try' if args.log else ''}"
     RUNS.mkdir(exist_ok=True)
     for old in RUNS.glob(f"{kind}_2*.json"):
         old.unlink()

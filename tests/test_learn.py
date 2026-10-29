@@ -97,3 +97,25 @@ def test_learned_examples_reach_the_next_prompt(paths):
     run(paths, REPORT.replace("2.1", "3.4"))
     prompt = paths["spark"]["sent"][-1]
     assert "correct example" in prompt and "wrong example (do not pick)" in prompt
+
+
+def test_confirm_refuses_null_or_failed_values(paths):
+    res = run(paths, REPORT, ("99", "Invasive ductal carcinoma, 2.1 cm"))    # value not in its evidence
+    assert "failed" in confirm(paths, res, candidate_id="c1")["reason"]
+    assert "not a number" in confirm(paths, res, value="about two", evidence_text="tumour 2.1 cm")["reason"]
+    assert confirm(paths, res, value=" ", evidence_text="tumour 2.1 cm")["status"] == "error"
+    assert read_log(paths["log"]) == []                                       # nothing scored or learned
+
+
+def test_teach_input_handling(paths, monkeypatch):
+    import importlib
+    tryer = importlib.import_module("extract.try")       # "try" is a keyword
+    monkeypatch.setattr(tryer, "TRY_PACK", paths["pack"])
+    monkeypatch.setattr(tryer, "TRY_LOG", paths["log"])
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    answers = iter(["0", "²", "v 2.1", "v2.1 | tumour 2.1 cm"])               # 3 rejected, then accepted
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    assert tryer.teach(res, "tumour_size").endswith("readiness now learning")
+    missing = run(paths, "DIAGNOSIS: Benign tissue.")
+    monkeypatch.setattr("builtins.input", lambda _: "")                       # Enter on "missing"
+    assert "true_empty" in tryer.teach(missing, "tumour_size")
