@@ -38,13 +38,13 @@ def _field_spec(f) -> str:
     return spec
 
 
-def _reply_for(result, pack) -> CandidatesReply:
+def _reply_for(result, pack, effort=None) -> CandidatesReply:
     fields = "\n".join(_field_spec(f) for f in pack["fields"])
     return spark.call(result, instructions=f"{INSTRUCTIONS}\n\nFields:\n{fields}", schema=CandidatesReply,
-                      step="candidates", report_id=result.report_id)
+                      step="candidates", report_id=result.report_id, effort=effort)
 
 
-def find_candidates(deid_id: str, field_key: str, *, pack_path=None) -> dict:
+def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None) -> dict:
     result = pipeline.result_for(deid_id)
     if result is None:
         return {"deid_id": deid_id, "status": "error", "reason": "de-identify and confirm this report first"}
@@ -54,7 +54,7 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None) -> dict:
         return {"deid_id": deid_id, "status": "error", "reason": f"no field '{field_key}' in the pack; define it first"}
 
     try:
-        reply = _reply_for(result, pack)
+        reply = _reply_for(result, pack, effort)
     except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
         return _result(deid_id, field, "amber", None, [], f"Muse Spark unavailable ({type(e).__name__}); review manually")
 
