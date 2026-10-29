@@ -10,9 +10,14 @@ teaching effort to Ready (your total review seconds and elapsed minutes).
 
 Writes runs/fields_<phase>[_<split>]_<YYYYMMDD-HHMMSS>.json (only the latest of each kind is kept).
 
+--check lists every wrong, missed and extra result (report, field, predicted vs confirmed, offsets
+in the de-identified text), so each can be re-checked before a score is reported: a wrong
+confirmation is an error in the answer key, not in PrivLab.
+
 Usage:
   python -m eval.score_fields --phase teach
   python -m eval.score_fields --phase test --split test --final
+  python -m eval.score_fields --phase test --split test --final --check
 """
 import argparse
 import json
@@ -56,6 +61,17 @@ def score(entries: list[dict]) -> dict:
     return out
 
 
+def to_check(entries: list[dict]) -> list[str]:
+    """Results to re-check before reporting a score (wrong, missed, extra)."""
+    bad = [e for e in entries if e["outcome"] in ("wrong", "missed", "extra")]
+    lines = [f"\n{len(bad)} results to re-check against the report (an error may be in the confirmation):"]
+    for e in bad:
+        p, c = e["predicted"], e["confirmed"] or {}
+        lines.append(f"  {e['report_id']} {e['field']:16} {e['outcome']:6} predicted {p['value']!r} "
+                     f"@{p['start']}-{p['end']}  confirmed {c.get('value')!r} @{c.get('start')}-{c.get('end')}")
+    return lines
+
+
 def _to_ready(rows: list[dict], n: int | None) -> dict | None:
     """Teaching effort until the field first became Ready: your review seconds and elapsed minutes."""
     if n is None:
@@ -77,6 +93,7 @@ def main() -> int:
     ap.add_argument("--split", default=None, choices=["dev", "extra", "test"])
     ap.add_argument("--final", action="store_true", help="required to score the test split")
     ap.add_argument("--log", default=None, help="another score log, e.g. runs/try_score_log.jsonl")
+    ap.add_argument("--check", action="store_true", help="list wrong, missed and extra results to re-check")
     args = ap.parse_args()
     if args.split == "test" and not args.final:
         ap.error("the test split is for the final evaluation only; add --final if this is it")
@@ -98,6 +115,10 @@ def main() -> int:
               f" | model call {s['median_model_ms']} ms | learn {s['median_learn_ms']} ms")
         print(f"{'':16} time to Ready: {t.get('confirmations', '-')} confirmations, your review "
               f"{t.get('review_s_total', '-')} s, elapsed {t.get('elapsed_min', '-')} min")
+
+    if args.check:
+        for line in to_check(entries):
+            print(line)
 
     now = datetime.now(timezone(timedelta(hours=8)))
     kind = f"fields_{args.phase}{'_' + args.split if args.split else ''}{'_try' if args.log else ''}"
