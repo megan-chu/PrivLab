@@ -265,7 +265,8 @@ def propagate_names(text: str, found: list[tuple]) -> list[tuple]:
     """Same report: once a name is found, its other mentions ("Tan" after "Tan Ah Kow") are too.
 
     found: (type, start, end, source, score). A full multi-word name also matches in any case
-    ("ong wei ling", "TAN AH KOW"); single parts match as whole, case-sensitive words.
+    ("ong wei ling", "TAN AH KOW"); single parts match as whole, case-sensitive words, unless the
+    part is also an ordinary report word ("Low", "Long"), which would mask "Low grade".
     """
     taken = [(s, e) for _, s, e, _, _ in found]
     parts, full_names = {}, {}
@@ -283,7 +284,12 @@ def propagate_names(text: str, found: list[tuple]) -> list[tuple]:
             if not any(a <= m.start() < b or a < m.end() <= b for a, b in taken):
                 extra.append((t, m.start(), m.end(), "pattern:repeat", 0.8))
                 taken.append((m.start(), m.end()))
+    from deid.hold import vocabulary
+
+    vocab = vocabulary()
     for part, t in parts.items():
+        if part.lower() in vocab:          # "Low" (surname) vs "Low grade": leave lone words to later layers
+            continue
         for m in re.finditer(rf"(?<![A-Za-z]){re.escape(part)}(?![A-Za-z])", text):
             if not any(a <= m.start() < b or a < m.end() <= b for a, b in taken):
                 extra.append((t, m.start(), m.end(), "pattern:repeat", 0.8))

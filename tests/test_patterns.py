@@ -89,6 +89,12 @@ def test_repeat_mentions_of_a_found_name():
     assert found(text) == [("NAME", "Low Ten Young"), ("NAME", "LOW TEN YOUNG")]   # repeat in any case
 
 
+def test_surname_that_is_a_report_word_is_not_repeated():
+    text = "Patient: Low Pei Shan\nDIAGNOSIS: Low grade carcinoma. Pei Shan consented."
+    hits = found(text)
+    assert ("NAME", "Low") not in hits and ("NAME", "Shan") in hits         # "Low grade" stays; "Pei Shan" masked
+
+
 def test_doctor_name_stops_at_section_heading():
     assert ("DOCTOR", "Dr Michael Anderson") in found("by Dr Michael Anderson Light Microscopy: Light microscopic")
 
