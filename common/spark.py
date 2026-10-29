@@ -71,8 +71,10 @@ def call(safe, *, instructions: str, schema: type[BaseModel], step: str,
     if not check_seal(safe):
         raise PhiLeakError("refusing to send: seal check failed (text was not produced by deid/)")
     text = safe.text          # read once: what was checked is exactly what is sent
-    check_no_leak(text, keep_types=getattr(safe, "kept_types", ()), allowed=getattr(safe, "allowed", ()),
-                  tags=getattr(safe, "tags", None))
+    kept, allowed = getattr(safe, "kept_types", ()), getattr(safe, "allowed", ())
+    check_no_leak(text, keep_types=kept, allowed=allowed, tags=getattr(safe, "tags", None))
+    # Instructions can carry learned examples (snippets of earlier reports): scan them too.
+    check_no_leak(instructions, keep_types=kept, allowed=allowed)
     # Report text goes in a delimited field and is described as data, never instructions. The marker
     # carries a hash of the text, so the text cannot contain its own closing marker.
     marker = "REPORT-" + hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]

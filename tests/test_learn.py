@@ -119,3 +119,16 @@ def test_teach_input_handling(paths, monkeypatch):
     missing = run(paths, "DIAGNOSIS: Benign tissue.")
     monkeypatch.setattr("builtins.input", lambda _: "")                       # Enter on "missing"
     assert "true_empty" in tryer.teach(missing, "tumour_size")
+
+
+def test_example_with_identifier_is_not_learned_or_sent(paths, monkeypatch):
+    import common.spark as spark
+    from extract.pack import save_pack
+    # A snippet that still holds an NRIC must never be stored, and never leave in a prompt.
+    pack = load_pack(paths["pack"])
+    pack["fields"][0].examples["good"].append({"report": "x", "value": 2.1, "context": "NRIC S1234567D tumour 2.1 cm"})
+    save_pack(pack, paths["pack"])
+    r = pipeline.deidentify_report(text=REPORT, profile=new_profile()[0])
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    res = find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"])
+    assert res["status"] == "amber" and paths["spark"]["sent"] == []         # refused before sending
