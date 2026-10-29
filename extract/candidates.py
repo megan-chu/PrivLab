@@ -8,6 +8,8 @@ the section and decides the status.
 
   find_candidates(deid_id, field_key) -> FieldResult dict
 """
+import time
+
 from common import spark
 from deid import pipeline
 from extract.checks import run_checks
@@ -53,10 +55,12 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
     if field is None:
         return {"deid_id": deid_id, "status": "error", "reason": f"no field '{field_key}' in the pack; define it first"}
 
+    t0 = time.perf_counter()
     try:
         reply = _reply_for(result, pack, effort)
     except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
         return _result(deid_id, field, "amber", None, [], f"Muse Spark unavailable ({type(e).__name__}); review manually")
+    model_ms = round((time.perf_counter() - t0) * 1000)
 
     proposed = next((fc.candidates for fc in reply.fields if fc.key == field.key), [])
     cands = []
@@ -74,9 +78,9 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
         c["rank"] = rank
 
     if not cands:
-        return _result(deid_id, field, "missing", None, ranked, "Not stated in this report")
+        return _result(deid_id, field, "missing", None, ranked, "Not stated in this report", model_ms)
     if not valid:
-        return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})")
+        return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms)
     top = valid[0]
     rivals = [c for c in valid[1:] if c["value"] != top["value"]
               and PRIORITY.get(c["section"], 2) == PRIORITY.get(top["section"], 2)]
@@ -87,14 +91,15 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
     elif top["confidence"] < MIN_CONFIDENCE:
         reason = "Low confidence"
     else:
-        return _result(deid_id, field, "green", top, ranked, None)
-    return _result(deid_id, field, "amber", top, ranked, reason)
+        return _result(deid_id, field, "green", top, ranked, None, model_ms)
+    return _result(deid_id, field, "amber", top, ranked, reason, model_ms)
 
 
-def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None) -> dict:
+def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None,
+            model_ms: int | None = None) -> dict:
     from extract.learn import remember_prediction
 
-    result = _build(deid_id, field, status, top, ranked, reason)
+    result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms}
     remember_prediction(result)                 # frozen before any feedback ("test then learn")
     return result
 

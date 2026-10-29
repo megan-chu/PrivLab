@@ -12,11 +12,12 @@ the user keeps hidden go to always_remove, so Layer 1 catches them locally next 
 Run state is saved encrypted per deid_id (runs/state/) for audit and replay.
 """
 import secrets
+import time
 from collections import Counter
 from pathlib import Path
 
 from common.config import ROOT
-from common.timing import timed
+from common.timing import record, timed
 from deid import profile as prof
 from deid.hold import hold_flags
 from deid.mask import apply_tags, mask, merge_spans, to_original
@@ -59,7 +60,7 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
     deid_id = "d_" + secrets.token_hex(4)
     run = {"deid_id": deid_id, "report_id": report_id, "text": text, "profile": profile, "persist": persist,
            "step": "review", "spans": spans, "allowed": list(reusable), "layer2": "not run",
-           "warnings": warnings, "trace": []}
+           "warnings": warnings, "trace": [], "shown_at": time.monotonic(), "review_s": {}}
     _trace(run, "layer1", f"Presidio found {len(spans)} identifiers on the laptop. Nothing sent.")
     _RUNS[deid_id] = run
     _save(run)
@@ -76,6 +77,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
     run = _RUNS.get(deid_id)
     if run is None or run["step"] not in ("review", "hold"):
         return _error(deid_id, "nothing to confirm for this deid_id")
+    _review_time(run)
     text = run["text"]
 
     if run["step"] == "review":
@@ -104,7 +106,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
             holds.append(PhiSpan(id=f"h{len(holds) + 1}", type="NAME", start=o_start, end=o_end,
                                  text=text[o_start:o_end], source="hold"))
         if holds:
-            run.update(step="hold", holds=holds)
+            run.update(step="hold", holds=holds, shown_at=time.monotonic())
             _trace(run, "hold", f"Paused before any API call: {len(holds)} words look like names.", ok=False)
             _save(run)
             return {"deid_id": deid_id, "next": "hold",
@@ -139,7 +141,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         run["layer2"] = "clean"
         _trace(run, "layer2", "Muse Spark double-checked the masked text: nothing new found.")
         return _finish(run, spans)
-    run.update(step="flags", flags=new, layer2="flagged")
+    run.update(step="flags", flags=new, layer2="flagged", shown_at=time.monotonic())
     _trace(run, "layer2", f"Muse Spark found {len(new)} more possible identifiers.", ok=False)
     _save(run)
     return {"deid_id": deid_id, "next": "flags",
@@ -151,6 +153,7 @@ def confirm_deid_flags(deid_id: str, keep=()) -> dict:
     run = _RUNS.get(deid_id)
     if run is None or run["step"] != "flags":
         return _error(deid_id, "no flags waiting for this deid_id")
+    _review_time(run)
     keep = set(keep)
     kept = [s for s in run["flags"] if s.id in keep]
     hide = [s for s in run["flags"] if s.id not in keep]
@@ -189,7 +192,7 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     _trace(run, "apply", f"{len(tags)} identifiers replaced with tags; encrypted vault saved.", ok=not leftovers)
     _save(run)
     return {"deid_id": deid_id, "next": "done", "text": tagged, "summary": summary, "layer2": run["layer2"],
-            "warnings": run["warnings"], "trace": run["trace"]}
+            "warnings": run["warnings"], "trace": run["trace"], "review_seconds": run["review_s"]}
 
 
 def result_for(deid_id: str) -> DeidResult | None:
@@ -214,6 +217,13 @@ def _detection(text: str, spans: list[PhiSpan], target: PhiSpan, show_text: bool
     return d
 
 
+def _review_time(run: dict) -> None:
+    """Seconds the user spent on the step just answered (review, hold, flags), for speed tracking."""
+    seconds = round(time.monotonic() - run["shown_at"], 1)
+    run["review_s"][run["step"]] = seconds
+    record("deid_review", seconds * 1000, report_id=run["report_id"], step=run["step"])
+
+
 def _trace(run: dict, step: str, message: str, ok: bool = True) -> None:
     run["trace"].append({"step": step, "observe": message, "ok": ok})
 
@@ -225,7 +235,8 @@ def _error(deid_id: str, message: str) -> dict:
 def _save(run: dict) -> None:
     """Encrypted state for audit and replay (contains report text and identifiers)."""
     STATE_DIR.mkdir(parents=True, exist_ok=True)
-    state = {k: run[k] for k in ("deid_id", "report_id", "step", "text", "allowed", "layer2", "warnings", "trace")}
+    state = {k: run[k] for k in ("deid_id", "report_id", "step", "text", "allowed", "layer2", "warnings", "trace",
+                                 "review_s")}
     for key in ("spans", "confirmed", "holds", "layer1_final", "flags", "final_spans"):
         if key in run:
             state[key] = [s.to_dict() for s in run[key]]
