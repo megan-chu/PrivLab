@@ -32,3 +32,6 @@ For real hospital data, the two layers alone are not enough, because an identifi
 dev and extra splits, so none of them would reach Muse Spark. This is partly an artefact of the data:
 every planted name follows a cue such as "Patient:" or "Dr". Names written in free text without a cue
 are missed by patterns alone; that is the job of the Muse Spark layer and the human review step.
+The name check could run on Muse Spark Open, which a hospital could host itself; in our tests it was
+not yet stable on hard names (single surnames, lower case), so today PrivLab uses Muse Spark 1.3,
+which caught all of them. Self-hosting is on the roadmap once the open model matches.
