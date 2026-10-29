@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Harry Whitaker    NHS No: 306 524 0777
+Patient: William Pemberton    NHS No: 306 524 0777
 DOB: 10/06/1966    MRN: MRN4131076
 Address: 7 Station Road, Ashford TN23 1PP
 Phone: +44 7643 262555

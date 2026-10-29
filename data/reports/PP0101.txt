@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Suresh Nair    NRIC: S5704331H
+Patient: Prakash Rao    NRIC: S5704331H
 DOB: 11/06/1971    MRN: P1021494
 Address: 27 Jalan Kembangan, Singapore 419122
 Phone: +65 9484 2661
@@ -11,6 +11,6 @@ Requesting surgeon: Dr Linda Walker
 
 FINAL DIAGNOSIS. KIDNEY, LEFT, RADICAL NEPHRECTOMY -. A. POORLY DIFFERENTIATED RENAL CELL CARCINOMA (7.9X7.2X4.0 CM). B. FUHRMAN GRADE IS 3-4/4. C. TUMOR PENETRATES RENAL CAPSULE AND EXTENDS INTO THE PERINEPHRIC FAT. D. RENAL ARTERY, RENAL VEIN, AND URETERAL MARGINS ARE FREE OF TUMOR. E. MARGINS OF SURGICAL RESECTION ARE FREE OF TUMOR. F. NO ANGIOLYMPHATIC OR PERINEURAL INVASION ARE IDENTIFIED. F. PATHOLOGIC TNM STAGE T3a NX MX. Final Diagnosis. POLYP, STOMACH, ENDOSCOPIC BIOPSY-. CLEAD CELL CARCINOMA, MOST LIKELY TO BE METASTATIC (SEE COMMENT). Comment: Biopsies show atypical clear cells in the mucosa. Given patient's previous history of renal cell carcinoma, current biopsy. is most likely to be a metastatic carcinoma. Special stains are pending to confirm its renal origin. Addendum. Addendum. Tumor cells are immunoreactive with cam5.2, vimentin, CD10, and EMA, but negative for RCC, CK7, CK20, and CDX2, Above. immunophenotype is compatible with a metastatic renal cell carcinoma. eviewed the case and concurs. Finar Diagnosis. 1. LEFT SHOULDER, BIOPSY OF BONE LESION: METASTATIC CLEAR CELL CARCINOMA, CONSISTENT WITH RENAL ORIGIN, SMALL FOCI. 2. LEFT SHOULDER, BIOPSY OF BONE LESION: METASTATIC CLEAR CELL CARCINOMA, CONSISTENT WITH RENAL ORIGIN. 3. LEFT SHOULDER, BIOPSY OF BONE LESION: METASTATIC CLEAR CELL CARCINOMA, CONSISTENT WITH RENAL ORIGIN. Comment: On immunohistochemistry, tumor cells are strongly positive for low molecular weight cytokeratin and vimentin, and focally for EMA,. Histological features and immunoprofiles are consistent with a renal clear cell carcinoma.
 
-COMMENT: Patient's husband Rajesh Nair requested a copy; contact +65 9484 2661.
+COMMENT: Patient's wife Shanti Rao requested a copy; contact +65 9484 2661.
 
 Electronically signed by Dr Susan Martinez, Consultant Pathologist, on 23/09/2025

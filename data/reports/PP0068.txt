@@ -2,7 +2,7 @@ Ashcombe General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Harry Holloway    NHS No: 342 836 4406
+Patient: Patricia Fletcher    NHS No: 342 836 4406
 DOB: 11/12/1989    MRN: P9315137
 Phone: +44 7407 494747
 Accession No: S25-46143    Collected: 29/06/2025    Reported: 07/07/2025

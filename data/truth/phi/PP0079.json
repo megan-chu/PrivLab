@@ -15,7 +15,7 @@
     },
     {
       "type": "NAME",
-      "text": "Karen Miller",
+      "text": "James Taylor",
       "start": 97,
       "end": 109
     },
@@ -75,27 +75,27 @@
     },
     {
       "type": "NAME",
-      "text": "Karen Clark",
+      "text": "Eleanor Taylor",
       "start": 1447,
-      "end": 1458
+      "end": 1461
     },
     {
       "type": "PHONE",
       "text": "(211) 555-2615",
-      "start": 1485,
-      "end": 1499
+      "start": 1488,
+      "end": 1502
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ananya Pillai",
-      "start": 1527,
-      "end": 1543
+      "start": 1530,
+      "end": 1546
     },
     {
       "type": "DATE",
       "text": "04/27/2025",
-      "start": 1572,
-      "end": 1582
+      "start": 1575,
+      "end": 1585
     }
   ]
 }

@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Charlotte Pemberton    NHS No: 657 027 9378
+Patient: William Clarke    NHS No: 657 027 9378
 DOB: 03/02/1948    MRN: P3751363
 Address: Flat 3, 22 Mill Lane, Bristol BS3 4LE
 Phone: +44 7844 929493

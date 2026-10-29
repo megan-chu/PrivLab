@@ -15,81 +15,81 @@
     },
     {
       "type": "NAME",
-      "text": "Ananya Rao",
+      "text": "Priya Reddy",
       "start": 94,
-      "end": 104
+      "end": 105
     },
     {
       "type": "ID",
       "text": "G3782639T",
-      "start": 114,
-      "end": 123
+      "start": 115,
+      "end": 124
     },
     {
       "type": "DOB",
       "text": "06/08/1985",
-      "start": 129,
-      "end": 139
+      "start": 130,
+      "end": 140
     },
     {
       "type": "MRN",
       "text": "H7961578",
-      "start": 148,
-      "end": 156
+      "start": 149,
+      "end": 157
     },
     {
       "type": "PHONE",
       "text": "+65 8651 8935",
-      "start": 164,
-      "end": 177
+      "start": 165,
+      "end": 178
     },
     {
       "type": "ACCESSION",
       "text": "SP25-67550",
-      "start": 192,
-      "end": 202
+      "start": 193,
+      "end": 203
     },
     {
       "type": "DATE",
       "text": "20/05/2025",
-      "start": 217,
-      "end": 227
+      "start": 218,
+      "end": 228
     },
     {
       "type": "DATE",
       "text": "23/05/2025",
-      "start": 241,
-      "end": 251
+      "start": 242,
+      "end": 252
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ong Jun Jie",
-      "start": 272,
-      "end": 286
+      "start": 273,
+      "end": 287
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ong Jun Jie",
-      "start": 4039,
-      "end": 4053
+      "start": 4040,
+      "end": 4054
     },
     {
       "type": "DATE",
       "text": "23 May 2025",
-      "start": 4057,
-      "end": 4068
+      "start": 4058,
+      "end": 4069
     },
     {
       "type": "DOCTOR",
       "text": "Dr William Turner",
-      "start": 4096,
-      "end": 4113
+      "start": 4097,
+      "end": 4114
     },
     {
       "type": "DATE",
       "text": "23/05/2025",
-      "start": 4142,
-      "end": 4152
+      "start": 4143,
+      "end": 4153
     }
   ]
 }

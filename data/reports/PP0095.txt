@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Chua Kok Wah    NRIC: G5618537U
+Patient: Yeo Mei Ling    NRIC: G5618537U
 DOB: 29/08/1967    MRN: MRN2517010
 Address: 27 Jalan Kembangan, Singapore 419122
 Phone: +65 9354 6828

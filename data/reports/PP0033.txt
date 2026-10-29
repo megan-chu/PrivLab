@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Vikram Pillai    NRIC: S3826758B
+Patient: Lakshmi Nair    NRIC: S3826758B
 DOB: 07/08/1977    MRN: P2661307
 Address: Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412
 Phone: +65 6975 6942

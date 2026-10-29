@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Charlotte Holloway    NHS No: 114 262 5826
+Patient: Thomas Bennett    NHS No: 114 262 5826
 DOB: 10/05/1979    MRN: MRN2677182
 Phone: +44 7283 193471
 Accession No: PA25-81273    Collected: 07/09/2025    Reported: 09/09/2025
@@ -13,4 +13,4 @@ FINAL PATHOLOGIC DIAGNOSIS. A. Anterior prostatic fat, biopsy: Benign fibrofatty
 COMMENT: Results discussed by phone with Dr Nur Abdullah on 09 Sep 2025.
 
 Electronically signed by Dr Tan Wei Ling, Consultant Pathologist, on 09/09/2025
-Page 1 of 1  |  Charlotte Holloway  |  MRN2677182
+Page 1 of 1  |  Thomas Bennett  |  MRN2677182

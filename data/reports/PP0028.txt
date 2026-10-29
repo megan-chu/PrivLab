@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Jennifer Martinez    SSN: 970-58-7325
+Patient: Jennifer Taylor    SSN: 970-58-7325
 DOB: 08/24/1953    MRN: MRN9427047
 Phone: (620) 555-3529
 Accession No: PA26-44515    Collected: 05/23/2026    Reported: 05/25/2026

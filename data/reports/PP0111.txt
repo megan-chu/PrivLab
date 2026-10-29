@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: William Turner    NHS No: 521 752 5002
+Patient: Helen Hughes    NHS No: 521 752 5002
 DOB: 21/07/1980    MRN: MRN3658100
 Phone: +44 7492 104895
 Accession No: SP25-12539    Collected: 08/10/2025    Reported: 13/10/2025
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Eleanor Pemberton
 
 DIAGNOSIS. (A) PERINEPHRIC FAT, PERMANENT: Adipose tissue, no tumor present. (B) RIGHT RENAL MASS, UPPER POLE, INKED AT MARGIN: RENAL CELL CARCINOMA, CONVENTIONAL (CLEAR CELL) TYPE, FUHRMAN. NUCLEAR GRADE 3 (5.5 CM). Parenchymal margin, free of tumor. (C) PERINEPHRIC FAT ADDITIONAL: Fibroadipose tissue, no tumor present. GROSS DESCRIPTION. (A) PERINEPHRIC FAT, PERMANENT- Two portions of adipose tissue (11.5 X. 4.5 X 1.5 cm and 9.0 X 5.5 X 2.0 cm) are homogenous without lesion. SECTION CODE: A1-A5, representative portion. (B) RIGHT RENAL MASS UPPER POLE, INK AT MARGIN - A partial nephrectomy. specimen (8.0 X 7.0 X 3.5 cm). A solid well- circumscribed tumor (5.5 X 5.0 X 3.0 cm) is identified 2.0. mm from the purple inked parenchymal margin. It has a variegated. appearance with yellow and red hemorrhagic areas. The remainder of the. tumor is surrounded by adipose tissue. A photograph is obtained. Portions are submitted for electron. microscopy. INK CODE: The purple ink area is re-inked in black. SECTION CODE: B1, mass with closest perpendicular renal. parenchymal margin for frozen section; B2-B5, tumor with perpendicular. renal parenchymal margin; B6-B9, tumor with adjacent adipose tissue. FS/DX: MARGIN, FREE OF TUMOR. (C) PERINEPHRIC FAT ADDITIONAL - A single portion of adipose tissue. (21.0 X 14.0 X 3.5 cm) has attached fascia without gross lesion. SECTION CODE: C1-C6, representative portions of adipose tissue and. fascia. CLINICAL HISTORY. History of right renal mass. SNOMED CODES. T-71000, M-82123. 1.
 
-COMMENT: Report copy sent to william.turner69@mailbox.example at the request of William Turner.
+COMMENT: Report copy sent to helen.hughes69@mailbox.example at the request of Helen Hughes.
 
 Electronically signed by Dr Susan Harris, Consultant Pathologist, on 13/10/2025
-Page 1 of 1  |  William Turner  |  MRN3658100
+Page 1 of 1  |  Helen Hughes  |  MRN3658100

@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Emily Hughes    NHS No: 770 388 6084
+Patient: Edward Wright    NHS No: 770 388 6084
 DOB: 03/10/1974    MRN: MRN5885179
 Address: Flat 3, 22 Mill Lane, Bristol BS3 4LE
 Phone: +44 7155 823468

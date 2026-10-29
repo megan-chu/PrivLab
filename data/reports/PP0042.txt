@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Thomas Lewis    SSN: 967-97-6295
+Patient: Daniel Martinez    SSN: 967-97-6295
 DOB: 05/12/1968    MRN: MRN8867190
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (673) 555-8404
@@ -11,7 +11,7 @@ Requesting surgeon: Dr Priya Iyer
 
 Diagnosis: Colon resectate 18 cm in length with inclusion of a 4 cm longitudinally extended, wide,. ulcerated, moderately differentiated adenocarcinoma of colorectal type with wide. infiltration of the pericolic fatty tissue, circumscribed penetration of the overlying serosa. and evidence of lymphangiosis carcinomatosis. Tumor-free regional lymph nodes. Tumor-. free colon resection margins. Tumor stage: pT4 pNO (0/36) pMX, G2, L1 V0.
 
-COMMENT: Report copy sent to thomas.lewis8@mailbox.example at the request of Thomas Lewis.
+COMMENT: Report copy sent to daniel.martinez8@mailbox.example at the request of Daniel Martinez.
 
 Electronically signed by Dr Oliver Fletcher, Consultant Pathologist, on 06/13/2025
-Page 1 of 1  |  Thomas Lewis  |  MRN8867190
+Page 1 of 1  |  Daniel Martinez  |  MRN8867190

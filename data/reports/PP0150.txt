@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: David Miller    SSN: 931-45-2960
+Patient: Michael Thompson    SSN: 931-45-2960
 DOB: 07/05/1975    MRN: MRN8973718
 Phone: (903) 555-6544
 Accession No: PA25-79146    Collected: 09/06/2025    Reported: 09/08/2025
@@ -13,4 +13,4 @@ Pre-Op Diagnosis. Lung cancer. Post-Op Diagnosis. Same. Clinical History. Nothin
 COMMENT: Results discussed by phone with Dr Arjun Raman on 08 Sep 2025.
 
 Electronically signed by Dr Ahmad Ismail, Consultant Pathologist, on 09/08/2025
-Page 1 of 1  |  David Miller  |  MRN8973718
+Page 1 of 1  |  Michael Thompson  |  MRN8973718

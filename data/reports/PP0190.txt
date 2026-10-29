@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Wong Wei Ling    NRIC: F3645970X
+Patient: Ho Yong Sheng    NRIC: F3645970X
 DOB: 14/05/1949    MRN: MRN1487633
 Address: Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412
 Phone: +65 6865 6336
@@ -14,4 +14,4 @@ UUTD:6758B6C3-61B6-4D4F-9018-CDC2E932ACC7. M. Date Of Birth. Encounter Number. C
 COMMENT: Results discussed by phone with Dr Chua Mei Xuan on 27 Feb 2025.
 
 Electronically signed by Dr Harry Pemberton, Consultant Pathologist, on 27/02/2025
-Page 1 of 1  |  Wong Wei Ling  |  MRN1487633
+Page 1 of 1  |  Ho Yong Sheng  |  MRN1487633

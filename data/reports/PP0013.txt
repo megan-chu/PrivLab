@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Kavitha Menon    NRIC: F6482366M
+Patient: Lakshmi Menon    NRIC: F6482366M
 DOB: 12/08/1955    MRN: H1006810
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8791 4501

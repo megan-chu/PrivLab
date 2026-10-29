@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Karen Garcia    SSN: 970-54-7883
+Patient: Robert Garcia    SSN: 970-54-7883
 DOB: 10/27/1979    MRN: MRN2056117
 Phone: (669) 555-5982
 Accession No: S25-31451    Collected: 01/22/2025    Reported: 01/28/2025

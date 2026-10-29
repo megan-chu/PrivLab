@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Nur Aisyah bin Osman    NRIC: T0502099E
+Patient: Syafiq bin Abdullah    NRIC: T0502099E
 DOB: 10/10/1966    MRN: MRN2826831
 Phone: +65 6886 5903
 Accession No: SP25-24363    Collected: 06/12/2025    Reported: 09/12/2025
@@ -13,4 +13,4 @@ M. Date Of Birth. Encounter Number. COPY ONLY DO NOT FILE. path Adenocaremina, a
 COMMENT: Results discussed by phone with Dr Lakshmi Rao on 09 Dec 2025.
 
 Electronically signed by Dr Harry Clarke, Consultant Pathologist, on 09/12/2025
-Page 1 of 1  |  Nur Aisyah bin Osman  |  MRN2826831
+Page 1 of 1  |  Syafiq bin Abdullah  |  MRN2826831

@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Rajesh Rao    NRIC: F4701204W
+Patient: Ravi Rao    NRIC: F4701204W
 DOB: 25/04/1972    MRN: P2944497
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8736 5395
@@ -11,6 +11,6 @@ Requesting surgeon: Dr Mohd Salleh
 
 Clinical Diagnosis & History: with history of renal mass, spontaneous pneumothorax. Specimens Submitted: 1: RENAL MASS, HILAR, LEFT; PARTIAL NEPHRECTOMY. DIAGNOSIS: 1. RENAL MASS, HILAR, LEFT; PARTIAL NEPHRECTOMY: Tumor Type: Renal cell carcinoma - Conventional (clear cell) type. Fuhrman Nuclear Grade: Nuclear grade II/IV. Tumor Size: Greatest dlameter Is 3.2 cm,. Local Invasion (for renal pelvic tumors): Not Identified. Renal Vein Invasion: Not Identified. Surgical Margins: Free of tumor. Non-Neoplastic Kidney: Unremarkable. Adrenal Gland: Not identified. Lymph Nodes: Not identified. Staging for renal cell carclnoma/oncocytoma: pT1 Tumor <= 7.0 cm in greatest dimension limited to the kidney. IATTEST THAT THE ABOVE DIAGNOSIS IS BASED UPON MY PERSONAL EXAMINATION OF THE SUIDES (AND/OR OTHER MATERIAL), AND THAT I HAVE. REVIEWEO AND APPROVED THIS REPORT. Gross Description: 1). The specimen Is received fresh for frozen section and is labeled "left renal hilar tumor, stitch marks deepest surgical margin for. FS. ", It consists of a 4 x 4 x 0.5 cm portion of kidney with a suture marking the deep margin. The margin Is inked green and the. specimen is serially sectioned to reveal a 3.2 x 2.8 x 2.1 cm tumor with a variegated brown-tan and yellow, solid and cystic cut. surface. The clearance from the resection margin is 0.3 cm. A representative section of the nearest margin is submitted for frozen. section diagnosis. Representatively submitted. Portlons of the tumor are submitted for TPS. Summary of sections: FSC - frozen section control. TM - tumor with margin. TF - tumor with perinephric fat. RS - representative sections. Summary of Sections: Part 1: RENAL MASS, HILAR, LEFT; PARTIAL NEPHRECTOMY. Block. Sect. Site. PCs. fsc. 2. rs. 2. tf. 3. tm. 3. Intraoperative Consultation: Note: The diagnoses given in this section pertain only to the tissue sample examined at the time of the intraoperative consultation. 1). FROZEN SECTION DIAGNOSIS: STITCH MARGIN NEGATIVE. RENAL CORTICAL NEOPLASM. CLEAR CELL. TYPE SUSPECT ON REPRESENTATIVE SECTION. PERMANENT DIAGNOSIS: SAME.
 
-COMMENT: Patient's brother Suresh Iyer requested a copy; contact +65 8736 5395.
+COMMENT: Patient's brother Rajesh Rao requested a copy; contact +65 8736 5395.
 
 Electronically signed by Dr Siti Rahman, Consultant Pathologist, on 25/11/2025

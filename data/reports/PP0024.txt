@@ -2,7 +2,7 @@ Whitfield NHS Foundation Trust Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: George Pemberton    NHS No: 183 242 1023
+Patient: Margaret Clarke    NHS No: 183 242 1023
 DOB: 06/08/1967    MRN: H3086308
 Address: 14 Hawthorn Close, Leeds LS6 2QT
 Phone: +44 7182 727086

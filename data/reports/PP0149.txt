@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: James Anderson    SSN: 914-35-8550
+Patient: Linda Clark    SSN: 914-35-8550
 DOB: 06/05/1948    MRN: H7528399
 Address: 92 Harbor View Rd, Apt 4B, Portland, ME 04101
 Phone: (326) 555-5150
@@ -15,4 +15,4 @@ Addendum. SPECIMEN(S): A. LEFT LOWER LUNG LOBE. B. HILAR MARGIN. C. 10L LYMPH NO
 COMMENT: Results discussed by phone with Dr Mohd Salleh on 23 Jun 2026.
 
 Electronically signed by Dr Koh Chee Keong, Consultant Pathologist, on 06/23/2026
-Page 1 of 1  |  James Anderson  |  H7528399
+Page 1 of 1  |  Linda Clark  |  H7528399

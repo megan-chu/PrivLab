@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Charlotte Fletcher    NHS No: 075 818 1418
+Patient: Susan Bennett    NHS No: 075 818 1418
 DOB: 20/05/1954    MRN: P3472100
 Address: 14 Hawthorn Close, Leeds LS6 2QT
 Phone: +44 7614 492127

@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: James Garcia    SSN: 968-50-3556
+Patient: Michael Garcia    SSN: 968-50-3556
 DOB: 05/20/1940    MRN: P5958621
 Address: 1847 Willow Creek Dr, Springfield, OH 45503
 Phone: (950) 555-8847
@@ -14,4 +14,4 @@ MODIFIED REPORT - REVIEW ADDENDUM SECTION. DIAGNOSIS. (A) RIGHT PELVIC LYMPH NOD
 COMMENT: Results discussed by phone with Dr Nurul Salleh on 21 Jul 2026.
 
 Electronically signed by Dr David Johnson, Consultant Pathologist, on 07/21/2026
-Page 1 of 1  |  James Garcia  |  P5958621
+Page 1 of 1  |  Michael Garcia  |  P5958621

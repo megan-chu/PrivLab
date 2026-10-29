@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Susan Martinez    SSN: 954-34-6254
+Patient: Helen Martinez    SSN: 954-34-6254
 DOB: 11/28/1970    MRN: MRN6867267
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (583) 555-3555

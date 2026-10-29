@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Koh Hui Min    NRIC: G9380686M
+Patient: Wong Yan Ling    NRIC: G9380686M
 DOB: 16/01/1988    MRN: H6013906
 Address: Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412
 Phone: +65 8277 3738
@@ -11,7 +11,7 @@ Requesting surgeon: Dr Teo Chee Keong
 
 Ref, Source: Clinical Diagnosis & History: with right renal mass scheduled for partial nephrectomy. Specimens Submitted: 1: Right renal, tumor, partial nephrectomy. 2: Lymph node, paracaval, excision. DIAGNOSIS: 1. Right renal, tumor, partial nephrectomy: Tumor Type: Renal cell carcinoma - Conventional (clear cell) type. Fuhrman Nuclear Grade: Nuclear grade II/IV. Tumor Size: Greatest diameter is 1,9 cm. Local Invasion (for renal cortical types): Not Identified. Renal Vein Invasion: Not identified. Surgical Margins: Free of tumor. Non-Neoplastic Kidney: Unremarkable. Adrenal Gland: Not identified. Lymph Nodes: Not identified. Staging for renal cell carcinoma/oncocytoma: pT1 Tumor <= 7.0 cm in greatest dimension limited to the kidney. Comment: The tumor cells are immunoreactive for CA-IX while the vasculature is immunoreactive for CD-31. 2. Lymph node, paracaval, excision: Lymph Nodes: Not involved. Number of nodes examined:1. IATTEST THAT THE ABOVE DIAGNOSIS IS BASED UPON MY PERSONAL EXAMINATION OF THE SLIDES (AND/OR OTHER MATERIAL), AND THAT 1 HAVE. REVIEWED AND APPROVED THIS REPORT. Special Studies: Special Stain. Comment. IMM RECUT. CA-1X. CD31. NEG CONT. Gross Description: 1). The specimen is received in formalin and is labeled "Right renal tumor, stitch marks deep surgical margin". It consists of a 4 X 4. x 2 cm wedge shaped portion of kidney with a suture marking the deep margin, The margin is inked black and the specimen is. serially sectioned to reveal a fairly circumscribed golden yellow, hemorrhagic tumor, measuring 1.9 x 1.7 x 1.6cm. The clearance. from the resection margin is 0.2 cm. A representative section of the nearest margin is submitted for frozen section diagnosis. Representatively submitted. Portions of the tumor are submitted for TPS. Summary of sections: FSC - frozen section control. T tumor. M margin. RS - representative sections. 2). The specimen is received in formalin, labeled "pericaval lymph nodes" and consists of a fragment of fibrofatty tissue measuring. 2.5 x 2.5 x 0.3 cm. No definite lymph nodes are notified. The specimen is entirely submitted. Summary of sections: FFT- fibrofatty tissue. Summary of Sections: Part 1: Right renal, tumor, partial nephrectomy. Block. Sect. Site. PCs. 1. FSC. 1. 1. M. 1. 2. RS. 2. T. 1. Part 2: Lymph node, paracaval, excision. Block. Sect. Site. PCs. 1. FFT. 1. Intraoperative Consultation: Note: The diagnoses given in this section pertain only to the tissue sample examined at the time of the intraoperative consultation. 1). FROZEN SECTION DIAGNOSIS: RENAL CORTICAL CARCINOMA. MARGIN MARKED BY STITCH IS BENIGN. (VR). PERMANENT DIAGNOSIS: SAME.
 
-COMMENT: Report copy sent to koh.min25@mailbox.example at the request of Koh Hui Min.
+COMMENT: Report copy sent to wong.ling25@mailbox.example at the request of Wong Yan Ling.
 
 Electronically signed by Dr Charlotte Hughes, Consultant Pathologist, on 07/05/2026
-Page 1 of 1  |  Koh Hui Min  |  H6013906
+Page 1 of 1  |  Wong Yan Ling  |  H6013906

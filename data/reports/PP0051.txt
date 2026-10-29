@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Priya Pillai    NRIC: G5820297K
+Patient: Ramesh Nair    NRIC: G5820297K
 DOB: 14/02/1943    MRN: MRN7145971
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8881 2259
@@ -15,4 +15,4 @@ Diagnosis: Colon, right, colectomy. Tumor Histologic Type: Invasive adenocarcino
 COMMENT: Results discussed by phone with Dr Lee Siew Lan on 13 May 2025.
 
 Electronically signed by Dr David Martinez, Consultant Pathologist, on 13/05/2025
-Page 1 of 1  |  Priya Pillai  |  MRN7145971
+Page 1 of 1  |  Ramesh Nair  |  MRN7145971

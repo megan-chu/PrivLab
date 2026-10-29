@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: David Miller    SSN: 911-96-4452
+Patient: Jennifer Lewis    SSN: 911-96-4452
 DOB: 01/15/1974    MRN: H7066680
 Phone: (575) 555-4013
 Accession No: PA26-35039    Collected: 08/18/2026    Reported: 08/21/2026

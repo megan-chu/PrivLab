@@ -15,105 +15,105 @@
     },
     {
       "type": "NAME",
-      "text": "Ahmad Faizal binte Hassan",
+      "text": "Azman bin Salleh",
       "start": 100,
-      "end": 125
+      "end": 116
     },
     {
       "type": "ID",
       "text": "S1824225G",
-      "start": 135,
-      "end": 144
+      "start": 126,
+      "end": 135
     },
     {
       "type": "DOB",
       "text": "24/03/1960",
-      "start": 150,
-      "end": 160
+      "start": 141,
+      "end": 151
     },
     {
       "type": "MRN",
       "text": "MRN5204459",
-      "start": 169,
-      "end": 179
+      "start": 160,
+      "end": 170
     },
     {
       "type": "PHONE",
       "text": "+65 9694 3526",
-      "start": 187,
-      "end": 200
+      "start": 178,
+      "end": 191
     },
     {
       "type": "ACCESSION",
       "text": "S25-84238",
-      "start": 215,
-      "end": 224
+      "start": 206,
+      "end": 215
     },
     {
       "type": "DATE",
       "text": "21/12/2025",
-      "start": 239,
-      "end": 249
+      "start": 230,
+      "end": 240
     },
     {
       "type": "DATE",
       "text": "27/12/2025",
-      "start": 263,
-      "end": 273
+      "start": 254,
+      "end": 264
     },
     {
       "type": "DOCTOR",
       "text": "Dr Lakshmi Subramaniam",
-      "start": 294,
-      "end": 316
+      "start": 285,
+      "end": 307
     },
     {
       "type": "ACCESSION",
       "text": "S2584238",
-      "start": 318,
-      "end": 326
+      "start": 309,
+      "end": 317
     },
     {
       "type": "ID",
       "text": "S1824225G",
-      "start": 327,
-      "end": 336
+      "start": 318,
+      "end": 327
     },
     {
       "type": "DOCTOR",
       "text": "Dr Lakshmi Subramaniam",
-      "start": 1264,
-      "end": 1286
+      "start": 1255,
+      "end": 1277
     },
     {
       "type": "DATE",
       "text": "27 Dec 2025",
-      "start": 1290,
-      "end": 1301
+      "start": 1281,
+      "end": 1292
     },
     {
       "type": "DOCTOR",
       "text": "Dr Oliver Turner",
-      "start": 1329,
-      "end": 1345
+      "start": 1320,
+      "end": 1336
     },
     {
       "type": "DATE",
       "text": "27/12/2025",
-      "start": 1374,
-      "end": 1384
+      "start": 1365,
+      "end": 1375
     },
     {
       "type": "NAME",
-      "text": "Ahmad Faizal binte Hassan",
-      "start": 1401,
-      "end": 1426
+      "text": "Azman bin Salleh",
+      "start": 1392,
+      "end": 1408
     },
     {
       "type": "MRN",
       "text": "MRN5204459",
-      "start": 1431,
-      "end": 1441
+      "start": 1413,
+      "end": 1423
     }
   ]
 }

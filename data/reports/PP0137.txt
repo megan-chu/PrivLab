@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Jennifer Anderson    SSN: 994-76-5685
+Patient: William Davis    SSN: 994-76-5685
 DOB: 06/21/1957    MRN: P3843451
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (610) 555-6785

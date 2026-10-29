@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Koh Mei Xuan    NRIC: S0030756D
+Patient: Yeo Siew Lan    NRIC: S0030756D
 DOB: 18/06/1953    MRN: P8035849
 Phone: +65 6614 1862
 Accession No: S25-43179    Collected: 03/07/2025    Reported: 05/07/2025

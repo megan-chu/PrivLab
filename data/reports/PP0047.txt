@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Muhammad Hafiz binte Ismail    NRIC: F7277901X
+Patient: Mohd Rizal bin Ibrahim    NRIC: F7277901X
 DOB: 14/09/1941    MRN: MRN9854536
 Address: Blk 412 Ang Mo Kio Ave 10, #08-1123, Singapore 560412
 Phone: +65 9912 8489
@@ -14,4 +14,4 @@ SPECIMEN. A. Sigmoid colon. B. Right abdominal wall tumor. C. Omentum. CLINICAL 
 COMMENT: Results discussed by phone with Dr Siti Ismail on 25 Sep 2025.
 
 Electronically signed by Dr Goh Mei Xuan, Consultant Pathologist, on 25/09/2025
-Page 1 of 1  |  Muhammad Hafiz binte Ismail  |  MRN9854536
+Page 1 of 1  |  Mohd Rizal bin Ibrahim  |  MRN9854536

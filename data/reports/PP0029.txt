@@ -2,7 +2,7 @@ Northbridge Royal Infirmary
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Eleanor Holloway    NHS No: 780 913 4310
+Patient: Karen Pemberton    NHS No: 780 913 4310
 DOB: 07/12/1978    MRN: H3791137
 Address: 14 Hawthorn Close, Leeds LS6 2QT
 Phone: +44 7541 252640
@@ -15,4 +15,4 @@ Final Diagnosis. Breast, right, wide local excision: Infiltrating ductal carcino
 COMMENT: Results discussed by phone with Dr Tan Hui Min on 14 Apr 2025.
 
 Electronically signed by Dr Suresh Iyer, Consultant Pathologist, on 14/04/2025
-Page 1 of 1  |  Eleanor Holloway  |  H3791137
+Page 1 of 1  |  Karen Pemberton  |  H3791137

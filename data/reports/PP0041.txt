@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Lim Zhi Hao    NRIC: T6968164B
+Patient: Ang Li Ting    NRIC: T6968164B
 DOB: 17/06/1970    MRN: MRN2281433
 Phone: +65 6249 5193
 Accession No: PA25-83998    Collected: 15/08/2025    Reported: 22/08/2025

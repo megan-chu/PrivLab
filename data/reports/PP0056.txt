@@ -2,7 +2,7 @@ Lakeshore Regional Medical Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Michael Thompson    SSN: 967-41-3308
+Patient: William Jackson    SSN: 967-41-3308
 DOB: 09/07/1948    MRN: H8015136
 Phone: (679) 555-9171
 Accession No: S25-21932    Collected: 02/21/2025    Reported: 02/27/2025
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Harry Bennett
 
 Diagnosis: Extended hemicolectomy specimen with two invasive, moderately differentiated. adenocarcinomas with infiltration of the pericolic fatty tissue and status following. endoscopic resection of a further adenocarcinoma. Multiple tubular adenomas with. moderate dysplasia (synonym: low-grade intra-epithelial neoplasia). Two lymph node. metastases. Tumor-free resection margins in the region of the mucosa. Tumor-free. omentum. Tumor classification: adenocarcinoma, G2 pT3 (mult/3) n1 (2/116) L0 V0 R0.
 
-COMMENT: Patient's daughter Jennifer Johnson requested a copy; contact (679) 555-9171.
+COMMENT: Patient's daughter Jennifer Jackson requested a copy; contact (679) 555-9171.
 
 Electronically signed by Dr Ahmad Hassan, Consultant Pathologist, on 02/27/2025
-Page 1 of 1  |  Michael Thompson  |  H8015136
+Page 1 of 1  |  William Jackson  |  H8015136

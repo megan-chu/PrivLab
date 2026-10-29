@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Ananya Subramaniam    NRIC: G5987622N
+Patient: Karthik Kumar    NRIC: G5987622N
 DOB: 26/01/1942    MRN: P5221936
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 6999 8752
@@ -14,4 +14,4 @@ TISSUE DESCRIPTION: A1 J1 K1 L1 M1 M2 M3 M4 M5 M6 N1 N2 N3 N4 01 P1 Q1 B1 C1. D1
 COMMENT: Results discussed by phone with Dr Lee Mei Xuan on 14 May 2025.
 
 Electronically signed by Dr Michael Johnson, Consultant Pathologist, on 14/05/2025
-Page 1 of 1  |  Ananya Subramaniam  |  P5221936
+Page 1 of 1  |  Karthik Kumar  |  P5221936

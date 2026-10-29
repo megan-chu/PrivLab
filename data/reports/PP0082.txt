@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Thomas Walker    SSN: 985-24-6700
+Patient: Linda Jackson    SSN: 985-24-6700
 DOB: 07/30/1971    MRN: P5990296
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (388) 555-7116
@@ -12,6 +12,6 @@ Requesting surgeon: Dr Siti Ismail
 
 DIAGNOSIS. (A) RIGHT KIDNEY AND ADRENAL GLAND: RENAL CELL CARCINOMA, CONVENTIONAL (90% CLEAR CELLS AND 10% EOSINOPHILIC CELLS),. FURHMAN'S NUCLEAR GRADE 3. TUMOR CONFINED TO KIDNEY. TUMOR MEASURES 9.5 CM IN GREATEST DIMENSION. Vascular, ureteral and soft tissue margins of resection free of tumor. Adrenal gland with nodular cortical hyperplasia. GROSS DESCRIPTION. (A). RIGHT KIDNEY AND ADRENAL GLAND - A nephrectomy specimen (22.0 x 13.5 x 6,3 cm) including the right kidney (13.0x 5.5 x. 4.0 cm), a segment of the renal artery, the renal vein, two ureters (7.5 and 12.0 cm in length x approximately 0.4 cm in average. diameter), and the adrenal gland (0.6 x 3.7 x 1.8 cm). There is a 9.5 x 7.2 x 6.0 cm well-circumscribed tumor in the mid portion of the kidney. Centrally, the tumor has a myxoid appearance. with a focus of calcification; the periphery is orange-yellow and slightly friable. There are no definitive areas of hemorrhage or. recrosis. The tumor pushes onto the renal pelvis but does not invade it. There is no extention into the adipose tissue, renal sinus,. unal vein, or Gerota's fascia. The. adjacent kidney parenchyma is unremarkable. The pelvicalyceal system is smooth and devoid of any lesions. One possible hilar. lymph node measures 1.7 x 0.9 x 0.9 cm. Serial cross sections of the adrenal gland show an enlarged cortex measuring 0.5 cm. The remainder of the adrenal gland is. unremarkable. Portions of tumor have been submitted for possible electron microscopy and to the tumor bank. INK CODE: Black - Gerota's fascia and capsule nearest tumor. SECTION CODE: A1, both ureters, renal artery, and renal vein margins, en face; A2, enlarged portion of adrenal gland; A3, kidney,. representative sections; A4-A5, tumor within pelvis; A6-A8, tumor with inked capsule; A9-A10, tumor with adjacent kidney; A11, tumor;. A12, representative sections of Gerota's fascia overlying tumor; A13, one possible lymph node; A14, tumor with sinus;. A15,. tumor. with. pelvis; A16, adrenal gland, representative section. CLINICAL HISTORY. Right renal mass. 1.
 
-COMMENT: Patient's brother Karen Walker requested a copy; contact (388) 555-7116.
+COMMENT: Patient's brother George Jackson requested a copy; contact (388) 555-7116.
 
 Electronically signed by Dr Siti Ismail, Consultant Pathologist, on 04/18/2026

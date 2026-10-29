@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Lakshmi Nair    NRIC: F1724825K
+Patient: Suresh Subramaniam    NRIC: F1724825K
 DOB: 05/01/1948    MRN: MRN6152035
 Address: 27 Jalan Kembangan, Singapore 419122
 Phone: +65 9697 2166
@@ -14,4 +14,4 @@ Clinical History/Diagnosis: ? Renal Cell CA vs. TCC. Left Renal Mass. Source of 
 COMMENT: Results discussed by phone with Dr Kavitha Rao on 23 Aug 2025.
 
 Electronically signed by Dr Tan Li Ting, Consultant Pathologist, on 23/08/2025
-Page 1 of 1  |  Lakshmi Nair  |  MRN6152035
+Page 1 of 1  |  Suresh Subramaniam  |  MRN6152035

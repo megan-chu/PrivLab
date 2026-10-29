@@ -15,87 +15,87 @@
     },
     {
       "type": "NAME",
-      "text": "Lakshmi Pillai",
+      "text": "Lakshmi Subramaniam",
       "start": 100,
-      "end": 114
+      "end": 119
     },
     {
       "type": "ID",
       "text": "S1790807C",
-      "start": 124,
-      "end": 133
+      "start": 129,
+      "end": 138
     },
     {
       "type": "DOB",
       "text": "20/04/1973",
-      "start": 139,
-      "end": 149
+      "start": 144,
+      "end": 154
     },
     {
       "type": "MRN",
       "text": "P5609255",
-      "start": 158,
-      "end": 166
+      "start": 163,
+      "end": 171
     },
     {
       "type": "ADDRESS",
       "text": "27 Jalan Kembangan, Singapore 419122",
-      "start": 176,
-      "end": 212
+      "start": 181,
+      "end": 217
     },
     {
       "type": "PHONE",
       "text": "+65 9918 7933",
-      "start": 220,
-      "end": 233
+      "start": 225,
+      "end": 238
     },
     {
       "type": "ACCESSION",
       "text": "SP25-24969",
-      "start": 248,
-      "end": 258
+      "start": 253,
+      "end": 263
     },
     {
       "type": "DATE",
       "text": "19/11/2025",
-      "start": 273,
-      "end": 283
+      "start": 278,
+      "end": 288
     },
     {
       "type": "DATE",
       "text": "28/11/2025",
-      "start": 297,
-      "end": 307
+      "start": 302,
+      "end": 312
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ananya Raman",
-      "start": 328,
-      "end": 343
+      "start": 333,
+      "end": 348
     },
     {
       "type": "DOCTOR",
       "text": "Dr Ananya Raman",
-      "start": 4724,
-      "end": 4739
+      "start": 4729,
+      "end": 4744
     },
     {
       "type": "DATE",
       "text": "28 Nov 2025",
-      "start": 4743,
-      "end": 4754
+      "start": 4748,
+      "end": 4759
     },
     {
       "type": "DOCTOR",
       "text": "Dr Charlotte Clarke",
-      "start": 4782,
-      "end": 4801
+      "start": 4787,
+      "end": 4806
     },
     {
       "type": "DATE",
       "text": "28/11/2025",
-      "start": 4830,
-      "end": 4840
+      "start": 4835,
+      "end": 4845
     }
   ]
 }

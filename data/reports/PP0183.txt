@@ -2,7 +2,7 @@ Kallang Medical Centre
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Lim Siew Lan    NRIC: S9391119I
+Patient: Sim Jian Hui    NRIC: S9391119I
 DOB: 27/08/1951    MRN: MRN4091420
 Address: 27 Jalan Kembangan, Singapore 419122
 Phone: +65 6899 2212
@@ -15,4 +15,4 @@ Diagnosis. 1. Tumor-free fatty tissue. 2. - 4. Tumor-free pelvic lymph nodes on 
 COMMENT: Results discussed by phone with Dr Ong Li Ting on 24 Jan 2026.
 
 Electronically signed by Dr David Thompson, Consultant Pathologist, on 24/01/2026
-Page 1 of 1  |  Lim Siew Lan  |  MRN4091420
+Page 1 of 1  |  Sim Jian Hui  |  MRN4091420

@@ -2,7 +2,7 @@ Bukit Timah Cancer Institute
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Suresh Menon    NRIC: T3901981C
+Patient: Vikram Raman    NRIC: T3901981C
 DOB: 23/05/1983    MRN: P6309796
 Address: Blk 88 Tampines St 81, #03-214, Singapore 520088
 Phone: +65 8927 3947

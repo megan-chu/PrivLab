@@ -2,7 +2,7 @@ Riverside General Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Kavitha Krishnan    NRIC: G8161849L
+Patient: Ananya Pillai    NRIC: G8161849L
 DOB: 11/06/1972    MRN: P2166941
 Phone: +65 8750 6977
 Accession No: S26-87673    Collected: 15/08/2026    Reported: 20/08/2026
@@ -10,7 +10,7 @@ Requesting surgeon: Dr Arjun Raman
 
 Diagnosis: Ablated breast sample with a multifocal poorly differentiated invasive ductal. carcinoma (tumor diameter: 7 cm, 2.2 cm and 1.7 cm), the largest tumor focus with. focal ulceration of the skin and circumscribed intraductal spread. Focal. angioinvasion. Tumor-free dorsal resection margin. Together with the preliminary finding, this gives rise to the following tumor. classification: NOS, G III, pT4b(mult)N3aL1V0R0.
 
-COMMENT: Report copy sent to kavitha.krishnan48@mailbox.example at the request of Kavitha Krishnan.
+COMMENT: Report copy sent to ananya.pillai48@mailbox.example at the request of Ananya Pillai.
 
 Electronically signed by Dr Ong Zhi Hao, Consultant Pathologist, on 20/08/2026
-Page 1 of 1  |  Kavitha Krishnan  |  P2166941
+Page 1 of 1  |  Ananya Pillai  |  P2166941

@@ -2,7 +2,7 @@ Maple Grove University Hospital
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Susan Walker    SSN: 920-91-9791
+Patient: Eleanor Martinez    SSN: 920-91-9791
 DOB: 03/26/1988    MRN: MRN6199374
 Address: 3310 Elm Park Ave, Madison, WI 53711
 Phone: (518) 555-8167
@@ -14,4 +14,4 @@ FINAL DIAGNOSIS. KIDNEY, RIGHT, NEPHRECTOMY -. A. RENAL CELL CARCINOMA, CONVENTI
 COMMENT: Results discussed by phone with Dr Nurul Rahman on 12 Jun 2025.
 
 Electronically signed by Dr Thomas Johnson, Consultant Pathologist, on 06/12/2025
-Page 1 of 1  |  Susan Walker  |  MRN6199374
+Page 1 of 1  |  Eleanor Martinez  |  MRN6199374

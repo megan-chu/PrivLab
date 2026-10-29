@@ -2,7 +2,7 @@ St. Brendan Cancer Center
 Department of Anatomical Pathology
 SURGICAL PATHOLOGY REPORT
 
-Patient: Thomas Harris    SSN: 963-44-4531
+Patient: Emily Moore    SSN: 963-44-4531
 DOB: 12/18/1985    MRN: H2860421
 Phone: (814) 555-1897
 Accession No: SP25-89895    Collected: 04/27/2025    Reported: 05/04/2025
@@ -13,4 +13,4 @@ page 1 / 2. copy No. Examination: Histopathological examination. Cost of diagnos
 COMMENT: Results discussed by phone with Dr William Fletcher on 04 May 2025.
 
 Electronically signed by Dr Goh Mei Xuan, Consultant Pathologist, on 05/04/2025
-Page 1 of 1  |  Thomas Harris  |  H2860421
+Page 1 of 1  |  Emily Moore  |  H2860421
