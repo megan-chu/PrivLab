@@ -22,10 +22,13 @@ Usage:
 """
 import argparse
 import json
+import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
 
+from common import spark
 from common.config import ROOT
 from common.data import load_phi_truth, load_report, manifest
 from deid import pipeline
@@ -149,6 +152,18 @@ def print_report(r: dict, split: str) -> None:
             print(f"{c:58} {v.get('truth', 0):>4} {v.get('caught', 0):>7} {v.get('false_alarms', 0):>13}")
 
 
+def _git_commit() -> str:
+    """Short commit of the code that produced a result; "+dirty" if there were uncommitted changes."""
+    try:
+        commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True,
+                                text=True, timeout=5).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "deid", "common", "eval"], cwd=ROOT,
+                               capture_output=True, text=True, timeout=5).stdout.strip()
+        return commit + ("+dirty" if dirty else "") if commit else "unknown"
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Score de-identification against the answer key.")
     ap.add_argument("--split", default="dev", choices=["dev", "extra", "test", "hard", "redteam"])
@@ -166,8 +181,18 @@ def main() -> int:
 
     result = score(load_cases(args.split), args.mode)
     print_report(result, args.split)
+
+    # Every run gets its own file and records what produced it, so results never overwrite each other.
+    now = datetime.now(timezone(timedelta(hours=8)))
+    provider = spark.STEP_PROVIDER["names"] if args.mode == "spark" else None
+    result = {"run_at": now.isoformat(timespec="seconds"), "split": args.split, "mode": args.mode,
+              "provider": provider, "effort": spark.DEFAULT_EFFORT[provider] if provider else None,
+              "commit": _git_commit(), **{k: v for k, v in result.items() if k != "mode"}}
     RUNS.mkdir(exist_ok=True)
-    stem = RUNS / f"deid_{args.split}_{args.mode}"
+    kind = f"deid_{args.split}_{args.mode}{'-' + provider if provider else ''}"
+    for old in list(RUNS.glob(f"{kind}_2*.json")) + list(RUNS.glob(f"{kind}_2*_misses.txt")):
+        old.unlink()                                  # keep only the latest result of each kind
+    stem = RUNS / f"{kind}_{now:%Y%m%d-%H%M%S}"
     misses, false_pos = result.pop("_misses"), result.pop("_false_positives")
     stem.with_suffix(".json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     if args.show_misses:
