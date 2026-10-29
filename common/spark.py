@@ -32,9 +32,10 @@ USAGE_TOTALS = ROOT / "runs" / "spark_usage.json"
 SGT = timezone(timedelta(hours=8))
 
 # Which provider each step uses (PLAN.md §2). Change here to move a step if credits run low.
-# Hard cases, 29 Oct: Meta left 0% of identifiers, Baseten (Muse Spark Open, effort low) 4.1%,
-# so the name check stays on Meta; Baseten is the backup.
-STEP_PROVIDER = {"names": "meta", "define": "meta", "candidates": "meta"}
+# Name check on Muse Spark Open (open weights, so a hospital can self-host it): owner's decision, 29 Oct.
+# Measured before the hold-rule update: Meta left 0% of hard-case identifiers, Muse Spark Open 4.1%;
+# the hold rule now catches those names locally. Meta stays the backup and runs extraction.
+STEP_PROVIDER = {"names": "baseten", "define": "meta", "candidates": "meta"}
 # PLACEHOLDER: USD per 1M (input, output) tokens. Fill in from the providers' docs or bills.
 PRICE_PER_M = {"meta": (None, None), "baseten": (None, None)}
 WARN_AT_USD = {"meta": (75, 120), "baseten": (50, 80)}

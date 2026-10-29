@@ -5,8 +5,9 @@ Healthcare professionals spend hours reading reports and retyping data. Reports 
 
 PrivLab de-identifies in two layers. **Presidio pattern recognisers** run on the laptop and mask
 structured identifiers (NRIC/FIN, NHS and SSN-format numbers, MRN, accession numbers, phones, emails,
-dates, addresses and labelled names). **Muse Spark 1.3** (Meta Model API) then looks for names and
-other free-text details in the already-masked text. Extraction only ever receives de-identified text.
+dates, addresses and labelled names). **Muse Spark Open** (Meta's open-weights model, hosted on Baseten) then looks for names and
+other free-text details in the already-masked text. Because it is open weights, the whole de-identification
+step can later run inside a hospital: only two settings change, no code. Extraction only ever receives de-identified text.
 
 The data in this repo is synthetic: real TCGA pathology text with randomly generated identifiers.
 For real hospital data, the two layers alone are not enough, because an identifier can slip past them:
@@ -26,15 +27,15 @@ For real hospital data, the two layers alone are not enough, because an identifi
 | **Share structured output only.** Registry exports contain a random case id, report id, field values and evidence positions, never free text, so a missed name does not travel onward. | Built |
 | **Measured exposure.** Evaluation reports the share of planted identifiers that reach the API (missed locally) and the share left after both layers. | Built |
 | **Learns from corrections without leaking.** Confirmed values become examples for later prompts; an example that still contains an identifier pattern is never stored. | Built |
-| **Self-hosted second layer.** For production, run the name check on an open-weights model (Muse Spark Open or Muse Glimmer) on the hospital's own servers, so nothing reaches an outside API. | Roadmap |
+| **Open-weights second layer, hostable in-house.** The name check runs on Muse Spark Open. For production, the hospital hosts the same weights on its own servers and changes two settings (`BASETEN_BASE_URL`, `BASETEN_MODEL`), so nothing reaches an outside API. | Open-weights model: built · in-hospital hosting: roadmap (config only) |
 | **Governance.** Real use needs hospital approval, a data-processing agreement with the API provider and a review of its data terms. | Out of scope for the hackathon |
 
 **Current results (synthetic data, development sets).** Locally (patterns + hold rule, no API call), PrivLab
 catches 100% of the 1,876 planted identifiers in the dev and extra reports, with no false alarms. That is
 partly an artefact of the data: every planted name follows a cue such as "Patient:" or "Dr". On hand-written
-hard cases (names and places without cues) Presidio alone caught 8%; with the hold rule and Muse Spark 1.3,
+hard cases (names and places without cues) Presidio alone caught 8%; with the hold rule and the Muse Spark name check,
 0% remain. The hard cases were also used to improve the rules, so these are development numbers; the
 held-out test reports give the final figures.
-The name check could run on Muse Spark Open, which a hospital could host itself; in our tests it was
-not yet stable on hard names (single surnames, lower case), so today PrivLab uses Muse Spark 1.3,
-which caught all of them. Self-hosting is on the roadmap once the open model matches.
+The name check runs on Muse Spark Open so that de-identification can be hosted locally. In an early
+test, before the hold rule caught them locally, it missed 2 of 49 hard names that Muse Spark 1.3 caught;
+Muse Spark 1.3 stays available as a backup, and the held-out test run reports the final figures.
