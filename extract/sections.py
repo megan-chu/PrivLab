@@ -10,7 +10,9 @@ HEADING = re.compile(
     r"\b(ADDENDUM|AMENDED|CASE SYNOPSIS|SYNOPTIC(?: DATA)?|FINAL DIAGNOSIS|"
     r"PRE-?OP(?:ERATIVE)? DIAGNOSIS|POST-?OP(?:ERATIVE)? DIAGNOSIS|FROZEN SECTION DIAGNOSIS|"
     r"DIAGNOSIS|MICROSCOPIC(?: DESCRIPTION)?|GROSS(?: DESCRIPTION)?|"
-    r"CLINICAL (?:DIAGNOSIS|HISTORY|DATA)|PATIENT HISTORY|HISTORY|COMMENT)\s*[:.]", re.I)
+    r"CLINICAL (?:DIAGNOSIS|HISTORY)|PATIENT HISTORY|HISTORY|COMMENT)\s*[:.]", re.I)
+# "CLINICAL DATA:" is left out on purpose: in TCGA synoptic blocks it labels the PSA line inside the
+# synoptic section, so it must not switch the section to history (PP0185, 29 Oct).
 PRIORITY = {"addendum": 5, "synoptic": 4, "diagnosis": 4, "microscopic": 3, "other": 2, "comment": 2,
             "gross": 1, "history": 0}
 WEAK = {"gross", "history"}           # a value only from here is never green
