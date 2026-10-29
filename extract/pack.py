@@ -1,0 +1,35 @@
+"""
+pack.py - the user's knowledge pack (packs/default.yaml, git-ignored). Starts empty.
+
+Each field is defined once by the user (define_field) and then learns from confirmations.
+"""
+import yaml
+
+from common.config import ROOT
+from extract.types import Field
+
+PACK_PATH = ROOT / "packs" / "default.yaml"
+
+
+def load_pack(path=None) -> dict:
+    path = path or PACK_PATH
+    if not path.exists():
+        return {"version": 1, "fields": []}
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return {"version": data.get("version", 1), "fields": [Field(**f) for f in data.get("fields", [])]}
+
+
+def save_pack(pack: dict, path=None) -> None:
+    path = path or PACK_PATH
+    path.parent.mkdir(exist_ok=True)
+    data = {"version": pack["version"], "fields": [f.to_dict() for f in pack["fields"]]}
+    path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True), encoding="utf-8")
+
+
+def get_field(pack: dict, key: str) -> Field | None:
+    return next((f for f in pack["fields"] if f.key == key), None)
+
+
+def put_field(pack: dict, f: Field) -> None:
+    pack["fields"] = [x for x in pack["fields"] if x.key != f.key] + [f]
+    pack["version"] += 1
