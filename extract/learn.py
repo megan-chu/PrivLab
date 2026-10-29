@@ -17,6 +17,7 @@ from common.config import ROOT
 from common.data import manifest
 from deid import pipeline
 from deid.names import locate
+from deid.patterns import leftover_identifiers
 from extract.checks import parse_number
 from extract.pack import get_field, load_pack, put_field, save_pack
 
@@ -56,7 +57,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
              "confirmed": confirmed, "outcome": outcome}
 
     # 2. Then learn.
-    _learn(field, predicted, confirmed, result.text, outcome)
+    _learn(field, predicted, confirmed, result.text, outcome, result.kept_types)
     put_field(pack, field)
     save_pack(pack, pack_path)
     entry["readiness_after"] = field.readiness
@@ -110,17 +111,20 @@ def _outcome(pred, conf, kind: str) -> str:
     return "correct" if _same(pred, conf, kind) else "wrong"
 
 
-def _learn(field, predicted, confirmed, text: str, outcome: str) -> None:
+def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=()) -> None:
     def context(start, end):
         return " ".join(text[max(0, start - CONTEXT):end + CONTEXT].split())
 
-    if confirmed:
-        good = {"report": predicted["deid_id"], "value": confirmed["value"],
-                "context": context(confirmed["start"], confirmed["end"])}
+    def safe(snippet: str) -> bool:
+        # Examples travel with every later prompt: never keep one with an identifier still in it.
+        return not leftover_identifiers(snippet, kept_types)
+
+    if confirmed and safe(ctx := context(confirmed["start"], confirmed["end"])):
+        good = {"report": predicted["deid_id"], "value": confirmed["value"], "context": ctx}
         field.examples["good"] = (field.examples["good"] + [good])[-KEEP_EXAMPLES:]
     top = next((c for c in predicted["candidates"] if c["id"] == predicted["candidate_id"]), None)
-    if outcome in ("wrong", "extra") and top and top["start"] is not None:
-        bad = {"report": predicted["deid_id"], "context": context(top["start"], top["end"]),
+    if outcome in ("wrong", "extra") and top and top["start"] is not None and safe(ctx := context(top["start"], top["end"])):
+        bad = {"report": predicted["deid_id"], "context": ctx,
                "reason": "not this one" if confirmed else "not stated in this report"}
         field.examples["bad"] = (field.examples["bad"] + [bad])[-KEEP_EXAMPLES:]
 
