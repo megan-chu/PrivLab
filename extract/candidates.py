@@ -92,6 +92,14 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
 
 
 def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None) -> dict:
+    from extract.learn import remember_prediction
+
+    result = _build(deid_id, field, status, top, ranked, reason)
+    remember_prediction(result)                 # frozen before any feedback ("test then learn")
+    return result
+
+
+def _build(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None) -> dict:
     return {"deid_id": deid_id, "field": field.key, "status": status,
             "value": top["value"] if top else None, "unit": top["unit"] if top else None,
             "candidate_id": top["id"] if top else None, "evidence_text": top["evidence_text"] if top else None,
