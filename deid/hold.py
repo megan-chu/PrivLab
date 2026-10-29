@@ -151,3 +151,63 @@ def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
             flags.remove((a, b))
         flags.append((start, end))
     return sorted(flags + fake)
+
+
+SUSPECT_RUN = re.compile(rf"(?<![A-Za-z'])({WORDPART})((?:[ \t]+{WORDPART}){{1,3}})(?![A-Za-z'])")
+
+
+def suspects(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
+    """Words the local rules are unsure about and do NOT hold: they go to the model as explicit
+    questions ("is this a name?"), and come back to the user unticked if the model says nothing.
+
+      - a lone unknown Title-case word at the start of a sentence ("Kumar consented ...")
+      - a surname-word at the start of a sentence ("Tan, a 54-year-old man ...")
+      - 2-4 unknown words in a row in lower case or ALL CAPS ("lim boon huat", "ONG KOK WAH")
+
+    Offsets are in the given (masked) text. Spans the hold rule already flags are not repeated.
+    """
+    from deid.normalise import fold
+
+    text = fold(text)
+    vocab, allow = vocabulary(), {a.lower() for a in allowed}
+    tag_spans = [(t.start, t.end) for t in tags] if tags is not None else \
+        [(m.start(), m.end()) for m in TAG.finditer(text)]
+    held = hold_flags(text, allowed, tags)
+
+    def free(start, end):
+        return not any(a < end and start < b for a, b in tag_spans + held)
+
+    out = []
+    for m in TOKEN.finditer(text):
+        word = m.group()
+        if not (_title(word) and _sentence_start(text, m.start()) and free(m.start(), m.end())):
+            continue
+        nxt = re.match(rf"[ \t]+({WORDPART})", text[m.end():])
+        if nxt and _title(nxt.group(1)):
+            continue                                            # part of a Title-case run: hold rule's job
+        plain = word.lower().replace("’", "'").removesuffix("'s")
+        if plain not in allow and (plain in SURNAMES or _unknown(word, vocab, allow)):
+            out.append((m.start(), m.end()))
+    # Runs of 2-4 unknown words in one case (all lower or ALL CAPS), after an optional title.
+    tokens = [m for m in TOKEN.finditer(text) if free(m.start(), m.end())]
+    run: list = []
+
+    def close():
+        names = [t for t in run if t.group().lower().rstrip(".") not in TITLES]
+        if 2 <= len(names) <= 4:
+            out.append((run[0].start(), run[-1].end()))
+
+    for t in tokens:
+        w = t.group()
+        case_ok = w.islower() or (w.isupper() and len(w) > 1)
+        joins = run and text[run[-1].end():t.start()] in (" ", "\t") and (
+            w.islower() == run[-1].group().islower() or run[-1].group().lower() in TITLES)
+        is_title_word = w.lower() in TITLES and not run
+        unknown = case_ok and len(w) >= 2 and w.lower() not in allow and _unknown(w, vocab, allow)
+        if (unknown or is_title_word) and (not run or joins):
+            run.append(t)
+        else:
+            close()
+            run = [t] if unknown or is_title_word else []
+    close()
+    return sorted(set(out))
