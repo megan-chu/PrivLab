@@ -1,5 +1,6 @@
 # Qualification set for the name-check model (deid/qualify.py, eval/qualify_model.py).
-# Identifiers here are ones the LOCAL rules (patterns + hold rule) miss, so the set measures the model alone.
+# Identifiers here are ones the LOCAL rules (patterns + hold rule, name list off) miss, so the set measures
+# the model alone; eval/qualify_model.py turns the name list off.
 # FROZEN: never tune the local rules or the name-check prompt on these lines; add new lines instead.
 # Same format as hard_cases.txt. All names are invented.
 

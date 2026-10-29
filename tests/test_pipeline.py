@@ -47,7 +47,9 @@ def test_detections_hide_identifier_text_by_default(fake_spark):
     assert all("Tan Ah Wing" not in d["context"] for d in r["detections"])
 
 
-def test_flags_prechecked_hide_and_layer1_learns(fake_spark):
+def test_flags_prechecked_hide_and_layer1_learns(fake_spark, monkeypatch):
+    from deid import hold
+    monkeypatch.setattr(hold, "USE_NAME_LIST", False)          # else the name list holds "ah kow"
     p = profile()
     # lower case, no particle: neither the patterns nor the hold rule catch it, only Muse Spark
     fake_spark["state"]["reply"] = {"findings": [{"text": "ah kow", "kind": "PERSON"}]}
@@ -196,7 +198,9 @@ def test_name_check_provider(fake_spark):
 # --------------------------------------------------------------------------
 # Robust to a weak or swapped name-check model
 # --------------------------------------------------------------------------
-def test_suspect_the_model_ignores_comes_back_unticked(fake_spark):
+def test_suspect_the_model_ignores_comes_back_unticked(fake_spark, monkeypatch):
+    from deid import hold
+    monkeypatch.setattr(hold, "USE_NAME_LIST", False)                          # else the name list holds Kumar
     fake_spark["state"]["reply"] = {"findings": [], "not_identifiers": []}       # a model that says nothing
     r = pipeline.deidentify_report(text="Kumar consented to the procedure.", profile=profile())
     flags = confirm(r["deid_id"])
@@ -211,6 +215,31 @@ def test_suspect_ruled_out_by_the_model_is_not_asked(fake_spark):
     r = pipeline.deidentify_report(text="Margins clear. Tan, firm cut surface.", profile=profile())
     done = confirm(r["deid_id"])
     assert done["next"] == "done" and "Tan, firm" in done["text"]
+
+
+def test_listed_name_is_held_locally(fake_spark):
+    for text in ("Kumar consented to the procedure.", "Report handed to ming wei at the desk.",
+                 "Darryl consented to the procedure."):                       # surnames; first name
+        r = pipeline.deidentify_report(text=text, profile=profile())
+        held = pipeline.confirm_deid(r["deid_id"])
+        assert held["next"] == "hold" and fake_spark["sent"] == []          # public name lists, no model
+
+
+def test_review_priority(fake_spark, monkeypatch):
+    fake_spark["state"]["fail"] = TimeoutError("slow")                         # first, so nothing is cached
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    assert confirm(r["deid_id"])["review_priority"]["level"] == "high"        # name check unavailable
+    fake_spark["state"]["fail"] = None
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    assert confirm(r["deid_id"])["review_priority"] == {"level": "low", "reasons": []}
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    held = pipeline.confirm_deid(r["deid_id"])
+    done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": [held["hold"][0]["id"]]})
+    assert done["review_priority"]["level"] == "medium"                        # a name-like word left visible
+    import deid.qualify as qualify
+    monkeypatch.setattr(qualify, "is_qualified", lambda provider: False)
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    assert "name-check model not qualified" in confirm(r["deid_id"])["review_priority"]["reasons"]
 
 
 def test_unqualified_model_uses_qualified_backup_or_warns(fake_spark, monkeypatch):

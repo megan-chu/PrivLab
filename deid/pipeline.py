@@ -10,12 +10,17 @@ called before confirm_deid. A Layer 2 failure turns the run amber ("review manua
 crash, never a raw-text fallback. Corrections are learned in the profile; Muse Spark finds
 the user keeps hidden go to always_remove, so Layer 1 catches them locally next time.
 Run state is saved encrypted per deid_id (runs/state/) for audit and replay.
+
+The final response carries review_priority (high | medium | low, with reasons), so a reviewer
+checks the riskiest reports first: high = a pattern left in the output, or the name check missing
+or unqualified; medium = name check not run, or name-like words the user kept visible.
 """
 import secrets
 import time
 from collections import Counter
 from pathlib import Path
 
+from common import spark
 from common.config import ROOT
 from common.timing import record, timed
 from deid import profile as prof
@@ -61,7 +66,8 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
     deid_id = "d_" + secrets.token_hex(4)
     run = {"deid_id": deid_id, "report_id": report_id, "text": text, "profile": profile, "persist": persist,
            "step": "review", "spans": spans, "allowed": list(reusable), "layer2": "not run",
-           "warnings": warnings, "trace": [], "shown_at": time.monotonic(), "review_s": {}}
+           "warnings": warnings, "trace": [], "shown_at": time.monotonic(), "review_s": {},
+           "kept_names": 0, "unqualified": False, "priority": None}
     _trace(run, "layer1", f"Presidio found {len(spans)} identifiers on the laptop. Nothing sent.")
     _RUNS[deid_id] = run
     _save(run)
@@ -119,6 +125,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         kept = [h for h in run["holds"] if h.id in keep]
         prof.learn(run["profile"], allow=[h.text for h in kept], remove=[{"text": h.text, "type": "NAME"} for h in hide])
         run["allowed"] += [h.text for h in kept]
+        run["kept_names"] += len(kept)
         spans = merge_spans(run["confirmed"] + hide)
         _trace(run, "hold", f"You hid {len(hide)} and kept {len(kept)} of the held words.")
 
@@ -131,6 +138,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
     provider, warning = choose_provider()
     if warning:
         run["warnings"].append(warning)
+    run["unqualified"] = warning is not None and provider == spark.STEP_PROVIDER["names"]
     try:
         with timed("deid_layer2", report_id=run["report_id"], provider=provider):
             found, not_found, unresolved = find_names(
@@ -174,6 +182,7 @@ def confirm_deid_flags(deid_id: str, keep=(), hide=()) -> dict:
     # Learning: hidden finds are caught locally next time; kept ones are not asked again.
     prof.learn(run["profile"], allow=[s.text for s in kept], remove=[{"text": s.text, "type": s.type} for s in hidden])
     run["allowed"] += [s.text for s in kept]
+    run["kept_names"] += len(kept)
     _trace(run, "flags", f"You hid {len(hidden)} and kept {len(kept)}; hidden ones are learned for next time.")
     return _finish(run, merge_spans(run["layer1_final"] + hidden))
 
@@ -201,13 +210,30 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     result = DeidResult(deid_id=deid_id, report_id=run["report_id"], status="confirmed", text=tagged, tags=tags,
                         summary=summary, profile_version=profile.version, vault_ref=str(vault_path),
                         kept_types=kept, allowed=allowed, seal=make_seal(deid_id, tagged, kept, allowed))
-    run.update(step="done", final_spans=spans, result=result)
+    run.update(step="done", final_spans=spans, result=result, priority=review_priority(run, len(leftovers)))
     if run["persist"]:
         prof.save_profile(profile)
     _trace(run, "apply", f"{len(tags)} identifiers replaced with tags; encrypted vault saved.", ok=not leftovers)
     _save(run)
     return {"deid_id": deid_id, "next": "done", "text": tagged, "summary": summary, "layer2": run["layer2"],
-            "warnings": run["warnings"], "trace": run["trace"], "review_seconds": run["review_s"]}
+            "warnings": run["warnings"], "trace": run["trace"], "review_seconds": run["review_s"],
+            "review_priority": run["priority"]}
+
+
+def review_priority(run: dict, leftovers: int) -> dict:
+    """Which finished reports a reviewer should check first, and why."""
+    high, medium = [], []
+    if leftovers:
+        high.append(f"{leftovers} identifier pattern(s) left in the output")
+    if run["layer2"] == "unavailable":
+        high.append("name check unavailable")
+    elif run["layer2"] == "skipped":
+        medium.append("name check not run")
+    if run["unqualified"] and run["layer2"] != "skipped":
+        high.append("name-check model not qualified")
+    if run["kept_names"]:
+        medium.append(f"{run['kept_names']} name-like word(s) you kept visible")
+    return {"level": "high" if high else "medium" if medium else "low", "reasons": high + medium}
 
 
 def result_for(deid_id: str) -> DeidResult | None:
@@ -251,7 +277,7 @@ def _save(run: dict) -> None:
     """Encrypted state for audit and replay (contains report text and identifiers)."""
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     state = {k: run[k] for k in ("deid_id", "report_id", "step", "text", "allowed", "layer2", "warnings", "trace",
-                                 "review_s")}
+                                 "review_s", "priority")}
     for key in ("spans", "confirmed", "holds", "layer1_final", "flags", "final_spans"):
         if key in run:
             state[key] = [s.to_dict() for s in run[key]]

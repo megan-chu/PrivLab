@@ -5,6 +5,7 @@ Runs the frozen qualification set (data/hard_cases/qualify.txt: identifiers the 
 plus clinical words that must not be flagged) through the local layers and then the given model,
 and records the result for the exact settings (provider, URL, model, effort, prompt version).
 deid/pipeline.py only uses a qualified model; anything else falls back or warns.
+The local name list is turned off here, so the model is measured on names the list would hold.
 
   catch         share of identifiers the local layers missed that the model put in findings
   false alarms  model findings on the negative lines
@@ -20,7 +21,7 @@ import argparse
 import sys
 
 from common.config import ROOT
-from deid import pipeline, qualify
+from deid import hold, pipeline, qualify
 from deid.hold import suspects
 from deid.mask import mask
 from deid.names import find_names
@@ -38,6 +39,7 @@ def main() -> int:
     if not args.allow_api:
         ap.error("this makes live calls (one per line of the qualification set); add --allow-api once approved")
 
+    hold.USE_NAME_LIST = False
     cases = parse(QUALIFY_FILE)
     to_catch = caught = false_alarms = local = errors = 0
     misses, alarms = [], []
