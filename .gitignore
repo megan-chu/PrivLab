@@ -29,7 +29,6 @@ packs/
 
 # Editors / OS
 .vscode/*
-!.vscode/settings.json
 .DS_Store
 Thumbs.db
 
