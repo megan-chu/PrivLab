@@ -32,3 +32,6 @@ packs/
 !.vscode/settings.json
 .DS_Store
 Thumbs.db
+
+# Stray pytest temp folders (tests now use runs/pytest)
+pytest-of-*/
