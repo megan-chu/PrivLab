@@ -55,7 +55,7 @@ def test_only_smoke_test_uses_raw_call():
     assert sorted(users) == ["common/spark.py", "eval/smoke_spark.py", "tests/test_spark_guard.py"]
 
 
-def test_request_path_with_fake_client(monkeypatch, tmp_path):
+def test_request_path_with_fake_client(monkeypatch, tmp_path, local_keys):
     """Fallback to json_object, schema validation, cache and usage log, without the real API."""
     import openai
     from types import SimpleNamespace

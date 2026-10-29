@@ -54,8 +54,14 @@ class Settings:
             )
 
 
+_loaded_env_files: set = set()
+
+
 def load_config(env_file: Path | None = None) -> Settings:
-    load_dotenv(env_file or ROOT / ".env", override=False)
+    env_file = env_file or ROOT / ".env"
+    if env_file not in _loaded_env_files:       # read .env once per run, not on every call
+        load_dotenv(env_file, override=False)
+        _loaded_env_files.add(env_file)
     values = {
         field: os.environ.get(env, "").strip() or DEFAULTS.get(field, "")
         for field, env in ENV_NAMES.items()
