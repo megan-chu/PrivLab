@@ -151,3 +151,33 @@ def test_deid_review_time_per_step(fake_spark):
     done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []}, use_spark=False) \
         if held["next"] == "hold" else held
     assert set(done["review_seconds"]) >= {"review"} and all(v >= 0 for v in done["review_seconds"].values())
+
+
+def test_one_call_per_report_even_after_a_correction(paths):
+    grade = {"key": "grade", "meaning_question": "Histological grade?", "type": "choice",
+             "unit": None, "range_min": None, "range_max": None, "choices": ["1", "2", "3"]}
+    paths["spark"]["state"]["reply"] = grade
+    define_field("grade", None, accept=grade, pack_path=paths["pack"])
+    r = pipeline.deidentify_report(text=REPORT + " Grade 2.", profile=new_profile()[0])
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    paths["spark"]["state"]["reply"] = {"fields": [
+        {"key": "tumour_size", "candidates": [{"value_text": "2.1", "unit_text": "cm", "reason": "t",
+                                                "evidence_text": "Invasive ductal carcinoma, 2.1 cm", "confidence": 0.9}]},
+        {"key": "grade", "candidates": [{"value_text": "2", "unit_text": "", "reason": "t",
+                                          "evidence_text": "Grade 2", "confidence": 0.9}]}]}
+    sent = len(paths["spark"]["sent"])
+    res = find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"])
+    confirm(paths, res, candidate_id=res["candidate_id"])                   # the pack changes here
+    res2 = find_candidates(r["deid_id"], "grade", pack_path=paths["pack"])
+    assert len(paths["spark"]["sent"]) == sent + 1                           # the second field reused the reply
+    assert res2["value"] == "2" and res2["model_ms"] == 0                    # short choice codes pass the checks
+
+
+def test_check_lists_only_results_to_recheck(paths):
+    from eval.score_fields import to_check
+    res = run(paths, REPORT, ("9", "specimen 9 x 6 x 3 cm"), ("2.1", "tumour 2.1 cm"))
+    confirm(paths, res, candidate_id="c2")                                   # wrong pick
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    confirm(paths, res, candidate_id=res["candidate_id"])                   # correct
+    lines = to_check(read_log(paths["log"]))
+    assert lines[0].startswith("\n1 results") and "wrong" in lines[1] and len(lines) == 2

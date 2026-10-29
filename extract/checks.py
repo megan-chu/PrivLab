@@ -29,6 +29,14 @@ def parse_number(value_text: str, unit_text: str | None, field_unit: str | None)
     return round(value, 3)
 
 
+def _in_evidence(word: str, evidence: str) -> bool:
+    """Long words as substrings; short codes not glued to a digit ("N0" in "pT3N0Mx", not "2" in "12")."""
+    if len(word) > 2:
+        return word in evidence
+    before = r"(?<!\d)" if word[0].isdigit() else ""
+    return re.search(before + re.escape(word) + r"(?!\d)", evidence) is not None
+
+
 def run_checks(field, cand, text: str, kept_types=()) -> dict:
     """Returns {"checks": {...}, "value", "start", "end", "section", "fail"}; fail = first failed check."""
     out = {"checks": {}, "value": None, "start": None, "end": None, "section": None, "fail": None}
@@ -50,8 +58,9 @@ def run_checks(field, cand, text: str, kept_types=()) -> dict:
         choice = next((c for c in field.choices if c.lower() == cand.value_text.strip().lower()), None)
         value = choice
         out["checks"]["type_ok"] = choice is not None
-        words = [w for w in re.findall(r"[a-z0-9]+", (choice or cand.value_text).lower()) if len(w) > 2]
-        out["checks"]["value_in_evidence"] = bool(words) and all(w in evidence.lower() for w in words)
+        tokens = re.findall(r"[a-z0-9]+", (choice or cand.value_text).lower())
+        words = [w for w in tokens if len(w) > 2] or tokens          # "T3", "N0", "2": short codes
+        out["checks"]["value_in_evidence"] = bool(words) and all(_in_evidence(w, evidence.lower()) for w in words)
     out["value"] = value
     out["checks"]["section_ok"] = out["section"] not in WEAK if hits else False
     out["checks"]["no_identifiers"] = not leftover_identifiers(f"{cand.value_text}\n{evidence}", kept_types)
