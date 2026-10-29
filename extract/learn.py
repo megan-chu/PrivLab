@@ -11,10 +11,12 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
 The log stores values, report ids and evidence positions only, never report text.
 """
 import json
+import time
 from datetime import datetime, timedelta, timezone
 
 from common.config import ROOT
 from common.data import manifest
+from common.timing import record
 from deid import pipeline
 from deid.names import locate
 from deid.patterns import leftover_identifiers
@@ -26,11 +28,13 @@ SGT = timezone(timedelta(hours=8))
 KEEP_EXAMPLES = 3
 CONTEXT = 60                          # characters of de-identified text around an example
 _PREDICTIONS: dict[tuple[str, str], dict] = {}
+_SHOWN_AT: dict[tuple[str, str], float] = {}     # when the result was shown to the user
 
 
 def remember_prediction(result: dict) -> None:
     """Called by find_candidates: freeze what PrivLab predicted, before any feedback."""
     _PREDICTIONS[(result["deid_id"], result["field"])] = json.loads(json.dumps(result))
+    _SHOWN_AT[(result["deid_id"], result["field"])] = time.monotonic()
 
 
 def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None, value=None,
@@ -48,18 +52,22 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     if isinstance(confirmed, str):
         return {"status": "error", "reason": confirmed}
     outcome = _outcome(predicted["value"], confirmed["value"] if confirmed else None, field.type)
+    review_s = round(time.monotonic() - _SHOWN_AT.get((deid_id, field_key), time.monotonic()), 1)
 
     # 1. Score first, with the prediction exactly as it was.
     entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id,
              "report_id": result.report_id, "split": _split(result.report_id), "phase": phase,
              "field": field.key, "pack_version": pack["version"],
              "predicted": {k: predicted[k] for k in ("value", "status", "start", "end", "reason")},
-             "confirmed": confirmed, "outcome": outcome}
+             "confirmed": confirmed, "outcome": outcome,
+             "model_ms": predicted.get("model_ms"), "review_s": review_s}       # for speed improvements
 
     # 2. Then learn.
+    t0 = time.perf_counter()
     _learn(field, predicted, confirmed, result.text, outcome, result.kept_types)
     put_field(pack, field)
     save_pack(pack, pack_path)
+    entry["learn_ms"] = round((time.perf_counter() - t0) * 1000, 1)
     entry["readiness_after"] = field.readiness
 
     path = log_path or LOG_PATH
@@ -67,6 +75,10 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry) + "\n")
     _PREDICTIONS.pop((deid_id, field_key), None)
+    _SHOWN_AT.pop((deid_id, field_key), None)
+    record("field_review", review_s * 1000, report_id=result.report_id, field=field.key,
+           status=predicted["status"], outcome=outcome)
+    record("field_learn", entry["learn_ms"], report_id=result.report_id, field=field.key)
     return {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
             "readiness": field.readiness}
 

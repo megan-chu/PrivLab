@@ -4,7 +4,9 @@ score_fields.py - extraction scores from the "test then learn" log (runs/score_l
 Each log line holds PrivLab's prediction (saved before feedback) and the user's confirmed answer.
 Per field: correct = TP; wrong counts as one FP and one FN; extra = FP; missed = FN; true_empty is
 correct but has no value. Also the learning curve (running accuracy, report by report) and the
-number of confirmations until the field first became Ready.
+number of confirmations until the field first became Ready, and median review time
+(seconds from showing a result to the user's answer) for green and amber results, learn time per confirmation, and the
+teaching effort to Ready (your total review seconds and elapsed minutes).
 
 Writes runs/fields_<phase>[_<split>]_<YYYYMMDD-HHMMSS>.json (only the latest of each kind is kept).
 
@@ -14,6 +16,7 @@ Usage:
 """
 import argparse
 import json
+import statistics
 import sys
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -40,12 +43,32 @@ def score(entries: list[dict]) -> dict:
             ok += r["outcome"] in ("correct", "true_empty")
             curve.append(round(ok / i, 3))
         to_ready = next((i for i, r in enumerate(rows, 1) if r.get("readiness_after") == "ready"), None)
+        review = {status: _median([r.get("review_s") for r in rows if r["predicted"]["status"] == status])
+                  for status in ("green", "amber", "missing")}
         out[key] = {"reports": len(rows), **n,
                     "precision": None if precision is None else round(precision, 3),
                     "recall": None if recall is None else round(recall, 3),
                     "f1": None if f1 is None else round(f1, 3),
-                    "learning_curve": curve, "confirmations_to_ready": to_ready}
+                    "learning_curve": curve, "confirmations_to_ready": to_ready,
+                    "median_review_s": review, "median_model_ms": _median([r.get("model_ms") for r in rows]),
+                    "median_learn_ms": _median([r.get("learn_ms") for r in rows]),
+                    "to_ready": _to_ready(rows, to_ready)}
     return out
+
+
+def _to_ready(rows: list[dict], n: int | None) -> dict | None:
+    """Teaching effort until the field first became Ready: your review seconds and elapsed minutes."""
+    if n is None:
+        return None
+    first, ready = datetime.fromisoformat(rows[0]["ts"]), datetime.fromisoformat(rows[n - 1]["ts"])
+    reviews = [r.get("review_s") for r in rows[:n] if r.get("review_s") is not None]
+    return {"confirmations": n, "review_s_total": round(sum(reviews), 1) if reviews else None,
+            "elapsed_min": round((ready - first).total_seconds() / 60, 1)}
+
+
+def _median(values) -> float | None:
+    values = [v for v in values if v is not None]
+    return round(statistics.median(values), 1) if values else None
 
 
 def main() -> int:
@@ -69,6 +92,12 @@ def main() -> int:
         fmt = lambda x: "-" if x is None else f"{x:.2f}"
         print(f"{key:16} {s['reports']:>3} {fmt(s['precision']):>6} {fmt(s['recall']):>6} {fmt(s['f1']):>6} "
               f"{s['confirmations_to_ready'] or '-':>12}  {s['learning_curve']}")
+        r = s["median_review_s"]
+        t = s["to_ready"] or {}
+        print(f"{'':16} review (median s): green {r['green']} | amber {r['amber']} | missing {r['missing']}"
+              f" | model call {s['median_model_ms']} ms | learn {s['median_learn_ms']} ms")
+        print(f"{'':16} time to Ready: {t.get('confirmations', '-')} confirmations, your review "
+              f"{t.get('review_s_total', '-')} s, elapsed {t.get('elapsed_min', '-')} min")
 
     now = datetime.now(timezone(timedelta(hours=8)))
     kind = f"fields_{args.phase}{'_' + args.split if args.split else ''}{'_try' if args.log else ''}"

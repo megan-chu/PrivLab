@@ -29,6 +29,12 @@ def _get_logger() -> logging.Logger:
     return _logger
 
 
+def record(name: str, ms: float, /, **context) -> None:
+    """Log a duration measured elsewhere (e.g. how long the user took to review)."""
+    extra = " ".join(f"{k}={v}" for k, v in context.items())
+    _get_logger().info("%s\t%.1f ms\t%s", name, ms, extra)
+
+
 @contextmanager
 def timed(name: str, /, **context):
     t0 = time.perf_counter()

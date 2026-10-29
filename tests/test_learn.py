@@ -72,6 +72,8 @@ def test_ready_after_four_of_five_and_examples_capped(paths):
     assert out["readiness"] == "ready" and len(f.examples["good"]) == 3
     s = score(read_log(paths["log"]))["tumour_size"]
     assert (s["f1"], s["confirmations_to_ready"], s["learning_curve"][-1]) == (1.0, 5, 1.0)
+    assert s["to_ready"]["confirmations"] == 5 and s["to_ready"]["review_s_total"] >= 0
+    assert s["median_learn_ms"] is not None and s["median_review_s"]["green"] is not None
 
 
 def test_confirm_needs_a_prediction_first(paths):
@@ -132,3 +134,20 @@ def test_example_with_identifier_is_not_learned_or_sent(paths, monkeypatch):
     pipeline.confirm_deid(r["deid_id"], use_spark=False)
     res = find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"])
     assert res["status"] == "amber" and paths["spark"]["sent"] == []         # refused before sending
+
+
+def test_review_and_model_time_are_recorded(paths):
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    confirm(paths, res, candidate_id=res["candidate_id"])
+    entry = read_log(paths["log"])[0]
+    assert entry["review_s"] >= 0 and entry["model_ms"] is not None and entry["learn_ms"] >= 0
+    s = score(read_log(paths["log"]))["tumour_size"]
+    assert s["median_review_s"]["amber"] is not None or s["median_review_s"]["green"] is not None
+
+
+def test_deid_review_time_per_step(fake_spark):
+    r = pipeline.deidentify_report(text="Next of kin: Rajesh Kumar phoned. Seen with Tan Ah Kow.", profile=new_profile()[0])
+    held = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []}, use_spark=False) \
+        if held["next"] == "hold" else held
+    assert set(done["review_seconds"]) >= {"review"} and all(v >= 0 for v in done["review_seconds"].values())
