@@ -191,3 +191,46 @@ def test_name_check_provider(fake_spark):
     r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=profile())
     confirm(r["deid_id"])
     assert fake_spark["state"]["providers"] == ["baseten"]       # Muse Spark Open, open weights
+
+
+# --------------------------------------------------------------------------
+# Robust to a weak or swapped name-check model
+# --------------------------------------------------------------------------
+def test_suspect_the_model_ignores_comes_back_unticked(fake_spark):
+    fake_spark["state"]["reply"] = {"findings": [], "not_identifiers": []}       # a model that says nothing
+    r = pipeline.deidentify_report(text="Kumar consented to the procedure.", profile=profile())
+    flags = confirm(r["deid_id"])
+    assert flags["next"] == "flags" and flags["flags"][0]["ticked"] is False
+    assert '"Kumar"' in fake_spark["sent"][0]                                  # the model was asked about it
+    done = pipeline.confirm_deid_flags(r["deid_id"], hide=[flags["flags"][0]["id"]])
+    assert "Kumar" not in done["text"]
+
+
+def test_suspect_ruled_out_by_the_model_is_not_asked(fake_spark):
+    fake_spark["state"]["reply"] = {"findings": [], "not_identifiers": ["Tan"]}
+    r = pipeline.deidentify_report(text="Margins clear. Tan, firm cut surface.", profile=profile())
+    done = confirm(r["deid_id"])
+    assert done["next"] == "done" and "Tan, firm" in done["text"]
+
+
+def test_unqualified_model_uses_qualified_backup_or_warns(fake_spark, monkeypatch):
+    import deid.qualify as qualify
+    monkeypatch.setattr(qualify, "is_qualified", lambda provider: provider == "meta")
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    done = confirm(r["deid_id"])
+    assert fake_spark["state"]["providers"] == ["meta"] and "qualified backup" in done["warnings"][0]
+    monkeypatch.setattr(qualify, "is_qualified", lambda provider: False)
+    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    done = confirm(r["deid_id"])
+    assert any("review the de-identified text manually" in w for w in done["warnings"])
+
+
+def test_qualification_key_changes_with_any_setting(local_keys, monkeypatch):
+    import common.spark as spark
+    from deid import qualify
+    key = qualify.qualification_key("baseten")
+    monkeypatch.setenv("BASETEN_MODEL", "some-other-model")
+    assert qualify.qualification_key("baseten") != key                         # hospital swaps the model
+    monkeypatch.delenv("BASETEN_MODEL")
+    monkeypatch.setitem(spark.DEFAULT_EFFORT, "baseten", "minimal")
+    assert qualify.qualification_key("baseten") != key                         # or lowers the effort

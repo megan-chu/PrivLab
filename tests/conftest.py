@@ -36,8 +36,14 @@ def fake_spark(monkeypatch, local_keys):
             raise state["fail"]
         sent.append(prompt)
         state.setdefault("providers", []).append(provider)
-        return json.dumps(state["reply"]), (100, 20), "json_schema"
+        reply = dict(state["reply"])
+        if "findings" in reply:
+            reply.setdefault("not_identifiers", [])      # the name check's newer field
+        return json.dumps(reply), (100, 20), "json_schema"
 
+    import deid.qualify as qualify
+    monkeypatch.setattr(qualify, "QUAL_FILE", local_keys / "qualification.json")
+    monkeypatch.setattr(qualify, "is_qualified", lambda provider: state.get("qualified", True))
     monkeypatch.setenv("META_API_KEY", "test-key")
     monkeypatch.setenv("BASETEN_API_KEY", "test-key")
     monkeypatch.setattr(spark, "_request", fake_request)

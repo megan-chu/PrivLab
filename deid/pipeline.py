@@ -19,10 +19,11 @@ from pathlib import Path
 from common.config import ROOT
 from common.timing import record, timed
 from deid import profile as prof
-from deid.hold import hold_flags
+from deid.hold import hold_flags, suspects
 from deid.mask import apply_tags, mask, merge_spans, to_original
 from deid.names import find_names, locate
 from deid.patterns import find_pattern_phi, leftover_identifiers
+from deid.qualify import choose_provider
 from deid.seal import make_seal
 from deid.types import DeidResult, PhiSpan
 from deid.vault import encrypt_json, save_vault
@@ -127,40 +128,54 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         run["layer2"] = "skipped"
         return _finish(run, spans)
     masked = mask(deid_id, text, spans, kept_types=prof.kept_types(run["profile"]), allowed=run["allowed"])
+    provider, warning = choose_provider()
+    if warning:
+        run["warnings"].append(warning)
     try:
-        with timed("deid_layer2", report_id=run["report_id"]):
-            found, not_found = find_names(masked, text, run["report_id"])
+        with timed("deid_layer2", report_id=run["report_id"], provider=provider):
+            found, not_found, unresolved = find_names(
+                masked, text, run["report_id"], provider=provider,
+                suspects=suspects(masked.text, run["allowed"], masked.tags))
     except Exception as e:   # API down, timeout, bad JSON, missing key: amber, never a crash
         run["layer2"] = "unavailable"
         run["warnings"].append(f"Muse Spark check unavailable ({type(e).__name__}). Review the text manually.")
         _trace(run, "layer2", "Muse Spark check unavailable: review manually.", ok=False)
         return _finish(run, spans)
+    run["layer2_provider"] = provider
 
     new = [s for s in found if not _covered(s, spans)]
-    if not new:
+    unresolved = [q for q in unresolved if not _covered(q, spans) and not _covered(q, new)]
+    if not new and not unresolved:
         run["layer2"] = "clean"
         _trace(run, "layer2", "Muse Spark double-checked the masked text: nothing new found.")
         return _finish(run, spans)
-    run.update(step="flags", flags=new, layer2="flagged", shown_at=time.monotonic())
-    _trace(run, "layer2", f"Muse Spark found {len(new)} more possible identifiers.", ok=False)
+    run.update(step="flags", flags=new + unresolved, layer2="flagged", shown_at=time.monotonic())
+    _trace(run, "layer2", f"Muse Spark found {len(new)} more possible identifiers"
+                          + (f"; {len(unresolved)} words it did not rule on are shown for you to check" if unresolved else "")
+                          + ".", ok=False)
     _save(run)
+    every = spans + new + unresolved
     return {"deid_id": deid_id, "next": "flags",
-            "flags": [_detection(text, spans + new, s, show_text) for s in new],
-            "note": "All are ticked to hide. Send the ids of any false alarms as keep."}
+            "flags": [{**_detection(text, every, s, show_text), "ticked": s.source != "suspect"} for s in new + unresolved],
+            "note": ("Model finds are ticked to hide; send their ids as keep if they are false alarms. "
+                     "Words the model did not rule on are unticked; send their ids as hide if they are identifiers.")}
 
 
-def confirm_deid_flags(deid_id: str, keep=()) -> dict:
+def confirm_deid_flags(deid_id: str, keep=(), hide=()) -> dict:
+    """keep: ids of ticked model finds that are false alarms. hide: ids of unticked suspects that are identifiers."""
     run = _RUNS.get(deid_id)
     if run is None or run["step"] != "flags":
         return _error(deid_id, "no flags waiting for this deid_id")
     _review_time(run)
-    keep = set(keep)
-    kept = [s for s in run["flags"] if s.id in keep]
-    hide = [s for s in run["flags"] if s.id not in keep]
-    # Layer 1 learns: hidden finds are caught locally next time.
-    prof.learn(run["profile"], allow=[s.text for s in kept], remove=[{"text": s.text, "type": s.type} for s in hide])
-    _trace(run, "flags", f"You hid {len(hide)} and kept {len(kept)}; hidden ones are learned for next time.")
-    return _finish(run, merge_spans(run["layer1_final"] + hide))
+    keep, hide_ids = set(keep), set(hide)
+    hidden = [s for s in run["flags"] if (s.source != "suspect" and s.id not in keep)
+              or (s.source == "suspect" and s.id in hide_ids)]
+    kept = [s for s in run["flags"] if s not in hidden]
+    # Learning: hidden finds are caught locally next time; kept ones are not asked again.
+    prof.learn(run["profile"], allow=[s.text for s in kept], remove=[{"text": s.text, "type": s.type} for s in hidden])
+    run["allowed"] += [s.text for s in kept]
+    _trace(run, "flags", f"You hid {len(hidden)} and kept {len(kept)}; hidden ones are learned for next time.")
+    return _finish(run, merge_spans(run["layer1_final"] + hidden))
 
 
 # --------------------------------------------------------------------------
