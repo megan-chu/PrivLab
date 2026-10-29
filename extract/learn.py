@@ -77,14 +77,20 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
         c = next((c for c in predicted["candidates"] if c["id"] == candidate_id), None)
         if c is None or c["start"] is None:
             return f"candidate {candidate_id} not found or has no evidence in the report"
+        if c["fail"] is not None or c["value"] is None:
+            return f"candidate {candidate_id} failed the {c['fail']} check; type the value instead"
         return {"value": c["value"], "start": c["start"], "end": c["end"]}
-    if value is None or not evidence_text:
+    if value is None or str(value).strip() == "" or not evidence_text:
         return "give candidate_id, or value with evidence_text, or missing=True"
     hits = locate(text, evidence_text)
     if not hits:
         return "evidence_text not found in the de-identified report"
     if field.type == "number":
-        value = parse_number(str(value), None, field.unit)
+        typed, value = value, parse_number(str(value), None, field.unit)
+        if value is None:
+            return f"'{typed}' is not a number; for a number field type e.g. 2.1"
+    elif not any(c.lower() == str(value).strip().lower() for c in field.choices):
+        return f"'{value}' is not one of: {', '.join(field.choices)}"
     return {"value": value, "start": hits[0][0], "end": hits[0][1]}
 
 
