@@ -81,6 +81,13 @@ def call(safe, *, instructions: str, schema: type[BaseModel], step: str,
     return _call_raw(prompt, schema, step=step, report_id=report_id, effort=effort)
 
 
+def ask(prompt: str, *, schema: type[BaseModel], step: str, effort: str | None = None) -> BaseModel:
+    """For prompts that contain no report text at all (a field definition the user typed).
+    Still refused if the identifier patterns find anything in it."""
+    check_no_leak(prompt)
+    return _call_raw(prompt, schema, step=step, effort=effort)
+
+
 def check_no_leak(text: str, keep_types=(), allowed=(), tags=None) -> None:
     """Refuse to send text in which the pattern recognisers still find an identifier.
 
