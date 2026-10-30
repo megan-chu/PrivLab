@@ -5,13 +5,17 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
   2. confirm_field writes prediction vs the user's answer to runs/score_log.jsonl:
      correct / wrong / missed / extra / true_empty.
   3. Only then the pack learns: the confirmed span becomes a good example, a wrong top pick a
-     bad one (last 3 + 3 kept), and readiness moves Draft -> Learning -> Ready
-     (Ready = at least 4 of the last 5 accepted unchanged).
+     bad one (last 3 + 3 kept).
+  4. validation(): per field and definition version. The error that matters is a silent one: a green
+     value that was wrong. Ready = with 95% confidence at most 5% of green values are wrong (exact
+     binomial bound: 59 green values with no error, 93 with one, 124 with two). Blind checks (the
+     answer hidden from the user) are counted separately, to show whether confirmations are anchored.
 
 The log stores values, report ids and evidence positions only, never report text.
 """
 import json
 import time
+from math import comb
 from datetime import datetime, timedelta, timezone
 
 from common.config import ROOT
@@ -48,6 +52,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     field = get_field(pack, field_key)
     if predicted is None or result is None or field is None:
         return {"status": "error", "reason": "run find_candidates for this report and field first"}
+    if predicted.get("blind") and candidate_id:
+        return {"status": "error", "reason": "blind check: give value with evidence_text, or missing=True"}
 
     confirmed = _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing)
     if isinstance(confirmed, str):
@@ -58,7 +64,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     # 1. Score first, with the prediction exactly as it was.
     entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id,
              "report_id": result.report_id, "split": _split(result.report_id), "phase": phase,
-             "field": field.key, "pack_version": pack["version"],
+             "field": field.key, "field_version": field.version, "blind": bool(predicted.get("blind")),
+             "pack_version": pack["version"],
              "predicted": {k: predicted[k] for k in ("value", "status", "start", "end", "reason")},
              "confirmed": confirmed, "outcome": outcome,
              "model_ms": predicted.get("model_ms"), "review_s": review_s}       # for speed improvements
@@ -66,12 +73,13 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     # 2. Then learn.
     t0 = time.perf_counter()
     _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
+    path = log_path or LOG_PATH
+    field.readiness = readiness(validation(field, read_log(path) + [entry]))
     put_field(pack, field)
     save_pack(pack, pack_path)
     entry["learn_ms"] = round((time.perf_counter() - t0) * 1000, 1)
     entry["readiness_after"] = field.readiness
 
-    path = log_path or LOG_PATH
     path.parent.mkdir(exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
         f.write(json.dumps(entry) + "\n")
@@ -80,9 +88,12 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     record("field_review", review_s * 1000, report_id=result.report_id, field=field.key,
            status=predicted["status"], outcome=outcome)
     record("field_learn", entry["learn_ms"], report_id=result.report_id, field=field.key)
-    return {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
-            "start": confirmed["start"] if confirmed else None, "end": confirmed["end"] if confirmed else None,
-            "readiness": field.readiness}             # start/end: the confirmed quote, in the de-identified text
+    out = {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
+           "start": confirmed["start"] if confirmed else None, "end": confirmed["end"] if confirmed else None,
+           "readiness": field.readiness}              # start/end: the confirmed quote, in the de-identified text
+    if entry["blind"]:                                 # revealed only after the user answered
+        out.update(blind=True, predicted=predicted["value"])
+    return out
 
 
 def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missing):
@@ -168,8 +179,58 @@ def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=(), 
         field.examples["bad"] = (field.examples["bad"] + [bad])[-KEEP_EXAMPLES:]
 
     field.recent = (field.recent + ["accepted" if outcome in ("correct", "true_empty") else "corrected"])[-5:]
-    accepted = field.recent.count("accepted")
-    field.readiness = "ready" if len(field.recent) >= 5 and accepted >= 4 else "learning"
+
+
+# --------------------------------------------------------------------------
+# Validation: per field and definition version, from the log
+# --------------------------------------------------------------------------
+TARGET = 0.05             # at most 5% of green values wrong ...
+CONFIDENCE = 0.95         # ... with 95% confidence
+
+
+def upper_bound(errors: int, n: int) -> float:
+    """One-sided exact (Clopper-Pearson) upper bound on an error rate, after `errors` in `n`."""
+    if n == 0 or errors >= n:
+        return 1.0
+    lo, hi = errors / n, 1.0
+    for _ in range(50):
+        p = (lo + hi) / 2
+        at_most = sum(comb(n, i) * p ** i * (1 - p) ** (n - i) for i in range(errors + 1))
+        lo, hi = (p, hi) if at_most > 1 - CONFIDENCE else (lo, p)
+    return hi
+
+
+def more_needed(errors: int, n: int) -> int:
+    """How many more correct green values would bring the bound to TARGET."""
+    if upper_bound(errors, n) <= TARGET:
+        return 0
+    hi = 1
+    while upper_bound(errors, n + hi) > TARGET:
+        hi *= 2
+    lo = hi // 2
+    while hi - lo > 1:
+        mid = (lo + hi) // 2
+        lo, hi = (mid, hi) if upper_bound(errors, n + mid) > TARGET else (lo, mid)
+    return hi
+
+
+def validation(field, entries: list[dict]) -> dict:
+    """Scores for the field's current definition version only."""
+    rows = [e for e in entries if e["field"] == field.key and e.get("field_version", 1) == field.version]
+    green = [e for e in rows if e["predicted"]["status"] == "green"]
+    silent = sum(e["outcome"] in ("wrong", "extra") for e in green)
+    blind = [e for e in rows if e.get("blind")]
+    right = lambda es: sum(e["outcome"] in ("correct", "true_empty") for e in es)
+    bound = upper_bound(silent, len(green))
+    return {"version": field.version, "checked": len(rows), "correct": right(rows),
+            "green": len(green), "silent_errors": silent, "silent_bound": round(bound, 4),
+            "more_needed": more_needed(silent, len(green)),
+            "review_rate": round(1 - len(green) / len(rows), 2) if rows else None,
+            "blind": len(blind), "blind_correct": right(blind), "ready": bound <= TARGET}
+
+
+def readiness(v: dict) -> str:
+    return "draft" if not v["checked"] else "ready" if v["ready"] else "learning"
 
 
 def _split(report_id: str | None) -> str | None:
@@ -189,17 +250,20 @@ def read_log(log_path=None) -> list[dict]:
 def show_pack(field_key: str | None = None, *, pack_path=None, log_path=None) -> dict:
     """All fields with readiness; with field_key, also its definition and extraction history."""
     pack = load_pack(pack_path)
+    log = read_log(log_path)
     fields = [{"key": f.key, "name": f.name, "type": f.type, "unit": f.unit, "choices": f.choices,
-               "readiness": f.readiness, "recent": f.recent} for f in pack["fields"]]
+               "readiness": f.readiness, "recent": f.recent, "version": f.version,
+               "validation": validation(f, log)} for f in pack["fields"]]
     if field_key is None:
         return {"version": pack["version"], "fields": fields}
     field = get_field(pack, field_key)
     if field is None:
         return {"status": "error", "reason": f"no field '{field_key}' in the pack"}
-    extractions = [{"when": e["ts"], "report_id": e["report_id"], "predicted": e["predicted"]["value"],
-                    "status": e["predicted"]["status"], "confirmed": (e["confirmed"] or {}).get("value"),
-                    "outcome": e["outcome"], "readiness_after": e.get("readiness_after")}
-                   for e in reversed(read_log(log_path)) if e["field"] == field_key]
+    extractions = [{"when": e["ts"], "report_id": e["report_id"], "version": e.get("field_version", 1),
+                    "predicted": e["predicted"]["value"], "status": e["predicted"]["status"],
+                    "confirmed": (e["confirmed"] or {}).get("value"), "outcome": e["outcome"],
+                    "blind": e.get("blind", False), "readiness_after": e.get("readiness_after")}
+                   for e in reversed(log) if e["field"] == field_key]
     return {"field": {**next(f for f in fields if f["key"] == field_key), "meaning": field.meaning,
-                      "description": field.description, "range": field.range},
+                      "definition": field.definition, "description": field.description, "range": field.range},
             "definition_history": field.history, "extraction_history": extractions}

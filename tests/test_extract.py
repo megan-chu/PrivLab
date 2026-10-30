@@ -9,6 +9,7 @@ from extract.define import define_field
 from extract.pack import load_pack
 
 SIZE_DRAFT = {"key": "tumour_size", "meaning_question": "Largest tumour dimension on the surgical specimen?",
+              "definition": "The largest invasive tumour dimension measured on the resection specimen.",
               "type": "number", "unit": "cm", "range_min": 0.1, "range_max": 30, "choices": []}
 
 

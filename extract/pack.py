@@ -11,6 +11,11 @@ from extract.types import Field
 PACK_PATH = ROOT / "packs" / "default.yaml"
 
 
+def meaning_key(f: Field) -> tuple:
+    """What a field means, without what it learned. A change here is a new definition version."""
+    return (f.meaning, f.definition, f.type, f.unit, tuple(f.range or ()), tuple(f.choices))
+
+
 def load_pack(path=None) -> dict:
     path = path or PACK_PATH
     if not path.exists():
