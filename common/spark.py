@@ -36,8 +36,9 @@ SGT = timezone(timedelta(hours=8))
 # Measured before the hold-rule update: Meta left 0% of hard-case identifiers, Muse Spark Open 4.1%;
 # the hold rule now catches those names locally. Meta stays the backup and runs extraction.
 STEP_PROVIDER = {"names": "baseten", "define": "meta", "candidates": "meta"}
-# PLACEHOLDER: USD per 1M (input, output) tokens. Fill in from the providers' docs or bills.
-PRICE_PER_M = {"meta": (None, None), "baseten": (None, None)}
+# USD per 1M (input, output) tokens, from the providers' pages (30 Oct 2026). Meta also bills cached input
+# at $0.15/M; the full input price is used here, so the estimate errs high.
+PRICE_PER_M = {"meta": (1.25, 4.25), "baseten": (1.25, 4.25)}
 WARN_AT_USD = {"meta": (75, 120), "baseten": (50, 80)}
 # Lowest reasoning effort that still answers well (smoke tests, 28-29 Oct). Muse Spark Open at
 # "minimal" returned empty lists; at "low" it found every name for about the same tokens.
