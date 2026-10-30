@@ -43,7 +43,7 @@ def warm_up() -> None:
     recognisers, then freezes them for the garbage collector: a full collection would otherwise
     rescan ~170,000 long-lived objects and pause one report for 40-250 ms."""
     vocabulary(), name_list()
-    find_pattern_phi("Patient: Mary Tan  NRIC: S1234567D  Phone: +65 6123 4567")   # compiles every recogniser
+    find_pattern_phi("Patient: Mary Tan  NRIC: S1234567D  Phone: +65 6123 4567")   # compiles recognisers, loads NER
     gc.collect()
     gc.freeze()
 
@@ -110,8 +110,9 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                 spans.append(PhiSpan(id=f"u{len(spans) + 1}", type=a["type"], start=start, end=end,
                                      text=text[start:end], source="user"))
         spans = merge_spans(spans)
-        prof.learn(run["profile"], allow=[s.text for s in kept],
-                   remove=[{"text": a["text"], "type": a["type"]} for a in add])
+        prof.learn(run["profile"], allow=[s.text for s in kept],      # a model-found name you kept hidden is
+                   remove=[{"text": a["text"], "type": a["type"]} for a in add]   # learned like a held one
+                   + [{"text": s.text, "type": s.type} for s in spans if s.source == "ner:spacy"])
         run["allowed"] += [s.text for s in kept]
         run["confirmed"] = spans
         _trace(run, "review", f"You confirmed {len(spans)} identifiers ({len(kept)} unmarked, {len(add)} added).")

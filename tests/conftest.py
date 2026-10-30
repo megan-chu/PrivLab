@@ -22,6 +22,14 @@ def local_keys(monkeypatch, tmp_path):
 
 
 @pytest.fixture
+def no_names_model(monkeypatch):
+    """Rules only: for tests of the hold rule, whose names the local name model would hide earlier."""
+    import deid.patterns as patterns
+
+    monkeypatch.setattr(patterns, "find_names", lambda text: [])
+
+
+@pytest.fixture
 def fake_spark(monkeypatch, local_keys):
     """Replace the network request with a scripted reply; records every prompt sent."""
     import json
