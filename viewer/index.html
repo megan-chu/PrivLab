@@ -47,14 +47,19 @@ svg { width: 16px; height: 16px; flex: none; }
 .brand .logo { width: 24px; height: 26px; flex: none; }
 .brand .logo .ink { fill: #07182a; } .brand .logo .bar { fill: #00dbab; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo .ink { fill: #ecebf5; } }
-.value { flex: 1; display: flex; justify-content: center; gap: var(--s6); color: var(--ink-muted); font-size: 13px; white-space: nowrap; overflow: hidden; }
+.safety { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 var(--s3); border-radius: 999px; background: var(--verified-bg); color: var(--verified); font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; }
+.safety svg { width: 14px; height: 14px; }
+.safety b { font: 600 13px var(--f-mono); }
+.value { flex: 1; min-width: 0; color: var(--ink-muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .value b { color: var(--ink); font: 500 13px var(--f-mono); }
+.util { display: flex; align-items: center; gap: var(--s1); padding-left: var(--s3); border-left: 1px solid var(--line); flex: none; }
 .tbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--s3); border-radius: var(--r-md); color: var(--ink-muted); font-weight: 600; font-size: 14px; text-decoration: none; }
 .tbtn:hover { background: var(--surface-sunken); color: var(--ink); }
 .pill { display: inline-flex; align-items: center; gap: var(--s1); height: 22px; padding: 0 var(--s2); border-radius: 999px;
   font: 600 12px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; background: var(--surface-sunken); color: var(--ink-muted); }
 .pill.verified { background: var(--verified-bg); color: var(--verified); } .pill.review { background: var(--review-bg); color: var(--review); }
-.pill.not-stated { background: var(--not-stated-bg); color: var(--not-stated); } .pill.refused { background: var(--refused-bg); color: var(--refused); }
+.pill.not-stated { background: var(--not-stated-bg); color: var(--not-stated); }
+.pill.not-found { background: var(--review-bg); color: var(--review); } .pill.refused { background: var(--refused-bg); color: var(--refused); }
 .pill.hema { background: var(--hema); color: var(--on-hema); }
 
 /* ---------- layout ---------- */
@@ -264,12 +269,14 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 .toast { position: fixed; left: 50%; bottom: var(--s6); transform: translateX(-50%) translateY(16px); opacity: 0; background: var(--ink); color: var(--surface-raised); padding: var(--s3) var(--s4); border-radius: var(--r-md); box-shadow: var(--shadow-raised); transition: all .18s var(--ease); z-index: 30; pointer-events: none; font-size: 14px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
-@media (max-width: 1100px) { .app { grid-template-columns: 220px minmax(0, 1fr) 380px; } .value span:nth-child(n+3) { display: none; } }
+@media (max-width: 1100px) { .app { grid-template-columns: 220px minmax(0, 1fr) 380px; } .safety .long { display: none; } }
+@media (max-width: 900px) { .value { display: none; } }
 </style>
 </head>
 <body>
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
@@ -279,14 +286,17 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 <header class="top">
   <div class="brand"><svg class="logo" viewBox="194 175 362 400" role="img" aria-label="PrivLab logo">
     <path class="ink" d="M194 175H518V325H457V262H281V575H194Z"/><rect class="bar" x="281" y="325" width="275" height="87"/></svg>PrivLab</div>
-  <div class="value" id="value" aria-live="polite"></div>
   <span id="mode" class="pill review" style="display:none">Demo</span>
-  <button class="tbtn" id="fieldsBtn"><svg aria-hidden="true"><use href="#i-sliders"/></svg>Fields</button>
+  <span class="safety" id="safety" title="Identifiers are found and hidden on this laptop. Only masked text is ever sent, and only after you confirm."></span>
+  <div class="value" id="value" aria-live="polite"></div>
   <div class="seg" role="group" aria-label="Task"><button id="modeDeid" aria-pressed="false">De-identify only</button><button id="modeBoth" aria-pressed="true">De-identify + extract</button></div>
+  <div class="util">
+  <button class="tbtn" id="fieldsBtn"><svg aria-hidden="true"><use href="#i-sliders"/></svg>Fields</button>
   <details class="menu" id="exportMenu"><summary class="tbtn"><svg aria-hidden="true"><use href="#i-down"/></svg>Export</summary>
     <div class="pop"><a href="/api/deid_export" id="expDeid">De-identified text (.zip)<span>Every finished report, identifiers replaced with tags.</span></a>
     <a href="/api/export.csv" id="expCsv">Registry fields (.csv)<span>Structured fields only: no report text.</span></a></div></details>
   <button class="tbtn" id="resetBtn" style="display:none">Start over</button>
+  </div>
 </header>
 
 <div class="app">
@@ -324,7 +334,7 @@ const CHECK = {evidence_found: "quote found in the report", type_ok: "valid valu
   section_ok: "reliable section", no_identifiers: "no identifiers"};
 const FAIL = {evidence_found: "The quote is not in the report.", type_ok: "The value is the wrong type or out of range.",
   value_in_evidence: "The value is not in its quote.", no_identifiers: "The quote contains an identifier.", section_ok: "It comes from a less reliable section."};
-const STATUS = {verified: ["✓", "Verified"], review: ["!", "Needs review"], "not-stated": ["–", "Not stated"], refused: ["×", "Refused"]};
+const STATUS = {verified: ["✓", "Verified"], review: ["!", "Needs review"], "not-found": ["!", "Not found"], "not-stated": ["–", "Not stated"], refused: ["×", "Refused"]};
 const pill = (k) => `<span class="pill ${k}">${STATUS[k][0]} ${STATUS[k][1]}</span>`;
 const store = {get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }};
 const S = {reports: [], cur: -1, fields: [], profile: null, samples: [], demo: false, choices: null,
@@ -398,11 +408,14 @@ function renderTop() {
   const typed = rs.reduce((n, r) => n + r.typed, 0);
   const avg = done.length ? done.reduce((n, r) => n + (r.doneAt - r.openedAt), 0) / done.length / 1000 : null;
   const exported = rs.filter((r) => r.exported).length;
-  $("value").innerHTML = rs.length
-    ? `<span><b>${safe}/${rs.length}</b> reports de-identified</span><span><b>0</b> identifiers sent before you confirmed</span>
-       ${extracting() ? `<span><b>${filled}</b> fields filled</span><span><b>${typed}</b> typed by hand</span>${avg ? `<span><b>${fmtSecs(avg)}</b> per report</span>` : ""}`
-         : `<span><b>${exported}</b> downloaded</span>`}`
-    : `<span>Nothing leaves this laptop until you confirm.</span>`;
+  const hidden = rs.reduce((n, r) => n + (r.done ? r.done.summary.total : 0), 0);
+  $("safety").innerHTML = `${icon("lock")}<span>Nothing sent before you confirm</span>${hidden ? `<span class="long">· <b>${hidden}</b> hidden on this laptop</span>` : ""}`;
+  const parts = rs.length ? [`<b>${safe}</b> of <b>${rs.length}</b> de-identified`] : [];
+  if (rs.length && extracting()) {
+    parts.push(`<b>${filled}</b> fields filled`, `<b>${typed}</b> typed`);
+    if (avg) parts.push(`<b>${fmtSecs(avg)}</b> per report`);
+  } else if (rs.length) parts.push(`<b>${exported}</b> downloaded`);
+  $("value").innerHTML = parts.join(" · ");
 }
 function renderRail() {
   $("rail").innerHTML = S.reports.length ? S.reports.map((r, i) => {
@@ -719,6 +732,7 @@ function viewBlocked(r) {
 // Step 2: extract fields
 // ======================================================================
 async function openFields(r) {
+  if (!r || !r.dtext || r.leftover) return;              // only on de-identified, unblocked text
   r.step = "fields"; r.error = null; render();
   for (const f of S.fields) {
     if (r.results[f.key] || r.saved[f.key]) continue;
@@ -734,7 +748,7 @@ async function openFields(r) {
 }
 function status(res) {
   if (res.status === "green") return ["verified", "Verified"];
-  if (res.status === "missing") return ["not-stated", "Not stated"];
+  if (res.status === "missing") return ["not-found", "Not found"];
   return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
 }
 const unit = (f, v) => v != null && f.type === "number" && f.unit ? ` ${esc(f.unit)}` : "";
@@ -788,7 +802,11 @@ function viewFields(r) {
   else if (verified.length) foot = `<button class="btn primary" id="confirmAll">Confirm ${verified.length} verified value${verified.length > 1 ? "s" : ""}</button>
     <div class="hint">${pending.length ? `${pending.length} still need${pending.length > 1 ? "" : "s"} your review · ` : ""}<span class="kbd">↑</span> <span class="kbd">↓</span> fields · <span class="kbd">R</span> confirm</div>`;
   else if (open.length) foot = `<button class="btn primary" disabled>Review ${open.length} field${open.length > 1 ? "s" : ""} above</button>`;
-  else foot = `<button class="btn primary" id="approve">Approve extraction ${icon("arrow")}</button>`;
+  else {
+    const next = S.reports.findIndex((x, i) => i !== S.cur && x.step !== "approved");
+    foot = `<button class="btn primary" id="approve" data-next="${next}">${next >= 0 ? "Approve and next report" : "Approve extraction"} ${icon("arrow")}</button>
+      <div class="hint"><span class="kbd">Enter</span></div>`;
+  }
   setPanel(`${loading ? `<p class="running" style="margin:0 0 var(--s3)"><span class="spin"></span>Extracting fields</p>` : ""}
     ${r.error ? banner("refused", esc(r.error.title), `${esc(r.error.text)} <button class="link" id="retry">Try again</button>`) : ""}
     ${!loading && pending.length ? banner("review", `${pending.length} field${pending.length > 1 ? "s" : ""} need${pending.length > 1 ? "" : "s"} your answer`, "Confirm, edit or mark not stated before approving.") : ""}
@@ -797,7 +815,11 @@ function viewFields(r) {
     <div class="fields" role="list">${S.fields.map((f) => fieldRow(r, f)).join("")}</div>${traceBlock(r)}`, foot);
   $("newField").onclick = () => chatOpen();
   if ($("confirmAll")) $("confirmAll").onclick = () => confirmAll(r);
-  if ($("approve")) $("approve").onclick = () => approve(r);
+  if ($("approve")) $("approve").onclick = () => {
+    const next = +$("approve").dataset.next;
+    approve(r);
+    if (next >= 0) { toast(`${r.name} approved.`); select(next); }
+  };
   if ($("retry")) $("retry").onclick = () => openFields(r);
   wireRows(r);
 }
@@ -818,10 +840,10 @@ function fieldRow(r, f) {
       <div class="fval">${esc(res.value)}${unit(f, res.value)}</div>${quote(top)}${whyHtml(top, false, f.key)}
       <div class="factions"><button class="link" data-act="accept" data-key="${f.key}" data-cid="${top.id}">Confirm value</button>
       <button class="link" data-act="edit" data-key="${f.key}">Edit value</button></div>${editor}</div>`;
-  if (k === "not-stated") return `<div data-frow="${f.key}" class="frow not-stated" role="listitem">${head(pill("not-stated"))}
-      <div class="freason">The report does not state this field.</div>
-      <div class="factions"><button class="link" data-act="missing" data-key="${f.key}">Confirm not stated</button>
-      <button class="link" data-act="edit" data-key="${f.key}">It is stated</button></div>${editor}</div>`;
+  if (k === "not-found") return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem">${head(pill("not-found"))}
+      <div class="freason">PrivLab did not find this in the report. If it is there, select its text in the report and choose <b>Use as</b>. If not, confirm it is not stated.</div>
+      <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Select it in the report</button>
+      <button class="link" data-act="missing" data-key="${f.key}">It is not stated</button></div>${editor}</div>`;
   const valid = (res.candidates || []).filter((c) => !c.fail);
   if (k === "refused") {
     const failed = (res.candidates || [])[0];
@@ -1124,7 +1146,7 @@ async function chatSave(r) {
   r.results[c.key] = found;
   const [k] = status(found), cand = (found.candidates || []).find((x) => x.id === found.candidate_id) || (found.candidates || []).find((x) => !x.fail);
   const f = S.fields.find((x) => x.key === c.key);
-  if (k === "not-stated") {
+  if (k === "not-found") {
     say("spark", `This report does not seem to state <b>${esc(c.name)}</b>. Is that right?`); c.stage = "missing";
   } else if (k === "refused" || !cand) {
     say("spark", `I found something, but it failed a check: ${esc((FAIL[(found.candidates || [])[0]?.fail]) || found.reason || "")} Select the right text in the report and choose <b>Use as</b> to show me.`);
