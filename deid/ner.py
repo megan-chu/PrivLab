@@ -49,7 +49,7 @@ def find_names(text: str) -> list[tuple[int, int]]:
     nlp = _model()
     if nlp is None:
         return []
-    from deid.hold import _plain, vocabulary
+    from deid.hold import LABEL_AFTER, _plain, vocabulary
 
     vocab, out = vocabulary(), []
     # Only text around a capitalised word that is not report vocabulary can hold a name: the model reads
@@ -74,6 +74,8 @@ def find_names(text: str) -> list[tuple[int, int]]:
         end = start + len(text[start:end].rstrip(" \t-.,;:"))
         if end < len(text) and text[end].isalpha() or start and text[start - 1].isalpha():
             continue                            # cut mid-word ("Gross Descriptio|n"): not a name
+        if LABEL_AFTER.match(text, end):
+            continue                            # a form label ("Claim Ref:"), as in the hold rule
         if _looks_like_name(text[start:end], vocab):
             if out and re.fullmatch(rf"[ \t]+(?:{PARTICLE_RX})[ \t]+", text[out[-1][1]:start], re.IGNORECASE):
                 out[-1] = (out[-1][0], end)     # "Nur Aisyah" + "bte" + "Rahman": one name
