@@ -5,563 +5,920 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PrivLab</title>
 <style>
+/* Tokens: PrivLab design system (H&E palette). Fonts are local only: the viewer handles report
+   text, so it never calls a font CDN; IBM Plex / Schibsted Grotesk are used when installed. */
 :root {
-  --bg: #f6f7f9; --panel: #fff; --ink: #1c2330; --muted: #667085; --line: #e3e6ea;
-  --accent: #2f5bea; --green: #0f7b4d; --green-bg: #e6f5ee; --amber: #a15c00; --amber-bg: #fff4e0;
-  --red: #b42318; --red-bg: #fdecea; --local: #ecfdf5; --cloud: #eff6ff;
+  color-scheme: light;
+  --surface: #f7f7fb; --surface-raised: #ffffff; --surface-sunken: #ecebf2; --line: #d9d7e6; --line-strong: #7b78a0;
+  --ink: #1c1930; --ink-muted: #5b5772; --hema: #3d2f86; --on-hema: #ffffff; --eosin: #b02a5f; --eosin-tint: #fbe3ec;
+  --verified: #0a6e7a; --verified-bg: #e0f2f3; --review: #8a4b00; --review-bg: #fdf0d9;
+  --not-stated: #5b5772; --not-stated-bg: #ecebf2; --refused: #a11d2b; --refused-bg: #fbe4e6;
+  --id-name: #fde3ea; --id-doctor: #e9e5fb; --id-number: #fdecd6; --id-date: #dff3ee; --id-record: #e3e8fa; --id-contact: #f6efd0; --id-place: #e2eef6;
+  --shadow-raised: 0 1px 2px rgba(28,25,48,.08), 0 4px 12px rgba(28,25,48,.06);
+  --f-display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --f-sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s6: 24px; --s8: 32px; --s12: 48px;
+  --r-sm: 4px; --r-md: 8px; --target: 44px; --panel: 440px; --ease: cubic-bezier(.2,.8,.2,1);
 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  color-scheme: dark;
+  --surface: #14121f; --surface-raised: #1d1a2c; --surface-sunken: #262338; --line: #36324d; --line-strong: #6f6a8f;
+  --ink: #ecebf5; --ink-muted: #a7a3bf; --hema: #a99cf0; --on-hema: #14121f; --eosin: #f07aa6; --eosin-tint: #3a1828;
+  --verified: #5cc8d2; --verified-bg: #0f2e33; --review: #f2b65a; --review-bg: #3a2a0e;
+  --not-stated: #a7a3bf; --not-stated-bg: #262338; --refused: #f28b95; --refused-bg: #3d1519;
+  --id-name: #4a2433; --id-doctor: #34295c; --id-number: #4a3418; --id-date: #193a33; --id-record: #252f55; --id-contact: #3f3818; --id-place: #1c3446;
+  --shadow-raised: 0 1px 2px rgba(0,0,0,.5); } }
 * { box-sizing: border-box; }
-body { margin: 0; font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
-header { display: flex; align-items: center; gap: 14px; padding: 10px 20px; background: var(--panel); border-bottom: 1px solid var(--line); }
-header h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
-header .tag { color: var(--muted); }
-header .spacer { flex: 1; }
-.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: #eef1f5; color: var(--muted); white-space: nowrap; }
-.badge.green { background: var(--green-bg); color: var(--green); }
-.badge.amber { background: var(--amber-bg); color: var(--amber); }
-.badge.red { background: var(--red-bg); color: var(--red); }
-.badge.blue { background: var(--cloud); color: var(--accent); }
-main { display: grid; grid-template-columns: 250px minmax(0, 1fr) 380px; gap: 14px; padding: 14px 20px; height: calc(100vh - 53px); }
-.col { min-height: 0; overflow: auto; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
-.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 0 0 10px; }
-.card h3 { font-size: 15px; margin: 0 0 6px; }
-select, input, textarea { font: inherit; width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
-button { font: inherit; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
-button:hover { border-color: #c5cad1; }
-button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
-button.primary:hover { filter: brightness(1.05); }
-button.small { padding: 3px 8px; font-size: 12px; }
-button:disabled { opacity: .5; cursor: default; }
-.row { display: flex; gap: 8px; align-items: center; }
-.row.wrap { flex-wrap: wrap; }
-.muted { color: var(--muted); }
-.small { font-size: 12px; }
-.steps { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.step { padding: 4px 10px; border-radius: 999px; background: #eef1f5; color: var(--muted); font-size: 12px; font-weight: 600; }
-.step.on { background: var(--accent); color: #fff; }
-.step.done { background: var(--green-bg); color: var(--green); }
-.where { display: flex; gap: 8px; margin-bottom: 10px; font-size: 12px; }
-.where span { padding: 3px 8px; border-radius: 6px; }
-.where .local { background: var(--local); color: #065f46; }
-.where .cloud { background: var(--cloud); color: #1e3a8a; }
-#doc { white-space: pre-wrap; font: 13px/1.65 ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; min-height: 300px; }
-#doc .empty { font-family: system-ui, sans-serif; color: var(--muted); }
-mark { border-radius: 3px; padding: 0 1px; cursor: pointer; color: inherit; }
-mark.off { background: transparent !important; text-decoration: line-through; outline: 1px dashed #b0b6bf; }
-mark.added { outline: 2px dashed var(--accent); }
-mark.hold { background: #ffe1a8; outline: 2px solid #f0a020; }
-mark.flag { background: #ffd2cc; outline: 2px solid var(--red); }
-mark.suspect { background: #fff; outline: 2px dashed var(--red); }
-mark.tagged { background: #e8ecf3; color: #3d4a5c; font-weight: 600; cursor: default; }
-mark.ev { background: #cfe0ff; outline: 2px solid var(--accent); }
-mark.ev.green { background: #c9efdb; outline-color: var(--green); }
-mark.ev.amber { background: #ffe7bf; outline-color: #e09a1f; }
-mark.flash { animation: flash 1s ease-out 1; }
-@keyframes flash { from { box-shadow: 0 0 0 6px rgba(47,91,234,.35); } to { box-shadow: 0 0 0 0 rgba(47,91,234,0); } }
-.t-NAME, .t-PATIENT, .t-PERSON { background: #fde2e4; }
-.t-DOCTOR { background: #e5e0ff; }
-.t-ID, .t-NRIC, .t-NHS, .t-SSN { background: #ffe4c4; }
-.t-DOB, .t-DATE { background: #d9f2e6; }
-.t-MRN, .t-ACCESSION, .t-ACCOUNT { background: #dcecff; }
-.t-PHONE, .t-EMAIL, .t-ADDRESS { background: #fff0b3; }
-.t-HOSPITAL { background: #e2f0d9; }
+html, body { height: 100%; }
+body { margin: 0; font: 15px/22px var(--f-sans); color: var(--ink); background: var(--surface); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; }
+:focus-visible { outline: 2px solid var(--eosin); outline-offset: 2px; border-radius: var(--r-sm); }
+svg { width: 16px; height: 16px; flex: none; }
+.muted { color: var(--ink-muted); }
+.sm { font-size: 13px; line-height: 18px; }
+.label { font: 600 12px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); }
+
+/* ---------- top bar ---------- */
+.top { height: 56px; display: flex; align-items: center; gap: var(--s4); padding: 0 var(--s6); background: var(--surface-raised); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: var(--s2); font: 700 18px/1 var(--f-display); letter-spacing: -.01em; }
+.brand .logo { width: 28px; height: 28px; border-radius: var(--r-md); background: var(--hema); color: var(--on-hema); display: grid; place-items: center; }
+.value { flex: 1; display: flex; justify-content: center; gap: var(--s6); color: var(--ink-muted); font-size: 13px; white-space: nowrap; overflow: hidden; }
+.value b { color: var(--ink); font: 500 13px var(--f-mono); }
+.tbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--s3); border-radius: var(--r-md); color: var(--ink-muted); font-weight: 600; font-size: 14px; text-decoration: none; }
+.tbtn:hover { background: var(--surface-sunken); color: var(--ink); }
+.pill { display: inline-flex; align-items: center; gap: var(--s1); height: 22px; padding: 0 var(--s2); border-radius: 999px;
+  font: 600 12px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; background: var(--surface-sunken); color: var(--ink-muted); }
+.pill.verified { background: var(--verified-bg); color: var(--verified); } .pill.review { background: var(--review-bg); color: var(--review); }
+.pill.not-stated { background: var(--not-stated-bg); color: var(--not-stated); } .pill.refused { background: var(--refused-bg); color: var(--refused); }
+.pill.hema { background: var(--hema); color: var(--on-hema); }
+
+/* ---------- layout ---------- */
+.app { display: grid; grid-template-columns: 272px minmax(0, 1fr) var(--panel); height: calc(100vh - 56px); }
+.rail { background: var(--surface-raised); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+.rail-head { display: flex; align-items: center; justify-content: space-between; padding: var(--s4) var(--s4) var(--s2); }
+.rail-list { flex: 1; overflow: auto; padding: 0 var(--s2) var(--s4); }
+.row { width: 100%; min-height: var(--target); text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s2); padding: var(--s3); border-radius: var(--r-md); }
+.row:hover { background: var(--surface); }
+.row.on { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--hema); }
+.row .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .sub { grid-column: 1 / -1; color: var(--ink-muted); font-size: 13px; line-height: 18px; display: flex; gap: 6px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot.high { background: var(--refused); } .dot.medium { background: var(--review); } .dot.low { background: var(--verified); }
+
+.center { min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.stepper { display: flex; align-items: center; gap: var(--s2); padding: var(--s4) var(--s8) 0; min-height: 40px; }
+.step { display: flex; align-items: center; gap: var(--s2); color: var(--ink-muted); font-weight: 600; font-size: 13px; }
+.step .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--f-mono); background: var(--surface-sunken); color: var(--ink-muted); }
+.step.on { color: var(--ink); } .step.on .n { background: var(--hema); color: var(--on-hema); }
+.step.done .n { background: var(--verified-bg); color: var(--verified); }
+.step-line { width: 28px; height: 1px; background: var(--line); }
+.where { padding: var(--s2) var(--s8) var(--s3); display: flex; gap: var(--s2); align-items: center; font-size: 13px; line-height: 18px; color: var(--ink-muted); min-height: 40px; }
+.docwrap { flex: 1; overflow: auto; padding: 0 var(--s8) var(--s8); min-height: 0; }
+.doc { background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s8); white-space: pre-wrap;
+  font: 15px/24px var(--f-sans); max-width: calc(68ch + 64px); margin: 0 auto; overflow-wrap: anywhere; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(68ch + 64px); margin: 0 auto var(--s3); }
+mark { color: inherit; border-radius: var(--r-sm); padding: 1px 2px; cursor: pointer; transition: background .12s var(--ease); }
+mark.kept { background: transparent !important; text-decoration: line-through; text-decoration-color: var(--line-strong); box-shadow: inset 0 0 0 1px var(--line); }
+mark.added { box-shadow: inset 0 0 0 2px var(--hema); }
+mark.hold { background: var(--review-bg); box-shadow: inset 0 0 0 2px var(--review); }
+mark.flag { background: var(--refused-bg); box-shadow: inset 0 0 0 2px var(--refused); }
+mark.suspect { background: transparent; box-shadow: inset 0 0 0 2px var(--refused); }
+mark.redact { background: var(--hema); color: var(--on-hema); font: 500 13px var(--f-mono); padding: 1px 4px; cursor: default; }
+mark.quote { background: var(--eosin-tint); box-shadow: inset 0 0 0 1.5px var(--hema); }
+mark.pulse { animation: pulse 1s var(--ease) 1; }
+@keyframes pulse { from { box-shadow: 0 0 0 0 rgba(176,42,95,.45); } to { box-shadow: 0 0 0 8px rgba(176,42,95,0); } }
+/* identifier types: id-* tokens; the legend chip's word carries the meaning */
+.t-NAME { background: var(--id-name); } .t-DOCTOR { background: var(--id-doctor); } .t-ID { background: var(--id-number); }
+.t-DOB, .t-DATE { background: var(--id-date); } .t-MRN, .t-ACCESSION, .t-ACCOUNT { background: var(--id-record); }
+.t-PHONE, .t-EMAIL, .t-ADDRESS { background: var(--id-contact); } .t-HOSPITAL { background: var(--id-place); }
+.chip { display: inline-flex; align-items: center; height: 24px; padding: 0 var(--s2); border-radius: var(--r-sm); font-size: 13px; color: var(--ink); }
+
+/* ---------- side panel ---------- */
+.panel { background: var(--surface-raised); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+.pbody { flex: 1; overflow: auto; padding: var(--s6); }
+.pfoot { padding: var(--s4) var(--s6); border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: var(--s2); }
+.h1 { font: 600 20px/28px var(--f-display); margin: 0 0 var(--s1); }
+.lede { color: var(--ink-muted); font-size: 13px; line-height: 18px; margin: 0 0 var(--s4); }
+.btn { min-height: var(--target); border-radius: var(--r-md); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); padding: 0 var(--s4); text-decoration: none; }
+.btn.primary { width: 100%; background: var(--hema); color: var(--on-hema); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.secondary { width: 100%; background: var(--surface-raised); color: var(--ink); border: 1px solid var(--line-strong); }
+.btn.secondary:hover { background: var(--surface); }
+.btn:disabled { background: var(--surface-sunken); color: var(--ink-muted); border-color: transparent; cursor: default; filter: none; }
+.btn.inline { width: auto; min-height: 36px; padding: 0 var(--s3); font-size: 14px; }
+.link { color: var(--hema); font-weight: 600; font-size: 14px; min-height: 32px; display: inline-flex; align-items: center; }
+.link:hover { text-decoration: underline; }
+.kbd { font: 500 11px var(--f-mono); padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--r-sm); color: var(--ink-muted); }
+.hint { text-align: center; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
+.big { display: flex; align-items: baseline; gap: var(--s2); margin-bottom: var(--s3); }
+.big b { font: 600 28px/34px var(--f-display); }
+.banner { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s3) var(--s4); border-radius: var(--r-md); margin-bottom: var(--s4); font-size: 14px; }
+.banner b { display: block; }
+.banner.verified { background: var(--verified-bg); } .banner.verified b { color: var(--verified); }
+.banner.review { background: var(--review-bg); } .banner.review b { color: var(--review); }
+.banner.refused { background: var(--refused-bg); } .banner.refused b { color: var(--refused); }
+.banner.info { background: var(--surface-sunken); }
+.banner .gl { font: 700 16px/22px var(--f-mono); width: 16px; text-align: center; }
+.banner.verified .gl { color: var(--verified); } .banner.review .gl { color: var(--review); } .banner.refused .gl { color: var(--refused); }
 .list { list-style: none; margin: 0; padding: 0; }
-.list li { display: flex; gap: 8px; align-items: flex-start; padding: 6px 4px; border-bottom: 1px solid #f0f2f4; }
-.list li:last-child { border-bottom: 0; }
-.list li .grow { flex: 1; min-width: 0; }
-.ctx { font: 12px ui-monospace, Consolas, monospace; color: var(--muted); overflow-wrap: anywhere; }
-.counts { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
-.chip { font-size: 12px; padding: 2px 8px; border-radius: 6px; }
-.big { font-size: 22px; font-weight: 700; }
-.field { border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-.field.green { border-left: 4px solid var(--green); }
-.field.amber { border-left: 4px solid #e09a1f; }
-.field.missing { border-left: 4px solid #b0b6bf; }
-.field.saved { opacity: .85; }
-.value { font-size: 18px; font-weight: 700; }
-.cand { font-size: 12px; padding: 6px; border-radius: 6px; border: 1px solid #f0f2f4; margin-top: 6px; cursor: pointer; }
-.cand:hover { border-color: var(--accent); }
-.checks span { margin-right: 6px; }
-.ok { color: var(--green); } .bad { color: var(--red); }
-.trace { font-size: 12px; }
-.trace li { padding: 4px 0; border-bottom: 1px dashed #eceef1; }
-.fieldlist li { justify-content: space-between; }
-#busy { position: fixed; inset: 0; background: rgba(246,247,249,.75); display: none; align-items: center; justify-content: center; z-index: 10; }
-#busy .box { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 18px 24px; display: flex; gap: 12px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,.08); }
-.spin { width: 20px; height: 20px; border: 3px solid #dbe3ff; border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+.item { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
+.item:last-child { border-bottom: 0; }
+.item .grow { flex: 1; min-width: 0; }
+.ctx { font: 13px/20px var(--f-mono); color: var(--ink-muted); overflow-wrap: anywhere; }
+.toggle { appearance: none; width: 20px; height: 20px; border: 1.5px solid var(--line-strong); border-radius: var(--r-sm); margin-top: 1px; display: grid; place-items: center; cursor: pointer; flex: none; background: var(--surface-raised); }
+.toggle:checked { background: var(--hema); border-color: var(--hema); }
+.toggle:checked::after { content: ""; width: 10px; height: 5px; border-left: 2px solid var(--on-hema); border-bottom: 2px solid var(--on-hema); transform: rotate(-45deg) translate(1px, -1px); }
+.running { display: flex; align-items: center; gap: var(--s2); font-size: 13px; color: var(--ink-muted); }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--hema); animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-#toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 14px; border-radius: 8px; display: none; z-index: 11; }
-.warn { background: var(--amber-bg); color: var(--amber); padding: 6px 8px; border-radius: 6px; font-size: 12px; margin: 6px 0; }
-.err { background: var(--red-bg); color: var(--red); padding: 6px 8px; border-radius: 6px; font-size: 12px; margin: 6px 0; }
-label.check { display: flex; gap: 8px; align-items: flex-start; padding: 3px 0; }
-label.check input { width: auto; margin-top: 3px; }
+.tip { display: flex; gap: var(--s3); background: var(--surface-sunken); border-radius: var(--r-md); padding: var(--s3) var(--s4); font-size: 13px; line-height: 18px; margin-bottom: var(--s4); }
+.tip button { margin-left: auto; color: var(--hema); font-weight: 600; white-space: nowrap; }
+.trace { margin-top: var(--s6); border-top: 1px solid var(--line); padding-top: var(--s3); }
+.trace summary { cursor: pointer; color: var(--ink-muted); font-size: 13px; }
+.trace li { display: flex; gap: var(--s2); align-items: flex-start; font-size: 13px; line-height: 18px; padding: 6px 0; }
+.wb { display: inline-flex; align-items: center; gap: 4px; font: 600 11px/16px var(--f-sans); letter-spacing: .04em; text-transform: uppercase; padding: 1px 6px; border-radius: var(--r-sm); flex: none; }
+.wb.local { background: var(--verified-bg); color: var(--verified); } .wb.cloud { background: var(--surface-sunken); color: var(--hema); }
+
+/* fields: a list; each row is a button that selects its quote */
+.fields { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+.frow { display: block; width: 100%; text-align: left; padding: var(--s3) var(--s4); border-bottom: 1px solid var(--line); background: var(--surface-raised); }
+.frow:last-child { border-bottom: 0; }
+.frow.on { box-shadow: inset 3px 0 0 var(--hema); background: var(--surface); }
+.frow.not-stated { background: var(--surface-sunken); }
+.fhead { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.fname { font-weight: 600; }
+.fval { font: 500 15px/22px var(--f-mono); font-variant-numeric: tabular-nums; margin-top: var(--s2); }
+.fquote { font: 13px/20px var(--f-mono); color: var(--ink-muted); margin-top: var(--s1); overflow-wrap: anywhere; }
+.freason { font-size: 13px; line-height: 18px; color: var(--ink); margin-top: var(--s2); }
+.factions { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); margin-top: var(--s2); }
+.choices { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+.choice { min-height: 36px; padding: 0 var(--s3); border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--surface-raised); font: 500 14px var(--f-mono); }
+.choice:hover { border-color: var(--hema); color: var(--hema); }
+.editor { margin-top: var(--s3); display: grid; gap: var(--s2); }
+input.in, select.in, textarea.in { width: 100%; min-height: 40px; padding: 0 var(--s3); border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--surface-raised); }
+textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
+.skel { height: 64px; border-bottom: 1px solid var(--line); background: var(--surface-sunken); position: relative; overflow: hidden; }
+.skel::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: sh 1.3s infinite; }
+@keyframes sh { to { transform: translateX(100%); } }
+.docskel { max-width: calc(68ch + 64px); margin: 0 auto; display: grid; gap: 12px; padding: var(--s8); background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); }
+.docskel i { display: block; height: 12px; border-radius: var(--r-sm); background: var(--surface-sunken); }
+
+/* empty state */
+.empty { max-width: 640px; margin: var(--s12) auto 0; }
+.empty h1 { font: 700 40px/44px var(--f-display); letter-spacing: -.01em; margin: 0 0 var(--s2); }
+.empty p { color: var(--ink-muted); margin: 0 0 var(--s6); }
+.drop { border: 1.5px dashed var(--line-strong); border-radius: var(--r-md); background: var(--surface-raised); padding: var(--s8) var(--s6); text-align: center; }
+.drop.over { border-color: var(--hema); background: var(--surface-sunken); }
+.drop .acts { display: flex; gap: var(--s2); justify-content: center; margin-top: var(--s4); }
+.samples { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s3); }
+.sample { min-height: 36px; padding: 0 var(--s3); border-radius: var(--r-md); border: 1px solid var(--line); background: var(--surface-raised); font-size: 14px; }
+.sample:hover { border-color: var(--hema); color: var(--hema); }
+.paste { width: 100%; min-height: 160px; margin-top: var(--s4); padding: var(--s3); border: 1px solid var(--line-strong); border-radius: var(--r-sm); font: 13px/20px var(--f-mono); display: none; background: var(--surface-raised); }
+.paste.show { display: block; }
+
+/* selection toolbar */
+.floatbar { position: fixed; z-index: 20; display: none; align-items: center; gap: var(--s1); padding: var(--s1); background: var(--ink); color: var(--surface-raised); border-radius: var(--r-md); box-shadow: var(--shadow-raised); font-size: 14px; }
+.floatbar button { color: inherit; min-height: 36px; padding: 0 var(--s3); border-radius: 6px; font-weight: 600; }
+.floatbar button:hover { background: rgba(255,255,255,.14); }
+.floatbar select { background: transparent; color: inherit; border: 1px solid rgba(255,255,255,.3); min-height: 32px; border-radius: 6px; padding: 0 6px; }
+.floatbar select option { color: #1c1930; }
+.floatbar .sep { width: 1px; height: 18px; background: rgba(255,255,255,.25); }
+
+/* dialog */
+dialog.sheet { border: 0; border-radius: var(--r-md); padding: 0; width: 520px; max-width: calc(100vw - 32px); box-shadow: var(--shadow-raised); background: var(--surface-raised); color: var(--ink); }
+dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
+.sheet .sh { padding: var(--s4) var(--s6); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+.sheet .sb { padding: var(--s4) var(--s6); max-height: 60vh; overflow: auto; }
+.sheet .sf { padding: var(--s4) var(--s6); border-top: 1px solid var(--line); display: flex; gap: var(--s2); justify-content: flex-end; }
+.sheet .sf .btn { width: auto; }
+.toast { position: fixed; left: 50%; bottom: var(--s6); transform: translateX(-50%) translateY(16px); opacity: 0; background: var(--ink); color: var(--surface-raised); padding: var(--s3) var(--s4); border-radius: var(--r-md); box-shadow: var(--shadow-raised); transition: all .18s var(--ease); z-index: 30; pointer-events: none; font-size: 14px; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 1100px) { .app { grid-template-columns: 220px minmax(0, 1fr) 380px; } .value span:nth-child(n+3) { display: none; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>PrivLab</h1>
-  <span class="tag">De-identify a pathology report, then fill registry fields from it</span>
-  <span class="spacer"></span>
-  <span id="mode" class="badge"></span>
-  <button id="reset" class="small" style="display:none">Start over</button>
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="brand"><span class="logo"><svg><use href="#i-shield"/></svg></span>PrivLab</div>
+  <div class="value" id="value" aria-live="polite"></div>
+  <span id="mode" class="pill review" style="display:none">Demo</span>
+  <button class="tbtn" id="fieldsBtn"><svg aria-hidden="true"><use href="#i-sliders"/></svg>Fields</button>
+  <a class="tbtn" id="exportBtn" href="/api/export.csv" title="Structured fields only: no report text"><svg aria-hidden="true"><use href="#i-down"/></svg>Export CSV</a>
+  <button class="tbtn" id="resetBtn" style="display:none">Start over</button>
 </header>
-<main>
-  <div class="col">
-    <div class="card">
-      <h2>Report</h2>
-      <select id="reportSel"></select>
-      <div class="row" style="margin-top:8px">
-        <button id="openBtn" class="primary" style="flex:1">Open report</button>
-      </div>
-      <div class="muted small" style="margin-top:6px">Synthetic identifiers on real TCGA reports. Test reports are never listed.</div>
-    </div>
-    <div class="card">
-      <h2>Fields</h2>
-      <ul id="fieldList" class="list fieldlist"></ul>
-      <div id="defineBox" style="margin-top:8px">
-        <input id="fieldName" placeholder="New field, e.g. tumour size">
-        <input id="fieldDesc" placeholder="Optional: what you mean" style="margin-top:6px">
-        <button id="defineBtn" style="margin-top:6px;width:100%">Add field</button>
-      </div>
-      <div id="draftBox"></div>
-    </div>
-    <div class="card small muted" id="profileInfo"></div>
-  </div>
 
-  <div class="col">
-    <div class="steps" id="steps"></div>
-    <div class="where" id="where"></div>
-    <div id="doc"><div class="empty">Choose a report and press <b>Open report</b>.</div></div>
-  </div>
+<div class="app">
+  <aside class="rail" aria-label="Reports">
+    <div class="rail-head"><span class="label">Reports</span><button class="tbtn" id="addBtn"><svg aria-hidden="true"><use href="#i-plus"/></svg>Add</button></div>
+    <div class="rail-list" id="rail"></div>
+  </aside>
+  <main class="center">
+    <div id="stepper" class="stepper"></div>
+    <div id="where" class="where" aria-live="polite"></div>
+    <div class="docwrap" id="docwrap"><div id="view"></div></div>
+  </main>
+  <aside class="panel" aria-label="Actions">
+    <div class="pbody" id="pbody"></div>
+    <div class="pfoot" id="pfoot"></div>
+  </aside>
+</div>
 
-  <div class="col">
-    <div class="card" id="panel"><h2>Start</h2><div class="muted">Open a report to begin. Nothing leaves this laptop until you confirm.</div></div>
-    <div class="card"><h2>Trace</h2><ul class="list trace" id="trace"></ul></div>
-  </div>
-</main>
-<div id="busy"><div class="box"><div class="spin"></div><div id="busyMsg">Working…</div></div></div>
-<div id="toast"></div>
+<div class="floatbar" id="floatbar" role="toolbar" aria-label="Selection"></div>
+<dialog class="sheet" id="sheet" aria-label="Fields"></dialog>
+<input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 "use strict";
+// ======================================================================
+// State and helpers
+// ======================================================================
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
-const TYPES = ["NAME", "DOCTOR", "ID", "DOB", "DATE", "MRN", "ACCESSION", "ACCOUNT", "PHONE", "EMAIL", "ADDRESS", "HOSPITAL"];
-const STEPS = ["Report", "Review", "Hold", "Name check", "De-identified", "Extract"];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const icon = (n) => `<svg aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const TYPES = ["NAME", "DOCTOR", "ID", "DOB", "DATE", "MRN", "ACCESSION", "PHONE", "EMAIL", "ADDRESS", "HOSPITAL"];
+const TL = {NAME: "Name", DOCTOR: "Doctor", ID: "ID number", DOB: "Date of birth", DATE: "Date", MRN: "MRN", ACCESSION: "Accession",
+  ACCOUNT: "Account", PHONE: "Phone", EMAIL: "Email", ADDRESS: "Address", HOSPITAL: "Hospital"};
+const CHECK = {evidence_found: "quote found in the report", type_ok: "valid value", value_in_evidence: "value in the quote",
+  section_ok: "reliable section", no_identifiers: "no identifiers"};
+const FAIL = {evidence_found: "The quote is not in the report.", type_ok: "The value is the wrong type or out of range.",
+  value_in_evidence: "The value is not in its quote.", no_identifiers: "The quote contains an identifier.", section_ok: "It comes from a less reliable section."};
+const STATUS = {verified: ["✓", "Verified"], review: ["!", "Needs review"], "not-stated": ["–", "Not stated"], refused: ["×", "Refused"]};
+const pill = (k) => `<span class="pill ${k}">${STATUS[k][0]} ${STATUS[k][1]}</span>`;
+const store = {get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }};
+const S = {reports: [], cur: -1, fields: [], profile: null, samples: [], demo: false, choices: null};
+let seq = 0;
 
-let S = {};          // current report state
-let fields = [];     // pack fields
-
-// ---------------------------------------------------------------- helpers
-async function api(path, body, busyMsg) {
-  if (busyMsg) { $("busyMsg").textContent = busyMsg; $("busy").style.display = "flex"; }
+async function api(path, body) {
   try {
     const r = await fetch(path, body === undefined ? {} : {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
-    const data = await r.json();
-    if (data.error) toast(data.error);
-    return data;
+    return await r.json();
   } catch (e) {
-    toast("Viewer server not reachable: is python -m viewer.server running?");
-    return {error: String(e)};
-  } finally { $("busy").style.display = "none"; }
+    return {error: "The PrivLab server is not reachable. Start it with python -m viewer.server, then try again.", offline: true};
+  }
 }
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = "none", 4000); }
-function trace(msg, ok = true, where = "") {
-  const li = document.createElement("li");
-  li.innerHTML = `<span class="${ok ? "ok" : "bad"}">${ok ? "✓" : "!"}</span> ${where ? `<span class="badge ${where === "cloud" ? "blue" : "green"}">${where === "cloud" ? "Muse Spark" : "laptop"}</span> ` : ""}${esc(msg)}`;
-  $("trace").appendChild(li);
-}
-function setStep(i, doneUpTo = i - 1) {
-  $("steps").innerHTML = STEPS.map((s, k) => `<span class="step ${k === i ? "on" : k <= doneUpTo ? "done" : ""}">${k + 1}. ${s}</span>`).join("");
-}
-function setWhere(text) { $("where").innerHTML = text; }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3600); }
+const cur = () => S.reports[S.cur];
+const trace = (r, msg, where, ok = true) => r.trace.push({msg, where, ok});
+const fmtSecs = (s) => s < 60 ? `${Math.round(s)} s` : `${Math.floor(s / 60)} min ${Math.round(s % 60)} s`;
+const clock = (d) => d.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
+const sectionName = (s) => ({diagnosis: "Diagnosis", synoptic: "Synoptic", gross: "Gross", history: "Clinical history", addendum: "Addendum", comment: "Comment"}[s] || (s ? s[0].toUpperCase() + s.slice(1) : "Report"));
 
-// Render text with non-overlapping marks: [{start, end, cls, id, title}]
-function renderDoc(text, marks) {
+function marked(text, marks) {
   marks = marks.filter((m) => m.start != null && m.end > m.start).sort((a, b) => a.start - b.start || b.end - a.end);
   let out = "", pos = 0;
   for (const m of marks) {
     if (m.start < pos) continue;
-    out += esc(text.slice(pos, m.start));
-    out += `<mark class="${m.cls}" data-id="${esc(m.id || "")}" title="${esc(m.title || "")}">${esc(text.slice(m.start, m.end))}</mark>`;
+    out += esc(text.slice(pos, m.start)) + `<mark class="${m.cls}" data-id="${esc(m.id || "")}"${m.title ? ` title="${esc(m.title)}"` : ""}>${esc(text.slice(m.start, m.end))}</mark>`;
     pos = m.end;
   }
-  $("doc").innerHTML = out + esc(text.slice(pos));
+  return out + esc(text.slice(pos));
 }
-document.addEventListener("selectionchange", () => {
-  const t = selectionInDoc();
-  if (!t) return;
-  S.lastSel = t;
-  document.querySelectorAll(".evsel").forEach((e) => e.innerHTML = `Evidence: <b>“${esc(t.slice(0, 80))}”</b>`);
-});
-function selectionInDoc() {
-  const sel = window.getSelection();
-  if (!sel.rangeCount || sel.isCollapsed) return null;
+function redactions(text) {
+  const out = [], re = /\[[A-Z]+-\d+\]/g; let m;
+  while ((m = re.exec(text))) out.push({start: m.index, end: m.index + m[0].length, cls: "redact"});
+  return out;
+}
+function docSelection() {
+  const doc = document.querySelector(".doc"), sel = window.getSelection();
+  if (!doc || !sel.rangeCount || sel.isCollapsed) return null;
   const range = sel.getRangeAt(0);
-  if (!$("doc").contains(range.commonAncestorContainer)) return null;
-  // Snap to whole words, so a slightly short drag (".9 x 1.3" for "1.9 x 1.3") still works.
-  const full = $("doc").textContent, pre = document.createRange();
-  pre.setStart($("doc"), 0); pre.setEnd(range.startContainer, range.startOffset);
+  if (!doc.contains(range.commonAncestorContainer)) return null;
+  const full = doc.textContent, pre = document.createRange();
+  pre.setStart(doc, 0); pre.setEnd(range.startContainer, range.startOffset);
   let a = pre.toString().length, b = a + range.toString().length;
-  while (a > 0 && /\S/.test(full[a - 1]) && /\S/.test(full[a])) a--;
+  while (a > 0 && /\S/.test(full[a - 1]) && /\S/.test(full[a])) a--;            // snap to whole words
   while (b < full.length && /\S/.test(full[b]) && /\S/.test(full[b - 1])) b++;
   const text = full.slice(a, b).trim().replace(/[.,;:]+$/, "");
-  return text || null;
+  return text ? {text, rect: range.getBoundingClientRect()} : null;
 }
-function scrollToMark(id) {
-  const m = $("doc").querySelector(`mark[data-id="${CSS.escape(id)}"]`);
+function showMark(id) {
+  const m = document.querySelector(`.doc mark[data-id="${CSS.escape(id)}"]`);
   if (!m) return;
-  const col = $("doc").parentElement, top = m.getBoundingClientRect().top - col.getBoundingClientRect().top;
-  if (top < 40 || top > col.clientHeight - 40) col.scrollTo({top: col.scrollTop + top - col.clientHeight / 2, behavior: "smooth"});
-  m.classList.remove("flash"); void m.offsetWidth; m.classList.add("flash");
+  const wrap = $("docwrap"), top = m.getBoundingClientRect().top - wrap.getBoundingClientRect().top;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (top < 60 || top > wrap.clientHeight - 60) wrap.scrollTo({top: wrap.scrollTop + top - wrap.clientHeight / 2, behavior: reduce ? "auto" : "smooth"});
+  m.classList.remove("pulse"); void m.offsetWidth; m.classList.add("pulse");
 }
 
-// ---------------------------------------------------------------- start
-async function init() {
-  const r = await api("/api/reports");
-  if (r.error) return;
-  const groups = {dev: [], extra: []};
-  r.reports.forEach((x) => groups[x.split].push(x));
-  $("reportSel").innerHTML = Object.entries(groups).map(([g, xs]) =>
-    `<optgroup label="${g === "dev" ? "Dev (teaching)" : "Extra (demo)"}">${xs.map((x) => `<option value="${x.id}">${x.id} · ${esc(x.cancer)}</option>`).join("")}</optgroup>`).join("");
-  $("mode").textContent = r.demo ? "demo mode" : "live profile";
-  $("mode").className = "badge " + (r.demo ? "amber" : "");
-  $("reset").style.display = r.demo ? "" : "none";
-  setStep(-1);
-  await refreshFields();
-  await refreshProfile();
+// ======================================================================
+// Frame: value strip, worklist, stepper
+// ======================================================================
+const RSTAT = {loading: ["De-identifying", ""], setup: ["Set up", ""], review: ["Review", ""], checking: ["Checking", ""],
+  hold: ["Needs review", "review"], flags: ["Needs review", "review"], safe: ["De-identified", "verified"], blocked: ["Refused", "refused"],
+  fields: ["Extracting", ""], approved: ["Approved", "verified"], failed: ["Error", "refused"]};
+function renderTop() {
+  const rs = S.reports, safe = rs.filter((r) => ["safe", "fields", "approved"].includes(r.step)).length;
+  const done = rs.filter((r) => r.step === "approved");
+  const filled = rs.reduce((n, r) => n + Object.values(r.saved).filter((o) => o.value != null).length, 0);
+  const typed = rs.reduce((n, r) => n + r.typed, 0);
+  const avg = done.length ? done.reduce((n, r) => n + (r.doneAt - r.openedAt), 0) / done.length / 1000 : null;
+  $("value").innerHTML = rs.length
+    ? `<span><b>${safe}/${rs.length}</b> reports de-identified</span><span><b>0</b> identifiers sent before you confirmed</span>
+       <span><b>${filled}</b> fields filled</span><span><b>${typed}</b> typed by hand</span>${avg ? `<span><b>${fmtSecs(avg)}</b> per report</span>` : ""}`
+    : `<span>Nothing leaves this laptop until you confirm.</span>`;
 }
-async function refreshProfile() {
-  const p = await api("/api/profile");
-  $("profileInfo").innerHTML = p.exists
-    ? `Privacy profile: <b>${p.allow}</b> learned false alarms, <b>${p.learned}</b> learned identifiers (encrypted).`
-    : "No privacy profile yet: the first report asks what to remove.";
-  return p;
+function renderRail() {
+  $("rail").innerHTML = S.reports.length ? S.reports.map((r, i) => {
+    const [label, cls] = RSTAT[r.step] || ["", ""];
+    const pr = r.done && r.done.review_priority ? r.done.review_priority.level : null;
+    return `<button class="row ${i === S.cur ? "on" : ""}" data-i="${i}" aria-current="${i === S.cur}">
+      <span class="name">${esc(r.name)}</span><span class="pill ${cls}">${label}</span>
+      <span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${esc(r.cancer || (r.sample ? "Sample" : "Your file"))}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span></button>`;
+  }).join("") : `<p class="sm muted" style="padding:0 var(--s3)">No reports yet.</p>`;
 }
-async function refreshFields() {
-  const p = await api("/api/pack");
-  fields = p.fields || [];
-  $("fieldList").innerHTML = fields.length ? fields.map((f) => `<li><span>${esc(f.name)}${f.unit ? ` <span class="muted small">(${esc(f.unit)})</span>` : ""}</span>${readinessBadge(f.readiness)}</li>`).join("")
-    : `<li class="muted small">No fields yet. Packs start empty.</li>`;
+$("rail").addEventListener("click", (e) => { const b = e.target.closest(".row"); if (b) select(+b.dataset.i); });
+function select(i) { S.cur = i; hideFloat(); render(); $("docwrap").scrollTop = 0; }
+function render() { renderTop(); renderRail(); renderMain(); }
+function refresh(r) { r === cur() ? render() : (renderTop(), renderRail()); }
+
+function stepper(active) {
+  $("stepper").innerHTML = ["De-identify", "Extract fields", "Approve"].map((s, k) => `${k ? '<span class="step-line"></span>' : ""}
+    <span class="step ${k === active ? "on" : k < active ? "done" : ""}"><span class="n">${k < active ? "✓" : k + 1}</span>${s}</span>`).join("");
 }
-function readinessBadge(r) {
-  const cls = r === "ready" ? "green" : r === "learning" ? "amber" : "";
-  return `<span class="badge ${cls}">${r === "ready" ? "Ready" : r === "learning" ? "Learning" : "Draft"}</span>`;
+const LOCAL = `<span class="wb local">Laptop</span>`, CLOUD = `<span class="wb cloud">Muse Spark</span>`;
+const where = (html) => $("where").innerHTML = html;
+const running = (txt) => `<span class="running"><span class="spin"></span>${esc(txt)}</span>`;
+function setDoc(html, legend = "") { $("view").innerHTML = `${legend ? `<div class="legend">${legend}</div>` : ""}<div class="doc" id="doc">${html}</div>`; }
+function setPanel(body, foot) { $("pbody").innerHTML = body; $("pfoot").innerHTML = foot || ""; $("pfoot").style.display = foot ? "" : "none"; }
+const tip = (key, text) => store.get("tip:" + key) ? "" : `<div class="tip"><span>${text}</span><button data-tip="${key}">Got it</button></div>`;
+$("pbody").addEventListener("click", (e) => { const t = e.target.closest("[data-tip]"); if (t) { store.set("tip:" + t.dataset.tip, "1"); t.parentElement.remove(); } });
+const banner = (kind, title, text) => `<div class="banner ${kind}" role="${kind === "refused" ? "alert" : "status"}"><span class="gl">${{verified: "✓", review: "!", refused: "×", info: "i"}[kind]}</span><div><b>${title}</b>${text ? `<span>${text}</span>` : ""}</div></div>`;
+
+function renderMain() {
+  const r = cur();
+  if (!r) return viewEmpty();
+  ({loading: viewLoading, setup: viewSetup, review: viewReview, checking: viewChecking, hold: viewQuestion, flags: viewQuestion,
+    safe: viewSafe, blocked: viewBlocked, fields: viewFields, approved: viewApproved, failed: viewFailed})[r.step](r);
 }
 
-$("openBtn").onclick = async () => {
-  const id = $("reportSel").value;
-  const r = await api("/api/report?id=" + encodeURIComponent(id));
-  if (r.error) return;
-  S = {id, text: r.text, unmark: new Set(), add: [], results: {}};
-  $("trace").innerHTML = "";
-  renderDoc(S.text, []);
-  setStep(0);
-  setWhere(`<span class="local">On this laptop: nothing has been sent</span>`);
-  const p = await refreshProfile();
-  if (!p.exists) return showChecklist(p.checklist);
-  runDeid(null);
-};
+// ======================================================================
+// Empty state and adding reports
+// ======================================================================
+function viewEmpty() {
+  $("stepper").innerHTML = ""; where("");
+  const picks = [...new Map(S.samples.filter((x) => x.split === "extra").map((x) => [x.cancer, x])).values()]
+    .map((x) => S.samples.find((y) => y.split === "extra" && y.cancer === x.cancer));     // first of each cancer type
+  $("view").innerHTML = `<div class="empty">
+    <h1>De-identify a pathology report</h1>
+    <p>Identifiers are found on this laptop. Nothing is sent anywhere until you confirm, and then only masked text.</p>
+    <div class="drop" id="drop">
+      <div style="font-weight:600">No reports yet. Drop a text report to start.</div>
+      <div class="hint">.txt files, one report per file. They stay in memory on this laptop.</div>
+      <div class="acts"><button class="btn secondary inline" id="browse">${icon("upload")}Choose files</button>
+        <button class="btn secondary inline" id="pasteBtn">Paste text</button></div>
+      <textarea class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
+      <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">De-identify pasted report</button>
+    </div>
+    <p class="label" style="margin:var(--s6) 0 0">Or try a sample report</p>
+    <div class="samples">${picks.map((x) => `<button class="sample" data-sample="${x.id}">${x.id} · ${esc(x.cancer)}</button>`).join("")}
+      <select class="sample" id="moreSamples" aria-label="More sample reports"><option value="">More samples</option>
+      ${S.samples.map((x) => `<option value="${x.id}">${x.id} · ${esc(x.cancer)} · ${x.split}</option>`).join("")}</select></div>
+    <p class="sm muted">Samples are real TCGA report text with synthetic identifiers.</p>
+  </div>`;
+  setPanel(`<h2 class="h1">Three steps</h2><p class="lede">One button per step, always here at the bottom.</p>
+    <ol class="list">${[["De-identify", "Names, IDs and contact details are highlighted on this laptop. You check them, then confirm."],
+      ["Extract fields", "Each field you choose is filled from the de-identified text, with the quote it came from."],
+      ["Approve", "Confirm or edit each value. PrivLab learns from every correction. Export as CSV."]].map(([t, d], k) =>
+      `<li class="item"><span class="pill hema">${k + 1}</span><div class="grow"><b>${t}</b><div class="sm muted">${d}</div></div></li>`).join("")}</ol>
+    ${S.fields.length ? "" : banner("info", "No fields yet", "Add the fields to fill with Fields at the top, for example tumour size.")}`);
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
+  $("browse").onclick = () => $("fileInput").click();
+  $("pasteBtn").onclick = () => { $("paste").classList.add("show"); $("pasteAdd").style.display = ""; $("paste").focus(); };
+  $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t) : toast("Paste the report text first."); };
+  document.querySelectorAll("[data-sample]").forEach((b) => b.onclick = () => addSample(b.dataset.sample));
+  $("moreSamples").onchange = (e) => e.target.value && addSample(e.target.value);
+}
+$("fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
+$("addBtn").onclick = () => { S.cur = -1; render(); };
+document.addEventListener("dragover", (e) => e.preventDefault());
+document.addEventListener("drop", (e) => { if (!e.target.closest("#drop")) { e.preventDefault(); if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files); } });
 
-function showChecklist(items) {
-  $("panel").innerHTML = `<h2>First use: what should be removed?</h2>
-    <div class="muted small" style="margin-bottom:8px">Saved as your privacy profile. Clinical dates stay: registries need them.</div>
-    ${items.map((c) => `<label class="check"><input type="checkbox" data-key="${c.key}" ${c.default ? "checked" : ""}> <span>${esc(c.label)}${c.warn_if_unticked ? "" : ' <span class="muted small">(optional)</span>'}</span></label>`).join("")}
-    <label class="check"><input type="checkbox" checked disabled> <span>Replace with tags like [PATIENT-1]</span></label>
-    <button class="primary" id="ckBtn" style="margin-top:10px;width:100%">Save and find identifiers</button>`;
-  $("ckBtn").onclick = () => {
+async function addFiles(files) {
+  for (const f of files) {
+    if (!/\.txt$/i.test(f.name) && f.type !== "text/plain") { toast(`${f.name} is not a text file. Save the report as .txt and drop it again.`); continue; }
+    await addText(f.name, await f.text());
+  }
+}
+const newReport = (name, extra) => ({key: ++seq, name, step: "loading", unmark: new Set(), add: [], dets: null, results: {}, saved: {},
+  typed: 0, trace: [], prefetch: "none", openedAt: performance.now(), ...extra});
+function addText(name, text) { return start(newReport(name.replace(/\.txt$/i, ""), {preview: text}), "/api/add", {name, text}); }
+function addSample(id) { const m = S.samples.find((x) => x.id === id) || {}; return start(newReport(id, {sample: true, cancer: m.cancer}), "/api/deid", {report_id: id}); }
+async function start(r, path, body) {
+  r.req = {path, body};
+  S.reports.push(r); S.cur = S.reports.length - 1;
+  if (!S.profile.exists && !S.choices) { r.step = "setup"; return render(); }
+  return layer1(r);
+}
+async function layer1(r) {
+  r.step = "loading"; r.error = null;
+  const slow = setTimeout(() => refresh(r), 120);                 // skeleton only if it takes noticeable time
+  const t0 = performance.now(), res = await api(r.req.path, {...r.req.body, choices: S.choices});
+  clearTimeout(slow);
+  if (res.error) { r.step = "failed"; r.error = {title: "This report could not be de-identified", text: res.error, retry: () => layer1(r)}; return refresh(r); }
+  if (res.next === "profile") { S.profile.exists = false; r.step = "setup"; return refresh(r); }
+  S.profile.exists = true;
+  Object.assign(r, {text: res.text, deid: res.deid_id, dets: res.detections, step: "review", name: res.name || r.name});
+  (res.warnings || []).forEach(toast);
+  trace(r, `Found ${res.detections.length} identifiers in ${Math.round(performance.now() - t0)} ms. Nothing sent.`, "local");
+  refresh(r);
+}
+function viewLoading(r) {
+  stepper(0); where(running("De-identifying on this laptop"));
+  $("view").innerHTML = `<div class="docskel" aria-label="Loading report">${Array.from({length: 14}, (_, k) => `<i style="width:${55 + (k * 37) % 45}%"></i>`).join("")}</div>`;
+  setPanel(`<h2 class="h1">De-identifying</h2><p class="lede">Finding names, IDs and contact details on this laptop.</p>
+    <div class="fields">${'<div class="skel"></div>'.repeat(4)}</div>`, `<button class="btn primary" disabled>De-identifying…</button>`);
+}
+function viewFailed(r) {
+  stepper(0); where("");
+  setDoc(esc(r.preview || r.text || ""));
+  setPanel(banner("refused", esc(r.error.title), esc(r.error.text)), `<button class="btn primary" id="retry">Try again</button>
+    <button class="btn secondary" id="drop1">Remove this report</button>`);
+  $("retry").onclick = r.error.retry;
+  $("drop1").onclick = () => { S.reports.splice(S.cur, 1); S.cur = S.reports.length - 1; render(); };
+}
+
+// first use: privacy profile
+function viewSetup(r) {
+  stepper(0); where(LOCAL);
+  setDoc(r.preview ? esc(r.preview) : '<span class="muted">The sample opens after you choose what to hide.</span>');
+  setPanel(`<h2 class="h1">What should be hidden?</h2><p class="lede">Asked once and saved as your privacy profile. Clinical dates stay, because registries need them.</p>
+    <ul class="list">${S.profile.checklist.map((c) => `<li class="item"><input type="checkbox" class="toggle" data-key="${c.key}" ${c.default ? "checked" : ""} id="ck-${c.key}">
+      <label for="ck-${c.key}" class="grow">${esc(c.label)}${c.warn_if_unticked ? "" : ' <span class="sm muted">optional</span>'}</label></li>`).join("")}</ul>`,
+    `<button class="btn primary" id="go">Save and find identifiers</button>`);
+  $("go").onclick = () => {
     const choices = {};
-    $("panel").querySelectorAll("input[data-key]").forEach((i) => choices[i.dataset.key] = i.checked);
-    runDeid(choices);
+    document.querySelectorAll("#pbody [data-key]").forEach((i) => choices[i.dataset.key] = i.checked);
+    S.choices = choices;
+    S.reports.filter((x) => x.step === "setup").forEach(layer1);
   };
 }
 
-// ---------------------------------------------------------------- de-id
-async function runDeid(choices) {
-  const r = await api("/api/deid", {report_id: S.id, choices});
-  if (r.error || r.next === "error") return;
-  S.deid = r.deid_id; S.dets = r.detections;
-  (r.warnings || []).forEach((w) => toast(w));
-  trace(`Presidio found ${r.detections.length} identifiers. Nothing sent.`, true, "local");
-  showReview();
-}
-
-function reviewMarks() {
-  const marks = S.dets.map((d) => ({start: d.start, end: d.end, id: d.id, title: `${d.type} · click to unmark`,
-    cls: `t-${d.type}` + (S.unmark.has(d.id) ? " off" : "")}));
-  S.add.forEach((a, i) => { let k = -1; while ((k = S.text.indexOf(a.text, k + 1)) >= 0) marks.push({start: k, end: k + a.text.length, id: "add" + i, cls: `t-${a.type} added`, title: "added by you"}); });
+// ======================================================================
+// Step 1: de-identify
+// ======================================================================
+function reviewMarks(r) {
+  const marks = r.dets.map((d) => ({start: d.start, end: d.end, id: d.id, title: `${TL[d.type] || d.type}. Click to keep it visible.`,
+    cls: `t-${d.type}` + (r.unmark.has(d.id) ? " kept" : "")}));
+  r.add.forEach((a, i) => { let k = -1; while ((k = r.text.indexOf(a.text, k + 1)) >= 0) marks.push({start: k, end: k + a.text.length, id: "add" + i, cls: `t-${a.type} added`, title: "Added by you. Click to remove."}); });
   return marks;
 }
-function showReview() {
-  S.step = "review"; setStep(1);
-  renderDoc(S.text, reviewMarks());
-  const counts = {};
-  S.dets.forEach((d) => counts[d.type] = (counts[d.type] || 0) + 1);
-  const kept = S.dets.length - S.unmark.size + S.add.length;
-  $("panel").innerHTML = `<h2>Review what will be hidden</h2>
-    <div class="row"><span class="big">${kept}</span><span class="muted">identifiers found on this laptop</span></div>
-    <div class="counts">${Object.entries(counts).map(([t, n]) => `<span class="chip t-${t}">${t} ${n}</span>`).join("")}</div>
-    <div class="muted small">Click a highlight to unmark a false alarm. To add something missed, select it in the report.</div>
-    <div class="row" style="margin:8px 0"><select id="addType" style="width:auto">${TYPES.map((t) => `<option>${t}</option>`).join("")}</select>
-      <button id="addBtn" class="small">Hide selected text</button></div>
-    <ul class="list" style="max-height:300px;overflow:auto">${S.dets.map((d) => `<li><input type="checkbox" data-id="${d.id}" ${S.unmark.has(d.id) ? "" : "checked"} style="width:auto">
-      <div class="grow"><span class="chip t-${d.type}">${d.type}</span> <b>${esc(d.text)}</b><div class="ctx">${esc(d.context)}</div></div></li>`).join("")}
-      ${S.add.map((a, i) => `<li><input type="checkbox" checked data-add="${i}" style="width:auto" title="untick to remove"><div class="grow"><span class="chip t-${a.type}">${a.type}</span> <b>${esc(a.text)}</b> <span class="muted small">added</span></div></li>`).join("")}</ul>
-    <button class="primary" id="confirmBtn" style="margin-top:10px;width:100%">Confirm and run the name check</button>
-    <div class="muted small" style="margin-top:6px">After this, only the masked text goes to Muse Spark.</div>`;
-  $("panel").querySelectorAll("input[data-id]").forEach((i) => i.onchange = () => { toggleUnmark(i.dataset.id); });
-  $("panel").querySelectorAll("input[data-add]").forEach((i) => i.onchange = () => { S.add.splice(+i.dataset.add, 1); showReview(); });
-  $("addBtn").onclick = () => {
-    const t = S.lastSel;
-    if (!t) return toast("Select the missed text in the report first.");
-    S.lastSel = null;
-    S.add.push({text: t, type: $("addType").value});
-    showReview();
-  };
-  $("confirmBtn").onclick = confirmReview;
+function counts(r) {
+  const c = {};
+  r.dets.forEach((d) => { if (!r.unmark.has(d.id)) c[d.type] = (c[d.type] || 0) + 1; });
+  r.add.forEach((a) => c[a.type] = (c[a.type] || 0) + 1);
+  return c;
 }
-function toggleUnmark(id) { S.unmark.has(id) ? S.unmark.delete(id) : S.unmark.add(id); showReview(); }
-$("doc").addEventListener("click", (e) => {
-  const m = e.target.closest("mark");
-  if (!m || !m.dataset.id) return;
-  if (S.step === "hold" || S.step === "flags") {
-    const box = $("panel").querySelector(`input[data-id="${CSS.escape(m.dataset.id)}"]`);
-    if (box) { box.checked = !box.checked; box.dispatchEvent(new Event("change")); }
-  } else if (S.step === "extract") {
-    selectCandidate(m.dataset.id);
-  } else if (S.step === "review" && m.dataset.id.startsWith("add")) {
-    S.add.splice(+m.dataset.id.slice(3), 1); showReview();
-  } else if (S.step === "review" && S.dets.some((d) => d.id === m.dataset.id)) toggleUnmark(m.dataset.id);
+function viewReview(r) {
+  stepper(0); where(`${LOCAL}<span>Nothing has left this laptop</span>`);
+  const c = counts(r), n = Object.values(c).reduce((a, b) => a + b, 0);
+  setDoc(marked(r.text, reviewMarks(r)), Object.entries(c).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join(""));
+  setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
+    ${tip("review", "Click a highlight to keep it visible. Select any text in the report to hide something PrivLab missed.")}
+    <h2 class="h1">Review what will be hidden</h2>
+    <div class="big"><b>${n}</b><span class="muted">identifiers found on this laptop</span></div>
+    <ul class="list">${r.dets.map((d) => `<li class="item"><input type="checkbox" class="toggle" data-det="${d.id}" ${r.unmark.has(d.id) ? "" : "checked"} aria-label="Hide ${esc(d.text)}">
+      <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}</div><button class="link" data-go="${d.id}">Show</button></li>`).join("")}
+      ${r.add.map((a, i) => `<li class="item"><input type="checkbox" class="toggle" checked data-add="${i}" aria-label="Stop hiding ${esc(a.text)}">
+      <div class="grow"><span class="chip t-${a.type}">${TL[a.type] || a.type}</span> ${esc(a.text)} <span class="sm muted">added by you</span></div></li>`).join("")}</ul>
+    ${traceBlock(r)}`,
+    `<button class="btn primary" id="go">Hide ${n} and check for names</button>
+     <div class="hint">Only the masked text goes to Muse Spark <span class="kbd">Enter</span></div>`);
+  $("go").onclick = () => confirmReview(r);
+  document.querySelectorAll("[data-det]").forEach((i) => i.onchange = () => toggleKeep(r, i.dataset.det));
+  document.querySelectorAll("[data-add]").forEach((i) => i.onchange = () => { r.add.splice(+i.dataset.add, 1); renderMain(); });
+  document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => showMark(b.dataset.go));
+}
+function toggleKeep(r, id) { r.unmark.has(id) ? r.unmark.delete(id) : r.unmark.add(id); renderMain(); }
+
+async function confirmReview(r) {
+  r.step = "checking"; r.error = null; render();
+  const res = await api("/api/confirm", {deid_id: r.deid, unmark: [...r.unmark], add: r.add});
+  if (!res.error) trace(r, `You confirmed: ${r.unmark.size} kept visible, ${r.add.length} added.`, "local");
+  handleNext(r, res, "review");
+}
+function handleNext(r, res, back) {
+  if (res.error || res.next === "error") {
+    r.step = back;
+    r.error = {title: "The name check did not run", text: `${res.error || "This step is no longer available."} Nothing was sent.`};
+    return refresh(r);
+  }
+  if (res.next === "hold") { r.step = "hold"; r.question = {kind: "hold", items: res.hold}; trace(r, `Paused before any API call: ${res.hold.length} words look like names.`, "local", false); }
+  else if (res.next === "flags") { r.step = "flags"; r.question = {kind: "flags", items: res.flags}; trace(r, `Muse Spark: ${res.flags.length} more to check.`, "cloud", false); }
+  else if (res.next === "done") return finishDeid(r, res);
+  refresh(r);
+}
+function viewChecking(r) {
+  stepper(0); where(running("Checking for patient identifiers on the masked text"));
+  setDoc(marked(r.text, reviewMarks(r)));
+  setPanel(`<h2 class="h1">Checking for patient identifiers</h2>
+    <p class="lede">Muse Spark reads the masked text for names the rules missed. You can open other reports while you wait.</p>
+    <div class="fields">${'<div class="skel"></div>'.repeat(3)}</div>${traceBlock(r)}`,
+    `<button class="btn primary" disabled>Checking…</button>`);
+}
+
+function viewQuestion(r) {
+  const q = r.question, hold = q.kind === "hold";
+  stepper(0); where(hold ? `${LOCAL}<span>Paused before any API call</span>` : `${CLOUD}<span>Saw masked text only</span>`);
+  if (!q.picked) q.picked = new Set(q.items.filter((x) => hold || x.ticked).map((x) => x.id));
+  const base = r.dets.filter((d) => !r.unmark.has(d.id)).map((d) => ({start: d.start, end: d.end, cls: `t-${d.type}`}));
+  setDoc(marked(r.text, [...base, ...q.items.map((x) => ({start: x.start, end: x.end, id: x.id, title: "Click to change",
+    cls: hold ? "hold" : x.ticked ? "flag" : "suspect"}))]));
+  setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
+    ${banner("review", hold ? "These look like names" : "Possible identifiers found", hold ? "Ticked ones will be hidden. Untick any that are not names; PrivLab learns." :
+      "Muse Spark's finds are ticked. Words it could not decide are unticked: tick any that identify a person.")}
+    <ul class="list">${q.items.map((x) => `<li class="item"><input type="checkbox" class="toggle" data-q="${x.id}" ${q.picked.has(x.id) ? "checked" : ""} aria-label="Hide ${esc(x.text)}">
+      <div class="grow">${esc(x.text)} <span class="sm muted">${x.source === "suspect" ? "undecided" : esc(TL[x.type] || x.type)}</span>
+      <div class="ctx">${esc(x.context)}</div></div><button class="link" data-go="${x.id}">Show</button></li>`).join("")}</ul>${traceBlock(r)}`,
+    `<button class="btn primary" id="go">Hide ${q.picked.size} and ${hold ? "check for names" : "finish"}</button>`);
+  document.querySelectorAll("[data-q]").forEach((i) => i.onchange = () => { i.checked ? q.picked.add(i.dataset.q) : q.picked.delete(i.dataset.q); renderMain(); });
+  document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => showMark(b.dataset.go));
+  $("go").onclick = () => answer(r);
+}
+async function answer(r) {
+  const q = r.question, back = r.step;
+  r.step = "checking"; r.error = null; render();
+  let res;
+  if (q.kind === "hold") {
+    const keep = q.items.filter((x) => !q.picked.has(x.id)).map((x) => x.id);
+    res = await api("/api/hold", {deid_id: r.deid, keep});
+    if (!res.error) trace(r, `You hid ${q.picked.size}, kept ${keep.length}.`, "local");
+  } else {
+    res = await api("/api/flags", {deid_id: r.deid, keep: q.items.filter((x) => x.ticked && !q.picked.has(x.id)).map((x) => x.id),
+      hide: q.items.filter((x) => !x.ticked && q.picked.has(x.id)).map((x) => x.id)});
+  }
+  if (!res.error && res.next !== "error") r.question = null;
+  handleNext(r, res, back);
+}
+
+const LAYER2 = {clean: "Muse Spark found nothing new.", flagged: "You reviewed Muse Spark's finds.",
+  unavailable: "The name check did not run. Read the text once before using it.", skipped: "The name check was not run."};
+function finishDeid(r, res) {
+  const leftover = (res.review_priority?.reasons || []).find((x) => /left in the output/.test(x));
+  Object.assign(r, {done: res, dtext: res.text, step: leftover ? "blocked" : "safe", leftover});
+  trace(r, LAYER2[res.layer2] || res.layer2, res.layer2 === "skipped" ? "local" : "cloud", ["clean", "flagged"].includes(res.layer2));
+  trace(r, `${res.summary.total} identifiers replaced with tags; originals in the encrypted vault.`, "local");
+  if (!leftover && S.fields.length) prefetch(r);
+  refresh(r);
+}
+function prefetch(r) {
+  r.prefetch = "running";
+  api("/api/prefetch", {deid_id: r.deid}).then((p) => {
+    r.prefetch = p.status === "ready" ? "ready" : "none";
+    if (p.status === "ready") trace(r, `Fields read ahead of time (${(p.model_ms / 1000).toFixed(1)} s).`, "cloud");
+    if (r === cur() && r.step === "safe") renderMain();
+  });
+}
+function viewSafe(r) {
+  stepper(1); where(`${LOCAL}<span>Originals stay in the encrypted vault on this laptop</span>`);
+  const res = r.done, pr = res.review_priority || {level: "low", reasons: []};
+  const ok = ["clean", "flagged"].includes(res.layer2);
+  setDoc(marked(r.dtext, redactions(r.dtext)));
+  setPanel(`${ok ? banner("verified", "De-identified", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2]}`)
+                 : banner("review", "De-identified, needs review", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2] || ""}`)}
+    ${pr.level !== "low" ? `<p class="sm"><b>Review priority ${pr.level}.</b> ${pr.reasons.map(esc).join("; ")}.</p>` : ""}
+    <div class="legend" style="margin:0">${Object.entries(res.summary.by_type).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join("")}</div>
+    ${traceBlock(r)}`,
+    S.fields.length ? `<button class="btn primary" id="go">Extract ${S.fields.length} field${S.fields.length > 1 ? "s" : ""} ${icon("arrow")}</button>
+      <div class="hint">${r.prefetch === "ready" ? "Ready: read ahead of time" : r.prefetch === "running" ? "Reading the fields ahead of time" : ""} <span class="kbd">Enter</span></div>`
+    : `<button class="btn primary" id="addField">${icon("plus")}Add a field to extract</button>`);
+  if ($("go")) $("go").onclick = () => openFields(r);
+  if ($("addField")) $("addField").onclick = openSheet;
+}
+function viewBlocked(r) {
+  stepper(0); where(`${LOCAL}<span>Nothing more will be sent for this report</span>`);
+  setDoc(marked(r.dtext, redactions(r.dtext)));
+  const n = +(String(r.leftover).match(/\d+/) || [1])[0];
+  setPanel(banner("refused", "Possible identifier left in the text", `${n} possible identifier${n > 1 ? "s were" : " was"} found after de-identification. The value is not shown, and nothing more is sent for this report. De-identify it again and mark ${n > 1 ? "them" : "it"} before continuing.`) + traceBlock(r),
+    `<button class="btn primary" id="again">De-identify again</button>`);
+  $("again").onclick = () => { const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer}); copy.req = r.req; S.reports.splice(S.cur, 1, copy); layer1(copy); };
+}
+
+// ======================================================================
+// Step 2: extract fields
+// ======================================================================
+async function openFields(r) {
+  r.step = "fields"; r.error = null; render();
+  for (const f of S.fields) {
+    if (r.results[f.key] || r.saved[f.key]) continue;
+    const res = await api("/api/find", {deid_id: r.deid, field: f.key});
+    if (res.error || res.status === "error") { r.error = {title: "Fields could not be extracted", text: res.error || res.reason}; break; }
+    r.results[f.key] = res;
+    const top = (res.candidates || []).find((c) => c.id === res.candidate_id);
+    trace(r, `${f.name}: ${res.value != null ? res.value : status(res)[1]}` + (top ? ` (${Object.entries(top.checks).filter(([, k]) => !k).map(([k]) => "failed: " + CHECK[k]).join(", ") || "all checks passed"})` : ""),
+      res.model_ms ? "cloud" : "local", res.status === "green");
+    if (r === cur() && r.step === "fields") renderMain();
+  }
+  if (r === cur()) renderMain();
+}
+function status(res) {
+  if (res.status === "green") return ["verified", "Verified"];
+  if (res.status === "missing") return ["not-stated", "Not stated"];
+  return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
+}
+const unit = (f, v) => v != null && f.type === "number" && f.unit ? ` ${esc(f.unit)}` : "";
+function quoteMarks(r) {
+  const marks = redactions(r.dtext), sel = r.focus;
+  if (sel) {
+    const res = r.results[sel.key], c = res && (res.candidates || []).find((x) => x.id === sel.cid);
+    if (c && c.start != null) marks.push({start: c.start, end: c.end, id: `${sel.key}:${c.id}`, cls: "quote"});
+  }
+  return marks;
+}
+function viewFields(r) {
+  stepper(1); where(`${CLOUD}<span>proposes each value; code checks it against the text</span>`);
+  setDoc(marked(r.dtext, quoteMarks(r)));
+  const open = S.fields.filter((f) => !r.saved[f.key]);
+  const verified = open.filter((f) => r.results[f.key] && status(r.results[f.key])[0] === "verified");
+  const pending = open.filter((f) => r.results[f.key] && status(r.results[f.key])[0] !== "verified");
+  const loading = open.some((f) => !r.results[f.key]) && !r.error;
+  let foot;
+  if (loading) foot = `<button class="btn primary" disabled>Extracting fields…</button>`;
+  else if (verified.length) foot = `<button class="btn primary" id="confirmAll">Confirm ${verified.length} verified value${verified.length > 1 ? "s" : ""}</button>
+    <div class="hint">${pending.length ? `${pending.length} still need${pending.length > 1 ? "" : "s"} your review · ` : ""}<span class="kbd">↑</span> <span class="kbd">↓</span> fields · <span class="kbd">R</span> confirm</div>`;
+  else if (open.length) foot = `<button class="btn primary" disabled>Review ${open.length} field${open.length > 1 ? "s" : ""} above</button>`;
+  else foot = `<button class="btn primary" id="approve">Approve extraction ${icon("arrow")}</button>`;
+  setPanel(`${loading ? `<p class="running" style="margin:0 0 var(--s3)"><span class="spin"></span>Extracting fields</p>` : ""}
+    ${r.error ? banner("refused", esc(r.error.title), `${esc(r.error.text)} <button class="link" id="retry">Try again</button>`) : ""}
+    ${!loading && pending.length ? banner("review", `${pending.length} field${pending.length > 1 ? "s" : ""} need${pending.length > 1 ? "" : "s"} your answer`, "Confirm, edit or mark not stated before approving.") : ""}
+    ${tip("fields", "Select a field to see its quote in the report. To correct a value, select the right text in the report.")}
+    <h2 class="h1">Extract fields</h2>
+    <div class="fields" role="list">${S.fields.map((f) => fieldRow(r, f)).join("")}</div>${traceBlock(r)}`, foot);
+  if ($("confirmAll")) $("confirmAll").onclick = () => confirmAll(r);
+  if ($("approve")) $("approve").onclick = () => approve(r);
+  if ($("retry")) $("retry").onclick = () => openFields(r);
+  wireRows(r);
+}
+function fieldRow(r, f) {
+  const res = r.results[f.key], saved = r.saved[f.key], on = r.focus && r.focus.key === f.key;
+  const head = (st) => `<div class="fhead"><span class="fname">${esc(f.name)}</span>${st}</div>`;
+  if (saved) {
+    const corrected = !["correct", "true_empty"].includes(saved.outcome);
+    return `<div class="frow ${saved.value == null ? "not-stated" : ""}" role="listitem">${head(saved.value == null ? pill("not-stated") : pill("verified"))}
+      <div class="fval">${saved.value != null ? esc(saved.value) + unit(f, saved.value) : "Not stated"}</div>
+      <div class="sm muted">${corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div></div>`;
+  }
+  if (!res) return `<div class="skel" aria-label="Extracting ${esc(f.name)}"></div>`;
+  const [k] = status(res), top = (res.candidates || []).find((c) => c.id === res.candidate_id);
+  const editor = r.editing === f.key ? editorHtml(r, f) : "";
+  const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}${c.start != null ? ` · ${c.start}–${c.end}` : ""}</div>` : "";
+  if (k === "verified") return `<div class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-row="${f.key}" data-cid="${top.id}" aria-label="${esc(f.name)}: ${esc(res.value)}. Select to show its quote.">${head(pill("verified"))}
+      <div class="fval">${esc(res.value)}${unit(f, res.value)}</div>${quote(top)}
+      <div class="factions"><button class="link" data-act="accept" data-key="${f.key}" data-cid="${top.id}">Confirm value</button>
+      <button class="link" data-act="edit" data-key="${f.key}">Edit value</button></div>${editor}</div>`;
+  if (k === "not-stated") return `<div class="frow not-stated" role="listitem">${head(pill("not-stated"))}
+      <div class="freason">The report does not state this field.</div>
+      <div class="factions"><button class="link" data-act="missing" data-key="${f.key}">Confirm not stated</button>
+      <button class="link" data-act="edit" data-key="${f.key}">It is stated</button></div>${editor}</div>`;
+  const valid = (res.candidates || []).filter((c) => !c.fail);
+  if (k === "refused") {
+    const failed = (res.candidates || [])[0];
+    return `<div class="frow" role="listitem">${head(pill("refused"))}
+      <div class="freason">${failed ? esc(FAIL[failed.fail] || "A check refused the value.") : esc(res.reason || "")} The value is not shown.</div>
+      <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
+      <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
+  }
+  const focusC = r.focus && r.focus.key === f.key ? valid.find((c) => c.id === r.focus.cid) : null;
+  return `<div class="frow ${on ? "on" : ""}" role="listitem">${head(pill("review"))}
+    <div class="freason">${esc(res.reason || "")}</div>
+    <div class="choices">${valid.map((c) => `<button class="choice" data-act="pick" data-key="${f.key}" data-cid="${c.id}" data-show="${c.id}">${esc(c.value)}${unit(f, c.value)}</button>`).join("")}</div>
+    ${quote(focusC || valid[0])}
+    <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
+    <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
+}
+function editorHtml(r, f) {
+  const ed = r.edit || {};
+  const input = f.type === "choice"
+    ? `<select class="in" id="edVal" aria-label="Value">${f.choices.map((c) => `<option ${c === ed.value ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>`
+    : `<input class="in" id="edVal" inputmode="decimal" aria-label="Value" placeholder="Value${f.unit ? " in " + esc(f.unit) : ""}" value="${esc(ed.value || "")}">`;
+  return `<div class="editor" data-stop>${input}<div class="sm ${ed.evidence ? "" : "muted"}">${ed.evidence ? `Quote: <span class="fquote">“${esc(ed.evidence.slice(0, 100))}”</span>` : "Select the quote for this value in the report."}</div>
+    <div class="factions"><button class="btn secondary inline" id="edSave">Save value</button><button class="link" id="edCancel">Cancel</button></div></div>`;
+}
+function wireRows(r) {
+  const pb = $("pbody");
+  pb.querySelectorAll("[data-row]").forEach((b) => {
+    const pick = () => { r.focus = {key: b.dataset.row, cid: b.dataset.cid}; renderMain(); showMark(`${b.dataset.row}:${b.dataset.cid}`); };
+    b.onclick = (e) => { if (!e.target.closest("[data-act], [data-stop]")) pick(); };
+    b.onkeydown = (e) => { if (e.key === "Enter" && e.target === b) { e.preventDefault(); e.stopPropagation(); pick(); } };   // Enter jumps to the quote
+  });
+  pb.querySelectorAll("[data-show]").forEach((b) => b.onmouseenter = () => { r.focus = {key: b.dataset.key, cid: b.dataset.show};
+    setDoc(marked(r.dtext, quoteMarks(r))); showMark(`${b.dataset.key}:${b.dataset.show}`); });
+  pb.querySelectorAll("[data-act]").forEach((b) => b.onclick = (e) => { e.stopPropagation(); act(r, b.dataset.act, b.dataset.key, b.dataset.cid); });
+  if ($("edSave")) {
+    $("edSave").onclick = (e) => {
+      e.stopPropagation();
+      const v = $("edVal").value.trim();
+      if (!v) return toast("Type the value first.");
+      if (!r.edit || !r.edit.evidence) return toast("Select the quote for this value in the report, then save.");
+      act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence});
+    };
+    $("edCancel").onclick = (e) => { e.stopPropagation(); r.editing = null; r.edit = null; renderMain(); };
+    $("edVal").onclick = (e) => e.stopPropagation();
+  }
+}
+async function act(r, kind, key, cid, typed) {
+  if (kind === "edit") { r.editing = key; r.edit = r.edit && r.edit.key === key ? r.edit : {key}; return renderMain(); }
+  const body = {deid_id: r.deid, field: key};
+  if (kind === "accept" || kind === "pick") body.candidate_id = cid;
+  else if (kind === "missing") body.missing = true;
+  else Object.assign(body, typed);
+  const out = await api("/api/confirm_field", body);
+  if (out.error || out.status !== "saved") return toast(out.error || out.reason || "The value was not saved. Try again.");
+  r.saved[key] = out;
+  if (kind === "typed") r.typed++;
+  if (r.editing === key) { r.editing = null; r.edit = null; }
+  const f = S.fields.find((x) => x.key === key);
+  if (f) f.readiness = out.readiness;
+  trace(r, `${f ? f.name : key}: ${out.outcome === "correct" ? "confirmed" : out.outcome === "true_empty" ? "confirmed not stated" : "edited; PrivLab learned from it"}.`, "local");
+  refresh(r);
+}
+async function confirmAll(r) {
+  for (const f of S.fields) {
+    const res = r.results[f.key];
+    if (res && status(res)[0] === "verified" && !r.saved[f.key]) await act(r, "accept", f.key, res.candidate_id);
+  }
+}
+
+// ======================================================================
+// Step 3: approve
+// ======================================================================
+function approve(r) { r.step = "approved"; r.doneAt = performance.now(); r.approvedAt = new Date(); render(); }
+function viewApproved(r) {
+  stepper(3); where(LOCAL);
+  setDoc(marked(r.dtext, redactions(r.dtext)));
+  const filled = Object.values(r.saved).filter((o) => o.value != null).length;
+  const next = S.reports.findIndex((x, i) => i !== S.cur && x.step !== "approved");
+  setPanel(`${banner("verified", `Approved by you at ${clock(r.approvedAt)}`, `${filled} field${filled === 1 ? "" : "s"} filled, ${r.typed} typed by hand, in ${fmtSecs((r.doneAt - r.openedAt) / 1000)}. Fields are now read-only.`)}
+    <div class="fields" role="list">${S.fields.map((f) => { const o = r.saved[f.key]; return `<div class="frow" role="listitem"><div class="fhead"><span class="fname">${esc(f.name)}</span>
+      ${o ? pill(o.value == null ? "not-stated" : "verified") : ""}</div><div class="fval">${o ? (o.value != null ? esc(o.value) + unit(f, o.value) : "Not stated") : "–"}</div></div>`; }).join("")}</div>
+    ${traceBlock(r)}`,
+    `${next >= 0 ? `<button class="btn primary" id="go">Next report ${icon("arrow")}</button>` : `<button class="btn primary" id="go">${icon("plus")}Add more reports</button>`}
+     <a class="btn secondary" href="/api/export.csv">${icon("down")}Download registry CSV</a>`);
+  $("go").onclick = () => next >= 0 ? select(next) : (S.cur = -1, render());
+}
+
+function traceBlock(r) {
+  if (!r.trace.length) return "";
+  return `<details class="trace"><summary>How PrivLab handled this report (${r.trace.length} step${r.trace.length === 1 ? "" : "s"})</summary><ul class="list">
+    ${r.trace.map((t) => `<li>${t.where === "cloud" ? CLOUD : LOCAL}<span style="color:${t.ok ? "inherit" : "var(--review)"}">${esc(t.msg)}</span></li>`).join("")}</ul></details>`;
+}
+
+// ======================================================================
+// Selection toolbar
+// ======================================================================
+function hideFloat() { $("floatbar").style.display = "none"; }
+document.addEventListener("mouseup", (e) => {
+  if (e.target.closest("#floatbar")) return;
+  setTimeout(() => {
+    const r = cur(), sel = docSelection();
+    if (!r || !sel || !["review", "fields"].includes(r.step)) return hideFloat();
+    const bar = $("floatbar");
+    if (r.step === "review") {
+      bar.innerHTML = `<span style="padding:0 var(--s2)">Hide as</span><select id="fbType" aria-label="Identifier type">${TYPES.map((t) => `<option value="${t}">${TL[t]}</option>`).join("")}</select>
+        <button id="fbGo">Hide</button>`;
+      $("fbGo").onclick = () => { r.add.push({text: sel.text, type: $("fbType").value}); hideFloat(); window.getSelection().removeAllRanges(); renderMain(); };
+    } else {
+      const open = S.fields.filter((f) => !r.saved[f.key]);
+      bar.innerHTML = `<span style="padding:0 var(--s2)">Use as</span>${open.map((f) => `<button data-use="${f.key}">${esc(f.name)}</button>`).join('<span class="sep"></span>') || '<span style="padding:0 var(--s2)">All fields saved</span>'}`;
+      bar.querySelectorAll("[data-use]").forEach((b) => b.onclick = () => {
+        const f = S.fields.find((x) => x.key === b.dataset.use);
+        const num = (sel.text.match(/\d+(?:\.\d+)?/) || [""])[0];
+        const choice = f.type === "choice" ? (f.choices.find((c) => sel.text.toLowerCase().includes(c.toLowerCase())) || f.choices[0]) : null;
+        r.editing = f.key; r.edit = {key: f.key, evidence: sel.text, value: f.type === "number" ? num : choice};
+        hideFloat(); renderMain();
+      });
+    }
+    bar.style.display = "flex";
+    const w = bar.offsetWidth;
+    bar.style.left = Math.max(8, Math.min(innerWidth - w - 8, sel.rect.left + sel.rect.width / 2 - w / 2)) + "px";
+    bar.style.top = Math.max(8, sel.rect.top - 50) + "px";
+  }, 0);
+});
+$("docwrap").addEventListener("scroll", hideFloat);
+$("view").addEventListener("click", (e) => {
+  const m = e.target.closest("mark"), r = cur();
+  if (!m || !r || !m.dataset.id || !window.getSelection().isCollapsed) return;
+  if (r.step === "review") {
+    if (m.dataset.id.startsWith("add")) { r.add.splice(+m.dataset.id.slice(3), 1); renderMain(); }
+    else toggleKeep(r, m.dataset.id);
+  } else if (r.step === "hold" || r.step === "flags") {
+    const q = r.question; q.picked.has(m.dataset.id) ? q.picked.delete(m.dataset.id) : q.picked.add(m.dataset.id); renderMain();
+  }
 });
 
-async function confirmReview() {
-  const r = await api("/api/confirm", {deid_id: S.deid, unmark: [...S.unmark], add: S.add}, "Checking the masked text…");
-  trace(`You confirmed: ${S.unmark.size} unmarked, ${S.add.length} added.`, true, "local");
-  handleNext(r);
+// ======================================================================
+// Fields dialog
+// ======================================================================
+$("fieldsBtn").onclick = openSheet;
+function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
+function openSheet(note) {
+  const d = $("sheet");
+  d.innerHTML = `<div class="sh"><h2 class="h1" style="margin:0">Fields</h2><button class="tbtn" id="shClose">Close</button></div>
+    <div class="sb">${note ? banner("verified", esc(note), "It will be extracted from every report.") : ""}<ul class="list">${S.fields.length ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b>
+      <div class="sm muted">${esc(f.meaning)}</div></div>${readiness(f.readiness)}</li>`).join("") :
+      '<li class="item sm muted">No fields yet. Your field pack starts empty.</li>'}</ul>
+      <div style="margin-top:var(--s4);display:grid;gap:var(--s2)"><span class="label">Add a field</span>
+      <input class="in" id="fName" placeholder="For example: tumour size, pT, lymphovascular invasion" aria-label="Field name">
+      <input class="in" id="fDesc" placeholder="Optional: what you mean" aria-label="Description"></div>
+      <div id="draft"></div></div>
+    <div class="sf"><button class="btn secondary inline" id="shDone">Done</button><button class="btn primary inline" id="fSuggest">Suggest a definition</button></div>`;
+  if (!d.open) d.showModal();
+  $("shClose").onclick = $("shDone").onclick = () => d.close();
+  $("fName").focus();
+  $("fSuggest").onclick = suggest;
+  $("fName").onkeydown = (e) => { if (e.key === "Enter") suggest(); };
 }
-function handleNext(r) {
-  if (r.error || r.next === "error") return;
-  if (r.next === "hold") return showHold(r);
-  if (r.next === "flags") return showFlags(r);
-  if (r.next === "done") return showDone(r);
-}
-
-function showChoiceList(title, intro, items, defaultFor, button, onConfirm, cls) {
-  renderDoc(S.text, [...S.dets.filter((d) => !S.unmark.has(d.id)).map((d) => ({start: d.start, end: d.end, cls: `t-${d.type}`})),
-    ...items.map((h) => ({start: h.start, end: h.end, id: h.id, cls: cls(h), title: "click to toggle"}))]);
-  $("panel").innerHTML = `<h2>${title}</h2><div class="muted small" style="margin-bottom:8px">${intro}</div>
-    <ul class="list">${items.map((h) => `<li><label class="check grow"><input type="checkbox" data-id="${h.id}" ${defaultFor(h) ? "checked" : ""}>
-      <span><b>${esc(h.text)}</b> <span class="muted small">${h.source === "suspect" ? "model did not rule on it" : h.type}</span>
-      <div class="ctx">${esc(h.context)}</div></span></label>
-      <button class="small" data-go="${h.id}">show</button></li>`).join("")}</ul>
-    <button class="primary" id="choiceBtn" style="margin-top:10px;width:100%">${button}</button>`;
-  $("panel").querySelectorAll("[data-go]").forEach((b) => b.onclick = () => scrollToMark(b.dataset.go));
-  $("choiceBtn").onclick = () => {
-    const checked = new Set([...$("panel").querySelectorAll("input[data-id]")].filter((i) => i.checked).map((i) => i.dataset.id));
-    onConfirm(checked);
-  };
-}
-function showHold(r) {
-  S.step = "hold"; setStep(2);
-  setWhere(`<span class="local">Still on this laptop: paused before any API call</span>`);
-  trace(`Hold rule: ${r.hold.length} words still look like names. Paused before any API call.`, false, "local");
-  showChoiceList("These look like names. Hide them?", "Ticked = hide. Untick any that are not names; that is learned.",
-    r.hold, () => true, "Hide ticked and run the name check",
-    async (hide) => {
-      const keep = r.hold.filter((h) => !hide.has(h.id)).map((h) => h.id);
-      trace(`You hid ${hide.size} and kept ${keep.length}.`, true, "local");
-      handleNext(await api("/api/hold", {deid_id: S.deid, keep}, "Muse Spark is double-checking the masked text…"));
-    }, () => "hold");
-}
-function showFlags(r) {
-  S.step = "flags"; setStep(3, 2);
-  setWhere(`<span class="local">Laptop</span><span class="cloud">Muse Spark saw masked text only</span>`);
-  trace(`Muse Spark name check: ${r.flags.filter((f) => f.ticked).length} more possible identifiers, ${r.flags.filter((f) => !f.ticked).length} words to check.`, false, "cloud");
-  showChoiceList("Second review", "Model finds are ticked to hide. Words it did not rule on are unticked: tick any that are identifiers.",
-    r.flags, (f) => f.ticked, "Apply and de-identify",
-    async (checked) => {
-      const keep = r.flags.filter((f) => f.ticked && !checked.has(f.id)).map((f) => f.id);
-      const hide = r.flags.filter((f) => !f.ticked && checked.has(f.id)).map((f) => f.id);
-      showDone(await api("/api/flags", {deid_id: S.deid, keep, hide}, "Applying tags…"));
-    }, (f) => f.ticked ? "flag" : "suspect");
-}
-
-const LAYER2 = {clean: ["green", "Muse Spark: nothing new found"], flagged: ["amber", "Muse Spark found more; you reviewed them"],
-  unavailable: ["red", "Name check unavailable: review manually"], skipped: ["amber", "Name check not run"]};
-function showDone(r) {
-  if (r.error || r.next === "error") return;
-  S.done = r; S.step = "done"; S.dtext = r.text; setStep(4);
-  setWhere(`<span class="local">De-identified · originals in the encrypted vault</span>`);
-  const tags = [];
-  const re = /\[[A-Z]+-\d+\]/g; let m;
-  while ((m = re.exec(r.text))) tags.push({start: m.index, end: m.index + m[0].length, cls: "tagged"});
-  renderDoc(r.text, tags);
-  const [l2cls, l2msg] = LAYER2[r.layer2] || ["", r.layer2];
-  trace(l2msg, l2cls === "green", r.layer2 === "skipped" ? "local" : "cloud");
-  trace(`${r.summary.total} identifiers replaced with tags; encrypted vault saved.`, true, "local");
-  const pr = r.review_priority || {level: "low", reasons: []};
-  const prCls = {high: "red", medium: "amber", low: "green"}[pr.level];
-  $("panel").innerHTML = `<h2>De-identified</h2>
-    <div class="row"><span class="big">${r.summary.total}</span><span class="muted">identifiers replaced with tags</span></div>
-    <div class="counts">${Object.entries(r.summary.by_type).map(([t, n]) => `<span class="chip t-${t}">${t} ${n}</span>`).join("")}</div>
-    <div class="row wrap"><span class="badge ${l2cls}">${esc(l2msg)}</span>
-      <span class="badge ${prCls}">Review priority: ${pr.level}</span></div>
-    ${pr.reasons.map((x) => `<div class="warn">${esc(x)}</div>`).join("")}
-    ${(r.warnings || []).map((w) => `<div class="warn">${esc(w)}</div>`).join("")}
-    <button class="primary" id="toExtract" style="margin-top:12px;width:100%">Fill registry fields →</button>`;
-  $("toExtract").onclick = showExtract;
-  refreshProfile();
-}
-
-// ---------------------------------------------------------------- extract
-function showExtract() {
-  S.step = "extract"; setStep(5, 4);
-  setWhere(`<span class="local">De-identified text only</span><span class="cloud">Muse Spark proposes · code checks</span>`);
-  if (!fields.length) {
-    $("panel").innerHTML = `<h2>Fill registry fields</h2><div class="muted">Add a field on the left first (e.g. "tumour size").</div>`;
-    return;
-  }
-  drawFields();
-}
-function drawFields() {
-  const pending = fields.filter((f) => !S.results[f.key]);
-  $("panel").innerHTML = `<h2>Fill registry fields</h2>
-    <button class="primary" id="fillAll" style="width:100%;margin-bottom:10px" ${pending.length ? "" : "disabled"}>${pending.length ? `Find ${pending.length === fields.length ? "all" : "remaining"} fields` : "All fields found"}</button>
-    <div id="fieldCards">${fields.map(fieldCard).join("")}</div>`;
-  $("fillAll").onclick = fillAll;
-  $("panel").querySelectorAll("[data-act]").forEach((b) => b.onclick = () => fieldAction(b.dataset.act, b.dataset.key, b.dataset.cid));
-  $("panel").querySelectorAll(".cand").forEach((c) => c.onclick = (e) => { if (!e.target.closest("button")) highlightCandidate(c.dataset.key, c.dataset.cid); });
-  showEvidence();
-}
-function fieldCard(f) {
-  const r = S.results[f.key];
-  const head = `<div class="row" style="justify-content:space-between"><h3>${esc(f.name)}</h3>${readinessBadge(f.readiness)}</div>`;
-  if (!r) return `<div class="field">${head}<div class="muted small">${esc(f.meaning)}</div>
-    <button class="small" data-act="find" data-key="${f.key}" style="margin-top:6px">Find</button></div>`;
-  if (r.saved) return `<div class="field saved ${r.status}">${head}<div class="value">${r.saved.value ?? "Not in report"} ${r.saved.value != null && f.type === "number" && f.unit ? esc(f.unit) : ""}</div>
-    <div class="small"><span class="badge ${r.saved.outcome === "correct" || r.saved.outcome === "true_empty" ? "green" : "amber"}">${esc(outcomeText(r.saved.outcome))}</span> saved; PrivLab learned from it.</div></div>`;
-  const statusText = {green: "Confident", amber: "Check this", missing: "Not stated"}[r.status] || r.status;
-  const cands = (r.candidates || []).map((c) => `<div class="cand" data-key="${f.key}" data-cid="${c.id}">
-      <div class="row" style="justify-content:space-between"><b>${esc(c.value ?? "?")} ${c.value != null && c.unit ? esc(c.unit) : ""}</b>
-        <span class="muted">${esc(c.section || "?")} · ${Math.round((c.confidence || 0) * 100)}%</span></div>
-      <div class="ctx">“${esc(c.evidence_text)}”</div>
-      <div class="checks small">${Object.entries(c.checks).map(([k, ok]) => `<span class="${ok ? "ok" : "bad"}">${ok ? "✓" : "✗"} ${k.replace(/_/g, " ")}</span>`).join("")}</div>
-      ${c.fail ? "" : `<button class="small" data-act="pick" data-key="${f.key}" data-cid="${c.id}" style="margin-top:4px">Use this</button>`}</div>`).join("");
-  return `<div class="field ${r.status}">${head}
-    <div class="row"><span class="badge ${r.status === "green" ? "green" : r.status === "amber" ? "amber" : ""}">${statusText}</span>
-      <span class="value">${r.value != null ? esc(r.value) + (r.unit ? " " + esc(r.unit) : "") : ""}</span></div>
-    ${r.reason ? `<div class="warn">${esc(plainReason(r.reason))}</div>` : ""}
-    <div class="row wrap" style="margin-top:6px">
-      ${r.candidate_id ? `<button class="small primary" data-act="accept" data-key="${f.key}" data-cid="${r.candidate_id}">Accept</button>` : ""}
-      ${r.status === "missing" ? `<button class="small primary" data-act="missing" data-key="${f.key}">Confirm not stated</button>` : `<button class="small" data-act="missing" data-key="${f.key}">Not in report</button>`}
-      </div>
-    <div class="row" style="margin-top:6px"><input data-val="${f.key}" placeholder="Other value (select its evidence in the report)">
-      <button class="small" data-act="type" data-key="${f.key}">Save</button></div>
-    <div class="small muted evsel">${S.lastSel ? `Evidence: <b>“${esc(S.lastSel.slice(0, 80))}”</b>` : "Select the evidence in the report first."}</div>
-    ${cands ? `<details ${r.status !== "green" ? "open" : ""}><summary class="small muted" style="margin-top:6px;cursor:pointer">${r.candidates.length} candidate(s)</summary>${cands}</details>` : ""}</div>`;
-}
-const CHECK = {evidence_found: "evidence", type_ok: "type", value_in_evidence: "value in evidence",
-  section_ok: "section", no_identifiers: "no identifiers"};
-const FAIL = {evidence_found: "the quoted evidence is not in the report", type_ok: "the value is the wrong type or out of range",
-  value_in_evidence: "the value does not appear in its evidence", no_identifiers: "the evidence contains an identifier",
-  section_ok: "it comes from a weak section"};
-function plainReason(r) {
-  return r.replace(/No candidate passed the checks \((\w+)\)/, (_, k) => "Nothing passed the checks: " + (FAIL[k] || k.replace(/_/g, " ")) + ". Pick the value yourself.");
-}
-function outcomeText(o) { return {correct: "Correct", true_empty: "Correct (not stated)", wrong: "Corrected", missed: "Missed, now learned", extra: "Was not in report"}[o] || o; }
-
-async function findField(key) {
-  const r = await api("/api/find", {deid_id: S.deid, field: key}, "Muse Spark is reading the de-identified report…");
-  if (r.status === "error" || r.error) return false;
-  S.results[key] = r;
-  const f = fields.find((x) => x.key === key);
-  const top = (r.candidates || [])[0];
-  trace(`${f ? f.name : key}: ${r.status}${r.value != null ? " " + r.value : ""}` + (top ? ` (${Object.entries(top.checks).map(([k, ok]) => (ok ? "✓ " : "✗ ") + CHECK[k]).join(", ")})` : ""),
-    r.status === "green", r.model_ms ? "cloud" : "local");
-  return true;
-}
-async function fillAll() {
-  for (const f of fields) if (!S.results[f.key]) { if (!(await findField(f.key))) break; }
-  drawFields();
-}
-async function fieldAction(act, key, cid) {
-  if (act === "find") { await findField(key); return drawFields(); }
-  const body = {deid_id: S.deid, field: key};
-  if (act === "accept" || act === "pick") body.candidate_id = cid;
-  else if (act === "missing") body.missing = true;
-  else if (act === "type") {
-    const v = ($("panel").querySelector(`input[data-val="${CSS.escape(key)}"]`).value || "").trim();
-    if (!v) return toast("Type the value first.");
-    if (!S.lastSel) return toast("Select the evidence for this value in the report, then press Save.");
-    body.value = v; body.evidence_text = S.lastSel;
-  }
-  const out = await api("/api/confirm_field", body, "Saving and learning…");
-  if (out.status !== "saved") return toast(out.reason || "not saved");
-  S.results[key].saved = out;
-  trace(`${(fields.find((x) => x.key === key) || {}).name || key}: ${outcomeText(out.outcome)}; readiness ${out.readiness}.`, true, "local");
-  await refreshFields();
-  drawFields();
-}
-function showEvidence(focus) {
-  const marks = [];
-  for (const f of fields) {
-    const r = S.results[f.key];
-    if (!r || r.saved) continue;
-    (r.candidates || []).forEach((c) => {
-      if (c.start == null) return;
-      const isTop = c.id === r.candidate_id;
-      if (focus ? (focus.key === f.key && focus.cid === c.id) : isTop)
-        marks.push({start: c.start, end: c.end, id: `${f.key}:${c.id}`, cls: `ev ${isTop ? r.status : ""}`, title: `${f.name}: ${c.value}`});
-    });
-  }
-  const re = /\[[A-Z]+-\d+\]/g; let m;
-  while ((m = re.exec(S.dtext))) marks.push({start: m.index, end: m.index + m[0].length, cls: "tagged"});
-  renderDoc(S.dtext, marks);
-}
-function highlightCandidate(key, cid) { showEvidence({key, cid}); scrollToMark(`${key}:${cid}`); }
-function selectCandidate(markId) { const [key, cid] = markId.split(":"); if (cid) highlightCandidate(key, cid); }
-
-// ---------------------------------------------------------------- define a field
-$("defineBtn").onclick = async () => {
-  const name = $("fieldName").value.trim();
-  if (!name) return toast("Type a field name first.");
-  const r = await api("/api/define", {name, description: $("fieldDesc").value.trim() || null}, "Muse Spark is drafting the field (no report text is sent)…");
-  if (r.error || !r.draft) return;
+async function suggest() {
+  const name = $("fName").value.trim();
+  if (!name) { $("draft").innerHTML = banner("review", "Type a field name first", ""); $("fName").focus(); return; }
+  $("draft").innerHTML = `<p class="running" style="margin-top:var(--s4)"><span class="spin"></span>Asking Muse Spark. Only the field name is sent, no report text.</p>`;
+  $("fSuggest").disabled = true;
+  const r = await api("/api/define", {name, description: $("fDesc").value.trim() || null});
+  $("fSuggest").disabled = false;
+  if (r.error || !r.draft) { $("draft").innerHTML = banner("refused", "No definition was suggested", esc(r.error || "Try again.")); return; }
   const d = r.draft;
-  $("draftBox").innerHTML = `<div class="field" style="margin-top:10px"><div class="small muted">Did you mean:</div>
-    <textarea id="dQ" rows="3">${esc(d.meaning_question)}</textarea>
-    <div class="row" style="margin-top:6px"><select id="dType" style="width:auto"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
-      <input id="dUnit" placeholder="unit" value="${esc(d.unit || "")}"></div>
-    <input id="dChoices" placeholder="choices, comma separated" value="${esc((d.choices || []).join(", "))}" style="margin-top:6px">
-    <div class="row" style="margin-top:8px"><button class="primary small" id="dOk">Yes, save</button><button class="small" id="dNo">Cancel</button></div></div>`;
-  $("dNo").onclick = () => $("draftBox").innerHTML = "";
-  $("dOk").onclick = async () => {
+  $("draft").innerHTML = `<div style="margin-top:var(--s4);display:grid;gap:var(--s2)"><span class="label">Did you mean</span>
+    <textarea class="in" id="dQ" rows="2" aria-label="Meaning">${esc(d.meaning_question)}</textarea>
+    <div style="display:flex;gap:var(--s2)"><select class="in" id="dType" style="width:140px" aria-label="Type"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
+    <input class="in" id="dUnit" placeholder="Unit, for example cm" value="${esc(d.unit || "")}" aria-label="Unit"></div>
+    <input class="in" id="dChoices" placeholder="Choices, separated by commas" value="${esc((d.choices || []).join(", "))}" aria-label="Choices"></div>`;
+  const byType = () => { const num = $("dType").value === "number"; $("dUnit").style.display = num ? "" : "none"; $("dChoices").style.display = num ? "none" : ""; };
+  $("dType").onchange = byType; byType();
+  $("fSuggest").textContent = "Save field";
+  $("fSuggest").onclick = async () => {
     const accept = {...d, meaning_question: $("dQ").value, type: $("dType").value, unit: $("dUnit").value || null,
       choices: $("dChoices").value.split(",").map((s) => s.trim()).filter(Boolean)};
-    const s = await api("/api/define", {name, description: $("fieldDesc").value.trim() || null, accept});
-    if (s.error) return;
-    $("draftBox").innerHTML = ""; $("fieldName").value = ""; $("fieldDesc").value = "";
-    trace(`Field "${name}" saved to your knowledge pack.`, true, "local");
-    await refreshFields();
-    if (S.step === "extract") drawFields();
+    const s = await api("/api/define", {name, description: $("fDesc").value.trim() || null, accept});
+    if (s.error) { $("draft").insertAdjacentHTML("afterbegin", banner("refused", "The field was not saved", esc(s.error))); return; }
+    await loadFields();
+    S.reports.filter((x) => x.step === "safe" && x.prefetch !== "running").forEach(prefetch);
+    openSheet(`${name} added`); render();
   };
-};
+}
+async function loadFields() { const p = await api("/api/pack"); S.fields = p.fields || []; }
 
-$("reset").onclick = async () => {
-  const b = $("reset");
-  if (!b.dataset.armed) {                 // two clicks instead of a browser dialog
-    b.dataset.armed = "1"; b.textContent = "Click again: delete demo profile, pack and log";
-    setTimeout(() => { delete b.dataset.armed; b.textContent = "Start over"; }, 4000);
-    return;
-  }
+// ======================================================================
+// Keyboard and start-up
+// ======================================================================
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea, select, dialog") || e.metaKey || e.ctrlKey || e.altKey) return;
+  const r = cur();
+  if (r && r.step === "fields" && (e.key === "ArrowDown" || e.key === "ArrowUp")) {     // move between fields
+    e.preventDefault();
+    const rows = [...document.querySelectorAll("#pbody [data-row]")];
+    if (!rows.length) return;
+    const i = rows.findIndex((x) => r.focus && x.dataset.row === r.focus.key);
+    const nx = rows[Math.max(0, Math.min(rows.length - 1, i + (e.key === "ArrowDown" ? 1 : -1)))];
+    r.focus = {key: nx.dataset.row, cid: nx.dataset.cid}; renderMain(); showMark(`${nx.dataset.row}:${nx.dataset.cid}`);
+    document.querySelector(`#pbody [data-row="${CSS.escape(nx.dataset.row)}"]`)?.focus();
+  } else if (r && r.step === "fields" && e.key.toLowerCase() === "r" && r.focus) {      // confirm the selected field
+    const res = r.results[r.focus.key];
+    if (res && !r.saved[r.focus.key] && status(res)[0] === "verified") act(r, "accept", r.focus.key, res.candidate_id);
+  } else if (e.key === "Enter" && !e.target.closest("button, a")) {
+    const b = document.querySelector("#pfoot .primary:not(:disabled)");
+    if (b) { e.preventDefault(); b.click(); }
+  } else if ((e.key === "ArrowDown" || e.key === "ArrowUp") && S.reports.length) {
+    e.preventDefault();
+    select(Math.max(0, Math.min(S.reports.length - 1, S.cur + (e.key === "ArrowDown" ? 1 : -1))));
+  } else if (e.key === "Escape") hideFloat();
+});
+$("resetBtn").onclick = async () => {
+  const b = $("resetBtn");
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Click again to clear"; setTimeout(() => { delete b.dataset.armed; b.textContent = "Start over"; }, 3500); return; }
   delete b.dataset.armed; b.textContent = "Start over";
   const r = await api("/api/reset", {});
-  if (r.ok) { S = {}; $("doc").innerHTML = '<div class="empty">Choose a report and press <b>Open report</b>.</div>'; $("trace").innerHTML = "";
-    $("panel").innerHTML = "<h2>Start</h2><div class='muted'>Clean first use.</div>"; setStep(-1); setWhere(""); await refreshFields(); await refreshProfile(); }
+  if (!r.ok) return toast(r.error || "Start over did not work.");
+  S.reports = []; S.cur = -1; S.choices = null;
+  S.profile = await api("/api/profile"); await loadFields(); render();
+  toast("Clean start: profile, fields and score log cleared.");
 };
 
-init();
+(async function init() {
+  const [reps, prof] = await Promise.all([api("/api/reports"), api("/api/profile")]);
+  if (reps.error) {
+    $("view").innerHTML = `<div class="empty">${banner("refused", "The PrivLab server is not reachable", "Start it with python -m viewer.server, then reload this page.")}</div>`;
+    return;
+  }
+  S.samples = reps.reports || []; S.demo = !!reps.demo; S.profile = prof;
+  $("mode").style.display = S.demo ? "" : "none";
+  $("resetBtn").style.display = S.demo ? "" : "none";
+  await loadFields();
+  render();
+})();
 </script>
 </body>
 </html>
