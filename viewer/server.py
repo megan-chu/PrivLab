@@ -23,6 +23,7 @@ Usage:
   python -m viewer.server --demo
 """
 import argparse
+import base64
 import csv
 import io
 import json
@@ -39,10 +40,10 @@ from urllib.parse import parse_qs, urlparse
 
 from common.config import ROOT
 from common.data import load_report, manifest
+from common.pdf import pdf_text
 from common.timing import timed
 from deid import pipeline
 from deid import profile as prof
-from deid.hold import name_list, vocabulary
 from extract import learn
 from extract.candidates import find_candidates, prefetch
 from extract.define import define_field
@@ -93,8 +94,16 @@ def api_deid(b):
 
 
 def api_add(b):
-    """A dropped or pasted report. Kept in memory only; nothing is sent anywhere."""
-    text, name = b.get("text"), str(b.get("name") or "pasted report").strip()[:60]
+    """A dropped or pasted report, or a text PDF (pdf: base64). Kept in memory only; nothing is sent anywhere."""
+    text, name, warnings = b.get("text"), str(b.get("name") or "pasted report").strip()[:60], []
+    if b.get("pdf") is not None:
+        try:
+            out = pdf_text(base64.b64decode(b["pdf"], validate=True))
+        except (ValueError, TypeError):
+            return {"error": "The PDF upload was damaged. Add it again.", "refused": True}
+        if "error" in out:
+            return {"error": out["error"], "refused": True}
+        text, warnings = out["text"], out["warnings"]
     if not isinstance(text, str) or not text.strip():
         return {"error": "The report is empty."}
     if len(text) > MAX_UPLOAD:
@@ -102,7 +111,8 @@ def api_add(b):
     name = Path(name).stem or "pasted report"
     if any(r["report_id"] == name and r["split"] == "test" for r in manifest()):
         return {"error": "That name belongs to a held-out test report; rename the file."}
-    return _start(text.replace("\r\n", "\n").replace("\r", "\n"), name, b.get("choices"))
+    out = _start(text.replace("\r\n", "\n").replace("\r", "\n"), name, b.get("choices"))
+    return {**out, "warnings": out.get("warnings", []) + warnings}
 
 
 def _locked_step(deid_id: str, fn):
@@ -130,10 +140,16 @@ def api_prefetch(b):
 
 
 def api_pack(_):
-    return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "description": f.description,
+    log = learn.read_log(STATE["log"])
+    return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "definition": f.definition, "description": f.description,
                         "type": f.type, "unit": f.unit, "range": f.range, "choices": f.choices,
-                        "readiness": f.readiness, "recent": f.recent}
-                       for f in load_pack(STATE["pack"])["fields"]]}
+                        "readiness": learn.readiness(v), "recent": f.recent, "version": f.version,
+                        "validation": v, "history": f.history,
+                        "checks": [{"when": e["ts"], "version": e.get("field_version", 1), "status": e["predicted"]["status"],
+                                    "predicted": e["predicted"]["value"], "confirmed": (e["confirmed"] or {}).get("value"),
+                                    "outcome": e["outcome"], "blind": e.get("blind", False)}
+                                   for e in reversed(log) if e["field"] == f.key][:20]}
+                       for f in load_pack(STATE["pack"])["fields"] for v in [learn.validation(f, log)]]}
 
 
 def api_define(b):
@@ -153,7 +169,7 @@ def api_remove_field(b):
 
 
 def api_find(b):
-    return find_candidates(b["deid_id"], b["field"], pack_path=STATE["pack"])
+    return find_candidates(b["deid_id"], b["field"], pack_path=STATE["pack"], blind_checks=bool(b.get("blind_ok")))
 
 
 def api_confirm_field(b):
@@ -313,7 +329,7 @@ def main() -> int:
     if args.demo:
         STATE.update(demo=True, pack=DEMO_DIR / "pack.yaml", log=DEMO_DIR / "score_log.jsonl")
         prof.PROFILE_PATH = DEMO_DIR / "profile.yaml"
-    vocabulary(), name_list()          # load once at start-up
+    pipeline.warm_up()                 # load once at start-up, then freeze for the garbage collector
     try:
         server = make_server(args.port)
     except OSError:

@@ -61,6 +61,10 @@ svg { width: 16px; height: 16px; flex: none; }
 .pill.not-stated { background: var(--not-stated-bg); color: var(--not-stated); }
 .pill.not-found { background: var(--review-bg); color: var(--review); } .pill.refused { background: var(--refused-bg); color: var(--refused); }
 .pill.hema { background: var(--hema); color: var(--on-hema); }
+.pill.blind { background: var(--surface-sunken); color: var(--ink); }
+.fhist { margin-top: var(--s2); font-size: 13px; line-height: 18px; }
+.fhist summary { cursor: pointer; color: var(--ink-muted); }
+.fhist ul { margin: var(--s1) 0 var(--s2); padding-left: var(--s4); color: var(--ink-muted); }
 
 /* ---------- layout ---------- */
 .app { display: grid; grid-template-columns: 272px minmax(0, 1fr) var(--panel); height: calc(100vh - 56px); }
@@ -244,6 +248,9 @@ mark.ev.on { background: rgba(var(--fc), .24); box-shadow: inset 0 -2px 0 var(--
 .fdef { display: grid; grid-template-columns: auto 1fr; gap: 2px var(--s3); margin: var(--s2) 0 0; font-size: 13px; line-height: 18px; }
 .fdef dt { color: var(--ink-muted); }
 .fdef dd { margin: 0; color: var(--ink); }
+.msg .defn { display: block; margin-top: var(--s2); }
+button.step { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
+button.step:hover { color: var(--hema); }
 .thread { display: grid; gap: var(--s3); }
 .msg { max-width: 92%; padding: var(--s3) var(--s4); border-radius: 12px; font-size: 14px; line-height: 20px; }
 .msg .who { display: block; font: 600 11px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
@@ -290,14 +297,14 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
   <div class="brand"><svg class="logo" viewBox="194 175 362 400" role="img" aria-label="PrivLab logo">
     <path class="ink" d="M194 175H518V325H457V262H281V575H194Z"/><rect class="bar" x="281" y="325" width="275" height="87"/></svg>PrivLab</div>
   <span id="mode" class="pill review" style="display:none">Demo</span>
-  <span class="safety" id="safety" title="Identifiers are found and hidden on this laptop. Only masked text is ever sent, and only after you confirm."></span>
+  <span class="safety" id="safety" title="Identifiers are detected and masked on this device. Raw text is never sent. After you confirm, only masked text is checked by Muse Spark."></span>
   <div class="value" id="value" aria-live="polite"></div>
   <div class="seg" role="group" aria-label="Task"><button id="modeDeid" aria-pressed="false">De-identify only</button><button id="modeBoth" aria-pressed="true">De-identify + extract</button></div>
   <div class="util">
   <button class="tbtn" id="fieldsBtn"><svg aria-hidden="true"><use href="#i-sliders"/></svg>Fields</button>
   <details class="menu" id="exportMenu"><summary class="tbtn"><svg aria-hidden="true"><use href="#i-down"/></svg>Export</summary>
-    <div class="pop"><a href="/api/deid_export" id="expDeid">De-identified text (.zip)<span>Every finished report, identifiers replaced with tags.</span></a>
-    <a href="/api/export.csv" id="expCsv">Registry fields (.csv)<span>Structured fields only: no report text.</span></a></div></details>
+    <div class="pop"><a href="/api/deid_export" id="expDeid">Masked reports (.zip)<span>The full narrative text of every finished report, with identifiers replaced by tags such as [PATIENT-1].</span></a>
+    <a href="/api/export.csv" id="expCsv">Registry data (.csv)<span>One row per field: value, unit and source position. No narrative text.</span></a></div></details>
   <button class="tbtn" id="resetBtn" style="display:none">Start over</button>
   </div>
 </header>
@@ -319,7 +326,7 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 </div>
 
 <div class="floatbar" id="floatbar" role="toolbar" aria-label="Selection"></div>
-<input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
+<input type="file" id="fileInput" accept=".txt,text/plain,.pdf,application/pdf" multiple hidden>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -337,7 +344,7 @@ const CHECK = {evidence_found: "quote found in the report", type_ok: "valid valu
   section_ok: "reliable section", no_identifiers: "no identifiers"};
 const FAIL = {evidence_found: "The quote is not in the report.", type_ok: "The value is the wrong type or out of range.",
   value_in_evidence: "The value is not in its quote.", no_identifiers: "The quote contains an identifier.", section_ok: "It comes from a less reliable section."};
-const STATUS = {verified: ["✓", "Verified"], review: ["!", "Needs review"], "not-found": ["!", "Not found"], "not-stated": ["–", "Not stated"], refused: ["×", "Refused"]};
+const STATUS = {verified: ["✓", "Verified"], review: ["!", "Needs review"], "not-found": ["!", "Not found"], "not-stated": ["–", "Not stated"], refused: ["×", "Refused"], blind: ["?", "Blind check"]};
 const pill = (k) => `<span class="pill ${k}">${STATUS[k][0]} ${STATUS[k][1]}</span>`;
 const store = {get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }};
 const S = {reports: [], cur: -1, fields: [], profile: null, samples: [], demo: false, choices: null,
@@ -354,7 +361,7 @@ async function api(path, body) {
     return {error: "The PrivLab server is not reachable. Start it with python -m viewer.server, then try again.", offline: true};
   }
 }
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3600); }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), Math.max(3600, msg.length * 60)); }
 const cur = () => S.reports[S.cur];
 const trace = (r, msg, where, ok = true) => r.trace.push({msg, where, ok});
 const fmtSecs = (s) => s < 60 ? `${Math.round(s)} s` : `${Math.floor(s / 60)} min ${Math.round(s % 60)} s`;
@@ -412,7 +419,7 @@ function renderTop() {
   const avg = done.length ? done.reduce((n, r) => n + (r.doneAt - r.openedAt), 0) / done.length / 1000 : null;
   const exported = rs.filter((r) => r.exported).length;
   const hidden = rs.reduce((n, r) => n + (r.done ? r.done.summary.total : 0), 0);
-  $("safety").innerHTML = `${icon("lock")}<span>Nothing sent before you confirm</span>${hidden ? `<span class="long">· <b>${hidden}</b> hidden on this laptop</span>` : ""}`;
+  $("safety").innerHTML = `${icon("lock")}<span>On-device de-identification</span>${hidden ? `<span class="long">· <b>${hidden}</b> identifiers masked</span>` : ""}`;
   const parts = rs.length ? [`<b>${safe}</b> of <b>${rs.length}</b> de-identified`] : [];
   if (rs.length && extracting()) {
     parts.push(`<b>${filled}</b> fields filled`, `<b>${typed}</b> typed`);
@@ -435,17 +442,43 @@ function render() { renderTop(); renderRail(); renderMain(); }
 function refresh(r) { r === cur() ? render() : (renderTop(), renderRail()); }
 
 function stepper(active) {
-  const steps = extracting() ? ["De-identify", "Extract fields", "Approve"] : ["De-identify", "Export"];
-  if (!extracting()) active = active === 0 ? 0 : active >= 3 ? 2 : 1;
-  $("stepper").innerHTML = steps.map((s, k) => `${k ? '<span class="step-line"></span>' : ""}
-    <span class="step ${k === active ? "on" : k < active ? "done" : ""}"><span class="n">${k < active ? "✓" : k + 1}</span>${s}</span>`).join("");
+  const r = cur(), ex = extracting();
+  const steps = ex ? ["De-identify", "Extract fields", "Approve"] : ["De-identify", "Export"];
+  if (!ex) active = active === 0 ? 0 : 1;
+  else if (r && r.step === "safe") active = 0;               // the de-identified result belongs to step 1
+  else active = Math.min(active, 2);
+  const done = (k) => !!r && (k === 0 ? !!r.dtext : !ex ? !!r.exported
+    : k === 1 ? S.fields.length > 0 && S.fields.every((f) => r.saved[f.key]) : !!r.approvedAt);
+  $("stepper").innerHTML = steps.map((s, k) => {
+    const go = k !== active && r && goStep(r, k, true);
+    const tag = go ? "button" : "span", attrs = go ? ` data-step="${k}" title="Go to ${s}"` : "";
+    return `${k ? '<span class="step-line"></span>' : ""}<${tag} class="step ${k === active ? "on" : done(k) ? "done" : ""}"${attrs}><span class="n">${done(k) ? "✓" : k + 1}</span>${s}</${tag}>`;
+  }).join("");
+  document.querySelectorAll("[data-step]").forEach((b) => b.onclick = () => goStep(r, +b.dataset.step));
 }
-const LOCAL = `<span class="wb local">Laptop</span>`, CLOUD = `<span class="wb cloud">Muse Spark · masked text only</span>`;
+// Move freely between the steps a report has reached: De-identify (the masked result), Extract fields
+// (values found so far are kept; only missing ones are read), Approve (once approved, with every field saved).
+function goStep(r, k, test) {
+  const ok = extracting() && r.dtext && !r.leftover;
+  let go = null;
+  if (k === 0 && ok && r.step !== "safe") go = () => { r.step = "safe"; render(); };
+  else if (k === 1 && ok && S.fields.length && r.step !== "fields") go = () => openFields(r);
+  else if (k === 2 && ok && r.approvedAt && S.fields.every((f) => r.saved[f.key]) && r.step !== "approved")
+    go = () => { r.step = "approved"; render(); };
+  if (!test && go) go();
+  return !!go;
+}
+function reviewAgain(r) {        // a fresh local run with the same choices; nothing is sent until confirmed again
+  const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer, add: r.add, carry: r.unmark});
+  copy.req = r.req; S.reports.splice(S.cur, 1, copy); layer1(copy);
+}
+const LOCAL = `<span class="wb local">This device</span>`, CLOUD = `<span class="wb cloud">Muse Spark · masked text only</span>`;
 const where = (html) => $("where").innerHTML = html;
 const running = (txt) => `<span class="running"><span class="spin"></span>${esc(txt)}</span>`;
 function setDoc(html, legend = "") { $("view").innerHTML = `${legend ? `<div class="legend">${legend}</div>` : ""}<div class="doc" id="doc">${html}</div>`; }
 function setPanel(body, foot) { $("pbody").innerHTML = body; $("pfoot").innerHTML = foot || ""; $("pfoot").style.display = foot ? "" : "none"; }
 const tip = (key, text) => store.get("tip:" + key) ? "" : `<div class="tip"><span>${text}</span><button data-tip="${key}">Got it</button></div>`;
+$("pbody").addEventListener("click", (e) => { const d = e.target.closest("[data-redefine]"); if (d) chatOpen(S.fields.find((f) => f.key === d.dataset.redefine)); });
 $("pbody").addEventListener("click", (e) => { const t = e.target.closest("[data-tip]"); if (t) { store.set("tip:" + t.dataset.tip, "1"); t.parentElement.remove(); } });
 const banner = (kind, title, text) => `<div class="banner ${kind}" role="${kind === "refused" ? "alert" : "status"}"><span class="gl">${{verified: "✓", review: "!", refused: "×", info: "i"}[kind]}</span><div><b>${title}</b>${text ? `<span>${text}</span>` : ""}</div></div>`;
 
@@ -466,26 +499,25 @@ function mainView(r) {
 function viewEmpty() {
   $("stepper").innerHTML = ""; where("");
   $("view").innerHTML = `<div class="empty">
-    <h1>De-identify a pathology report</h1>
-    <p>Identifiers are found on this laptop. Nothing is sent anywhere until you confirm, and then only masked text.</p>
+    <h1>De-identify clinical reports on this device</h1>
+    <p>Names, IDs and contact details are detected and masked locally. You review every highlight before anything is sent, and only masked text ever leaves your device.</p>
     <div class="drop" id="drop">
-      <div style="font-weight:600">No reports yet. Drop a text report to start.</div>
-      <div class="hint">.txt files, one report per file. They stay in memory on this laptop.</div>
+      <div style="font-weight:600">Drop clinical reports here</div>
+      <div class="hint">Plain text (.txt) or PDF with selectable text, one report per file. Files are held in memory on this device and never saved. Scanned PDFs and images are not supported.</div>
       <div class="acts"><button class="btn secondary inline" id="browse">${icon("upload")}Choose files</button>
-        <button class="btn secondary inline" id="pasteBtn">Paste text</button></div>
+        <button class="btn secondary inline" id="pasteBtn">Paste a report</button></div>
       <textarea class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
-      <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">De-identify pasted report</button>
+      <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">Find identifiers</button>
     </div>
     <p class="label" style="margin:var(--s6) 0 0">Try a sample</p>
     <div class="samples">${SAMPLES.map(([id, label]) => `<button class="sample" data-sample="${id}">${esc(label)}</button>`).join("")}</div>
     <p class="sm muted">Public research reports (TCGA) with made-up names and ID numbers. No real patient identifiers.</p>
   </div>`;
-  const how = extracting() ? [["De-identify", "Names, IDs and contact details are found and hidden on this laptop. You check them, then confirm."],
-      ["Extract fields", "Each field you choose is filled from the de-identified text, with the quote it came from."],
-      ["Approve", "Confirm or edit each value. PrivLab learns from every correction. Export fields as CSV."]]
-    : [["De-identify", "Names, IDs and contact details are found and hidden on this laptop. You check them, then confirm."],
-      ["Export", "Download the de-identified text, one report or all of them. No fields are extracted."]];
-  setPanel(`<h2 class="h1">${extracting() ? "Three steps" : "Two steps"}</h2><p class="lede">One button per step, always here at the bottom. Choose De-identify only or De-identify + extract at the top.</p>
+  const review = ["De-identify", "PrivLab highlights every identifier on your device. You confirm what gets masked."];
+  const how = extracting() ? [review, ["Extract fields", "Each field is filled from the masked text and linked to the sentence it came from."],
+      ["Approve", "Confirm or correct each value. Every correction teaches PrivLab. Export to your registry as CSV."]]
+    : [review, ["Export", "Download the masked text, one report or a batch."]];
+  setPanel(`<h2 class="h1">How it works</h2><p class="lede">One action per step, always at the bottom of this panel. Choose your task at the top.</p>
     <ol class="list">${how.map(([t, d], k) =>
       `<li class="item"><span class="pill hema">${k + 1}</span><div class="grow"><b>${t}</b><div class="sm muted">${d}</div></div></li>`).join("")}</ol>
     ${S.fields.length || !extracting() ? "" : banner("info", "No fields yet", 'Add the fields you want filled with <button class="link" id="emptyNew">New field</button>, for example tumour size.')}`);
@@ -505,10 +537,19 @@ document.addEventListener("dragover", (e) => e.preventDefault());
 document.addEventListener("drop", (e) => { if (!e.target.closest("#drop")) { e.preventDefault(); if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files); } });
 
 async function addFiles(files) {
+  const pdf = (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf", txt = (f) => /\.txt$/i.test(f.name) || f.type === "text/plain";
+  const other = [...files].filter((f) => !pdf(f) && !txt(f)).map((f) => f.name);
+  if (other.length) toast(`Not supported: ${other.join(", ")}. PrivLab accepts text files (.txt) and PDFs with selectable text. Scanned PDFs, images and other formats are not supported.`);
   for (const f of files) {
-    if (!/\.txt$/i.test(f.name) && f.type !== "text/plain") { toast(`${f.name} is not a text file. Save the report as .txt and drop it again.`); continue; }
-    await addText(f.name, await f.text());
+    if (pdf(f)) await addPdf(f);
+    else if (txt(f)) await addText(f.name, await f.text());
   }
+}
+async function addPdf(f) {             // read on the server on this device; a scan is refused there
+  const bytes = new Uint8Array(await f.arrayBuffer());
+  let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  const name = f.name.replace(/\.pdf$/i, "");
+  return start(newReport(name, {}), "/api/add", {name, pdf: btoa(bin)});
 }
 const newReport = (name, extra) => ({key: ++seq, name, step: "loading", unmark: new Set(), add: [], dets: null, results: {}, saved: {},
   typed: 0, trace: [], prefetch: "none", openedAt: performance.now(), ...extra});
@@ -532,10 +573,15 @@ async function layer1(r) {
   const slow = setTimeout(() => refresh(r), 120);                 // skeleton only if it takes noticeable time
   const t0 = performance.now(), res = await api(r.req.path, {...r.req.body, choices: S.choices});
   clearTimeout(slow);
+  if (res.refused) {                        // a file PrivLab does not accept: say why, keep no report
+    S.reports.splice(S.reports.indexOf(r), 1); S.cur = Math.min(S.cur, S.reports.length - 1);
+    toast(`${r.name}: ${res.error}`); return render();
+  }
   if (res.error) { r.step = "failed"; r.error = {title: "This report could not be de-identified", text: res.error, retry: () => layer1(r)}; return refresh(r); }
   if (res.next === "profile") { S.profile.exists = false; r.step = "setup"; return refresh(r); }
   S.profile.exists = true;
   Object.assign(r, {text: res.text, deid: res.deid_id, dets: res.detections, step: "review", name: r.sample ? r.name : res.name || r.name});
+  if (r.carry) { r.unmark = new Set(r.dets.map((d) => d.id).filter((id) => r.carry.has(id))); delete r.carry; }   // same text, same ids
   (res.warnings || []).forEach(toast);
   trace(r, `Found ${res.detections.length} identifiers in ${Math.round(performance.now() - t0)} ms. Nothing sent.`, "local");
   refresh(r);
@@ -545,10 +591,10 @@ function checklist(items) {      // [[label, "done" | "run" | "todo", detail]]
     `<li class="${st}"><span class="mk">${st === "done" ? "✓" : ""}</span><div><b>${t}</b>${d ? `<small>${d}</small>` : ""}</div></li>`).join("")}</ol>`;
 }
 function viewLoading(r) {
-  stepper(0); where(`${LOCAL}${running("De-identifying on this laptop")}`);
+  stepper(0); where(`${LOCAL}${running("De-identifying on this device")}`);
   if (r.preview) setDoc(esc(r.preview));
   else $("view").innerHTML = `<div class="docskel" aria-label="Opening the report">${Array.from({length: 14}, (_, k) => `<i style="width:${55 + (k * 37) % 45}%"></i>`).join("")}</div>`;
-  setPanel(`<h2 class="h1">De-identifying</h2><p class="lede">Everything in this step runs on this laptop. Nothing is sent.</p>
+  setPanel(`<h2 class="h1">De-identifying</h2><p class="lede">Everything in this step runs on this device. Nothing is sent.</p>
     ${checklist([["Report opened", "done", "Kept in memory only"], ["Finding identifiers", "run", "Names, ID numbers, dates of birth, contact details"],
       ["Your review", "todo", "You check every highlight before anything else happens"]])}`, `<button class="btn primary" disabled>De-identifying…</button>`);
 }
@@ -593,20 +639,20 @@ function counts(r) {
   return c;
 }
 function viewReview(r) {
-  stepper(0); where(`${LOCAL}<span>Nothing has left this laptop</span>`);
+  stepper(0); where(`${LOCAL}<span>Nothing has left this device</span>`);
   const c = counts(r), n = Object.values(c).reduce((a, b) => a + b, 0);
   setDoc(marked(r.text, reviewMarks(r)), Object.entries(c).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join(""));
   setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
     ${tip("review", "Click a highlight to keep it visible. Select any text in the report to hide something PrivLab missed.")}
     <h2 class="h1">Review what will be hidden</h2>
-    <div class="big"><b>${n}</b><span class="muted">identifiers found on this laptop</span></div>
+    <div class="big"><b>${n}</b><span class="muted">identifiers found on this device</span></div>
     <ul class="list">${r.dets.map((d) => `<li class="item"><input type="checkbox" class="toggle" data-det="${d.id}" ${r.unmark.has(d.id) ? "" : "checked"} aria-label="Hide ${esc(d.text)}">
       <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}</div><button class="link" data-go="${d.id}">Show</button></li>`).join("")}
       ${r.add.map((a, i) => `<li class="item"><input type="checkbox" class="toggle" checked data-add="${i}" aria-label="Stop hiding ${esc(a.text)}">
       <div class="grow"><span class="chip t-${a.type}">${TL[a.type] || a.type}</span> ${esc(a.text)} <span class="sm muted">added by you</span></div></li>`).join("")}</ul>
     ${traceBlock(r)}`,
     `<button class="btn primary" id="go">Hide ${n} and check for names</button>
-     <div class="hint">Identifiers are hidden on this laptop first <span class="kbd">Enter</span></div>`);
+     <div class="hint">Identifiers are masked on this device first <span class="kbd">Enter</span></div>`);
   $("go").onclick = () => confirmReview(r);
   document.querySelectorAll("[data-det]").forEach((i) => i.onchange = () => toggleKeep(r, i.dataset.det));
   document.querySelectorAll("[data-add]").forEach((i) => i.onchange = () => { r.add.splice(+i.dataset.add, 1); renderMain(); });
@@ -636,9 +682,9 @@ function viewChecking(r) {
   setDoc(marked(r.text, reviewMarks(r)));
   const n = Object.values(counts(r)).reduce((a, b) => a + b, 0);
   setPanel(`<h2 class="h1">Second check</h2>
-    <p class="lede">Your report was de-identified on this laptop. A second check now reads only the masked text, with every identifier already replaced by a tag, for any name the rules missed. No personal information is sent. You can open other reports while you wait.</p>
-    ${checklist([[`${n} identifiers hidden`, "done", "On this laptop"], ["Masked text sealed and scanned for leftovers", "done", "On this laptop"],
-      ["Second check for missed names", "run", "Muse Spark reads the masked text only"], ["Replace with tags", "todo", "Originals go to the encrypted vault on this laptop"]])}
+    <p class="lede">Your report was de-identified on this device. A second check now reads only the masked text, with every identifier already replaced by a tag, for any name the rules missed. No personal information is sent. You can open other reports while you wait.</p>
+    ${checklist([[`${n} identifiers hidden`, "done", "On this device"], ["Masked text sealed and scanned for leftovers", "done", "On this device"],
+      ["Second check for missed names", "run", "Muse Spark reads the masked text only"], ["Replace with tags", "todo", "Originals go to the encrypted vault on this device"]])}
     ${traceBlock(r)}`, `<button class="btn primary" disabled>Checking…</button>`);
 }
 
@@ -650,13 +696,22 @@ function viewQuestion(r) {
   setDoc(marked(r.text, [...base, ...q.items.map((x) => ({start: x.start, end: x.end, id: x.id, title: "Click to change",
     cls: hold ? "hold" : x.ticked ? "flag" : "suspect"}))]));
   setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
-    ${banner("review", hold ? "These look like names" : "The second check found more", hold ? "Found on this laptop, before anything is sent. Ticked ones will be hidden; untick any that are not names, and PrivLab learns." :
+    ${banner("review", hold ? "These look like names" : "The second check found more", hold ? "Found on this device, before anything is sent. Ticked ones will be hidden; untick any that are not names, and PrivLab learns." :
       "Its finds are ticked to hide. Words it could not decide are unticked: tick any that identify a person.")}
+    <div class="factions"><button class="link" id="qAll">Tick all</button><button class="link" id="qNone">Untick all</button>
+      <span class="sm muted">Shift-click to tick or untick a range</span></div>
     <ul class="list">${q.items.map((x) => `<li class="item"><input type="checkbox" class="toggle" data-q="${x.id}" ${q.picked.has(x.id) ? "checked" : ""} aria-label="Hide ${esc(x.text)}">
       <div class="grow">${esc(x.text)} <span class="sm muted">${x.source === "suspect" ? "undecided" : esc(TL[x.type] || x.type)}</span>
       <div class="ctx">${esc(x.context)}</div></div><button class="link" data-go="${x.id}">Show</button></li>`).join("")}</ul>${traceBlock(r)}`,
     `<button class="btn primary" id="go">Hide ${q.picked.size} and ${hold ? "check for names" : "finish"}</button>`);
-  document.querySelectorAll("[data-q]").forEach((i) => i.onchange = () => { i.checked ? q.picked.add(i.dataset.q) : q.picked.delete(i.dataset.q); renderMain(); });
+  const boxes = [...document.querySelectorAll("[data-q]")];
+  boxes.forEach((i, k) => i.onclick = (e) => {
+    const [a, b] = e.shiftKey && q.last != null ? [Math.min(q.last, k), Math.max(q.last, k)] : [k, k];
+    boxes.slice(a, b + 1).forEach((x) => i.checked ? q.picked.add(x.dataset.q) : q.picked.delete(x.dataset.q));
+    q.last = k; renderMain();
+  });
+  $("qAll").onclick = () => { q.items.forEach((x) => q.picked.add(x.id)); renderMain(); };
+  $("qNone").onclick = () => { q.picked.clear(); renderMain(); };
   document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => showMark(b.dataset.go));
   $("go").onclick = () => answer(r);
 }
@@ -695,17 +750,18 @@ function prefetch(r) {
   });
 }
 function viewSafe(r) {
-  stepper(1); where(`${LOCAL}<span>Originals stay in the encrypted vault on this laptop</span>`);
+  stepper(1); where(`${LOCAL}<span>Originals stay in the encrypted vault on this device</span>`);
   const res = r.done, pr = res.review_priority || {level: "low", reasons: []};
   const ok = ["clean", "flagged"].includes(res.layer2);
   setDoc(marked(r.dtext, redactions(r.dtext)));
-  setPanel(`${ok ? banner("verified", "De-identified on this laptop", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2]} No personal information left this laptop.`)
-                 : banner("review", "De-identified on this laptop. Please read it once", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2] || ""} No personal information left this laptop.`)}
+  setPanel(`${ok ? banner("verified", "De-identified on this device", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2]} No personal information left this device.`)
+                 : banner("review", "De-identified on this device. Please read it once", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2] || ""} No personal information left this device.`)}
     ${pr.level !== "low" ? `<p class="sm"><b>Review priority ${pr.level}.</b> ${pr.reasons.map(esc).join("; ")}.</p>` : ""}
     <div class="legend" style="margin:0">${Object.entries(res.summary.by_type).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join("")}</div>
     ${extracting() && S.fields.length ? `<div class="fhead" style="margin-top:var(--s6)"><h2 class="h1" style="margin:0">Fields to extract</h2><button class="link" id="manageFields">Manage fields</button></div>
       <ul class="list">${S.fields.map((f) => `<li class="item"><div class="grow"><div class="fhead"><b>${esc(f.name)}</b>${readiness(f.readiness)}</div>${fieldDef(f)}</div></li>`).join("")}</ul>
       <p class="sm muted">Field definitions are kept in your field pack on this device. Values you approve go to Registry data (.csv) under Export.</p>` : ""}
+    ${Object.keys(r.saved).length ? "" : `<p class="sm"><button class="link" id="reviewAgain">Review identifiers again</button> <span class="muted">Runs again on this device; nothing is sent until you confirm.</span></p>`}
     ${traceBlock(r)}`,
     !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
         ${nextButton("secondary")}`
@@ -717,6 +773,7 @@ function viewSafe(r) {
   if ($("go")) $("go").onclick = () => openFields(r);
   if ($("addField")) $("addField").onclick = () => chatOpen();
   if ($("manageFields")) $("manageFields").onclick = () => { S.side = "fields"; renderMain(); };
+  if ($("reviewAgain")) $("reviewAgain").onclick = () => reviewAgain(r);
   if ($("dl")) $("dl").onclick = () => { r.exported = true; trace(r, "De-identified text downloaded.", "local"); setTimeout(() => refresh(r), 0); };
   wireNext();
 }
@@ -745,7 +802,7 @@ async function openFields(r) {
   r.step = "fields"; r.error = null; render();
   for (const f of S.fields) {
     if (r.results[f.key] || r.saved[f.key]) continue;
-    const res = await api("/api/find", {deid_id: r.deid, field: f.key});
+    const res = await api("/api/find", {deid_id: r.deid, field: f.key, blind_ok: true});
     if (res.error || res.status === "error") { r.error = {title: "Fields could not be extracted", text: res.error || res.reason}; break; }
     r.results[f.key] = res;
     const top = (res.candidates || []).find((c) => c.id === res.candidate_id);
@@ -756,6 +813,7 @@ async function openFields(r) {
   if (r === cur()) renderMain();
 }
 function status(res) {
+  if (res.status === "blind") return ["blind", "Blind check"];
   if (res.status === "green") return ["verified", "Verified"];
   if (res.status === "missing") return ["not-found", "Not found"];
   return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
@@ -845,10 +903,15 @@ function fieldRow(r, f) {
     const corrected = !["correct", "true_empty"].includes(saved.outcome);
     return `<div data-frow="${f.key}" class="frow ${saved.value == null ? "not-stated" : ""}" role="listitem">${head(saved.value == null ? pill("not-stated") : pill("verified"))}
       <div class="fval">${saved.value != null ? esc(saved.value) + unit(f, saved.value) : "Not stated"}</div>
-      <div class="sm muted">${corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div></div>`;
+      <div class="sm muted">${saved.blind ? `Blind check: ${saved.predicted != null ? `PrivLab had ${esc(saved.predicted)}${unit(f, saved.predicted)}` : "PrivLab found nothing"}.${corrected ? "Counted as an error; PrivLab learned from it." : "You agreed."}`
+        : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div></div>`;
   }
   if (!res) return `<div data-frow="${f.key}" class="frow loading" role="listitem"><span class="fname">${esc(f.name)}</span><span class="running"><span class="spin"></span>Reading the de-identified text</span></div>`;
   const [k] = status(res), top = (res.candidates || []).find((c) => c.id === res.candidate_id);
+  if (k === "blind") return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem">${head(pill("blind"))}
+      <div class="freason">PrivLab's answer is hidden for this one, so you check it without seeing it first. This keeps the accuracy score honest. Select the value in the report and choose <b>Use as</b>, or confirm it is not stated. PrivLab's answer is shown after you save.</div>
+      <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Select it in the report</button>
+      <button class="link" data-act="missing" data-key="${f.key}">It is not stated</button></div>${r.editing === f.key ? editorHtml(r, f) : ""}</div>`;
   const editor = r.editing === f.key ? editorHtml(r, f) : "";
   const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}${c.start != null ? ` · ${c.start}–${c.end}` : ""}</div>` : "";
   if (k === "verified") return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-row="${f.key}" data-cid="${top.id}" aria-label="${esc(f.name)}: ${esc(res.value)}. Select to show its quote.">${head(pill("verified"))}
@@ -934,6 +997,7 @@ function wireRows(r) {
     };
     $("edCancel").onclick = (e) => { e.stopPropagation(); r.editing = null; r.edit = null; renderMain(); };
     $("edVal").onclick = (e) => e.stopPropagation();
+    $("edVal").onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); $("edSave").click(); } };
     if ($("edNote")) $("edNote").onclick = (e) => e.stopPropagation();
   }
 }
@@ -957,8 +1021,8 @@ async function act(r, kind, key, cid, typed) {   // kind: accept, pick, missing,
   r.saved[key] = out;
   if (kind === "typed") r.typed++;
   if (r.editing === key) { r.editing = null; r.edit = null; }
+  await loadFields();                        // fresh accuracy and history
   const f = S.fields.find((x) => x.key === key);
-  if (f) f.readiness = out.readiness;
   trace(r, `${f ? f.name : key}: ${out.outcome === "correct" ? "confirmed" : out.outcome === "true_empty" ? "confirmed not stated" : "edited; PrivLab learned from it"}.`, "local");
   refresh(r);
 }
@@ -1026,13 +1090,7 @@ document.addEventListener("mouseup", (e) => {
     } else {
       const open = S.fields.filter((f) => !r.saved[f.key]);
       bar.innerHTML = `<span style="padding:0 var(--s2)">Use as</span>${open.map((f) => `<button data-use="${f.key}">${esc(f.name)}</button>`).join('<span class="sep"></span>') || '<span style="padding:0 var(--s2)">All fields saved</span>'}`;
-      bar.querySelectorAll("[data-use]").forEach((b) => b.onclick = () => {
-        const f = S.fields.find((x) => x.key === b.dataset.use);
-        const num = (sel.text.match(/\d+(?:\.\d+)?/) || [""])[0];
-        const choice = f.type === "choice" ? (f.choices.find((c) => sel.text.toLowerCase().includes(c.toLowerCase())) || f.choices[0]) : null;
-        r.editing = f.key; r.edit = {key: f.key, evidence: sel.text, value: f.type === "number" ? num : choice};
-        hideFloat(); renderMain();
-      });
+      bar.querySelectorAll("[data-use]").forEach((b) => b.onclick = () => useAs(r, S.fields.find((x) => x.key === b.dataset.use), sel.text));
     }
     bar.style.display = "flex";
     const w = bar.offsetWidth;
@@ -1041,6 +1099,22 @@ document.addEventListener("mouseup", (e) => {
   }, 0);
 });
 $("docwrap").addEventListener("scroll", hideFloat);
+// "Use as": one number (7,950.00 -> 7950.00) or one of the field's choices in the selection is saved at
+// once; anything else opens the value editor, scrolled into view, with the selection as its quote.
+function useAs(r, f, text) {
+  const nums = (text.match(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g) || []).map((n) => n.replace(/,/g, ""));
+  const choices = f.type === "choice" ? f.choices.filter((c) =>
+    new RegExp(`(^|[^\\w])${c.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[^\\w])`, "i").test(text)) : [];
+  const value = f.type === "number" ? (nums.length === 1 ? nums[0] : null) : (choices.length === 1 ? choices[0] : null);
+  hideFloat(); window.getSelection().removeAllRanges(); S.side = null;
+  if (value != null) return act(r, "typed", f.key, null, {value, evidence_text: text});
+  r.editing = f.key; r.edit = {key: f.key, evidence: text, value: f.type === "number" ? nums[0] || "" : choices[0] || null};
+  renderMain();
+  const ed = $("edVal");
+  if (ed) { ed.closest(".frow").scrollIntoView({block: "nearest"}); ed.focus(); }
+  toast(f.type === "number" ? (nums.length ? "More than one number is selected. Type the right one, then Save value." : "No number in the selection. Type the value, then Save value.")
+    : "Choose the value for this quote, then Save value.");
+}
 $("view").addEventListener("click", (e) => {
   const m = e.target.closest("mark"), r = cur();
   if (!m || !r || !m.dataset.id || !window.getSelection().isCollapsed) return;
@@ -1058,14 +1132,36 @@ $("view").addEventListener("click", (e) => {
 // Fields: list and new-field conversation, in the side panel
 // ======================================================================
 $("fieldsBtn").onclick = () => { S.side = S.side ? null : "fields"; afterSideClose(); renderMain(); };
-function fieldDef(f) {        // what a field means, what values it takes, and what it has learned
+const OUTCOME = {correct: "right", true_empty: "right, not stated", wrong: "wrong value", missed: "missed", extra: "gave a value the report does not state"};
+const when = (iso) => { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"}); };
+function accuracyHtml(f) {    // the current definition version only; "verified" = shown green
+  const v = f.validation;
+  if (!v || !v.checked) return "Not checked yet. Every value you confirm is a test.";
+  const lines = [`${v.correct} of ${v.checked} right on definition v${v.version}`,
+    v.green ? `${v.silent_errors} wrong of ${v.green} shown as verified` : "None shown as verified yet",
+    v.ready ? "Proven: at most 5% of verified values are wrong (95% confidence)"
+      : `${v.more_needed} more correct verified values to prove at most 5% are wrong`,
+    `${Math.round(v.review_rate * 100)}% needed your review`];
+  if (v.blind) lines.push(`Blind checks: ${v.blind_correct} of ${v.blind} right`);
+  return lines.map(esc).join("<br>");
+}
+function historyHtml(f) {
+  const val = (x) => x == null ? "not stated" : esc(x) + unit(f, x);
+  const defs = (f.history || []).map((h) => `<li>${esc(when(h.when))} · ${esc(h.what)}</li>`).join("");
+  const checks = (f.checks || []).map((c) => `<li>${esc(when(c.when))} · v${c.version} · PrivLab ${val(c.predicted)}${c.status === "green" ? " (verified)" : ""}
+    → you ${val(c.confirmed)} · ${OUTCOME[c.outcome] || c.outcome}${c.blind ? " · blind" : ""}</li>`).join("");
+  return `<details class="fhist"><summary>History</summary><b>Definition</b><ul>${defs}</ul>
+    <b>Checks, newest first</b><ul>${checks || "<li>None yet</li>"}</ul></details>`;
+}
+function fieldDef(f, full) {  // what a field means, what values it takes, how accurate it is, and (full) its history
   const values = f.type === "number"
     ? `A number${f.unit ? ` in ${esc(f.unit)}` : ""}${f.range ? `, from ${f.range[0]} to ${f.range[1]}` : ""}`
     : `One of: ${(f.choices || []).map(esc).join(", ")}`;
-  const n = (f.recent || []).length;
-  return `<dl class="fdef"><dt>Means</dt><dd>${esc(f.meaning)}</dd><dt>Values</dt><dd>${values}</dd>
+  const means = f.definition ? esc(f.definition)
+    : `${esc(f.meaning)} <span class="muted">No precise definition yet.</span> <button class="link" data-redefine="${f.key}">Add one</button>`;
+  return `<dl class="fdef"><dt>Means</dt><dd>${means}</dd><dt>Values</dt><dd>${values}</dd>
     ${f.description ? `<dt>Your words</dt><dd>“${esc(f.description)}”</dd>` : ""}
-    <dt>Learned</dt><dd>${n ? `from ${n} confirmation${n === 1 ? "" : "s"}` : "nothing yet; it learns from each confirmation"}</dd></dl>`;
+    <dt>Accuracy</dt><dd>${accuracyHtml(f)}</dd></dl>${full ? historyHtml(f) : ""}`;
 }
 function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
 const specLine = (d) => d.type === "number"
@@ -1082,13 +1178,12 @@ function renderSide(r) {
   if (S.side === "fields") {
     setPanel(`${tabs}<p class="lede">The fields PrivLab fills on every report. Each one learns from your corrections.</p>
       <ul class="list flist">${n ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b> ${readiness(f.readiness)}
-        ${fieldDef(f)}</div>
+        ${fieldDef(f, true)}</div>
         <button class="link" data-redefine="${f.key}">Redefine</button><button class="link" data-remove="${f.key}">Remove</button></li>`).join("")
         : '<li class="item muted">No fields yet. Your field pack starts empty.</li>'}</ul>`,
       `<button class="btn primary" id="sideNew">${icon("plus")}New field</button>`);
     $("sideNew").onclick = () => chatOpen();
     document.querySelectorAll("[data-remove]").forEach((b) => b.onclick = () => removeField(b));
-    document.querySelectorAll("[data-redefine]").forEach((b) => b.onclick = () => chatOpen(S.fields.find((f) => f.key === b.dataset.redefine)));
   } else {
     const thread = c.msgs.map((m) => m.who === "note" ? `<div class="msg note">${m.html}</div>`
       : `<div class="msg ${m.who}"><span class="who">${m.who === "you" ? "You" : "Muse Spark"}</span>${m.html}</div>`).join("")
@@ -1142,7 +1237,7 @@ function chatOpen(field) {
   S.side = "chat";
   if (field) {
     S.chat = {msgs: [], stage: "refine", name: field.name, key: field.key};
-    say("spark", `You are redefining <b>${esc(field.name)}</b>. It currently means: ${esc(field.meaning)}<span class="spec">${specLine(field)}</span>`);
+    say("spark", `You are redefining <b>${esc(field.name)}</b>. It currently means: ${esc(field.definition || field.meaning)}<span class="spec">${specLine(field)}</span>`);
     say("spark", "What should it mean instead? Describe it in your own words.");
   } else if (!S.chat || S.chat.stage === "done") {
     S.chat = {msgs: [], stage: "name"};
@@ -1160,7 +1255,7 @@ async function chatSend(text) {
   if (res.error || !res.draft) { say("spark", `I could not suggest a definition. ${esc(res.error || "")} Try again.`); return renderMain(); }
   if (!c.noted) { say("note", "Only the field name and your words were sent. No report text."); c.noted = true; }
   c.draft = res.draft; c.editDetails = false; c.stage = "confirm";
-  say("spark", `Did you mean: <b>${esc(res.draft.meaning_question)}</b><span class="spec">${specLine(res.draft)}</span>
+  say("spark", `Did you mean: <b>${esc(res.draft.meaning_question)}</b><span class="defn">${esc(res.draft.definition || "")}</span><span class="spec">${specLine(res.draft)}</span>
     <button class="link" id="cDetails">Edit details</button>`);
   renderMain();
 }
@@ -1169,7 +1264,8 @@ function draftDetails() {          // the editable details live inside the last 
   if (!c.editDetails || c.stage !== "confirm") return;
   const d = c.draft, last = [...document.querySelectorAll(".msg.spark")].pop();
   last.insertAdjacentHTML("beforeend", `<div class="details">
-    <textarea class="in" id="dQ" rows="2" aria-label="Meaning">${esc(d.meaning_question)}</textarea>
+    <textarea class="in" id="dQ" rows="2" aria-label="Question">${esc(d.meaning_question)}</textarea>
+    <textarea class="in" id="dDef" rows="4" aria-label="Definition">${esc(d.definition || "")}</textarea>
     <div style="display:flex;gap:var(--s2)"><select class="in" id="dType" style="width:130px" aria-label="Type"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
     ${d.type === "number" ? `<input class="in" id="dUnit" placeholder="Unit, for example cm" value="${esc(d.unit || "")}" aria-label="Unit">` : ""}</div>
     ${d.type === "choice" ? `<input class="in" id="dChoices" placeholder="Choices, separated by commas" value="${esc((d.choices || []).join(", "))}" aria-label="Choices">` : ""}</div>`);
@@ -1178,6 +1274,7 @@ function draftDetails() {          // the editable details live inside the last 
 function readDetails() {
   const d = S.chat.draft;
   if ($("dQ")) d.meaning_question = $("dQ").value.trim() || d.meaning_question;
+  if ($("dDef")) d.definition = $("dDef").value.trim();
   if ($("dUnit")) d.unit = $("dUnit").value.trim() || null;
   if ($("dChoices")) d.choices = $("dChoices").value.split(",").map((x) => x.trim()).filter(Boolean);
 }
