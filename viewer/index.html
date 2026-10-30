@@ -888,6 +888,7 @@ function editorHtml(r, f) {
     ? `<select class="in" id="edVal" aria-label="Value">${f.choices.map((c) => `<option ${c === ed.value ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>`
     : `<input class="in" id="edVal" inputmode="decimal" aria-label="Value" placeholder="Value${f.unit ? " in " + esc(f.unit) : ""}" value="${esc(ed.value || "")}">`;
   return `<div class="editor" data-stop>${input}<div class="sm ${ed.evidence ? "" : "muted"}">${ed.evidence ? `Quote: <span class="fquote">“${esc(ed.evidence.slice(0, 100))}”</span>` : "Select the quote for this value in the report."}</div>
+    ${r.results[f.key] && r.results[f.key].candidate_id ? `<input class="in" id="edNote" placeholder="Optional: why was PrivLab's pick wrong?" aria-label="Why the suggestion was wrong" value="${esc(ed.note || "")}">` : ""}
     <div class="factions"><button class="btn secondary inline" id="edSave">Save value</button><button class="link" id="edCancel">Cancel</button></div></div>`;
 }
 function wireRows(r) {
@@ -909,10 +910,11 @@ function wireRows(r) {
       const v = $("edVal").value.trim();
       if (!v) return toast("Type the value first.");
       if (!r.edit || !r.edit.evidence) return toast("Select the quote for this value in the report, then save.");
-      act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence});
+      act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence, note: $("edNote") ? $("edNote").value.trim() || null : null});
     };
     $("edCancel").onclick = (e) => { e.stopPropagation(); r.editing = null; r.edit = null; renderMain(); };
     $("edVal").onclick = (e) => e.stopPropagation();
+    if ($("edNote")) $("edNote").onclick = (e) => e.stopPropagation();
   }
 }
 async function act(r, kind, key, cid, typed) {

@@ -159,7 +159,8 @@ def api_confirm_field(b):
     with _WRITE:
         return learn.confirm_field(b["deid_id"], b["field"], candidate_id=b.get("candidate_id"),
                                    value=b.get("value"), evidence_text=b.get("evidence_text"),
-                                   missing=bool(b.get("missing")), pack_path=STATE["pack"], log_path=STATE["log"])
+                                   missing=bool(b.get("missing")), note=b.get("note"),
+                                   pack_path=STATE["pack"], log_path=STATE["log"])
 
 
 def api_reset(_):

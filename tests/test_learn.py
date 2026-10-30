@@ -53,8 +53,28 @@ def test_wrong_pick_becomes_a_bad_example(paths):
     assert res["value"] == 9.0                                               # both gross; model's order
     out = confirm(paths, res, candidate_id="c2")
     f = load_pack(paths["pack"])["fields"][0]
-    assert out["outcome"] == "wrong" and f.examples["bad"][0]["reason"] == "not this one"
+    assert out["outcome"] == "wrong"
+    assert f.examples["bad"][0]["reason"] == "Picked 9 cm; the right value was 2.1 cm, elsewhere in the gross section."
     assert "specimen 9 x 6 x 3 cm" in f.examples["bad"][0]["context"]
+
+
+def test_rejected_pick_explains_why_and_keeps_the_reviewer_note(paths):
+    text = "DIAGNOSIS: specimen 9 x 6 x 3 cm. GROSS: tumour 2.1 cm."
+    res = run(paths, text, ("9", "specimen 9 x 6 x 3 cm"))                    # PrivLab picks the wrong one
+    confirm(paths, res, value="2.1", evidence_text="tumour 2.1 cm", note="whole specimen, not the tumour")
+    reason = load_pack(paths["pack"])["fields"][0].examples["bad"][-1]["reason"]
+    assert reason.startswith("Picked 9 cm from the diagnosis section; the right value was 2.1 cm in the gross section.")
+    assert reason.endswith("Reviewer: whole specimen, not the tumour")
+    res = run(paths, text.replace("2.1", "3.4"))                              # it reaches the next prompt
+    assert "Reviewer: whole specimen, not the tumour" in paths["spark"]["sent"][-1]
+
+
+def test_reviewer_note_with_an_identifier_is_dropped(paths):
+    text = "DIAGNOSIS: specimen 9 x 6 x 3 cm. GROSS: tumour 2.1 cm."
+    res = run(paths, text, ("9", "specimen 9 x 6 x 3 cm"))                    # PrivLab picks the wrong one
+    confirm(paths, res, value="2.1", evidence_text="tumour 2.1 cm", note="ask Dr Lim on +65 9123 4567")
+    reason = load_pack(paths["pack"])["fields"][0].examples["bad"][-1]["reason"]
+    assert "9123" not in reason and "Reviewer" not in reason                 # identifiers never reach a prompt
 
 
 def test_typed_value_missed_and_extra(paths):
