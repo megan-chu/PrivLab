@@ -597,7 +597,7 @@ function viewSafe(r) {
       <div class="hint">${r.prefetch === "ready" ? "Ready: read ahead of time" : r.prefetch === "running" ? "Reading the fields ahead of time" : ""} <span class="kbd">Enter</span></div>`
     : `<button class="btn primary" id="addField">${icon("plus")}Add a field to extract</button>`);
   if ($("go")) $("go").onclick = () => openFields(r);
-  if ($("addField")) $("addField").onclick = openSheet;
+  if ($("addField")) $("addField").onclick = () => openSheet();
 }
 function viewBlocked(r) {
   stepper(0); where(`${LOCAL}<span>Nothing more will be sent for this report</span>`);
@@ -823,7 +823,7 @@ $("view").addEventListener("click", (e) => {
 // ======================================================================
 // Fields dialog
 // ======================================================================
-$("fieldsBtn").onclick = openSheet;
+$("fieldsBtn").onclick = () => openSheet();
 function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
 function openSheet(note) {
   const d = $("sheet");
