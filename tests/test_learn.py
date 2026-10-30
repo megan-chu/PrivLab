@@ -7,7 +7,7 @@ from eval.score_fields import score
 from extract.candidates import find_candidates
 from extract.define import define_field
 from extract.export import export_rows
-from extract.learn import confirm_field, read_log, show_pack
+from extract.learn import confirm_field, more_needed, read_log, show_pack, upper_bound, validation
 from extract.pack import load_pack
 
 DRAFT = {"key": "tumour_size", "meaning_question": "Largest tumour dimension?", "type": "number",
@@ -86,16 +86,64 @@ def test_typed_value_missed_and_extra(paths):
     assert confirm(paths, res, missing=True)["outcome"] == "true_empty"
 
 
-def test_ready_after_four_of_five_and_examples_capped(paths):
+def test_six_right_is_not_ready_and_examples_capped(paths):
     for i in range(6):
         res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
         out = confirm(paths, res, candidate_id=res["candidate_id"])
     f = load_pack(paths["pack"])["fields"][0]
-    assert out["readiness"] == "ready" and len(f.examples["good"]) == 3
+    assert out["readiness"] == "learning" and len(f.examples["good"]) == 3   # a streak is not proof
+    v = validation(f, read_log(paths["log"]))
+    assert (v["checked"], v["green"], v["silent_errors"], v["more_needed"]) == (6, 6, 0, 53)
     s = score(read_log(paths["log"]))["tumour_size"]
-    assert (s["f1"], s["confirmations_to_ready"], s["learning_curve"][-1]) == (1.0, 5, 1.0)
-    assert s["to_ready"]["confirmations"] == 5 and s["to_ready"]["review_s_total"] >= 0
+    assert (s["f1"], s["confirmations_to_ready"], s["learning_curve"][-1]) == (1.0, None, 1.0)
     assert s["median_learn_ms"] is not None and s["median_review_s"]["green"] is not None
+
+
+def test_ready_needs_the_95_percent_bound():
+    # exact one-sided binomial: 59 / 93 / 124 green values with 0 / 1 / 2 errors prove <= 5% wrong
+    for errors, n in [(0, 59), (1, 93), (2, 124)]:
+        assert upper_bound(errors, n) <= 0.05 < upper_bound(errors, n - 1)
+    assert more_needed(0, 0) == 59 and more_needed(1, 60) == 33 and more_needed(0, 59) == 0
+    from extract.types import Field
+    f = Field(key="t", name="t", description="", meaning="m", type="number")
+    row = lambda status, outcome, **kw: {"field": "t", "predicted": {"status": status}, "outcome": outcome, **kw}
+    clean = [row("green", "correct") for _ in range(59)]
+    assert validation(f, clean)["ready"]
+    assert not validation(f, clean[1:] + [row("green", "wrong")])["ready"]          # one silent error
+    v = validation(f, clean[1:] + [row("amber", "wrong")])                           # caught by review, not silent
+    assert (v["silent_errors"], v["green"], v["ready"]) == (0, 58, False)
+    assert validation(f, [{**r, "field_version": 2} for r in clean])["checked"] == 0  # other version
+
+
+def test_new_meaning_is_a_new_version(paths):
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    confirm(paths, res, candidate_id=res["candidate_id"])
+    define_field("tumour size", "my words", accept=DRAFT, pack_path=paths["pack"])          # same meaning
+    f = load_pack(paths["pack"])["fields"][0]
+    assert f.version == 1 and f.examples["good"] and f.readiness == "learning"
+    define_field("tumour size", None, accept={**DRAFT, "definition": "Invasive part only."}, pack_path=paths["pack"])
+    f = load_pack(paths["pack"])["fields"][0]
+    assert f.version == 2 and f.examples == {"good": [], "bad": []} and f.readiness == "draft"
+    assert f.history[-1]["what"] == "redefined as v2; score and examples start again"
+    assert validation(f, read_log(paths["log"]))["checked"] == 0                    # v1 results are not mixed in
+
+
+def test_blind_check_hides_the_answer_until_the_user_has_answered(paths, monkeypatch):
+    import extract.candidates as candidates
+    monkeypatch.setattr(candidates, "_is_blind", lambda *a: True)
+    r = pipeline.deidentify_report(text=REPORT, profile=new_profile()[0])
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    paths["spark"]["state"]["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm", "reason": "t", "confidence": 0.9}]}]}
+    res = find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"], blind_checks=True)
+    assert res["status"] == "blind" and res["value"] is None and res["candidates"] == []
+    assert confirm(paths, res, candidate_id="c1")["status"] == "error"              # cannot pick the hidden answer
+    out = confirm(paths, res, value="2.1", evidence_text="tumour 2.1 cm")
+    assert (out["outcome"], out["blind"], out["predicted"]) == ("correct", True, 2.1)
+    entry = read_log(paths["log"])[0]
+    assert entry["blind"] and entry["field_version"] == 1 and entry["predicted"]["status"] == "green"
+    assert validation(load_pack(paths["pack"])["fields"][0], read_log(paths["log"]))["blind_correct"] == 1
+    assert find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"])["status"] == "green"   # off by default
 
 
 def test_confirm_needs_a_prediction_first(paths):

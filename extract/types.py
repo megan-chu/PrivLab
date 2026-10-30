@@ -25,6 +25,8 @@ class Field:
     recent: list[str] = field(default_factory=list)          # last outcomes: accepted / corrected
     examples: dict = field(default_factory=lambda: {"good": [], "bad": []})
     history: list[dict] = field(default_factory=list)
+    definition: str = ""        # what counts, where it is written, what to leave out
+    version: int = 1            # +1 when the meaning changes; scores and examples start again
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -37,6 +39,7 @@ class FieldDraft(BaseModel):
     """define_field: the model's suggested definition, shown to the user to accept or edit."""
     key: str
     meaning_question: str
+    definition: str
     type: Literal["number", "choice"]
     unit: str | None
     range_min: float | None

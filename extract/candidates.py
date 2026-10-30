@@ -15,13 +15,14 @@ the status.
   prefetch(deid_id)                   -> makes the one call ahead of time (viewer, after de-id);
                                          no prediction is frozen and no review timer starts
 """
+import hashlib
 import threading
 import time
 
 from common import spark
 from deid import pipeline
 from extract.checks import run_checks
-from extract.pack import get_field, load_pack
+from extract.pack import get_field, load_pack, meaning_key
 from extract.sections import PRIORITY, WEAK
 from extract.types import CandidatesReply
 
@@ -33,13 +34,15 @@ INSTRUCTIONS = (
     "empty candidates list. Do not infer, calculate or give medical advice."
 )
 MIN_CONFIDENCE = 0.6
+BLIND_EVERY = 10          # about 1 field result in 10 hides PrivLab's answer (viewer only)
 _REPLIES: dict[str, tuple[CandidatesReply, int, dict]] = {}   # deid_id -> (reply, model ms, definitions)
 _LOCKS: dict[str, threading.Lock] = {}                     # one call per report, even with a prefetch running
 _LOCKS_GUARD = threading.Lock()
 
 
 def _field_spec(f) -> str:
-    spec = f"- key: {f.key}\n  meaning: {f.meaning}\n  type: {f.type}"
+    spec = f"- key: {f.key}\n  meaning: {f.meaning}" + (f"\n  definition: {f.definition}" if f.definition else "")
+    spec += f"\n  type: {f.type}"
     if f.type == "number":
         spec += f", unit {f.unit or '-'}" + (f", range {f.range[0]}-{f.range[1]}" if f.range else "")
     else:
@@ -57,11 +60,6 @@ def _reply_for(result, pack, effort=None) -> CandidatesReply:
                       step="candidates", report_id=result.report_id, effort=effort)
 
 
-def _definition(f) -> tuple:
-    """What the field means, without its learned examples."""
-    return (f.meaning, f.type, f.unit, tuple(f.range or ()), tuple(f.choices))
-
-
 def _frozen_reply(deid_id: str, result, pack, field_key: str, effort=None) -> tuple[CandidatesReply, int]:
     """The report's reply (cached per report); a new call only if none yet covers field_key under
     its current definition."""
@@ -69,7 +67,7 @@ def _frozen_reply(deid_id: str, result, pack, field_key: str, effort=None) -> tu
         lock = _LOCKS.setdefault(deid_id, threading.Lock())
     with lock:
         frozen = _REPLIES.get(deid_id)
-        current = {f.key: _definition(f) for f in pack["fields"]}
+        current = {f.key: meaning_key(f) for f in pack["fields"]}
         if frozen and any(fc.key == field_key for fc in frozen[0].fields) \
                 and frozen[2].get(field_key) == current.get(field_key):
             return frozen[0], 0                                # no new call, no wait
@@ -92,7 +90,18 @@ def prefetch(deid_id: str, *, pack_path=None, effort: str | None = None) -> dict
     return {"deid_id": deid_id, "status": "ready", "model_ms": model_ms}
 
 
-def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None) -> dict:
+def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None,
+                    blind_checks: bool = False) -> dict:
+    """blind_checks: sometimes hide the answer, so the user's label is not anchored on it."""
+    blind = blind_checks and _is_blind(deid_id, field_key)
+    return _find(deid_id, field_key, pack_path, effort, blind)
+
+
+def _is_blind(deid_id: str, field_key: str) -> bool:
+    return int(hashlib.sha256(f"{deid_id}:{field_key}".encode()).hexdigest(), 16) % BLIND_EVERY == 0
+
+
+def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     result = pipeline.result_for(deid_id)
     if result is None:
         return {"deid_id": deid_id, "status": "error", "reason": "de-identify and confirm this report first"}
@@ -122,9 +131,9 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
         c["rank"] = rank
 
     if not cands:
-        return _result(deid_id, field, "missing", None, ranked, "Not stated in this report", model_ms)
+        return _result(deid_id, field, "missing", None, ranked, "Not stated in this report", model_ms, blind)
     if not valid:
-        return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms)
+        return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms, blind)
     top = valid[0]
     rivals = [c for c in valid[1:] if c["value"] != top["value"]
               and PRIORITY.get(c["section"], 2) == PRIORITY.get(top["section"], 2)]
@@ -135,16 +144,19 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
     elif top["confidence"] < MIN_CONFIDENCE:
         reason = "Low confidence"
     else:
-        return _result(deid_id, field, "green", top, ranked, None, model_ms)
-    return _result(deid_id, field, "amber", top, ranked, reason, model_ms)
+        return _result(deid_id, field, "green", top, ranked, None, model_ms, blind)
+    return _result(deid_id, field, "amber", top, ranked, reason, model_ms, blind)
 
 
 def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None,
-            model_ms: int | None = None) -> dict:
+            model_ms: int | None = None, blind: bool = False) -> dict:
     from extract.learn import remember_prediction
 
-    result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms}
+    result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms, "blind": blind}
     remember_prediction(result)                 # frozen before any feedback ("test then learn")
+    if blind:                                   # the user answers without seeing it
+        return {**_build(deid_id, field, "blind", None, [], "Blind check: find the value yourself"),
+                "model_ms": model_ms, "blind": True}
     return result
 
 
