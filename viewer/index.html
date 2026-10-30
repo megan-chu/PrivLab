@@ -752,13 +752,13 @@ function status(res) {
   return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
 }
 const unit = (f, v) => v != null && f.type === "number" && f.unit ? ` ${esc(f.unit)}` : "";
-function shownCandidate(r, f) {          // the candidate a field's highlight shows
+function shownCandidate(r, f) {          // what a field's highlight shows
+  const saved = r.saved[f.key];
+  if (saved) return saved.start != null ? {id: "saved", start: saved.start, end: saved.end, value: saved.value} : null;
   const res = r.results[f.key];
   if (!res) return null;
   const cs = res.candidates || [];
   if (r.focus && r.focus.key === f.key) return cs.find((x) => x.id === r.focus.cid) || null;
-  const saved = r.saved[f.key];
-  if (saved && !["correct", "true_empty"].includes(saved.outcome)) return null;   // corrected: old quote no longer applies
   return cs.find((x) => x.id === res.candidate_id) || cs.find((x) => !x.fail) || null;
 }
 function quoteMarks(r) {
@@ -767,13 +767,17 @@ function quoteMarks(r) {
     const c = shownCandidate(r, f);
     if (!c || c.start == null || c.fail === "evidence_found") return;
     const res = r.results[f.key], saved = r.saved[f.key];
-    const st = saved || status(res)[0] === "verified" ? "" : " rev";
+    const st = saved || (res && status(res)[0] === "verified") ? "" : " rev";
     const on = r.focus && r.focus.key === f.key ? " on" : "";
     const base = `ev fc${i % 6}${st}${on}`, id = `${f.key}:${c.id}`, title = `${f.name}: ${c.value}`;
     const q = r.dtext.slice(c.start, c.end).toLowerCase(), v = String(c.value ?? "").toLowerCase();
-    const k = v ? q.indexOf(v) : -1;
+    let k = -1, len = v.length;
+    if (typeof c.value === "number") {        // 7 also matches "7.0"; 2.1 never matches inside 12.1
+      const m = new RegExp(`(?<![\\d.])${v.replace(".", "\\.")}(?:\\.0+)?(?![\\d])`).exec(q);
+      if (m) { k = m.index; len = m[0].length; }
+    } else if (v) k = q.indexOf(v);
     if (k < 0) return marks.push({start: c.start, end: c.end, id, title, cls: `${base} val first last`});
-    const a = c.start + k, b = a + v.length;
+    const a = c.start + k, b = a + len;
     if (a > c.start) marks.push({start: c.start, end: a, id, title, cls: `${base} first`});
     marks.push({start: a, end: b, id, title, cls: `${base} val${a === c.start ? " first" : ""}${b === c.end ? " last" : ""}`});
     if (b < c.end) marks.push({start: b, end: c.end, id, title, cls: `${base} last`});
@@ -940,16 +944,32 @@ async function confirmAll(r) {
 function approve(r) { r.step = "approved"; r.doneAt = performance.now(); r.approvedAt = new Date(); render(); }
 function viewApproved(r) {
   stepper(3); where(LOCAL);
-  setDoc(marked(r.dtext, redactions(r.dtext)));
+  setDoc(marked(r.dtext, quoteMarks(r)), evidenceLegend(r));
+  document.querySelectorAll("[data-legend]").forEach((b) => b.onclick = () => focusField(r, b.dataset.legend));
   const filled = Object.values(r.saved).filter((o) => o.value != null).length;
   const next = S.reports.findIndex((x, i) => i !== S.cur && x.step !== "approved");
+  const approved = S.reports.filter((x) => x.step === "approved").length, waiting = S.reports.length - approved;
   setPanel(`${banner("verified", `Approved by you at ${clock(r.approvedAt)}`, `${filled} field${filled === 1 ? "" : "s"} filled, ${r.typed} typed by hand, in ${fmtSecs((r.doneAt - r.openedAt) / 1000)}. Fields are now read-only.`)}
-    <div class="fields" role="list">${S.fields.map((f) => { const o = r.saved[f.key]; return `<div class="frow" role="listitem"><div class="fhead"><span class="fname">${esc(f.name)}</span>
-      ${o ? pill(o.value == null ? "not-stated" : "verified") : ""}</div><div class="fval">${o ? (o.value != null ? esc(o.value) + unit(f, o.value) : "Not stated") : "–"}</div></div>`; }).join("")}</div>
-    ${traceBlock(r)}`,
+    <div class="fields" role="list">${S.fields.map((f) => { const o = r.saved[f.key], on = r.focus && r.focus.key === f.key;
+      return `<div class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-frow="${f.key}" data-pick="${f.key}"><div class="fhead"><span class="fname">${esc(f.name)}</span>
+      ${o ? pill(o.value == null ? "not-stated" : "verified") : ""}</div><div class="fval">${o ? (o.value != null ? esc(o.value) + unit(f, o.value) : "Not stated") : "–"}</div>
+      ${o && o.start != null ? `<div class="fquote">“${esc(r.dtext.slice(o.start, o.end).slice(0, 140))}”</div>` : ""}</div>`; }).join("")}</div>
+    <h2 class="h1" style="margin-top:var(--s6)">What next</h2>
+    <ul class="list">
+      <li class="item"><div class="grow"><b>Registry data</b><div class="sm muted">${approved} approved report${approved === 1 ? "" : "s"} in this session, one row per field. No report text.</div></div>
+        <a class="link" href="/api/export.csv">Download .csv</a></li>
+      <li class="item"><div class="grow"><b>This masked report</b><div class="sm muted">The full text with identifiers replaced by tags.</div></div>
+        <a class="link" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}">Download .txt</a></li>
+      <li class="item"><div class="grow"><b>${waiting ? `${waiting} report${waiting === 1 ? "" : "s"} still to review` : "All reports reviewed"}</b>
+        <div class="sm muted">${waiting ? "Carry on with the next one." : "Add more reports to continue the batch."}</div></div></li>
+    </ul>${traceBlock(r)}`,
     `${next >= 0 ? `<button class="btn primary" id="go">Next report ${icon("arrow")}</button>` : `<button class="btn primary" id="go">${icon("plus")}Add more reports</button>`}
-     <a class="btn secondary" href="/api/export.csv">${icon("down")}Download registry CSV</a>`);
+     <div class="hint">${next >= 0 ? "" : "Every approved report is in the registry CSV under Export."} <span class="kbd">Enter</span></div>`);
   $("go").onclick = () => next >= 0 ? select(next) : (S.cur = -1, render());
+  document.querySelectorAll("[data-pick]").forEach((b) => {
+    b.onclick = () => focusField(r, b.dataset.pick);
+    b.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); focusField(r, b.dataset.pick); } };
+  });
 }
 
 function traceBlock(r) {
@@ -996,7 +1016,7 @@ $("view").addEventListener("click", (e) => {
   if (r.step === "review") {
     if (m.dataset.id.startsWith("add")) { r.add.splice(+m.dataset.id.slice(3), 1); renderMain(); }
     else toggleKeep(r, m.dataset.id);
-  } else if (r.step === "fields" && m.dataset.id.includes(":")) {
+  } else if ((r.step === "fields" || r.step === "approved") && m.dataset.id.includes(":")) {
     focusField(r, m.dataset.id.split(":")[0]);
   } else if (r.step === "hold" || r.step === "flags") {
     const q = r.question; q.picked.has(m.dataset.id) ? q.picked.delete(m.dataset.id) : q.picked.add(m.dataset.id); renderMain();

@@ -80,7 +80,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
            status=predicted["status"], outcome=outcome)
     record("field_learn", entry["learn_ms"], report_id=result.report_id, field=field.key)
     return {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
-            "readiness": field.readiness}
+            "start": confirmed["start"] if confirmed else None, "end": confirmed["end"] if confirmed else None,
+            "readiness": field.readiness}             # start/end: the confirmed quote, in the de-identified text
 
 
 def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missing):
