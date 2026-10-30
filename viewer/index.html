@@ -211,6 +211,26 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .checklist small { display: block; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
 .frow.loading { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); color: var(--ink-muted); }
 
+/* extraction evidence: one colour per field; the value is marked strongly inside its quote */
+mark.ev { cursor: pointer; border-radius: 0; padding: 1px 0; }
+mark.ev.first { border-top-left-radius: var(--r-sm); border-bottom-left-radius: var(--r-sm); padding-left: 2px; }
+mark.ev.last { border-top-right-radius: var(--r-sm); border-bottom-right-radius: var(--r-sm); padding-right: 2px; }
+mark.ev.val { font-weight: 600; }
+mark.ev.rev { box-shadow: inset 0 -2px 0 var(--review); }
+
+.fc0 { --fc: 91,75,214; } .fc1 { --fc: 31,122,168; } .fc2 { --fc: 107,142,35; } .fc3 { --fc: 162,59,143; } .fc4 { --fc: 181,101,29; } .fc5 { --fc: 74,111,165; }
+mark.ev { background: rgba(var(--fc), .12); } mark.ev.val { background: rgba(var(--fc), .34); }
+mark.ev.on { background: rgba(var(--fc), .24); box-shadow: inset 0 -2px 0 var(--hema); } mark.ev.on.val { background: rgba(var(--fc), .45); }
+.lchip { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 var(--s2); border-radius: var(--r-sm); font-size: 13px; background: rgba(var(--fc), .12); color: var(--ink); }
+.lchip b { font: 600 13px var(--f-mono); }
+.lchip .sw { width: 10px; height: 10px; border-radius: 2px; background: rgba(var(--fc), .7); }
+.why { margin-top: var(--s2); font-size: 13px; line-height: 18px; }
+.why summary { cursor: pointer; color: var(--hema); font-weight: 600; }
+.why p { margin: var(--s1) 0; color: var(--ink); }
+.why ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.why li.ok { color: var(--verified); } .why li.bad { color: var(--refused); }
+.why li span { color: var(--ink-muted); }
+
 /* side panel: fields list and new-field conversation */
 .ptabs { display: flex; align-items: center; gap: var(--s2); margin: 0 0 var(--s4); }
 .ptabs .seg { flex: 1; }
@@ -718,17 +738,47 @@ function status(res) {
   return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
 }
 const unit = (f, v) => v != null && f.type === "number" && f.unit ? ` ${esc(f.unit)}` : "";
+function shownCandidate(r, f) {          // the candidate a field's highlight shows
+  const res = r.results[f.key];
+  if (!res) return null;
+  const cs = res.candidates || [];
+  if (r.focus && r.focus.key === f.key) return cs.find((x) => x.id === r.focus.cid) || null;
+  const saved = r.saved[f.key];
+  if (saved && !["correct", "true_empty"].includes(saved.outcome)) return null;   // corrected: old quote no longer applies
+  return cs.find((x) => x.id === res.candidate_id) || cs.find((x) => !x.fail) || null;
+}
 function quoteMarks(r) {
-  const marks = redactions(r.dtext), sel = r.focus;
-  if (sel) {
-    const res = r.results[sel.key], c = res && (res.candidates || []).find((x) => x.id === sel.cid);
-    if (c && c.start != null) marks.push({start: c.start, end: c.end, id: `${sel.key}:${c.id}`, cls: "quote"});
-  }
+  const marks = redactions(r.dtext);
+  S.fields.forEach((f, i) => {
+    const c = shownCandidate(r, f);
+    if (!c || c.start == null || c.fail === "evidence_found") return;
+    const res = r.results[f.key], saved = r.saved[f.key];
+    const st = saved || status(res)[0] === "verified" ? "" : " rev";
+    const on = r.focus && r.focus.key === f.key ? " on" : "";
+    const base = `ev fc${i % 6}${st}${on}`, id = `${f.key}:${c.id}`, title = `${f.name}: ${c.value}`;
+    const q = r.dtext.slice(c.start, c.end).toLowerCase(), v = String(c.value ?? "").toLowerCase();
+    const k = v ? q.indexOf(v) : -1;
+    if (k < 0) return marks.push({start: c.start, end: c.end, id, title, cls: `${base} val first last`});
+    const a = c.start + k, b = a + v.length;
+    if (a > c.start) marks.push({start: c.start, end: a, id, title, cls: `${base} first`});
+    marks.push({start: a, end: b, id, title, cls: `${base} val${a === c.start ? " first" : ""}${b === c.end ? " last" : ""}`});
+    if (b < c.end) marks.push({start: b, end: c.end, id, title, cls: `${base} last`});
+  });
   return marks;
+}
+function evidenceLegend(r) {
+  return S.fields.map((f, i) => {
+    const res = r.results[f.key], saved = r.saved[f.key], c = shownCandidate(r, f);
+    if (!res && !saved) return "";
+    const v = saved ? (saved.value != null ? `${esc(saved.value)}${unit(f, saved.value)}` : "not stated")
+      : c && !c.fail ? `${esc(c.value)}${unit(f, c.value)}` : status(res)[1].toLowerCase();
+    return `<button class="lchip fc${i % 6}" data-legend="${f.key}"><span class="sw"></span>${esc(f.name)} · <b>${v}</b></button>`;
+  }).join("");
 }
 function viewFields(r) {
   stepper(1); where(`${CLOUD}<span>proposes each value; code checks it against the text</span>`);
-  setDoc(marked(r.dtext, quoteMarks(r)));
+  setDoc(marked(r.dtext, quoteMarks(r)), evidenceLegend(r));
+  document.querySelectorAll("[data-legend]").forEach((b) => b.onclick = () => focusField(r, b.dataset.legend));
   const open = S.fields.filter((f) => !r.saved[f.key]);
   const verified = open.filter((f) => r.results[f.key] && status(r.results[f.key])[0] === "verified");
   const pending = open.filter((f) => r.results[f.key] && status(r.results[f.key])[0] !== "verified");
@@ -756,19 +806,19 @@ function fieldRow(r, f) {
   const head = (st) => `<div class="fhead"><span class="fname">${esc(f.name)}</span>${st}</div>`;
   if (saved) {
     const corrected = !["correct", "true_empty"].includes(saved.outcome);
-    return `<div class="frow ${saved.value == null ? "not-stated" : ""}" role="listitem">${head(saved.value == null ? pill("not-stated") : pill("verified"))}
+    return `<div data-frow="${f.key}" class="frow ${saved.value == null ? "not-stated" : ""}" role="listitem">${head(saved.value == null ? pill("not-stated") : pill("verified"))}
       <div class="fval">${saved.value != null ? esc(saved.value) + unit(f, saved.value) : "Not stated"}</div>
       <div class="sm muted">${corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div></div>`;
   }
-  if (!res) return `<div class="frow loading" role="listitem"><span class="fname">${esc(f.name)}</span><span class="running"><span class="spin"></span>Reading the de-identified text</span></div>`;
+  if (!res) return `<div data-frow="${f.key}" class="frow loading" role="listitem"><span class="fname">${esc(f.name)}</span><span class="running"><span class="spin"></span>Reading the de-identified text</span></div>`;
   const [k] = status(res), top = (res.candidates || []).find((c) => c.id === res.candidate_id);
   const editor = r.editing === f.key ? editorHtml(r, f) : "";
   const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}${c.start != null ? ` · ${c.start}–${c.end}` : ""}</div>` : "";
-  if (k === "verified") return `<div class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-row="${f.key}" data-cid="${top.id}" aria-label="${esc(f.name)}: ${esc(res.value)}. Select to show its quote.">${head(pill("verified"))}
-      <div class="fval">${esc(res.value)}${unit(f, res.value)}</div>${quote(top)}
+  if (k === "verified") return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-row="${f.key}" data-cid="${top.id}" aria-label="${esc(f.name)}: ${esc(res.value)}. Select to show its quote.">${head(pill("verified"))}
+      <div class="fval">${esc(res.value)}${unit(f, res.value)}</div>${quote(top)}${whyHtml(top, false, f.key)}
       <div class="factions"><button class="link" data-act="accept" data-key="${f.key}" data-cid="${top.id}">Confirm value</button>
       <button class="link" data-act="edit" data-key="${f.key}">Edit value</button></div>${editor}</div>`;
-  if (k === "not-stated") return `<div class="frow not-stated" role="listitem">${head(pill("not-stated"))}
+  if (k === "not-stated") return `<div data-frow="${f.key}" class="frow not-stated" role="listitem">${head(pill("not-stated"))}
       <div class="freason">The report does not state this field.</div>
       <div class="factions"><button class="link" data-act="missing" data-key="${f.key}">Confirm not stated</button>
       <button class="link" data-act="edit" data-key="${f.key}">It is stated</button></div>${editor}</div>`;
@@ -776,17 +826,35 @@ function fieldRow(r, f) {
   if (k === "refused") {
     const failed = (res.candidates || [])[0];
     return `<div class="frow" role="listitem">${head(pill("refused"))}
-      <div class="freason">${failed ? esc(FAIL[failed.fail] || "A check refused the value.") : esc(res.reason || "")} The value is not shown.</div>
+      <div class="freason">${failed ? esc(FAIL[failed.fail] || "A check refused the value.") : esc(res.reason || "")} The value is not shown.</div>${whyHtml(failed, true, f.key)}
       <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
       <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
   }
   const focusC = r.focus && r.focus.key === f.key ? valid.find((c) => c.id === r.focus.cid) : null;
-  return `<div class="frow ${on ? "on" : ""}" role="listitem">${head(pill("review"))}
+  return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem">${head(pill("review"))}
     <div class="freason">${esc(res.reason || "")}</div>
     <div class="choices">${valid.map((c) => `<button class="choice" data-act="pick" data-key="${f.key}" data-cid="${c.id}" data-show="${c.id}">${esc(c.value)}${unit(f, c.value)}</button>`).join("")}</div>
-    ${quote(focusC || valid[0])}
+    ${quote(focusC || valid[0])}${whyHtml(focusC || valid[0], true, f.key)}
     <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
     <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
+}
+const WHY = {evidence_found: () => "The quote is in the report", type_ok: () => "It is a valid value for this field",
+  value_in_evidence: () => "The value appears in the quote", no_identifiers: () => "The quote holds no identifiers",
+  section_ok: (c, ok) => ok ? `From the ${sectionName(c.section)} section` : `From a less reliable section (${sectionName(c.section)})`};
+S.whyOpen = new Set();
+function whyHtml(c, open, key) {
+  if (!c) return "";
+  open = key && S.whyOpen.has(key) ? true : key && S.whyOpen.has("-" + key) ? false : open;
+  const checks = Object.entries(c.checks || {}).map(([k, ok]) => `<li class="${ok ? "ok" : "bad"}">${ok ? "✓" : "✗"} <span>${esc((WHY[k] || (() => k))(c, ok))}</span></li>`).join("");
+  return `<details class="why" data-stop data-why="${esc(key || "")}"${open ? " open" : ""}><summary>Why this value</summary>
+    ${c.reason ? `<p>${esc(c.reason)}</p>` : ""}<ul>${checks}</ul></details>`;
+}
+function focusField(r, key) {
+  const f = S.fields.find((x) => x.key === key), c = f && shownCandidate(r, f);
+  r.focus = c ? {key, cid: c.id} : null;
+  renderMain();
+  if (c) showMark(`${key}:${c.id}`);
+  document.querySelector(`#pbody [data-frow="${CSS.escape(key)}"]`)?.scrollIntoView({block: "nearest", behavior: "smooth"});
 }
 function editorHtml(r, f) {
   const ed = r.edit || {};
@@ -798,13 +866,16 @@ function editorHtml(r, f) {
 }
 function wireRows(r) {
   const pb = $("pbody");
+  pb.querySelectorAll("details[data-why]").forEach((d) => d.ontoggle = () => {
+    const k = d.dataset.why; S.whyOpen.delete(k); S.whyOpen.delete("-" + k); S.whyOpen.add(d.open ? k : "-" + k);
+  });
   pb.querySelectorAll("[data-row]").forEach((b) => {
     const pick = () => { r.focus = {key: b.dataset.row, cid: b.dataset.cid}; renderMain(); showMark(`${b.dataset.row}:${b.dataset.cid}`); };
     b.onclick = (e) => { if (!e.target.closest("[data-act], [data-stop]")) pick(); };
     b.onkeydown = (e) => { if (e.key === "Enter" && e.target === b) { e.preventDefault(); e.stopPropagation(); pick(); } };   // Enter jumps to the quote
   });
   pb.querySelectorAll("[data-show]").forEach((b) => b.onmouseenter = () => { r.focus = {key: b.dataset.key, cid: b.dataset.show};
-    setDoc(marked(r.dtext, quoteMarks(r))); showMark(`${b.dataset.key}:${b.dataset.show}`); });
+    setDoc(marked(r.dtext, quoteMarks(r)), evidenceLegend(r)); showMark(`${b.dataset.key}:${b.dataset.show}`); });
   pb.querySelectorAll("[data-act]").forEach((b) => b.onclick = (e) => { e.stopPropagation(); act(r, b.dataset.act, b.dataset.key, b.dataset.cid); });
   if ($("edSave")) {
     $("edSave").onclick = (e) => {
@@ -903,6 +974,8 @@ $("view").addEventListener("click", (e) => {
   if (r.step === "review") {
     if (m.dataset.id.startsWith("add")) { r.add.splice(+m.dataset.id.slice(3), 1); renderMain(); }
     else toggleKeep(r, m.dataset.id);
+  } else if (r.step === "fields" && m.dataset.id.includes(":")) {
+    focusField(r, m.dataset.id.split(":")[0]);
   } else if (r.step === "hold" || r.step === "flags") {
     const q = r.question; q.picked.has(m.dataset.id) ? q.picked.delete(m.dataset.id) : q.picked.add(m.dataset.id); renderMain();
   }
