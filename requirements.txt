@@ -26,5 +26,5 @@ cryptography~=50.0
 # Tests
 pytest~=9.1
 
-# Added later in the plan:
-# mcp            Day 5, MCP server
+# MCP server (mcp_server/server.py; SDK 2.x: MCPServer, formerly FastMCP)
+mcp~=2.3

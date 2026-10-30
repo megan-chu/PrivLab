@@ -762,7 +762,7 @@ function viewSafe(r) {
     ${extracting() && S.fields.length ? `<div class="fhead" style="margin-top:var(--s6)"><h2 class="h1" style="margin:0">Fields to extract</h2><button class="link" id="manageFields">Manage fields</button></div>
       <ul class="list">${S.fields.map((f) => `<li class="item"><div class="grow"><div class="fhead"><b>${esc(f.name)}</b>${readiness(f.readiness)}</div>${fieldDef(f)}</div></li>`).join("")}</ul>
       <p class="sm muted">Field definitions are kept in your field pack on this device. Values you approve go to Registry data (.csv) under Export.</p>` : ""}
-    ${Object.keys(r.saved).length ? "" : `<p class="sm"><button class="link" id="reviewAgain">Review identifiers again</button> <span class="muted">Runs again on this device; nothing is sent until you confirm.</span></p>`}
+    ${Object.keys(r.saved).length || !r.req ? "" : `<p class="sm"><button class="link" id="reviewAgain">Review identifiers again</button> <span class="muted">Runs again on this device; nothing is sent until you confirm.</span></p>`}
     ${traceBlock(r)}`,
     !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
         ${nextButton("secondary")}`
@@ -1402,7 +1402,26 @@ $("resetBtn").onclick = async () => {
   $("resetBtn").style.display = S.demo ? "" : "none";
   await loadFields();
   setMode(S.mode);
+  openFromLink();
 })();
+// A report started in the chat (MCP server): the link is http://127.0.0.1:8765/#d_1a2b3c4d
+async function openFromLink() {
+  const id = (location.hash.match(/^#(d_[0-9a-f]+)$/) || [])[1];
+  if (!id) return;
+  const i = S.reports.findIndex((x) => x.deid === id);
+  if (i >= 0) return select(i);
+  const res = await api(`/api/open?deid_id=${id}`);
+  if (res.error || res.next === "error") return toast("That report is not open in this PrivLab session. Start it again from the chat.");
+  const r = newReport(res.report_id || "Report from chat", {fromChat: true});
+  Object.assign(r, {deid: id, text: res.text, dets: res.confirmed || res.items || []});
+  S.reports.push(r); S.cur = S.reports.length - 1;
+  trace(r, "Started in the chat; opened here.", "local");
+  if (res.next === "done") return finishDeid(r, res);
+  if (res.next === "review") r.step = "review";
+  else { r.step = res.next; r.question = {kind: res.next, items: res.items}; }
+  render();
+}
+window.addEventListener("hashchange", openFromLink);
 </script>
 </body>
 </html>
