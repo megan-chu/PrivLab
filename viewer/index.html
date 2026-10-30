@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PrivLab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='194 175 362 400'%3E%3Cpath fill='%2307182A' d='M194 175H518V325H457V262H281V575H194Z'/%3E%3Crect fill='%2300DBAB' x='281' y='325' width='275' height='87'/%3E%3C/svg%3E">
 <style>
 /* Tokens: PrivLab design system (H&E palette). Fonts are local only: the viewer handles report
    text, so it never calls a font CDN; IBM Plex / Schibsted Grotesk are used when installed. */
@@ -43,7 +44,9 @@ svg { width: 16px; height: 16px; flex: none; }
 /* ---------- top bar ---------- */
 .top { height: 56px; display: flex; align-items: center; gap: var(--s4); padding: 0 var(--s6); background: var(--surface-raised); border-bottom: 1px solid var(--line); }
 .brand { display: flex; align-items: center; gap: var(--s2); font: 700 18px/1 var(--f-display); letter-spacing: -.01em; }
-.brand .logo { width: 28px; height: 28px; border-radius: var(--r-md); background: var(--hema); color: var(--on-hema); display: grid; place-items: center; }
+.brand .logo { width: 24px; height: 26px; flex: none; }
+.brand .logo .ink { fill: #07182a; } .brand .logo .bar { fill: #00dbab; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo .ink { fill: #ecebf5; } }
 .value { flex: 1; display: flex; justify-content: center; gap: var(--s6); color: var(--ink-muted); font-size: 13px; white-space: nowrap; overflow: hidden; }
 .value b { color: var(--ink); font: 500 13px var(--f-mono); }
 .tbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--s3); border-radius: var(--r-md); color: var(--ink-muted); font-weight: 600; font-size: 14px; text-decoration: none; }
@@ -246,7 +249,6 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 </head>
 <body>
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
@@ -255,7 +257,8 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 </svg>
 
 <header class="top">
-  <div class="brand"><span class="logo"><svg><use href="#i-shield"/></svg></span>PrivLab</div>
+  <div class="brand"><svg class="logo" viewBox="194 175 362 400" role="img" aria-label="PrivLab logo">
+    <path class="ink" d="M194 175H518V325H457V262H281V575H194Z"/><rect class="bar" x="281" y="325" width="275" height="87"/></svg>PrivLab</div>
   <div class="value" id="value" aria-live="polite"></div>
   <span id="mode" class="pill review" style="display:none">Demo</span>
   <button class="tbtn" id="fieldsBtn"><svg aria-hidden="true"><use href="#i-sliders"/></svg>Fields</button>
