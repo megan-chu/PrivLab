@@ -22,6 +22,7 @@ from deid.names import locate
 from deid.patterns import leftover_identifiers
 from extract.checks import parse_number
 from extract.pack import get_field, load_pack, put_field, save_pack
+from extract.sections import section_at
 
 LOG_PATH = ROOT / "runs" / "score_log.jsonl"
 SGT = timezone(timedelta(hours=8))
@@ -38,7 +39,7 @@ def remember_prediction(result: dict) -> None:
 
 
 def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None, value=None,
-                  evidence_text: str | None = None, missing: bool = False, *,
+                  evidence_text: str | None = None, missing: bool = False, note: str | None = None, *,
                   phase: str = "teach", pack_path=None, log_path=None) -> dict:
     """The user's answer: pick a candidate, or give value + evidence, or say it is not in the report."""
     predicted = _PREDICTIONS.get((deid_id, field_key))
@@ -64,7 +65,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
 
     # 2. Then learn.
     t0 = time.perf_counter()
-    _learn(field, predicted, confirmed, result.text, outcome, result.kept_types)
+    _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
     put_field(pack, field)
     save_pack(pack, pack_path)
     entry["learn_ms"] = round((time.perf_counter() - t0) * 1000, 1)
@@ -124,7 +125,30 @@ def _outcome(pred, conf, kind: str) -> str:
     return "correct" if _same(pred, conf, kind) else "wrong"
 
 
-def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=()) -> None:
+def _where(section: str | None) -> str:
+    return f"the {section.replace('_', ' ')} section" if section and section != "other" else "the report"
+
+
+def critique(field, top: dict, confirmed: dict | None, text: str, note: str | None = None) -> str:
+    """Why a rejected pick was wrong, for the "do not pick" example: written by code from what it
+    knows (both values, both sections), plus the reviewer's own words if given. No model call."""
+    unit = f" {field.unit}" if field.type == "number" and field.unit else ""
+    fmt = lambda v: f"{v:g}" if isinstance(v, (int, float)) else str(v)
+    picked = f"{fmt(top['value'])}{unit}" if top.get("value") is not None else "this"
+    where_a = _where(top.get("section") or section_at(text, top["start"]))
+    if confirmed is None:
+        why = f"Picked {picked} from {where_a}, but this report does not state {field.name}."
+    else:
+        right = f"{fmt(confirmed['value'])}{unit}"
+        where_b = _where(section_at(text, confirmed["start"]))
+        why = (f"Picked {picked} from {where_a}; the right value was {right} in {where_b}." if where_a != where_b
+               else f"Picked {picked}; the right value was {right}, elsewhere in {where_b}.")
+    if note and note.strip():
+        why += f" Reviewer: {' '.join(note.split())[:200]}"
+    return why
+
+
+def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=(), note: str | None = None) -> None:
     def context(start, end):
         return " ".join(text[max(0, start - CONTEXT):end + CONTEXT].split())
 
@@ -137,8 +161,10 @@ def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=()) 
         field.examples["good"] = (field.examples["good"] + [good])[-KEEP_EXAMPLES:]
     top = next((c for c in predicted["candidates"] if c["id"] == predicted["candidate_id"]), None)
     if outcome in ("wrong", "extra") and top and top["start"] is not None and safe(ctx := context(top["start"], top["end"])):
-        bad = {"report": predicted["deid_id"], "context": ctx,
-               "reason": "not this one" if confirmed else "not stated in this report"}
+        reason = critique(field, top, confirmed, text, note)
+        if not safe(reason):                                   # a reviewer note with an identifier
+            reason = critique(field, top, confirmed, text)
+        bad = {"report": predicted["deid_id"], "context": ctx, "reason": reason}
         field.examples["bad"] = (field.examples["bad"] + [bad])[-KEEP_EXAMPLES:]
 
     field.recent = (field.recent + ["accepted" if outcome in ("correct", "true_empty") else "corrected"])[-5:]
