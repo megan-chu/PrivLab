@@ -698,6 +698,9 @@ function viewSafe(r) {
                  : banner("review", "De-identified on this laptop. Please read it once", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2] || ""} No personal information left this laptop.`)}
     ${pr.level !== "low" ? `<p class="sm"><b>Review priority ${pr.level}.</b> ${pr.reasons.map(esc).join("; ")}.</p>` : ""}
     <div class="legend" style="margin:0">${Object.entries(res.summary.by_type).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join("")}</div>
+    ${extracting() && S.fields.length ? `<div class="fhead" style="margin-top:var(--s6)"><h2 class="h1" style="margin:0">Fields to extract</h2><button class="link" id="manageFields">Manage fields</button></div>
+      <ul class="list">${S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b><div class="sm muted">${esc(f.meaning)}</div></div>${readiness(f.readiness)}</li>`).join("")}</ul>
+      <p class="sm muted">Field definitions are kept in your field pack on this device. Values you approve go to Registry data (.csv) under Export.</p>` : ""}
     ${traceBlock(r)}`,
     !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
         ${nextButton("secondary")}`
@@ -708,6 +711,7 @@ function viewSafe(r) {
       <a class="btn secondary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>`);
   if ($("go")) $("go").onclick = () => openFields(r);
   if ($("addField")) $("addField").onclick = () => chatOpen();
+  if ($("manageFields")) $("manageFields").onclick = () => { S.side = "fields"; renderMain(); };
   if ($("dl")) $("dl").onclick = () => { r.exported = true; trace(r, "De-identified text downloaded.", "local"); setTimeout(() => refresh(r), 0); };
   wireNext();
 }
@@ -759,7 +763,8 @@ function shownCandidate(r, f) {          // what a field's highlight shows
   if (!res) return null;
   const cs = res.candidates || [];
   if (r.focus && r.focus.key === f.key) return cs.find((x) => x.id === r.focus.cid) || null;
-  return cs.find((x) => x.id === res.candidate_id) || cs.find((x) => !x.fail) || null;
+  return cs.find((x) => x.id === res.candidate_id) || cs.find((x) => !x.fail)
+    || cs.find((x) => x.checks && x.checks.evidence_found) || null;       // e.g. a value worked out from its quote
 }
 function quoteMarks(r) {
   const marks = redactions(r.dtext);
@@ -789,7 +794,8 @@ function evidenceLegend(r) {
     const res = r.results[f.key], saved = r.saved[f.key], c = shownCandidate(r, f);
     if (!res && !saved) return "";
     const v = saved ? (saved.value != null ? `${esc(saved.value)}${unit(f, saved.value)}` : "not stated")
-      : c && !c.fail ? `${esc(c.value)}${unit(f, c.value)}` : status(res)[1].toLowerCase();
+      : c && !c.fail ? `${esc(c.value)}${unit(f, c.value)}`
+      : c && c.fail === "value_in_evidence" && c.value != null ? `${esc(c.value)}${unit(f, c.value)} (to confirm)` : status(res)[1].toLowerCase();
     return `<button class="lchip fc${i % 6}" data-legend="${f.key}"><span class="sw"></span>${esc(f.name)} · <b>${v}</b></button>`;
   }).join("");
 }
@@ -851,7 +857,14 @@ function fieldRow(r, f) {
   const valid = (res.candidates || []).filter((c) => !c.fail);
   if (k === "refused") {
     const failed = (res.candidates || [])[0];
-    return `<div class="frow" role="listitem">${head(pill("refused"))}
+    const derived = failed && failed.fail === "value_in_evidence" && failed.checks.evidence_found && failed.checks.type_ok && failed.value != null;
+    if (derived) return `<div data-frow="${f.key}" class="frow ${on ? "on" : ""}" role="listitem">${head(pill("review"))}
+      <div class="freason">The model worked out <b>${esc(failed.value)}${unit(f, failed.value)}</b> from the quote below. The report does not say it word for word, so PrivLab does not fill it in by itself. Confirm it if it is right.</div>
+      ${quote(failed)}${whyHtml(failed, false, f.key)}
+      <div class="factions"><button class="btn secondary inline" data-act="derive" data-key="${f.key}" data-cid="${failed.id}">Confirm ${esc(failed.value)}${unit(f, failed.value)}</button>
+      <button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
+      <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
+    return `<div data-frow="${f.key}" class="frow" role="listitem">${head(pill("refused"))}
       <div class="freason">${failed ? esc(FAIL[failed.fail] || "A check refused the value.") : esc(res.reason || "")} The value is not shown.</div>${whyHtml(failed, true, f.key)}
       <div class="factions"><button class="link" data-act="edit" data-key="${f.key}">Edit value</button>
       <button class="link" data-act="missing" data-key="${f.key}">Not stated</button></div>${editor}</div>`;
@@ -884,10 +897,12 @@ function focusField(r, key) {
 }
 function editorHtml(r, f) {
   const ed = r.edit || {};
+  const known = f.choices.find((c) => c.toLowerCase() === String(ed.value || "").toLowerCase());
   const input = f.type === "choice"
-    ? `<select class="in" id="edVal" aria-label="Value">${f.choices.map((c) => `<option ${c === ed.value ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>`
+    ? `<select class="in" id="edVal" aria-label="Value"><option value=""${known ? "" : " selected"}>Choose a value…</option>
+        ${f.choices.map((c) => `<option ${c === known ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>`
     : `<input class="in" id="edVal" inputmode="decimal" aria-label="Value" placeholder="Value${f.unit ? " in " + esc(f.unit) : ""}" value="${esc(ed.value || "")}">`;
-  return `<div class="editor" data-stop>${input}<div class="sm ${ed.evidence ? "" : "muted"}">${ed.evidence ? `Quote: <span class="fquote">“${esc(ed.evidence.slice(0, 100))}”</span>` : "Select the quote for this value in the report."}</div>
+  return `<div class="editor" data-stop><span class="label">${f.type === "choice" ? "Value, from this field's choices" : `Value${f.unit ? ` in ${esc(f.unit)}` : ""}`}</span>${input}<div class="sm ${ed.evidence ? "" : "muted"}">${ed.evidence ? `Quote: <span class="fquote">“${esc(ed.evidence.slice(0, 100))}”</span>` : "Select the quote for this value in the report."}</div>
     ${r.results[f.key] && r.results[f.key].candidate_id ? `<input class="in" id="edNote" placeholder="Optional: why was PrivLab's pick wrong?" aria-label="Why the suggestion was wrong" value="${esc(ed.note || "")}">` : ""}
     <div class="factions"><button class="btn secondary inline" id="edSave">Save value</button><button class="link" id="edCancel">Cancel</button></div></div>`;
 }
@@ -917,8 +932,17 @@ function wireRows(r) {
     if ($("edNote")) $("edNote").onclick = (e) => e.stopPropagation();
   }
 }
-async function act(r, kind, key, cid, typed) {
-  if (kind === "edit") { r.editing = key; r.edit = r.edit && r.edit.key === key ? r.edit : {key}; return renderMain(); }
+async function act(r, kind, key, cid, typed) {   // kind: accept, pick, missing, typed, edit, derive
+  if (kind === "edit") {                     // start from the model's proposal, if it had one
+    const prop = ((r.results[key] || {}).candidates || [])[0];
+    r.editing = key; r.edit = r.edit && r.edit.key === key ? r.edit : {key, value: prop && prop.value != null ? String(prop.value) : ""};
+    return renderMain();
+  }
+  if (kind === "derive") {                   // you confirm a value the model worked out, with its quote
+    const c = ((r.results[key] || {}).candidates || []).find((x) => x.id === cid);
+    if (!c) return;
+    kind = "confirmDerived"; typed = {value: String(c.value), evidence_text: c.evidence_text};
+  }
   const body = {deid_id: r.deid, field: key};
   if (kind === "accept" || kind === "pick") body.candidate_id = cid;
   else if (kind === "missing") body.missing = true;
