@@ -130,8 +130,9 @@ def api_prefetch(b):
 
 
 def api_pack(_):
-    return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "type": f.type, "unit": f.unit,
-                        "choices": f.choices, "readiness": f.readiness, "recent": f.recent}
+    return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "description": f.description,
+                        "type": f.type, "unit": f.unit, "range": f.range, "choices": f.choices,
+                        "readiness": f.readiness, "recent": f.recent}
                        for f in load_pack(STATE["pack"])["fields"]]}
 
 
