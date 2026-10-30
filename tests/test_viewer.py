@@ -1,4 +1,5 @@
 """Viewer server: uploads, prefetch and the threaded server. Fake Muse Spark only."""
+import base64
 import json
 import threading
 import time
@@ -11,6 +12,7 @@ from deid.profile import new_profile
 from extract import learn
 from extract.candidates import find_candidates, prefetch
 from extract.define import define_field
+from test_pdf import REPORT as PDF_REPORT, make_pdf
 
 DRAFT = {"key": "tumour_size", "meaning_question": "Largest tumour dimension?", "type": "number",
          "unit": "cm", "range_min": 0.1, "range_max": 30, "choices": []}
@@ -105,3 +107,14 @@ def test_second_viewer_on_the_same_port_is_refused(viewer):
             viewer.make_server(srv.server_address[1])
     finally:
         srv.server_close()
+
+
+def test_viewer_adds_a_text_pdf_and_refuses_a_scan(viewer):
+    pdf = base64.b64encode(make_pdf(PDF_REPORT, [])).decode()
+    out = viewer.api_add({"name": "mine.pdf", "pdf": pdf, "choices": {}})
+    assert out["next"] == "review" and "Mary Tan" in out["text"] and out["name"] == "mine"
+    assert any("Page 2" in w for w in out["warnings"])
+    assert any(d["text"] == "S1234567D" for d in out["detections"])            # de-identified as usual
+    scan = viewer.api_add({"name": "scan.pdf", "pdf": base64.b64encode(make_pdf([])).decode(), "choices": {}})
+    assert scan["refused"] and "not supported" in scan["error"]
+    assert viewer.api_add({"name": "x.pdf", "pdf": "%%%", "choices": {}})["refused"]
