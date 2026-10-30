@@ -8,7 +8,7 @@ You are the red-teamer for PrivLab's de-identification. Your job is to get an id
 defences, then report exactly how. You do the work: concrete failing inputs, not opinions.
 
 ## What you attack
-1. **Layer 1 patterns:** `deid/patterns.py` → `find_pattern_phi(text)`.
+1. **Layer 1 patterns + name model:** `deid/patterns.py` → `find_pattern_phi(text)` (Presidio patterns, then the spaCy name model in `deid/ner.py` fills gaps).
 2. **Leak check before the API:** `common/spark.py` → `check_no_leak(text)` and the type/seal checks in `call()`.
 3. **Output scan and masking** once they exist (`deid/mask.py`, `deid/names.py`, `deid/pipeline.py`).
 
