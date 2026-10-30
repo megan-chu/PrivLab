@@ -77,3 +77,31 @@ def test_threaded_server_answers_while_a_model_call_runs(viewer, monkeypatch):
         assert "fields" in pack and time.perf_counter() - t0 < 0.5           # not stuck behind the slow call
     finally:
         srv.shutdown()
+
+
+def test_deidentified_text_export_one_all_and_withheld(viewer):
+    import io
+    import zipfile
+    ids = []
+    for text in ("Patient: Mary Tan    MRN: H1088762\nDIAGNOSIS: carcinoma, 2.1 cm.\n",
+                 "Patient: John Lim    MRN: H1088763\nDIAGNOSIS: adenoma.\n"):
+        r = pipeline.deidentify_report(text=text, report_id="mine", profile=new_profile()[0])
+        pipeline.confirm_deid(r["deid_id"], use_spark=False)
+        ids.append(r["deid_id"])
+    body, ctype, name = viewer.deid_download(ids[0])
+    assert ctype.startswith("text/plain") and name == "mine_deidentified.txt"
+    assert b"[PATIENT-1]" in body and b"Mary Tan" not in body
+    pipeline._RUNS[ids[1]]["priority"] = {"level": "high", "reasons": ["1 identifier pattern(s) left in the output"]}
+    body, ctype, _ = viewer.deid_download(None)
+    names = zipfile.ZipFile(io.BytesIO(body)).namelist()
+    assert ctype == "application/zip" and len([n for n in names if n.startswith("mine")]) >= 1
+    assert viewer.deid_download(ids[1]) is None                                 # withheld: identifier left
+
+
+def test_second_viewer_on_the_same_port_is_refused(viewer):
+    srv = viewer.make_server(0)
+    try:
+        with pytest.raises(OSError):
+            viewer.make_server(srv.server_address[1])
+    finally:
+        srv.server_close()
