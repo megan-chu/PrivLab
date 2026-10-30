@@ -248,6 +248,34 @@ def review_priority(run: dict, leftovers: int) -> dict:
     return {"level": "high" if high else "medium" if medium else "low", "reasons": high + medium}
 
 
+def report_state(deid_id: str, show_text: bool = False) -> dict:
+    """Where a report is up to, to resume it (MCP privlab_get_report, viewer). "items" are what still
+    needs an answer: detections (review), held words (hold) or second-check finds (flags). With
+    show_text (local viewer only), "confirmed" holds the spans already hidden, for highlighting."""
+    run = _RUNS.get(deid_id)
+    if run is None:
+        return _error(deid_id, "unknown deid_id: de-identify the report first")
+    text, step = run["text"], run["step"]
+    base = {"deid_id": deid_id, "report_id": run["report_id"], "next": step, "warnings": run["warnings"]}
+    if step == "done":
+        r = run["result"]
+        return {**base, "text": r.text, "summary": r.summary, "layer2": run["layer2"], "trace": run["trace"],
+                "review_priority": run["priority"]}
+    if step == "review":
+        done, items = [], [_detection(text, run["spans"], s, show_text) for s in run["spans"]]
+    elif step == "hold":
+        done = run["confirmed"]
+        items = [_detection(text, done + run["holds"], h, show_text) for h in run["holds"]]
+    else:                                                   # flags
+        done = run["layer1_final"]
+        items = [{**_detection(text, done + run["flags"], s, show_text), "ticked": s.source != "suspect"}
+                 for s in run["flags"]]
+    out = {**base, "items": items}
+    if show_text:
+        out.update(text=text, confirmed=[_detection(text, done, s, True) for s in done])
+    return out
+
+
 def result_for(deid_id: str) -> DeidResult | None:
     """The sealed DeidResult of a finished run (input to extraction)."""
     run = _RUNS.get(deid_id)

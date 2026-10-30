@@ -73,6 +73,11 @@ def api_reports(_):
                         for r in manifest() if r["split"] in ("dev", "extra")], "demo": STATE["demo"]}
 
 
+def api_open(b):
+    """A report started in the chat (MCP server, same process): where it is up to, with its text (local only)."""
+    return pipeline.report_state(str(b.get("deid_id", "")), show_text=True)
+
+
 def api_profile(_):
     p = prof.load_profile()
     return {"exists": p is not None, "checklist": prof.checklist(),
@@ -229,7 +234,7 @@ def deid_download(deid_id: str | None) -> tuple[bytes, str, str] | None:
     return buf.getvalue(), "application/zip", "privlab_deidentified.zip"
 
 
-GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack}
+GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
         "/api/confirm_field": api_confirm_field, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
