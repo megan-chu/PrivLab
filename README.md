@@ -1,6 +1,13 @@
 # PrivLab
 Healthcare professionals spend hours reading reports and retyping data. Reports are rich in information but full of patients’ personal details, so they can’t simply share them or use AI to analyse them. PrivLab removes those details locally, then extracts the data they need, as an MCP server that plugs into the tools they already use.
 
+## Input
+
+PrivLab reads plain text (a `.txt` file, or pasted text) and PDFs with selectable text. PDF text is
+extracted on the laptop; a page without text is skipped with a warning. Scanned PDFs, images and other
+formats are refused with a message saying they are not supported: this version has no OCR, and report
+content is never sent to a cloud API to be read. Accuracy has been measured on pathology reports only.
+
 ## Privacy: what reaches the cloud, and residual risk
 
 PrivLab de-identifies in two layers. **Presidio pattern recognisers** run on the laptop and mask
