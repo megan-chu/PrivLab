@@ -5,11 +5,15 @@ each with evidence, checks and a reason; best first; green, amber or missing.
 One Muse Spark call per report covers every field in the pack (cached), and sees only the
 sealed DeidResult text. The reply is frozen per report: later fields on the same report reuse it,
 even after a correction changed the pack's examples, so teaching 7 fields costs one call per
-report, not seven, and every field's prediction exists before any feedback on that report. The model proposes; code finds the evidence, runs the checks, detects
-the section and decides the status.
+report, not seven, and every field's prediction exists before any feedback on that report.
+The model proposes; code finds the evidence, runs the checks, detects the section and decides
+the status.
 
   find_candidates(deid_id, field_key) -> FieldResult dict
+  prefetch(deid_id)                   -> makes the one call ahead of time (viewer, after de-id);
+                                         no prediction is frozen and no review timer starts
 """
+import threading
 import time
 
 from common import spark
@@ -28,6 +32,8 @@ INSTRUCTIONS = (
 )
 MIN_CONFIDENCE = 0.6
 _REPLIES: dict[str, tuple[CandidatesReply, int]] = {}      # deid_id -> (reply, model ms), frozen per report
+_LOCKS: dict[str, threading.Lock] = {}                     # one call per report, even with a prefetch running
+_LOCKS_GUARD = threading.Lock()
 
 
 def _field_spec(f) -> str:
@@ -49,6 +55,33 @@ def _reply_for(result, pack, effort=None) -> CandidatesReply:
                       step="candidates", report_id=result.report_id, effort=effort)
 
 
+def _frozen_reply(deid_id: str, result, pack, field_key: str, effort=None) -> tuple[CandidatesReply, int]:
+    """The report's reply (cached per report); a new call only if none yet covers field_key."""
+    with _LOCKS_GUARD:
+        lock = _LOCKS.setdefault(deid_id, threading.Lock())
+    with lock:
+        frozen = _REPLIES.get(deid_id)
+        if frozen and any(fc.key == field_key for fc in frozen[0].fields):
+            return frozen[0], 0                                # no new call, no wait
+        t0 = time.perf_counter()
+        reply = _reply_for(result, pack, effort)
+        model_ms = round((time.perf_counter() - t0) * 1000)
+        _REPLIES[deid_id] = (reply, model_ms)
+        return reply, model_ms
+
+
+def prefetch(deid_id: str, *, pack_path=None, effort: str | None = None) -> dict:
+    result = pipeline.result_for(deid_id)
+    pack = load_pack(pack_path)
+    if result is None or not pack["fields"]:
+        return {"deid_id": deid_id, "status": "skipped"}
+    try:
+        _, model_ms = _frozen_reply(deid_id, result, pack, pack["fields"][-1].key, effort)
+    except Exception as e:   # the click later shows amber "unavailable"; never a crash
+        return {"deid_id": deid_id, "status": "error", "reason": type(e).__name__}
+    return {"deid_id": deid_id, "status": "ready", "model_ms": model_ms}
+
+
 def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None) -> dict:
     result = pipeline.result_for(deid_id)
     if result is None:
@@ -58,17 +91,10 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
     if field is None:
         return {"deid_id": deid_id, "status": "error", "reason": f"no field '{field_key}' in the pack; define it first"}
 
-    frozen = _REPLIES.get(deid_id)
-    if frozen and any(fc.key == field.key for fc in frozen[0].fields):
-        reply, model_ms = frozen[0], 0                       # no new call, no wait
-    else:                                                    # first field, or a field defined since
-        t0 = time.perf_counter()
-        try:
-            reply = _reply_for(result, pack, effort)
-        except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
-            return _result(deid_id, field, "amber", None, [], f"Muse Spark unavailable ({type(e).__name__}); review manually")
-        model_ms = round((time.perf_counter() - t0) * 1000)
-        _REPLIES[deid_id] = (reply, model_ms)
+    try:
+        reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
+    except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
+        return _result(deid_id, field, "amber", None, [], f"Muse Spark unavailable ({type(e).__name__}); review manually")
 
     proposed = next((fc.candidates for fc in reply.fields if fc.key == field.key), [])
     cands = []
