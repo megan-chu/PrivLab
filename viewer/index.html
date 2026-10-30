@@ -241,6 +241,9 @@ mark.ev.on { background: rgba(var(--fc), .24); box-shadow: inset 0 -2px 0 var(--
 .ptabs .seg { flex: 1; }
 .ptabs .seg button { flex: 1; }
 .flist .item .meta { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.fdef { display: grid; grid-template-columns: auto 1fr; gap: 2px var(--s3); margin: var(--s2) 0 0; font-size: 13px; line-height: 18px; }
+.fdef dt { color: var(--ink-muted); }
+.fdef dd { margin: 0; color: var(--ink); }
 .thread { display: grid; gap: var(--s3); }
 .msg { max-width: 92%; padding: var(--s3) var(--s4); border-radius: 12px; font-size: 14px; line-height: 20px; }
 .msg .who { display: block; font: 600 11px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
@@ -422,7 +425,7 @@ function renderRail() {
     const [label, cls] = r.step === "safe" && r.exported ? ["Exported", "verified"] : RSTAT[r.step] || ["", ""];
     const pr = r.done && r.done.review_priority ? r.done.review_priority.level : null;
     return `<button class="row ${i === S.cur ? "on" : ""}" data-i="${i}" aria-current="${i === S.cur}">
-      <span class="name">${esc(r.name)}</span><span class="pill ${cls}">${label}</span>
+      <span class="name" title="${esc(r.name)}">${esc(r.name)}</span><span class="pill ${cls}">${label}</span>
       <span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${esc(r.cancer || (r.sample ? "Sample" : "Your file"))}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span></button>`;
   }).join("") : `<p class="sm muted" style="padding:0 var(--s3)">No reports yet.</p>`;
 }
@@ -462,8 +465,6 @@ function mainView(r) {
 // ======================================================================
 function viewEmpty() {
   $("stepper").innerHTML = ""; where("");
-  const picks = [...new Map(S.samples.filter((x) => x.split === "extra").map((x) => [x.cancer, x])).values()]
-    .map((x) => S.samples.find((y) => y.split === "extra" && y.cancer === x.cancer));     // first of each cancer type
   $("view").innerHTML = `<div class="empty">
     <h1>De-identify a pathology report</h1>
     <p>Identifiers are found on this laptop. Nothing is sent anywhere until you confirm, and then only masked text.</p>
@@ -475,11 +476,9 @@ function viewEmpty() {
       <textarea class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
       <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">De-identify pasted report</button>
     </div>
-    <p class="label" style="margin:var(--s6) 0 0">Or try a sample report</p>
-    <div class="samples">${picks.map((x) => `<button class="sample" data-sample="${x.id}">${x.id} · ${esc(x.cancer)}</button>`).join("")}
-      <select class="sample" id="moreSamples" aria-label="More sample reports"><option value="">More samples</option>
-      ${S.samples.map((x) => `<option value="${x.id}">${x.id} · ${esc(x.cancer)} · ${x.split}</option>`).join("")}</select></div>
-    <p class="sm muted">Samples are real TCGA report text with synthetic identifiers.</p>
+    <p class="label" style="margin:var(--s6) 0 0">Try a sample</p>
+    <div class="samples">${SAMPLES.map(([id, label]) => `<button class="sample" data-sample="${id}">${esc(label)}</button>`).join("")}</div>
+    <p class="sm muted">Public research reports (TCGA) with made-up names and ID numbers. No real patient identifiers.</p>
   </div>`;
   const how = extracting() ? [["De-identify", "Names, IDs and contact details are found and hidden on this laptop. You check them, then confirm."],
       ["Extract fields", "Each field you choose is filled from the de-identified text, with the quote it came from."],
@@ -499,7 +498,6 @@ function viewEmpty() {
   $("pasteBtn").onclick = () => { $("paste").classList.add("show"); $("pasteAdd").style.display = ""; $("paste").focus(); };
   $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t) : toast("Paste the report text first."); };
   document.querySelectorAll("[data-sample]").forEach((b) => b.onclick = () => addSample(b.dataset.sample));
-  $("moreSamples").onchange = (e) => e.target.value && addSample(e.target.value);
 }
 $("fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
 $("addBtn").onclick = () => { S.cur = -1; render(); };
@@ -515,7 +513,14 @@ async function addFiles(files) {
 const newReport = (name, extra) => ({key: ++seq, name, step: "loading", unmark: new Set(), add: [], dets: null, results: {}, saved: {},
   typed: 0, trace: [], prefetch: "none", openedAt: performance.now(), ...extra});
 function addText(name, text) { return start(newReport(name.replace(/\.txt$/i, ""), {preview: text}), "/api/add", {name, text}); }
-function addSample(id) { const m = S.samples.find((x) => x.id === id) || {}; return start(newReport(id, {sample: true, cancer: m.cancer}), "/api/deid", {report_id: id}); }
+// The demo samples: one per cancer type, named by the procedure in each report (extra split).
+const SAMPLES = [["PP0002", "Breast cancer surgery report"], ["PP0042", "Colon resection report"],
+  ["PP0081", "Kidney removal (nephrectomy) report"], ["PP0122", "Lung lobectomy report"],
+  ["PP0161", "Prostate removal (prostatectomy) report"]];
+function addSample(id) {
+  const label = (SAMPLES.find(([x]) => x === id) || [id, id])[1];
+  return start(newReport(label, {sample: true, cancer: "Sample"}), "/api/deid", {report_id: id});
+}
 async function start(r, path, body) {
   r.req = {path, body};
   S.reports.push(r); S.cur = S.reports.length - 1;
@@ -530,7 +535,7 @@ async function layer1(r) {
   if (res.error) { r.step = "failed"; r.error = {title: "This report could not be de-identified", text: res.error, retry: () => layer1(r)}; return refresh(r); }
   if (res.next === "profile") { S.profile.exists = false; r.step = "setup"; return refresh(r); }
   S.profile.exists = true;
-  Object.assign(r, {text: res.text, deid: res.deid_id, dets: res.detections, step: "review", name: res.name || r.name});
+  Object.assign(r, {text: res.text, deid: res.deid_id, dets: res.detections, step: "review", name: r.sample ? r.name : res.name || r.name});
   (res.warnings || []).forEach(toast);
   trace(r, `Found ${res.detections.length} identifiers in ${Math.round(performance.now() - t0)} ms. Nothing sent.`, "local");
   refresh(r);
@@ -699,7 +704,7 @@ function viewSafe(r) {
     ${pr.level !== "low" ? `<p class="sm"><b>Review priority ${pr.level}.</b> ${pr.reasons.map(esc).join("; ")}.</p>` : ""}
     <div class="legend" style="margin:0">${Object.entries(res.summary.by_type).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join("")}</div>
     ${extracting() && S.fields.length ? `<div class="fhead" style="margin-top:var(--s6)"><h2 class="h1" style="margin:0">Fields to extract</h2><button class="link" id="manageFields">Manage fields</button></div>
-      <ul class="list">${S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b><div class="sm muted">${esc(f.meaning)}</div></div>${readiness(f.readiness)}</li>`).join("")}</ul>
+      <ul class="list">${S.fields.map((f) => `<li class="item"><div class="grow"><div class="fhead"><b>${esc(f.name)}</b>${readiness(f.readiness)}</div>${fieldDef(f)}</div></li>`).join("")}</ul>
       <p class="sm muted">Field definitions are kept in your field pack on this device. Values you approve go to Registry data (.csv) under Export.</p>` : ""}
     ${traceBlock(r)}`,
     !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
@@ -1053,6 +1058,15 @@ $("view").addEventListener("click", (e) => {
 // Fields: list and new-field conversation, in the side panel
 // ======================================================================
 $("fieldsBtn").onclick = () => { S.side = S.side ? null : "fields"; afterSideClose(); renderMain(); };
+function fieldDef(f) {        // what a field means, what values it takes, and what it has learned
+  const values = f.type === "number"
+    ? `A number${f.unit ? ` in ${esc(f.unit)}` : ""}${f.range ? `, from ${f.range[0]} to ${f.range[1]}` : ""}`
+    : `One of: ${(f.choices || []).map(esc).join(", ")}`;
+  const n = (f.recent || []).length;
+  return `<dl class="fdef"><dt>Means</dt><dd>${esc(f.meaning)}</dd><dt>Values</dt><dd>${values}</dd>
+    ${f.description ? `<dt>Your words</dt><dd>“${esc(f.description)}”</dd>` : ""}
+    <dt>Learned</dt><dd>${n ? `from ${n} confirmation${n === 1 ? "" : "s"}` : "nothing yet; it learns from each confirmation"}</dd></dl>`;
+}
 function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
 const specLine = (d) => d.type === "number"
   ? `A number${d.unit ? ` in ${esc(d.unit)}` : ""}${d.range_min != null ? `, ${d.range_min}–${d.range_max}` : (d.range ? `, ${d.range[0]}–${d.range[1]}` : "")}`
@@ -1068,7 +1082,7 @@ function renderSide(r) {
   if (S.side === "fields") {
     setPanel(`${tabs}<p class="lede">The fields PrivLab fills on every report. Each one learns from your corrections.</p>
       <ul class="list flist">${n ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b> ${readiness(f.readiness)}
-        <div class="meta">${esc(f.meaning)}</div><div class="meta">${specLine(f)}</div></div>
+        ${fieldDef(f)}</div>
         <button class="link" data-redefine="${f.key}">Redefine</button><button class="link" data-remove="${f.key}">Remove</button></li>`).join("")
         : '<li class="item muted">No fields yet. Your field pack starts empty.</li>'}</ul>`,
       `<button class="btn primary" id="sideNew">${icon("plus")}New field</button>`);
