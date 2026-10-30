@@ -14,6 +14,10 @@ by a per-report lock, and quick pack / log / profile writes by one shared lock.
 so a video can be re-recorded from a clean first use. Without it the real profile, pack and
 runs/score_log.jsonl are used (Day 7 teaching).
 
+Exports: /api/export.csv (registry fields, structured only) and /api/deid_export (de-identified
+text: ?deid_id=… for one report as .txt, none for every finished report as .zip). A report whose
+output scan still found an identifier pattern is never exported.
+
 Usage:
   python -m viewer.server            # http://127.0.0.1:8765
   python -m viewer.server --demo
@@ -24,9 +28,11 @@ import io
 import json
 import logging
 import shutil
+import socket
 import sys
 import threading
 import traceback
+import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -166,6 +172,36 @@ def export_csv() -> bytes:
     return buf.getvalue().encode("utf-8")
 
 
+def _finished(deid_id: str | None = None) -> list[tuple[str, str]]:
+    """(file name, de-identified text) of finished reports; a report whose output scan still found an
+    identifier pattern is withheld."""
+    out, seen = [], set()
+    for did, run in list(pipeline._RUNS.items()):
+        if (deid_id and did != deid_id) or run.get("step") != "done" or not run.get("result"):
+            continue
+        if any("left in the output" in x for x in (run.get("priority") or {}).get("reasons", [])):
+            continue
+        name = Path(str(run.get("report_id") or "report")).name or "report"
+        name = f"{name}_deidentified.txt" if name not in seen else f"{name}_{did}_deidentified.txt"
+        seen.add(Path(str(run.get("report_id") or "report")).name)
+        out.append((name, run["result"].text))
+    return out
+
+
+def deid_download(deid_id: str | None) -> tuple[bytes, str, str] | None:
+    """One report as .txt, or every finished report as .zip. None if there is nothing to export."""
+    files = _finished(deid_id)
+    if not files:
+        return None
+    if deid_id:
+        return files[0][1].encode("utf-8"), "text/plain; charset=utf-8", files[0][0]
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, text in files:
+            z.writestr(name, text)
+    return buf.getvalue(), "application/zip", "privlab_deidentified.zip"
+
+
 GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
@@ -188,6 +224,16 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(500, {"error": "export failed; see runs/viewer.log"})
             return self._send(200, body, "text/csv; charset=utf-8",
                               {"Content-Disposition": 'attachment; filename="privlab_registry.csv"'})
+        if url.path == "/api/deid_export":
+            try:
+                out = deid_download(parse_qs(url.query).get("deid_id", [None])[0])
+            except Exception:
+                log.error("de-identified export failed: %s", traceback.format_exc())
+                return self._json(500, {"error": "export failed; see runs/viewer.log"})
+            if out is None:
+                return self._json(404, {"error": "No de-identified reports to export yet."})
+            body, ctype, fname = out
+            return self._send(200, body, ctype, {"Content-Disposition": f'attachment; filename="{fname}"'})
         fn = GET.get(url.path)
         if fn is None:
             return self._json(404, {"error": "not found"})
@@ -229,10 +275,20 @@ class Handler(BaseHTTPRequestHandler):
         log.info(fmt, *args)
 
 
+class ExclusiveServer(ThreadingHTTPServer):
+    """One viewer per port. Python's default lets a second server bind the same port on Windows,
+    and requests then reach whichever copy (often an old one) answers first."""
+    allow_reuse_address = False
+    daemon_threads = True
+
+    def server_bind(self):
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):                  # Windows
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        super().server_bind()
+
+
 def make_server(port: int) -> ThreadingHTTPServer:
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    server.daemon_threads = True
-    return server
+    return ExclusiveServer(("127.0.0.1", port), Handler)
 
 
 def main() -> int:
@@ -247,7 +303,12 @@ def main() -> int:
         STATE.update(demo=True, pack=DEMO_DIR / "pack.yaml", log=DEMO_DIR / "score_log.jsonl")
         prof.PROFILE_PATH = DEMO_DIR / "profile.yaml"
     vocabulary(), name_list()          # load once at start-up
-    server = make_server(args.port)
+    try:
+        server = make_server(args.port)
+    except OSError:
+        print(f"Port {args.port} is already in use: another PrivLab viewer is probably running. Close it "
+              f"(Ctrl+C in its window), or start this one with --port {args.port + 1}.", file=sys.stderr)
+        return 1
     print(f"PrivLab viewer: http://127.0.0.1:{args.port}{'  (demo mode)' if args.demo else ''}", file=sys.stderr)
     try:
         server.serve_forever()
