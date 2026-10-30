@@ -46,3 +46,11 @@ def test_phispan_round_trip_and_validation():
         PhiSpan(id="p2", type="SECRET", start=0, end=1, text="x", source="user")
     with pytest.raises(ValueError):
         PhiSpan(id="p3", type="NAME", start=5, end=5, text="", source="user")
+
+
+def test_labelled_ssn_gets_an_ssn_tag():
+    from deid.mask import apply_tags
+    from deid.patterns import find_pattern_phi
+    text = "Patient: Daniel Martinez    SSN: 967-97-6295\n"
+    tagged, _ = apply_tags(text, find_pattern_phi(text))
+    assert "[SSN-1]" in tagged and "[ID-1]" not in tagged

@@ -8,7 +8,8 @@ National IDs are tagged by kind ([NRIC-n], [NHS-n], [SSN-n]). Numbers follow fir
 import re
 
 PATIENT_SOURCES = {"pattern:labelled_patient", "pattern:labelled_footer"}
-ID_KIND = {"pattern:sg_nric": "NRIC", "pattern:uk_nhs": "NHS", "pattern:ssn_format": "SSN"}
+ID_KIND = {"nric": "NRIC", "nhs": "NHS", "ssn": "SSN"}     # matched inside the recogniser name, so
+                                                             # "labelled_ssn_label" is an SSN too
 NOT_PARTS = {"dr", "prof", "professor", "mr", "mrs", "ms", "mdm", "madam", "miss", "sister",
              "bin", "binte", "binti", "bte", "van", "von", "de", "da"}
 
@@ -32,7 +33,7 @@ def assign_tags(spans) -> dict[str, str]:
             is_patient = s.source in PATIENT_SOURCES or (parts and parts <= patient_parts)
             return "PATIENT" if is_patient else "PERSON"
         if s.type == "ID":
-            return ID_KIND.get(s.source, "ID")
+            return next((kind for key, kind in ID_KIND.items() if key in s.source), "ID")
         return s.type
 
     group = {"PATIENT": "NAME", "PERSON": "NAME"}
