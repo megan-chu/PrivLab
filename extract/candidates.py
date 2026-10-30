@@ -6,6 +6,8 @@ One Muse Spark call per report covers every field in the pack (cached), and sees
 sealed DeidResult text. The reply is frozen per report: later fields on the same report reuse it,
 even after a correction changed the pack's examples, so teaching 7 fields costs one call per
 report, not seven, and every field's prediction exists before any feedback on that report.
+A field whose DEFINITION changed since (meaning, type, unit, range, choices) gets a new call, so a
+refined definition is previewed with its new meaning; learned examples alone never trigger one.
 The model proposes; code finds the evidence, runs the checks, detects the section and decides
 the status.
 
@@ -31,7 +33,7 @@ INSTRUCTIONS = (
     "empty candidates list. Do not infer, calculate or give medical advice."
 )
 MIN_CONFIDENCE = 0.6
-_REPLIES: dict[str, tuple[CandidatesReply, int]] = {}      # deid_id -> (reply, model ms), frozen per report
+_REPLIES: dict[str, tuple[CandidatesReply, int, dict]] = {}   # deid_id -> (reply, model ms, definitions)
 _LOCKS: dict[str, threading.Lock] = {}                     # one call per report, even with a prefetch running
 _LOCKS_GUARD = threading.Lock()
 
@@ -55,18 +57,26 @@ def _reply_for(result, pack, effort=None) -> CandidatesReply:
                       step="candidates", report_id=result.report_id, effort=effort)
 
 
+def _definition(f) -> tuple:
+    """What the field means, without its learned examples."""
+    return (f.meaning, f.type, f.unit, tuple(f.range or ()), tuple(f.choices))
+
+
 def _frozen_reply(deid_id: str, result, pack, field_key: str, effort=None) -> tuple[CandidatesReply, int]:
-    """The report's reply (cached per report); a new call only if none yet covers field_key."""
+    """The report's reply (cached per report); a new call only if none yet covers field_key under
+    its current definition."""
     with _LOCKS_GUARD:
         lock = _LOCKS.setdefault(deid_id, threading.Lock())
     with lock:
         frozen = _REPLIES.get(deid_id)
-        if frozen and any(fc.key == field_key for fc in frozen[0].fields):
+        current = {f.key: _definition(f) for f in pack["fields"]}
+        if frozen and any(fc.key == field_key for fc in frozen[0].fields) \
+                and frozen[2].get(field_key) == current.get(field_key):
             return frozen[0], 0                                # no new call, no wait
         t0 = time.perf_counter()
         reply = _reply_for(result, pack, effort)
         model_ms = round((time.perf_counter() - t0) * 1000)
-        _REPLIES[deid_id] = (reply, model_ms)
+        _REPLIES[deid_id] = (reply, model_ms, current)
         return reply, model_ms
 
 

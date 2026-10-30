@@ -47,7 +47,7 @@ from extract import learn
 from extract.candidates import find_candidates, prefetch
 from extract.define import define_field
 from extract.export import COLUMNS, export_rows
-from extract.pack import load_pack
+from extract.pack import load_pack, remove_field, save_pack
 
 PAGE = Path(__file__).with_name("index.html")
 DEMO_DIR = ROOT / "runs" / "demo"
@@ -142,6 +142,15 @@ def api_define(b):
         return define_field(b["name"], b.get("description"), accept=b["accept"], pack_path=STATE["pack"])
 
 
+def api_remove_field(b):
+    with _WRITE:
+        pack = load_pack(STATE["pack"])
+        if not remove_field(pack, b["field"]):
+            return {"error": "That field is not in your pack."}
+        save_pack(pack, STATE["pack"])
+    return {"ok": True}
+
+
 def api_find(b):
     return find_candidates(b["deid_id"], b["field"], pack_path=STATE["pack"])
 
@@ -205,7 +214,7 @@ def deid_download(deid_id: str | None) -> tuple[bytes, str, str] | None:
 GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
-        "/api/confirm_field": api_confirm_field, "/api/reset": api_reset}
+        "/api/confirm_field": api_confirm_field, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
 
 
 # --------------------------------------------------------------------------

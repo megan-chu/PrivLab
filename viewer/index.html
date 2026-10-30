@@ -208,6 +208,29 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .checklist small { display: block; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
 .frow.loading { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); color: var(--ink-muted); }
 
+/* side panel: fields list and new-field conversation */
+.ptabs { display: flex; align-items: center; gap: var(--s2); margin: 0 0 var(--s4); }
+.ptabs .seg { flex: 1; }
+.ptabs .seg button { flex: 1; }
+.flist .item .meta { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.thread { display: grid; gap: var(--s3); }
+.msg { max-width: 92%; padding: var(--s3) var(--s4); border-radius: 12px; font-size: 14px; line-height: 20px; }
+.msg .who { display: block; font: 600 11px/16px var(--f-sans); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 2px; }
+.msg.spark { background: var(--surface-sunken); border-top-left-radius: 4px; justify-self: start; }
+.msg.spark .who { color: var(--hema); }
+.msg.you { background: var(--hema); color: var(--on-hema); border-top-right-radius: 4px; justify-self: end; }
+.msg.you .who { color: var(--on-hema); opacity: .8; }
+.msg.note { justify-self: center; max-width: 100%; padding: 0 var(--s2); background: none; color: var(--ink-muted); font-size: 13px; line-height: 18px; text-align: center; }
+.msg .spec { display: block; margin-top: var(--s1); font: 500 13px/20px var(--f-mono); color: var(--ink-muted); }
+.msg .found { font: 500 15px/22px var(--f-mono); }
+.msg .details { display: grid; gap: var(--s2); margin-top: var(--s2); }
+.typing span { display: inline-block; width: 6px; height: 6px; margin-right: 3px; border-radius: 50%; background: var(--ink-muted); animation: blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; } .typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+.composer { display: flex; gap: var(--s2); }
+.composer input { flex: 1; min-width: 0; }
+.composer .btn { width: auto; }
+
 /* dialog */
 dialog.sheet { border: 0; border-radius: var(--r-md); padding: 0; width: 520px; max-width: calc(100vw - 32px); box-shadow: var(--shadow-raised); background: var(--surface-raised); color: var(--ink); }
 dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
@@ -260,7 +283,6 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 </div>
 
 <div class="floatbar" id="floatbar" role="toolbar" aria-label="Selection"></div>
-<dialog class="sheet" id="sheet" aria-label="Fields"></dialog>
 <input type="file" id="fileInput" accept=".txt,text/plain" multiple hidden>
 <div class="toast" id="toast" role="status"></div>
 
@@ -285,6 +307,7 @@ const store = {get(k) { try { return localStorage.getItem(k); } catch { return n
 const S = {reports: [], cur: -1, fields: [], profile: null, samples: [], demo: false, choices: null,
   mode: store.get("mode") === "deid" ? "deid" : "both"};
 const extracting = () => S.mode === "both";
+S.side = null; S.chat = null;           // side panel: null | "fields" | "chat"
 let seq = 0;
 
 async function api(path, body) {
@@ -389,7 +412,11 @@ const banner = (kind, title, text) => `<div class="banner ${kind}" role="${kind 
 
 function renderMain() {
   const r = cur();
-  if (!r) return viewEmpty();
+  if (!r) { viewEmpty(); if (S.side) renderSide(null); return; }
+  if (S.side && extracting()) { mainView(r); renderSide(r); return; }
+  mainView(r);
+}
+function mainView(r) {
   ({loading: viewLoading, setup: viewSetup, review: viewReview, checking: viewChecking, hold: viewQuestion, flags: viewQuestion,
     safe: viewSafe, blocked: viewBlocked, fields: viewFields, approved: viewApproved, failed: viewFailed})[r.step](r);
 }
@@ -426,7 +453,8 @@ function viewEmpty() {
   setPanel(`<h2 class="h1">${extracting() ? "Three steps" : "Two steps"}</h2><p class="lede">One button per step, always here at the bottom. Choose De-identify only or De-identify + extract at the top.</p>
     <ol class="list">${how.map(([t, d], k) =>
       `<li class="item"><span class="pill hema">${k + 1}</span><div class="grow"><b>${t}</b><div class="sm muted">${d}</div></div></li>`).join("")}</ol>
-    ${S.fields.length || !extracting() ? "" : banner("info", "No fields yet", "Add the fields to fill with Fields at the top, for example tumour size.")}`);
+    ${S.fields.length || !extracting() ? "" : banner("info", "No fields yet", 'Add the fields you want filled with <button class="link" id="emptyNew">New field</button>, for example tumour size.')}`);
+  if ($("emptyNew")) $("emptyNew").onclick = () => chatOpen();
   const drop = $("drop");
   ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
@@ -643,7 +671,7 @@ function viewSafe(r) {
     : `<button class="btn primary" id="addField">${icon("plus")}Add a field to extract</button>
       <a class="btn secondary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>`);
   if ($("go")) $("go").onclick = () => openFields(r);
-  if ($("addField")) $("addField").onclick = () => openSheet();
+  if ($("addField")) $("addField").onclick = () => chatOpen();
   if ($("dl")) $("dl").onclick = () => { r.exported = true; trace(r, "De-identified text downloaded.", "local"); setTimeout(() => refresh(r), 0); };
   wireNext();
 }
@@ -712,8 +740,9 @@ function viewFields(r) {
     ${r.error ? banner("refused", esc(r.error.title), `${esc(r.error.text)} <button class="link" id="retry">Try again</button>`) : ""}
     ${!loading && pending.length ? banner("review", `${pending.length} field${pending.length > 1 ? "s" : ""} need${pending.length > 1 ? "" : "s"} your answer`, "Confirm, edit or mark not stated before approving.") : ""}
     ${tip("fields", "Select a field to see its quote in the report. To correct a value, select the right text in the report.")}
-    <h2 class="h1">Extract fields</h2>
+    <div class="fhead"><h2 class="h1">Extract fields</h2><span class="factions" style="margin:0"><button class="link" id="newField">${icon("plus")}New field</button></span></div>
     <div class="fields" role="list">${S.fields.map((f) => fieldRow(r, f)).join("")}</div>${traceBlock(r)}`, foot);
+  $("newField").onclick = () => chatOpen();
   if ($("confirmAll")) $("confirmAll").onclick = () => confirmAll(r);
   if ($("approve")) $("approve").onclick = () => approve(r);
   if ($("retry")) $("retry").onclick = () => openFields(r);
@@ -877,53 +906,176 @@ $("view").addEventListener("click", (e) => {
 });
 
 // ======================================================================
-// Fields dialog
+// Fields: list and new-field conversation, in the side panel
 // ======================================================================
-$("fieldsBtn").onclick = () => openSheet();
+$("fieldsBtn").onclick = () => { S.side = S.side ? null : "fields"; afterSideClose(); renderMain(); };
 function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
-function openSheet(note) {
-  const d = $("sheet");
-  d.innerHTML = `<div class="sh"><h2 class="h1" style="margin:0">Fields</h2><button class="tbtn" id="shClose">Close</button></div>
-    <div class="sb">${note ? banner("verified", esc(note), "It will be extracted from every report.") : ""}<ul class="list">${S.fields.length ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b>
-      <div class="sm muted">${esc(f.meaning)}</div></div>${readiness(f.readiness)}</li>`).join("") :
-      '<li class="item sm muted">No fields yet. Your field pack starts empty.</li>'}</ul>
-      <div style="margin-top:var(--s4);display:grid;gap:var(--s2)"><span class="label">Add a field</span>
-      <input class="in" id="fName" placeholder="For example: tumour size, pT, lymphovascular invasion" aria-label="Field name">
-      <input class="in" id="fDesc" placeholder="Optional: what you mean" aria-label="Description"></div>
-      <div id="draft"></div></div>
-    <div class="sf"><button class="btn secondary inline" id="shDone">Done</button><button class="btn primary inline" id="fSuggest">Suggest a definition</button></div>`;
-  if (!d.open) d.showModal();
-  $("shClose").onclick = $("shDone").onclick = () => d.close();
-  $("fName").focus();
-  $("fSuggest").onclick = suggest;
-  $("fName").onkeydown = (e) => { if (e.key === "Enter") suggest(); };
+const specLine = (d) => d.type === "number"
+  ? `A number${d.unit ? ` in ${esc(d.unit)}` : ""}${d.range_min != null ? `, ${d.range_min}–${d.range_max}` : (d.range ? `, ${d.range[0]}–${d.range[1]}` : "")}`
+  : `One of: ${(d.choices || []).map(esc).join(", ")}`;
+const say = (who, html) => S.chat.msgs.push({who, html});
+
+function renderSide(r) {
+  const n = S.fields.length, c = S.chat;
+  const tabs = `<div class="ptabs"><div class="seg" role="tablist" aria-label="Fields">
+      <button role="tab" id="tabFields" aria-pressed="${S.side === "fields"}">Fields · ${n}</button>
+      <button role="tab" id="tabNew" aria-pressed="${S.side === "chat"}">${icon("plus")} New field</button></div>
+    <button class="link" id="sideClose">Close</button></div>`;
+  if (S.side === "fields") {
+    setPanel(`${tabs}<p class="lede">The fields PrivLab fills on every report. Each one learns from your corrections.</p>
+      <ul class="list flist">${n ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b> ${readiness(f.readiness)}
+        <div class="meta">${esc(f.meaning)}</div><div class="meta">${specLine(f)}</div></div>
+        <button class="link" data-redefine="${f.key}">Redefine</button><button class="link" data-remove="${f.key}">Remove</button></li>`).join("")
+        : '<li class="item muted">No fields yet. Your field pack starts empty.</li>'}</ul>`,
+      `<button class="btn primary" id="sideNew">${icon("plus")}New field</button>`);
+    $("sideNew").onclick = () => chatOpen();
+    document.querySelectorAll("[data-remove]").forEach((b) => b.onclick = () => removeField(b));
+    document.querySelectorAll("[data-redefine]").forEach((b) => b.onclick = () => chatOpen(S.fields.find((f) => f.key === b.dataset.redefine)));
+  } else {
+    const thread = c.msgs.map((m) => m.who === "note" ? `<div class="msg note">${m.html}</div>`
+      : `<div class="msg ${m.who}"><span class="who">${m.who === "you" ? "You" : "Muse Spark"}</span>${m.html}</div>`).join("")
+      + (c.busy ? `<div class="msg spark typing" aria-label="Muse Spark is replying"><span></span><span></span><span></span></div>` : "");
+    setPanel(`${tabs}<div class="thread" id="thread" aria-live="polite">${thread}</div>`, chatFooter(c));
+    draftDetails();
+    wireChat(r);
+    const pb = $("pbody"); pb.scrollTop = pb.scrollHeight;
+  }
+  $("tabFields").onclick = () => { S.side = "fields"; renderMain(); };
+  $("tabNew").onclick = () => chatOpen();
+  $("sideClose").onclick = () => { S.side = null; afterSideClose(); renderMain(); };
 }
-async function suggest() {
-  const name = $("fName").value.trim();
-  if (!name) { $("draft").innerHTML = banner("review", "Type a field name first", ""); $("fName").focus(); return; }
-  $("draft").innerHTML = `<p class="running" style="margin-top:var(--s4)"><span class="spin"></span>Asking Muse Spark. Only the field name is sent, no report text.</p>`;
-  $("fSuggest").disabled = true;
-  const r = await api("/api/define", {name, description: $("fDesc").value.trim() || null});
-  $("fSuggest").disabled = false;
-  if (r.error || !r.draft) { $("draft").innerHTML = banner("refused", "No definition was suggested", esc(r.error || "Try again.")); return; }
-  const d = r.draft;
-  $("draft").innerHTML = `<div style="margin-top:var(--s4);display:grid;gap:var(--s2)"><span class="label">Did you mean</span>
+function afterSideClose() {
+  const r = cur();
+  if (!S.side && r && r.step === "fields") openFields(r);           // fill fields added meanwhile
+}
+function chatFooter(c) {
+  const input = (ph) => `<div class="composer"><input class="in" id="chatIn" placeholder="${ph}" aria-label="Message" autocomplete="off"${c.busy ? " disabled" : ""}>
+    <button class="btn primary" id="chatSend"${c.busy ? " disabled" : ""}>Send</button></div>`;
+  if (c.busy) return `<button class="btn primary" disabled>Muse Spark is replying…</button>`;
+  return {
+    name: input("Field name, for example tumour size"),
+    refine: input("What should it mean? In your own words"),
+    confirm: `<button class="btn primary" id="cYes">Yes, save this field</button><button class="btn secondary" id="cNo">Not quite</button>`,
+    preview: `<button class="btn primary" id="pYes">Yes, that's it</button><button class="btn secondary" id="pNo">No, that's not it</button>`,
+    missing: `<button class="btn primary" id="mYes">Correct, it is not stated</button><button class="btn secondary" id="mNo">It is stated</button>`,
+    done: `<button class="btn primary" id="dMore">${icon("plus")}Add another field</button><button class="btn secondary" id="dBack">Back to the report</button>`,
+  }[c.stage];
+}
+function wireChat(r) {
+  const c = S.chat, inp = $("chatIn");
+  if (inp) {
+    inp.focus();
+    const send = () => { const t = inp.value.trim(); if (t) chatSend(t); };
+    inp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); send(); } };
+    $("chatSend").onclick = send;
+  }
+  if ($("cYes")) $("cYes").onclick = () => chatSave(r);
+  if ($("cNo")) $("cNo").onclick = () => { say("you", "Not quite"); say("spark", "What should it mean instead? Describe it in your own words, for example <i>only the invasive tumour, not the whole specimen</i>."); c.stage = "refine"; renderMain(); };
+  if ($("pYes")) $("pYes").onclick = () => chatPreviewYes(r);
+  if ($("pNo")) $("pNo").onclick = () => { say("you", "No, that's not it"); say("spark", "What did you mean? Describe it in your own words, and I will look again."); c.stage = "refine"; if (r) delete r.results[c.key]; renderMain(); };
+  if ($("mYes")) $("mYes").onclick = async () => { say("you", "Correct, it is not stated"); await act(r, "missing", c.key); say("note", "Saved as not stated. PrivLab learns from it."); c.stage = "done"; renderMain(); };
+  if ($("mNo")) $("mNo").onclick = () => { say("you", "It is stated"); say("spark", "Select the right text in the report, then choose <b>Use as</b> and this field. That teaches me where to look."); c.stage = "done"; renderMain(); };
+  if ($("dMore")) $("dMore").onclick = () => { S.chat = null; chatOpen(); };
+  if ($("dBack")) $("dBack").onclick = () => { S.side = null; afterSideClose(); renderMain(); };
+  const det = $("cDetails");
+  if (det) det.onclick = () => { c.editDetails = !c.editDetails; renderMain(); };
+}
+function chatOpen(field) {
+  S.side = "chat";
+  if (field) {
+    S.chat = {msgs: [], stage: "refine", name: field.name, key: field.key};
+    say("spark", `You are redefining <b>${esc(field.name)}</b>. It currently means: ${esc(field.meaning)}<span class="spec">${specLine(field)}</span>`);
+    say("spark", "What should it mean instead? Describe it in your own words.");
+  } else if (!S.chat || S.chat.stage === "done") {
+    S.chat = {msgs: [], stage: "name"};
+    say("spark", "Which field should PrivLab fill? Type its name, for example <i>tumour size</i>, <i>pT</i> or <i>lymphovascular invasion</i>.");
+  }
+  renderMain();
+}
+async function chatSend(text) {
+  const c = S.chat;
+  say("you", esc(text));
+  if (c.stage === "name") { c.name = text; c.desc = null; } else c.desc = text;
+  c.busy = true; renderMain();
+  const res = await api("/api/define", {name: c.name, description: c.desc || null});
+  c.busy = false;
+  if (res.error || !res.draft) { say("spark", `I could not suggest a definition. ${esc(res.error || "")} Try again.`); return renderMain(); }
+  if (!c.noted) { say("note", "Only the field name and your words were sent. No report text."); c.noted = true; }
+  c.draft = res.draft; c.editDetails = false; c.stage = "confirm";
+  say("spark", `Did you mean: <b>${esc(res.draft.meaning_question)}</b><span class="spec">${specLine(res.draft)}</span>
+    <button class="link" id="cDetails">Edit details</button>`);
+  renderMain();
+}
+function draftDetails() {          // the editable details live inside the last Muse Spark message
+  const c = S.chat;
+  if (!c.editDetails || c.stage !== "confirm") return;
+  const d = c.draft, last = [...document.querySelectorAll(".msg.spark")].pop();
+  last.insertAdjacentHTML("beforeend", `<div class="details">
     <textarea class="in" id="dQ" rows="2" aria-label="Meaning">${esc(d.meaning_question)}</textarea>
-    <div style="display:flex;gap:var(--s2)"><select class="in" id="dType" style="width:140px" aria-label="Type"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
-    <input class="in" id="dUnit" placeholder="Unit, for example cm" value="${esc(d.unit || "")}" aria-label="Unit"></div>
-    <input class="in" id="dChoices" placeholder="Choices, separated by commas" value="${esc((d.choices || []).join(", "))}" aria-label="Choices"></div>`;
-  const byType = () => { const num = $("dType").value === "number"; $("dUnit").style.display = num ? "" : "none"; $("dChoices").style.display = num ? "none" : ""; };
-  $("dType").onchange = byType; byType();
-  $("fSuggest").textContent = "Save field";
-  $("fSuggest").onclick = async () => {
-    const accept = {...d, meaning_question: $("dQ").value, type: $("dType").value, unit: $("dUnit").value || null,
-      choices: $("dChoices").value.split(",").map((s) => s.trim()).filter(Boolean)};
-    const s = await api("/api/define", {name, description: $("fDesc").value.trim() || null, accept});
-    if (s.error) { $("draft").insertAdjacentHTML("afterbegin", banner("refused", "The field was not saved", esc(s.error))); return; }
-    await loadFields();
-    S.reports.filter((x) => x.step === "safe" && x.prefetch !== "running").forEach(prefetch);
-    openSheet(`${name} added`); render();
-  };
+    <div style="display:flex;gap:var(--s2)"><select class="in" id="dType" style="width:130px" aria-label="Type"><option ${d.type === "number" ? "selected" : ""}>number</option><option ${d.type === "choice" ? "selected" : ""}>choice</option></select>
+    ${d.type === "number" ? `<input class="in" id="dUnit" placeholder="Unit, for example cm" value="${esc(d.unit || "")}" aria-label="Unit">` : ""}</div>
+    ${d.type === "choice" ? `<input class="in" id="dChoices" placeholder="Choices, separated by commas" value="${esc((d.choices || []).join(", "))}" aria-label="Choices">` : ""}</div>`);
+  $("dType").onchange = () => { readDetails(); c.draft.type = $("dType").value; renderMain(); };
+}
+function readDetails() {
+  const d = S.chat.draft;
+  if ($("dQ")) d.meaning_question = $("dQ").value.trim() || d.meaning_question;
+  if ($("dUnit")) d.unit = $("dUnit").value.trim() || null;
+  if ($("dChoices")) d.choices = $("dChoices").value.split(",").map((x) => x.trim()).filter(Boolean);
+}
+async function chatSave(r) {
+  const c = S.chat;
+  readDetails();
+  say("you", "Yes, save this field");
+  c.busy = true; renderMain();
+  const accept = {...c.draft, key: c.key || c.draft.key};
+  const res = await api("/api/define", {name: c.name, description: c.desc || null, accept});
+  if (res.error || !res.field) { c.busy = false; say("spark", `The field was not saved. ${esc(res.error || "")}`); c.stage = "confirm"; return renderMain(); }
+  c.key = res.field.key;
+  await loadFields();
+  say("note", `Saved <b>${esc(c.name)}</b>. It will be filled on every report.`);
+  for (const x of S.reports) delete x.results[c.key];                 // re-read with the new meaning
+  S.reports.filter((x) => x !== r && x.step === "safe" && x.prefetch !== "running").forEach(prefetch);
+  if (!r || !r.dtext || r.leftover || !["safe", "fields"].includes(r.step)) {
+    c.busy = false; c.stage = "done";
+    say("spark", "Open a de-identified report and I will highlight this field in it.");
+    return renderMain();
+  }
+  r.step = "fields"; renderMain();
+  const found = await api("/api/find", {deid_id: r.deid, field: c.key});
+  c.busy = false;
+  if (found.error || found.status === "error") { say("spark", `I could not read the report. ${esc(found.error || found.reason || "")}`); c.stage = "done"; return renderMain(); }
+  r.results[c.key] = found;
+  const [k] = status(found), cand = (found.candidates || []).find((x) => x.id === found.candidate_id) || (found.candidates || []).find((x) => !x.fail);
+  const f = S.fields.find((x) => x.key === c.key);
+  if (k === "not-stated") {
+    say("spark", `This report does not seem to state <b>${esc(c.name)}</b>. Is that right?`); c.stage = "missing";
+  } else if (k === "refused" || !cand) {
+    say("spark", `I found something, but it failed a check: ${esc((FAIL[(found.candidates || [])[0]?.fail]) || found.reason || "")} Select the right text in the report and choose <b>Use as</b> to show me.`);
+    c.stage = "done";
+  } else {
+    r.focus = {key: c.key, cid: cand.id};
+    say("spark", `In ${esc(r.name)} I found <span class="found">${esc(cand.value)}${unit(f, cand.value)}</span>${cand.section && cand.section !== "other" ? ` in the ${esc(sectionName(cand.section))} section` : ""}, highlighted in the report. Is this what you mean?
+      <span class="spec">“${esc(cand.evidence_text.slice(0, 140))}”</span>`);
+    c.preview = cand.id; c.stage = "preview";
+  }
+  renderMain();
+  if (r.focus) showMark(`${r.focus.key}:${r.focus.cid}`);
+}
+async function chatPreviewYes(r) {
+  const c = S.chat;
+  say("you", "Yes, that's it");
+  await act(r, "accept", c.key, c.preview);
+  say("note", "Confirmed. PrivLab learns from it, so the next report starts closer.");
+  c.stage = "done"; renderMain();
+}
+async function removeField(b) {
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Click again to remove"; setTimeout(() => { delete b.dataset.armed; b.textContent = "Remove"; }, 3500); return; }
+  const res = await api("/api/remove_field", {field: b.dataset.remove});
+  if (res.error) return toast(res.error);
+  for (const x of S.reports) { delete x.results[b.dataset.remove]; delete x.saved[b.dataset.remove]; }
+  await loadFields(); renderMain();
+  toast("Field removed. Values already exported are not changed.");
 }
 async function loadFields() { const p = await api("/api/pack"); S.fields = p.fields || []; }
 
@@ -959,7 +1111,7 @@ function setMode(m) {
   if (m === "both" && S.fields.length) S.reports.filter((x) => x.step === "safe" && x.prefetch === "none" && !x.leftover).forEach(prefetch);
   render();
 }
-$("modeDeid").onclick = () => setMode("deid");
+$("modeDeid").onclick = () => { S.side = null; setMode("deid"); };
 $("modeBoth").onclick = () => setMode("both");
 $("expDeid").onclick = (e) => {
   if (!S.reports.some((x) => ["safe", "fields", "approved"].includes(x.step))) { e.preventDefault(); toast("Nothing to export yet. De-identify a report first."); }

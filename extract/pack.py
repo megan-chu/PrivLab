@@ -31,5 +31,19 @@ def get_field(pack: dict, key: str) -> Field | None:
 
 
 def put_field(pack: dict, f: Field) -> None:
-    pack["fields"] = [x for x in pack["fields"] if x.key != f.key] + [f]
+    """Add a field, or replace it in place (a redefined field keeps its position)."""
+    keys = [x.key for x in pack["fields"]]
+    if f.key in keys:
+        pack["fields"][keys.index(f.key)] = f
+    else:
+        pack["fields"].append(f)
     pack["version"] += 1
+
+
+def remove_field(pack: dict, key: str) -> bool:
+    before = len(pack["fields"])
+    pack["fields"] = [x for x in pack["fields"] if x.key != key]
+    if len(pack["fields"]) == before:
+        return False
+    pack["version"] += 1
+    return True
