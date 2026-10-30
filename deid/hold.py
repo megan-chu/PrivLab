@@ -23,7 +23,8 @@ NAME_LISTS = (DATA / "names" / "surnames.txt", DATA / "names" / "first_names.txt
 USE_NAME_LIST = True     # eval/qualify_model.py turns this off to measure the model alone
 
 EPONYMS = {"gleason", "nottingham", "fuhrman", "bloom", "richardson", "elston", "ellis", "hodgkin",
-           "paget", "isup", "who", "tnm", "ajcc", "cap", "her", "ki", "dako", "hercep"}
+           "paget", "isup", "who", "tnm", "ajcc", "cap", "her", "ki", "dako", "hercep", "gerota", "bauhin",
+           "ziehl", "neelsen"}
 REPORT_WORDS = {"department", "anatomical", "pathology", "surgical", "report", "consultant", "pathologist",
                 "electronically", "signed", "requesting", "surgeon", "accession", "collected", "reported",
                 "page", "patient", "comment", "results", "discussed", "phone", "address", "contact",
@@ -45,7 +46,9 @@ TOKEN = re.compile(rf"(?:s/o|d/o|a/l|a/p)(?![A-Za-z])|{LETTER}(?:{LETTER}|['’\
 TAG = re.compile(r"\[[A-Z]+-\d+\]")
 INITIALS_BEFORE = re.compile(r"(?:\b[A-Z]\.[ \t]*)+$")   # "L. " before "Kumar"
 INITIALS_AFTER = re.compile(r"^(?:[ \t]*[A-Z]\.)+")       # " B. H." after "Lim"
-LABEL_AFTER = re.compile(r"[ \t]*:")                    # "Vehicle Plate:" is a label, not a name
+# A label, not a name: "Vehicle Plate:", "Staff ID:", "Tax Identification (TIN):"
+LABEL_AFTER = re.compile(r"[ \t]*(?:ID|No\.?|\([^)\n]{1,20}\))?[ \t]*:")
+LABEL_WORDS = {"no", "number", "tax", "id", "ref"}       # in the name list, but label words here
 WORDPART = rf"{LETTER}(?:{LETTER}|['’\-])*"
 PARTICLE_NAME = re.compile(rf"(?<![A-Za-z'])({WORDPART})[ \t]+"
                            rf"(binte|binti|bin|bte|s/o|d/o|a/l|a/p)[ \t]+"
@@ -175,7 +178,7 @@ def _title_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
         if LABEL_AFTER.match(text, run[-1].end()) and not any(
-                _plain(m.group()) in name_list() or m.group().lower() in SURNAMES for m in words):
+                _plain(m.group()) in name_list() - LABEL_WORDS or m.group().lower() in SURNAMES for m in words):
             continue                         # a form label ("Vehicle Plate:", "Make:"); "Mary Tan:" stays held
         start, end = run[0].start(), run[-1].end()
         if m := INITIALS_BEFORE.search(text[:start]):     # include initials, so none are left visible

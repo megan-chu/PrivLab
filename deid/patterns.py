@@ -18,6 +18,7 @@ from presidio_analyzer import EntityRecognizer, Pattern, PatternRecognizer, Reco
 
 from common.timing import timed
 from deid.checksums import nhs_valid, nric_valid
+from deid.ner import find_names
 from deid.normalise import fold
 from deid.types import PhiSpan
 
@@ -58,6 +59,15 @@ DATE_ANY = (rf"(?:{D}{{1,2}}[/.\-]{D}{{1,2}}[/.\-](?:{D}{{4}}|{D}{{2}})|\d{{4}}-
             rf"{MONTHS} \d{{4}})")
 STREET = r"(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Close|Lane|Ln|Way|Crescent|Cres)"   # longest first
 MRN_OCR = r"[A-Z]{0,3}[\dO]{6,9}"
+# Any report type (forms, claims, banking): a label that names an identifier, and a role label before a name.
+ID_LABEL = (r"(?:[A-Za-z]+[ \t]+){0,3}(?i:passport|TIN|tax identification|IBAN|policy|licen[cs]e|plate|registration|"
+            r"no\.?|number|ID|ref(?:erence)?(?:[ \t]+no\.?)?)(?![A-Za-z])")   # "Staff ID", "Passport No", "Case File Ref"
+ID_TOKEN = r"[A-Z0-9](?:[A-Z0-9\-/.]*[A-Z0-9])?"
+ID_VALUE = rf"{ID_TOKEN}(?:[ \t]{ID_TOKEN}){{0,3}}"                        # no end dot; 3+ digits (analyze)
+CSEP = r"[ \t]*(?:\([^)\n]{0,20}\))?[ \t]*[:#][ \t]*"                    # "(TIN): ", " # "
+NAME_LINE = rf"{WORD}(?:[ \t]+(?:{PARTICLE}|{WORD}))+"                         # a name on one line
+ROLE = (r"(?i:name|owner|manager|holder|counsel|officer|investigator|insured|claimant|driver|applicant|customer|"
+        r"client|beneficiary|witness|agent|representative|director|signatory|guardian|employee|account holder)")
 PHONE_CUE = r"(?i:tel(?:ephone)?|phone|call|hp|h/p|mobile|mob|office|contact(?: no\.?)?|fax|line)"
 PHONE_VALUE = r"(?=(?:[^\dOlI\n]{0,2}[\dOlI]){7})\(?\+?\d[\dOlI \t().\-]{5,16}[\dOlI]"
 
@@ -126,6 +136,11 @@ class LabelledRecognizer(EntityRecognizer):
                               r"(?P<v>\d{5,6}|[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})\b"),
         ("MRN", "footer_mrn", rf"^Page \d+ of \d+ *\|[^|\n]*\| *(?P<v>{MRN_VALUE}) *$"),
         ("ACCOUNT", "account", rf"\b(?i:ACCT|Account(?: no\.?| number)?){LSEP}(?P<v>\d{{5,}})"),
+        ("ACCOUNT", "account_any", rf"\b(?i:ACCT|Account|IBAN)(?:[ \t]+(?i:no\.?|number))?{CSEP}(?P<v>{ID_VALUE})(?![\w-])"),
+        ("ID", "id_label", rf"(?<![A-Za-z]){ID_LABEL}{CSEP}(?P<v>{ID_VALUE})(?![\w-])"),
+        ("NAME", "role_label", rf"(?:^|[|;])[ \t]*(?:[A-Za-z]+[ \t]+){{0,3}}{ROLE}[ \t]*(?:\([^)\n]{{0,20}}\))?[ \t]*:"
+                               rf"[ \t]*(?P<v>{NAME_LINE}|{CAPS_NAME})"),
+        ("ADDRESS", "address_any", r"^[ \t]*(?:[A-Za-z]+[ \t]+){1,2}(?i:address):[ \t]*(?P<v>[^\n]*[^\s])"),
     ]
 
     def __init__(self):
@@ -137,7 +152,8 @@ class LabelledRecognizer(EntityRecognizer):
 
     # ALL-CAPS names: TCGA text is often in capitals ("DR. REPORTED BY"), so a capitalised run made
     # only of words from the report vocabulary is not a name.
-    CAPS_RULES = {"dr_caps", "title_caps", "next_of_kin", "name_label"}
+    CAPS_RULES = {"dr_caps", "title_caps", "next_of_kin", "name_label", "role_label"}
+    DIGIT_RULES = {"id_label", "account_any"}
 
     def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
         from deid.hold import vocabulary
@@ -146,6 +162,8 @@ class LabelledRecognizer(EntityRecognizer):
         for entity, rule, rx in self.rules:
             for m in rx.finditer(text):
                 value = re.sub(r"^(?i:dr|prof)\.?\s+", "", m.group("v"))
+                if rule in self.DIGIT_RULES and sum(ch.isdigit() for ch in value) < 3:
+                    continue                              # "NODES EXAMINED", "AGE/SX": not an identifier
                 if rule in self.CAPS_RULES and value.isupper() and all(
                         w.lower() in vocabulary() for w in re.findall(r"[A-Za-z']+", value)):
                     continue
@@ -216,7 +234,7 @@ def leftover_identifiers(text: str, kept_types=(), allowed=(), tags=None) -> lis
     else:
         tag_chars = {i for t in tags for i in range(t.start, t.end)}
         only_tags = lambda h: all(i in tag_chars or text[i] in " \t\n,;" for i in range(h.start, h.end))
-    return [h for h in find_pattern_phi(text)
+    return [h for h in find_pattern_phi(text, names_model=False)       # rules only: a model guess never blocks
             if h.type not in kept_types and h.text.lower() not in allow and not only_tags(h)]
 
 
@@ -236,8 +254,9 @@ def learned_recognisers(terms) -> list[PatternRecognizer]:
             for t, words in by_type.items()]
 
 
-def find_pattern_phi(text: str, report_id: str | None = None, learned=()) -> list[PhiSpan]:
+def find_pattern_phi(text: str, report_id: str | None = None, learned=(), names_model: bool = True) -> list[PhiSpan]:
     """learned: the profile's always_remove entries, matched as whole words, any case.
+    names_model: also run the local name model (deid/ner.py) to fill gaps; off for the leftover scans.
 
     Scans a folded copy (look-alike characters made plain, same length); spans keep the original text.
     """
@@ -250,6 +269,9 @@ def find_pattern_phi(text: str, report_id: str | None = None, learned=()) -> lis
                 results.append((f"pattern:{rule}", r))
         kept = resolve_overlaps(results)
         found = [(r.entity_type, r.start, r.end, source, round(r.score, 2)) for source, r in kept]
+        with timed("ner", report_id=report_id, chars=len(text)):    # the model only fills gaps
+            found += [] if not names_model else [("NAME", a, b, "ner:spacy", 0.6) for a, b in find_names(scan)
+                      if all(b <= s or a >= e for _, s, e, _, _ in found)]
         found += propagate_names(scan, found)
     return [
         PhiSpan(id=f"p{i}", type=t, start=s, end=e, text=text[s:e], source=source, score=score)

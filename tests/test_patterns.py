@@ -92,7 +92,9 @@ def test_repeat_mentions_of_a_found_name():
 def test_surname_that_is_a_report_word_is_not_repeated():
     text = "Patient: Low Pei Shan\nDIAGNOSIS: Low grade carcinoma. Pei Shan consented."
     hits = found(text)
-    assert ("NAME", "Low") not in hits and ("NAME", "Shan") in hits         # "Low grade" stays; "Pei Shan" masked
+    second = text.rindex("Pei Shan")
+    assert ("NAME", "Low") not in hits                                       # "Low grade" stays
+    assert any(s.start <= second + 4 < s.end for s in find_pattern_phi(text))   # "Pei Shan" masked
 
 
 def test_doctor_name_stops_at_section_heading():
@@ -136,3 +138,50 @@ def test_form_labels_are_not_held_but_names_before_a_colon_are():
     held = [text[a:b] for a, b in hold_flags(text)]
     assert "Vehicle Plate" not in held and "Make" not in held                    # labels
     assert "Mary Tan" in held and "Rajesh Kumar" in held                         # listed names stay held
+
+
+BANK = """CASE FILE REF: AML-2026-OCT-0941
+PRIMARY RELATIONSHIP MANAGER: Denise Alcantara (Staff ID: PB-99412)
+Account Name: Horizon Ventures Global Trust
+Account Number: 884-2901-7724
+Beneficial Owner: Victor Nikolai Voronin
+Nationality: Cypriot / Passport No: K9044129
+Tax Identification (TIN): 099-231-884A
+Residential Address: Apartment 18A, Nassim Jade, 38 Nassim Road, Singapore 258399
+Denise spoke with Victor. Voronin was screened. Shares bought via Broker ID: SGX-TR-4401.
+"""
+
+
+def test_any_report_type_labelled_ids_names_and_addresses():
+    got = {t for _, t in found(BANK)}
+    assert {"AML-2026-OCT-0941", "PB-99412", "884-2901-7724", "K9044129", "099-231-884A", "SGX-TR-4401",
+            "Denise Alcantara", "Horizon Ventures Global Trust", "Victor Nikolai Voronin",
+            "Apartment 18A, Nassim Jade, 38 Nassim Road, Singapore 258399",
+            "Denise", "Victor", "Voronin"} <= got                                   # later mentions too
+    assert ("ID", "SLL 4921 G") in found("Vehicle Plate: SLL 4921 G (Make: Honda)")
+    assert ("NAME", "Tan Wei Ming") in found("Driver: Tan Wei Ming")
+
+
+@pytest.mark.parametrize("text", ["LYMPH NODES EXAMINED: 12", "AGE/SX: 64/F", "Specimen No: 2",
+                                  "Reference range: 3.5-5.0 mmol/L", "SWIFT: BCGECHGG"])
+def test_labels_without_an_identifier_are_left_alone(text):
+    assert not [t for _, t in found(text)]
+
+
+def test_labels_next_to_an_id_are_not_held():
+    from deid.hold import hold_flags
+    text = "Manager: [PERSON-1] (Staff ID: [ID-1]). Passport No: [ID-2]. Tax Identification (TIN): [ID-3]."
+    assert hold_flags(text) == []
+
+
+def test_local_name_model_fills_gaps_only():
+    pytest.importorskip("en_core_web_sm")
+    text = ("DIAGNOSIS: Invasive ductal carcinoma, Gleason pattern noted; Gerota fascia intact.\n"
+            "Escalated to Group Compliance Head Marcus Wong for review.\n"
+            "by Dr Oliver Turner FROZEN SECTION DIAGNOSIS")
+    hits = found(text)
+    assert ("NAME", "Marcus Wong") in hits                                       # no cue, found by the model
+    assert ("DOCTOR", "Dr Oliver Turner") in hits                                # a pattern is never overridden
+    assert not any(t in ("Gleason", "Gerota", "DIAGNOSIS") for _, t in hits)    # report wording is not a name
+    from deid.patterns import leftover_identifiers
+    assert leftover_identifiers("Escalated to Marcus Wong for review.") == []    # final scan stays rules-only

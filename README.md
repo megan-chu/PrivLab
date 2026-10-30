@@ -12,7 +12,9 @@ content is never sent to a cloud API to be read. Accuracy has been measured on p
 
 PrivLab de-identifies in two layers. **Presidio pattern recognisers** run on the laptop and mask
 structured identifiers (NRIC/FIN, NHS and SSN-format numbers, MRN, accession numbers, phones, emails,
-dates, addresses and labelled names). **Muse Spark Open** (Meta's open-weights model, hosted on Baseten) then looks for names and
+dates, addresses, labelled names and labelled IDs in any report type), and a small spaCy name model
+(`en_core_web_sm`, on the laptop, ~6 ms per report) fills in names without a cue. The model only adds
+names: it never overrides a pattern, and the final leftover scan stays rules-only. **Muse Spark Open** (Meta's open-weights model, hosted on Baseten) then looks for names and
 other free-text details in the already-masked text. Because it is open weights, the whole de-identification
 step can later run inside a hospital: only two settings change, no code. Extraction only ever receives de-identified text.
 

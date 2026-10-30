@@ -1,6 +1,8 @@
 """Review-first de-identification flow, with a fake Muse Spark (no API calls)."""
 import time
 
+import pytest
+
 from common.data import load_phi_truth, load_report
 from deid import pipeline
 from deid.mask import apply_tags
@@ -22,6 +24,7 @@ def confirm(deid_id, **kw):
     return r
 
 
+@pytest.mark.usefixtures("no_names_model")
 def test_no_api_call_before_confirm_or_while_on_hold(fake_spark):
     r = pipeline.deidentify_report(text=HARD, profile=profile())
     assert r["next"] == "review" and fake_spark["sent"] == []
@@ -178,6 +181,7 @@ def test_look_alike_tag_is_held_not_skipped(fake_spark):
     assert held["next"] == "hold" and fake_spark["sent"] == []
 
 
+@pytest.mark.usefixtures("no_names_model")
 def test_name_after_colon_or_initial_is_held(fake_spark):
     for text in ("Consultant: Kumar reviewed the slides.", "Reviewed by L. Kumar today."):
         r = pipeline.deidentify_report(text=text, profile=profile())
@@ -202,6 +206,7 @@ def test_name_check_provider(fake_spark):
 # --------------------------------------------------------------------------
 # Robust to a weak or swapped name-check model
 # --------------------------------------------------------------------------
+@pytest.mark.usefixtures("no_names_model")
 def test_suspect_the_model_ignores_comes_back_unticked(fake_spark, monkeypatch):
     from deid import hold
     monkeypatch.setattr(hold, "USE_NAME_LIST", False)                          # else the name list holds Kumar
@@ -221,6 +226,7 @@ def test_suspect_ruled_out_by_the_model_is_not_asked(fake_spark):
     assert done["next"] == "done" and "Tan, firm" in done["text"]
 
 
+@pytest.mark.usefixtures("no_names_model")
 def test_listed_name_is_held_locally(fake_spark):
     for text in ("Kumar consented to the procedure.", "Report handed to ming wei at the desk.",
                  "Darryl consented to the procedure."):                       # surnames; first name
@@ -229,6 +235,7 @@ def test_listed_name_is_held_locally(fake_spark):
         assert held["next"] == "hold" and fake_spark["sent"] == []          # public name lists, no model
 
 
+@pytest.mark.usefixtures("no_names_model")
 def test_review_priority(fake_spark, monkeypatch):
     fake_spark["state"]["fail"] = TimeoutError("slow")                         # first, so nothing is cached
     r = pipeline.deidentify_report(text=HARD, profile=profile())

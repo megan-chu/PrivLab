@@ -22,12 +22,14 @@ ENV_NAMES = {
     "baseten_model": "BASETEN_MODEL",
     "seal_key": "PRIVLAB_SEAL_KEY",
     "vault_key": "PRIVLAB_VAULT_KEY",
+    "ner_model": "PRIVLAB_NER_MODEL",
 }
 DEFAULTS = {
     "meta_api_base_url": "https://api.meta.ai/v1",
     "meta_model": "muse-spark-1.3",
     "baseten_base_url": "https://inference.baseten.co/v1",
     "baseten_model": "meta-models/muse-spark-open-1026",
+    "ner_model": "en_core_web_sm",
 }
 
 
@@ -45,6 +47,7 @@ class Settings:
     baseten_model: str
     seal_key: str
     vault_key: str
+    ner_model: str
 
     def require(self, *names: str) -> None:
         missing = [ENV_NAMES[n] for n in names if not getattr(self, n)]

@@ -6,6 +6,9 @@
 presidio-analyzer~=2.2.365
 phonenumbers~=9.0
 
+# Local name model for names without a cue (spaCy NER only; PRIVLAB_NER_MODEL)
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+
 # Muse Spark 1.3 via the Meta Model API (OpenAI-SDK compatible)
 openai~=3.39
 pydantic~=2.14
