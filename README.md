@@ -37,14 +37,15 @@ For real hospital data, the two layers alone are not enough, because an identifi
 | **Model qualification.** The name check uses a model only after it passes a frozen qualification set under its exact settings (provider, model, effort, prompt). Muse Spark Open and Muse Spark 1.3 both pass (11 of 12, no false alarms); a changed setting needs a new run, so swapping models cannot silently lower privacy. | Built |
 | **Measured exposure.** Evaluation reports the share of planted identifiers that reach the API (missed locally) and the share left after both layers. | Built |
 | **Learns from corrections without leaking.** Confirmed values become examples for later prompts; an example that still contains an identifier pattern is never stored. | Built |
+| **Accuracy you can audit.** The person who defines a field validates it. Each field has a precise definition and a version (a new meaning restarts its score); about 1 in 10 values is a blind check (PrivLab's answer hidden until you answer); a field is Ready only when, with 95% confidence, at most 5% of its verified values are wrong (59 verified values with no error). Every check is in the field's history. | Built |
 | **Open-weights second layer, hostable in-house.** The name check runs on Muse Spark Open. For production, the hospital hosts the same weights on its own servers and changes two settings (`BASETEN_BASE_URL`, `BASETEN_MODEL`), so nothing reaches an outside API. | Open-weights model: built · in-hospital hosting: roadmap (config only) |
 | **Governance.** Real use needs hospital approval, a data-processing agreement with the API provider and a review of its data terms. | Out of scope for the hackathon |
 
 **Current results (synthetic data, development sets).** Locally (patterns + hold rule, no API call), PrivLab
 catches 100% of the 1,876 planted identifiers in the dev and extra reports, with no false alarms. That is
 partly an artefact of the data: every planted name follows a cue such as "Patient:" or "Dr". On hand-written
-hard cases (names and places without cues) Presidio alone caught 8%; with the hold rule and the Muse Spark name check,
-0% remain. The hard cases were also used to improve the rules, so these are development numbers; the
+hard cases (names and places without cues) the local patterns and name model alone catch 86% (Presidio
+patterns alone caught 8% at the start); with the hold rule, 100% are caught before any API call. The hard cases were also used to improve the rules, so these are development numbers; the
 held-out test reports give the final figures.
 The name check runs on Muse Spark Open so that de-identification can be hosted locally. In an early
 test, before the hold rule caught them locally, it missed 2 of 49 hard names that Muse Spark 1.3 caught;
