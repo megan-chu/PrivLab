@@ -39,7 +39,9 @@ def confirm(paths, res, **kw):
 def test_correct_is_logged_then_learned(paths):
     res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
     out = confirm(paths, res, candidate_id=res["candidate_id"])
+    start, end = out.pop("start"), out.pop("end")
     assert out == {"status": "saved", "outcome": "correct", "value": 2.1, "readiness": "learning"}
+    assert REPORT[start:end] == "Invasive ductal carcinoma, 2.1 cm"            # where the confirmed value is
     entry = read_log(paths["log"])[0]
     assert entry["predicted"]["value"] == 2.1 and entry["confirmed"]["value"] == 2.1
     assert entry["pack_version"] < load_pack(paths["pack"])["version"]       # scored before the pack changed
