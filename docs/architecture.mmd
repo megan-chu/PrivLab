@@ -1,42 +1,47 @@
 flowchart LR
     U(["Healthcare professional"])
 
-    subgraph CLIENT["AI assistant or report viewer"]
-        Q["Ask: 'What's the histology and grade?'"]
-        R["Review: evidence highlighted,\namber fields to confirm"]
+    subgraph CLIENT["Report viewer or AI assistant (MCP)"]
+        Q["Add a report;<br/>choose De-identify only<br/>or De-identify + extract"]
+        R["Review: values highlighted with<br/>their quote and reason;<br/>Verified / Needs review / Not found"]
     end
 
-    subgraph MCP["PrivLab MCP server"]
+    subgraph LOCAL["PrivLab on this device (raw text never leaves)"]
         direction TB
-        subgraph HOSP["De-identification: ask, confirm, highlight, correct, apply"]
-            RULES["Presidio patterns (laptop)\nIDs, phones, dates, emails"]
-            GLIM["Muse Spark 1.3\nnames and free-text identifiers\non already-masked text"]
-            SUR["Consistent surrogates\n[PATIENT-1], [DOB-1]"]
-            VAULT[("Encrypted vault\nre-link key")]
-        end
-        REC["find_candidates\nMuse Spark 1.3\nde-identified text only"]
-        VAL["Two checks in code\nevidence exists, value type ok\nthen rank, amber if unsure"]
-        PACKS[("Knowledge pack\nstarts empty, grows from\nuser confirmations")]
-        TEACH["confirm_field\nlearn examples, readiness"]
+        RULES["Layer 1: Presidio patterns<br/>+ Census name lists + hold rule<br/>IDs, phones, dates, emails, names"]
+        GATE["You confirm the highlights;<br/>mask, seal, leak re-scan"]
+        SUR["Consistent tags<br/>[PATIENT-1], [NRIC-1], [DOB-1]"]
+        VAULT[("Encrypted vault<br/>tag to original")]
+        VAL["Five checks in code<br/>quote in report, valid value,<br/>value in quote, section, no identifiers"]
+        PACKS[("Knowledge pack<br/>starts empty, grows from<br/>your confirmations")]
+        TEACH["confirm_field<br/>score, then learn examples"]
     end
 
-    OUT[("Structured data\nregistry, research, trials")]
+    subgraph CLOUD["Muse Spark (masked text only, after you confirm)"]
+        NAME["Second check: Muse Spark Open<br/>names the rules missed<br/>(qualified model; 1.3 as backup)"]
+        REC["Extraction: Muse Spark 1.3<br/>all fields in one call per report"]
+    end
+
+    OUT1[("Masked reports<br/>.txt / .zip")]
+    OUT2[("Registry data .csv<br/>no report text")]
 
     U --> Q
     Q -->|"raw report"| RULES
-    RULES --> GLIM --> SUR
+    RULES --> GATE
+    GATE -->|"masked text"| NAME
+    NAME --> SUR
     SUR -.-> VAULT
+    SUR --> OUT1
     SUR -->|"de-identified text"| REC
     PACKS --> REC
     REC --> VAL --> R
-    R -->|"confirm"| OUT
-    R -->|"correct or teach a term"| TEACH
+    R -->|"approve"| OUT2
+    R -->|"confirm or correct"| TEACH
     TEACH --> PACKS
 
     classDef safe fill:#ECFDF5,stroke:#059669,color:#065F46
     classDef cloud fill:#EFF6FF,stroke:#2563EB,color:#1E3A8A
     classDef know fill:#FFFBEB,stroke:#B45309,color:#92400E
-    class RULES,SUR,VAULT safe
-    class GLIM cloud
-    class REC,VAL cloud
+    class RULES,GATE,SUR,VAULT,VAL safe
+    class NAME,REC cloud
     class PACKS,TEACH know
