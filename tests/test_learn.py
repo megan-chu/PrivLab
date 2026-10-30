@@ -181,3 +181,25 @@ def test_check_lists_only_results_to_recheck(paths):
     confirm(paths, res, candidate_id=res["candidate_id"])                   # correct
     lines = to_check(read_log(paths["log"]))
     assert lines[0].startswith("\n1 results") and "wrong" in lines[1] and len(lines) == 2
+
+
+def test_redefined_field_gets_a_new_call_but_learning_does_not(paths):
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    sent = len(paths["spark"]["sent"])
+    confirm(paths, res, candidate_id=res["candidate_id"])                   # learning: examples change
+    find_candidates(res["deid_id"], "tumour_size", pack_path=paths["pack"])
+    assert len(paths["spark"]["sent"]) == sent                               # same definition: no call
+    paths["spark"]["state"]["reply"] = DRAFT
+    define_field("tumour size", "invasive tumour only",
+                 accept={**DRAFT, "meaning_question": "Largest invasive tumour dimension?"}, pack_path=paths["pack"])
+    paths["spark"]["state"]["reply"] = {"fields": [{"key": "tumour_size", "candidates": []}]}
+    find_candidates(res["deid_id"], "tumour_size", pack_path=paths["pack"])
+    assert len(paths["spark"]["sent"]) == sent + 1                           # new meaning: new call
+
+
+def test_remove_field(paths):
+    from extract.pack import load_pack, remove_field, save_pack
+    pack = load_pack(paths["pack"])
+    assert remove_field(pack, "tumour_size") and not remove_field(pack, "tumour_size")
+    save_pack(pack, paths["pack"])
+    assert load_pack(paths["pack"])["fields"] == []
