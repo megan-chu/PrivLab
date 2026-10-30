@@ -15,6 +15,7 @@ The final response carries review_priority (high | medium | low, with reasons), 
 checks the riskiest reports first: high = a pattern left in the output, or the name check missing
 or unqualified; medium = name check not run, or name-like words the user kept visible.
 """
+import gc
 import secrets
 import time
 from collections import Counter
@@ -24,7 +25,7 @@ from common import spark
 from common.config import ROOT
 from common.timing import record, timed
 from deid import profile as prof
-from deid.hold import hold_flags, suspects
+from deid.hold import hold_flags, name_list, suspects, vocabulary
 from deid.mask import apply_tags, mask, merge_spans, to_original
 from deid.names import find_names, locate
 from deid.patterns import find_pattern_phi, leftover_identifiers
@@ -35,6 +36,16 @@ from deid.vault import encrypt_json, save_vault
 
 STATE_DIR = ROOT / "runs" / "state"
 _RUNS: dict[str, dict] = {}
+
+
+def warm_up() -> None:
+    """Call once at start-up (viewer, MCP server). Loads the vocabulary, name lists and Presidio
+    recognisers, then freezes them for the garbage collector: a full collection would otherwise
+    rescan ~170,000 long-lived objects and pause one report for 40-250 ms."""
+    vocabulary(), name_list()
+    find_pattern_phi("Patient: Mary Tan  NRIC: S1234567D  Phone: +65 6123 4567")   # compiles every recogniser
+    gc.collect()
+    gc.freeze()
 
 
 # --------------------------------------------------------------------------

@@ -127,3 +127,12 @@ def test_red_team_formats(text, expected):
 
 def test_capitalised_report_words_are_not_doctors():
     assert not [t for t, _ in found("REPORTED TO: DR. REPORTED BY: DR. # BLOCKS : 2.") if t == "DOCTOR"]
+
+
+def test_form_labels_are_not_held_but_names_before_a_colon_are():
+    from deid.hold import hold_flags
+    text = ("Vehicle Plate: SLL 4921 G (Make: Honda Vezel 1.5A)\n"
+            "Contact list. Mary Tan: 9123 4567. Next of kin Rajesh Kumar: brother.")
+    held = [text[a:b] for a, b in hold_flags(text)]
+    assert "Vehicle Plate" not in held and "Make" not in held                    # labels
+    assert "Mary Tan" in held and "Rajesh Kumar" in held                         # listed names stay held
