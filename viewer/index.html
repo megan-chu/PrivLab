@@ -844,7 +844,11 @@ function quoteMarks(r) {
     if (typeof c.value === "number") {        // 7 also matches "7.0"; 2.1 never matches inside 12.1
       const m = new RegExp(`(?<![\\d.])${v.replace(".", "\\.")}(?:\\.0+)?(?![\\d])`).exec(q);
       if (m) { k = m.index; len = m[0].length; }
-    } else if (v) k = q.indexOf(v);
+    } else if (v) {                            // words in order, any punctuation between: "ductal. carcinoma"
+      const words = v.split(/[^a-z0-9]+/).filter(Boolean);       // letters and digits only: nothing to escape
+      const m = words.length ? new RegExp(words.join("[^a-z0-9]+")).exec(q) : null;
+      if (m) { k = m.index; len = m[0].length; }
+    }
     if (k < 0) return marks.push({start: c.start, end: c.end, id, title, cls: `${base} val first last`});
     const a = c.start + k, b = a + len;
     if (a > c.start) marks.push({start: c.start, end: a, id, title, cls: `${base} first`});
