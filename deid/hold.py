@@ -45,6 +45,7 @@ TOKEN = re.compile(rf"(?:s/o|d/o|a/l|a/p)(?![A-Za-z])|{LETTER}(?:{LETTER}|['’\
 TAG = re.compile(r"\[[A-Z]+-\d+\]")
 INITIALS_BEFORE = re.compile(r"(?:\b[A-Z]\.[ \t]*)+$")   # "L. " before "Kumar"
 INITIALS_AFTER = re.compile(r"^(?:[ \t]*[A-Z]\.)+")       # " B. H." after "Lim"
+LABEL_AFTER = re.compile(r"[ \t]*:")                    # "Vehicle Plate:" is a label, not a name
 WORDPART = rf"{LETTER}(?:{LETTER}|['’\-])*"
 PARTICLE_NAME = re.compile(rf"(?<![A-Za-z'])({WORDPART})[ \t]+"
                            rf"(binte|binti|bin|bte|s/o|d/o|a/l|a/p)[ \t]+"
@@ -173,6 +174,9 @@ def _title_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
             continue
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
+        if LABEL_AFTER.match(text, run[-1].end()) and not any(
+                _plain(m.group()) in name_list() or m.group().lower() in SURNAMES for m in words):
+            continue                         # a form label ("Vehicle Plate:", "Make:"); "Mary Tan:" stays held
         start, end = run[0].start(), run[-1].end()
         if m := INITIALS_BEFORE.search(text[:start]):     # include initials, so none are left visible
             start = m.start()
