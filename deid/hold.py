@@ -28,7 +28,8 @@ EPONYMS = {"gleason", "nottingham", "fuhrman", "bloom", "richardson", "elston", 
 REPORT_WORDS = {"department", "anatomical", "pathology", "surgical", "report", "consultant", "pathologist",
                 "electronically", "signed", "requesting", "surgeon", "accession", "collected", "reported",
                 "page", "patient", "comment", "results", "discussed", "phone", "address", "contact",
-                "copy", "requested", "sent", "next", "kin", "emergency", "history", "seen", "clinic", "review"}
+                "copy", "requested", "sent", "next", "kin", "emergency", "history", "seen", "clinic", "review",
+                "portal"}                                                        # patient portal; also a listed surname
 MONTHS = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec", "january",
           "february", "march", "april", "june", "july", "august", "september", "october", "november", "december"}
 TITLES = {"mr", "mrs", "ms", "mdm", "madam", "miss", "sister", "dr", "prof", "professor"}
@@ -36,7 +37,9 @@ TITLES = {"mr", "mrs", "ms", "mdm", "madam", "miss", "sister", "dr", "prof", "pr
 # suffixes ("Ph.D.", "Inc."), job titles ("Laboratory Director") and lab wording.
 NOT_NAMES = {"ph", "phd", "md", "msc", "sc", "mbbs", "frcpa", "frcpath", "dphil", "inc", "ltd", "llc", "corp",
              "director", "officer", "supervisor", "technologist", "scientist", "physician", "oncologist",
-             "coordinator", "attending", "resident", "floor", "suite", "unit", "building", "level"}
+             "coordinator", "attending", "resident", "floor", "suite", "unit", "building", "level",
+             "visa", "mastercard", "amex", "nets", "paynow", "unionpay", "jcb",        # card and payment brands
+             "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"}
 PARTICLES = {"bin", "binte", "binti", "bte", "s/o", "d/o", "a/l", "a/p"}
 SURNAMES = {"tan", "hope", "rose", "mark"}
 # Common surnames that are also ordinary English words: a Title-case mention flags for review
@@ -126,9 +129,9 @@ def _not_a_name(word: str, text: str, start: int, end: int) -> bool:
     """Shapes a person's name never has (lab and genomic reports): a unit after a number or around "/"
     ("11 Muts/Mb", "1st Floor"), a code with an ALL-CAPS part ("TMB-High", "MS-Stable", "FDA-Approved"),
     a product name joined from long words ("FoundationOne"; "McDonald", "DeSouza" stay names), a degree,
-    company suffix or job title."""
+    company suffix or job title, or a cited author ("Park et al.")."""
     before, after = text[max(0, start - 12):start], text[end:end + 1]
-    if re.search(r"\d\w*[ \t]+$|/$", before) or after == "/":
+    if re.search(r"\d\w*[ \t]+$|/$", before) or after == "/" or re.match(r"[ \t]+et[ \t]+al\b", text[end:end + 8]):
         return True
     if any(len(p) >= 2 and p.isupper() for p in word.split("-")) and "-" in word:
         return True

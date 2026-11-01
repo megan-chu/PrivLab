@@ -67,6 +67,78 @@ def test_floor_words_outside_addresses_are_not_masked():
     assert not [t for t, _ in found("Level 2 lymph nodes involved.") if t == "ADDRESS"]   # neck levels
 
 
+def test_card_iban_and_bank_names():
+    text = ("Paid by Visa 4111 1111 1111 1111. Refund to IBAN GB82 WEST 1234 5698 7654 32 at DBS Bank, "
+            "Bank of America and OCBC Bank Ltd.")
+    got = found(text)
+    for item in [("ACCOUNT", "4111 1111 1111 1111"), ("ACCOUNT", "GB82 WEST 1234 5698 7654 32"), ("BANK", "DBS Bank"),
+                 ("BANK", "Bank of America"), ("BANK", "OCBC Bank Ltd.")]:
+        assert item in got
+
+
+def test_statement_mailing_block_and_account_number():
+    text = ("0000111122223333444\nJANE SAMPLE DOE                     Statement Date   1 Jan 2030\n"
+            "45 EXAMPLE AVENUE                   Credit Limit     1,000.00\nSAMPLE TOWERS\n09-04\nSG 999999\n")
+    got = found(text)
+    for item in [("ACCOUNT", "0000111122223333444"), ("NAME", "JANE SAMPLE DOE"), ("ADDRESS", "45 EXAMPLE AVENUE"),
+                 ("ADDRESS", "SAMPLE TOWERS"), ("ADDRESS", "09-04"), ("ADDRESS", "SG 999999")]:
+        assert item in got
+    assert "Statement Date" not in " ".join(t for _, t in got)          # the second column is not part of the address
+
+
+def test_the_postcode_is_masked_wherever_it_appears_again():
+    text = ("(999999B)              REF 0000111122223333444\n999999 0000111122223333444\n"
+            "JANE SAMPLE DOE\n45 EXAMPLE AVENUE\nSG 999999\n")
+    spans = find_pattern_phi(text)
+    left = "".join("#" if any(s.start <= i < s.end for s in spans) else ch for i, ch in enumerate(text))
+    assert "999999" not in left                                         # every copy, bare or with its letter
+    assert ("ADDRESS", "999999B") in found(text)
+
+
+@pytest.mark.parametrize("text, address", [
+    ("Discharged to 21 Example Gateway, #12-03, Sample Towers, Singapore 999999.",
+     "21 Example Gateway, #12-03, Sample Towers, Singapore 999999"),
+    ("Home: 10, Jalan Contoh 3, Taman Sample, 50450 Kuala Lumpur, Malaysia.",
+     "10, Jalan Contoh 3, Taman Sample, 50450 Kuala Lumpur, Malaysia"),
+    ("Correspondence to Apt 3B, 77 Harbour Boulevard only.", "Apt 3B, 77 Harbour Boulevard"),
+    ("Transferred from 46000 Petaling Jaya, Selangor last month.", "46000 Petaling Jaya, Selangor"),
+])
+def test_address_by_its_parts(text, address):
+    assert ("ADDRESS", address) in found(text)
+
+
+def test_one_address_word_alone_is_not_an_address():
+    for text in ["Level 2 lymph nodes involved.", "Hill's criteria were met after a court-ordered review.",
+                 "Tissue was sent overseas to Australia.", "The tumour bank received 12345 samples."]:
+        assert not [t for t, _ in found(text) if t == "ADDRESS"], text
+
+
+def test_heading_block_without_a_postcode_is_not_an_address():
+    assert found("FINAL DIAGNOSIS\nInvasive ductal carcinoma, grade 2\nTumour size 21 mm\n") == []
+
+
+def test_sixteen_digits_in_groups_masked_even_if_checksum_fails():
+    assert found("Block 4111 1111 1111 1112 sections.") == [("ACCOUNT", "4111 1111 1111 1112")]
+    assert found("bill 1234  1324  1234  1234 paid.") == [("ACCOUNT", "1234  1324  1234  1234")]
+
+
+def test_invisible_and_full_width_characters_do_not_hide_identifiers():
+    text = "Patient: Jane Sa­mple Doe\nNRIC: S12​34567D\nEmail: ｊａｎｅ＠ｅｘａｍｐｌｅ．ｃｏｍ\n"
+    spans = find_pattern_phi(text)
+    covered = lambda part: any(s.start <= text.find(part) and text.find(part) + len(part) <= s.end for s in spans)
+    assert covered("Jane Sa­mple Doe") and covered("S12​34567D") and covered("ｊａｎｅ＠ｅｘａｍｐｌｅ．ｃｏｍ")
+
+
+def test_addr_label():
+    assert ("ADDRESS", "45 Example Avenue, #09-04") in found("Addr: 45 Example Avenue, #09-04\n")
+
+
+def test_card_and_bank_lookalikes_are_not_masked():
+    assert found("Ki-67 1234567890123.") == []
+    assert found("GB82 WEST 1234 5698 7654 33") == []                                   # wrong IBAN check digits
+    assert found("Sent to the tumour bank and the Tissue Bank; a swift recovery.") == []
+
+
 def test_doctor_name_stops_before_heading():
     assert ("DOCTOR", "Dr Oliver Turner") in found("by Dr Oliver Turner FROZEN SECTION DIAGNOSIS")
 
@@ -281,3 +353,56 @@ def test_merged_address_masks_as_one_tag():
     text = "7010 Kit Creek Road, Morrisville, NC 27560 (CLIA: 3402044309)"
     tagged, _ = apply_tags(text, find_pattern_phi(text))
     assert tagged == "[ADDRESS-1] (CLIA: [ID-1])"
+
+
+def test_portal_is_a_word_not_a_name_but_portal_singh_still_held():
+    from deid.hold import hold_flags
+    assert hold_flags("Portal access verified for [EMAIL-1] with 2FA enabled.") == []
+    text = "Portal Singh consented to the procedure."
+    assert "Portal Singh" in [text[a:b] for a, b in hold_flags(text)]
+
+
+def test_reversed_names_caught():
+    assert ("NAME", "TAN, K. W.") in found('Specimen container labelled "TAN, K. W. / S-24-98432".')
+    assert ("NAME", "Al-Mansoor, Tariq") in found("Seen in consultation with Al-Mansoor, Tariq.")
+    assert found("Tan, firm cut surface.") == []
+    assert all(t != "NAME" for t, _ in found("7010 Kit Creek Road, Morrisville, NC 27560"))
+
+
+def test_lowercase_apostrophe_name_after_dr():
+    assert ("DOCTOR", "d'Artois-Smith") in found("Post-op check with Dr d'Artois-Smith; dressing changed.")
+    assert all(t != "DOCTOR" for t, _ in found("Dr ordered labs."))
+
+
+def test_particle_names_caught_but_common_words_not():
+    assert ("NAME", "van der Meer") in found("Biopsy reviewed by van der Meer, resident on duty.")
+    assert found("de novo mutation noted.") == []
+    assert found("transported by van to lab.") == []
+
+
+def test_dotted_typo_name_caught():
+    assert ("NAME", "Nur.Aisyah") in found("Follow-up arranged for Nur.Aisyah at polyclinic.")
+    assert found("v2.0 released.") == []
+
+
+def test_lab_ref_ids_after_cue_words():
+    assert ("ID", "B24-10294A") in found("Block B24-10294A (Lim Ah Beng) received.")
+    assert ("ID", "S24/912-1") in found("Cassette marked S24/912-1: section taken.")
+    assert ("ACCESSION", "SURG-2024-001298") in found("Cross-reference histology accession SURG-2024-001298.")
+    assert ("ID", "PRBC#88219-02") in found("Cross-match unit barcode PRBC#88219-02 verified.")
+    assert ("ID", "ACC/2024/09/8812") in found("Billing reference ACC/2024/09/8812 attached.")
+    assert all(t != "ID" for t, _ in found("Reference range 4.5-11.0."))
+    assert all(t != "ID" for t, _ in found("Slide 5 of 6."))
+    assert all(t != "ID" for t, _ in found("Specimen: BREAST, RIGHT."))
+
+
+def test_mrn_bare_with_trailing_letter():
+    assert found("MRN9823411A") == [("MRN", "MRN9823411A")]
+    assert ("MRN", "MRN9823411A") in found("Specimen container stamped MRN9823411A without separator.")
+
+
+def test_pager_cue_and_phone_extension_tail():
+    assert ("PHONE", "b/p 9238-1120") in found("Urgent findings paged to b/p 9238-1120 at 1400 hrs.")
+    assert ("PHONE", "6321-4311 loc 204") in found("reachable via hospital trunk line 6321-4311 loc 204.")
+    assert all(t != "PHONE" for t, _ in found("BP 120/80 noted."))
+    assert ("PHONE", "1.888.988.3639") in found("Call 1.888.988.3639 now.")

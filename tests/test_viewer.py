@@ -10,7 +10,7 @@ import pytest
 from deid import pipeline
 from deid.profile import new_profile
 from extract import learn
-from extract.candidates import find_candidates, prefetch
+from extract.candidates import find_candidates, prefetch, preview
 from extract.define import define_field
 from test_pdf import REPORT as PDF_REPORT, make_pdf
 
@@ -60,6 +60,26 @@ def test_prefetch_makes_the_one_call_and_freezes_no_prediction(viewer, fake_spar
     assert (r["deid_id"], "tumour_size") not in learn._PREDICTIONS             # review timer not started
     res = find_candidates(r["deid_id"], "tumour_size", pack_path=pack)
     assert len(fake_spark["sent"]) == sent + 1 and res["status"] == "green"    # instant, no second call
+
+
+def test_preview_reads_the_read_ahead_only(viewer, fake_spark, monkeypatch):
+    import extract.candidates as cand
+    monkeypatch.setattr(cand, "BLIND_EVERY", 10**9)                          # this field is not due a blind check
+    pack = viewer.STATE["pack"]
+    fake_spark["state"]["reply"] = DRAFT
+    define_field("tumour size", None, accept=DRAFT, pack_path=pack)
+    r = pipeline.deidentify_report(text=REPORT + " ", profile=new_profile()[0])
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    sent = len(fake_spark["sent"])
+    assert preview(r["deid_id"], pack_path=pack)["status"] == "none"         # nothing read yet: no call made
+    assert len(fake_spark["sent"]) == sent
+    fake_spark["state"]["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
+         "reason": "t", "confidence": 0.9}]}]}
+    prefetch(r["deid_id"], pack_path=pack)
+    out = preview(r["deid_id"], pack_path=pack)
+    assert len(fake_spark["sent"]) == sent + 1 and out["fields"]["tumour_size"][0]["value"] == 2.1
+    assert (r["deid_id"], "tumour_size") not in learn._PREDICTIONS             # review timer not started
 
 
 def test_threaded_server_answers_while_a_model_call_runs(viewer, monkeypatch):
@@ -213,3 +233,24 @@ def test_privacy_choices_can_change_after_first_use(viewer):
     assert prof["remove"]["hospital"] is False and prof["exists"]
     again = viewer.api_add({"name": "a.txt", "text": "Seen at Riverside General Hospital. Patient: Mary Tan"})
     assert not any(d["type"] == "HOSPITAL" for d in again["detections"])                      # now kept
+
+
+@pytest.mark.parametrize("err", [ConnectionAbortedError, ConnectionResetError, BrokenPipeError])
+def test_browser_hangup_during_reply_is_silent(err, capsys):
+    import viewer.server as server
+    srv = object.__new__(server.ExclusiveServer)          # no port needed: handle_error only
+    try:
+        raise err("[WinError 10053] aborted")
+    except err:
+        srv.handle_error(None, ("127.0.0.1", 0))          # must not raise or print
+    assert capsys.readouterr().err == ""
+
+
+def test_other_server_errors_still_print(capsys):
+    import viewer.server as server
+    srv = object.__new__(server.ExclusiveServer)
+    try:
+        raise ValueError("real bug")
+    except ValueError:
+        srv.handle_error(None, ("127.0.0.1", 0))
+    assert "Traceback" in capsys.readouterr().err

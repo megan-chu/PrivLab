@@ -10,7 +10,7 @@ never listed, and an upload named like a test report is refused).
 Threaded, so a 2-10 s model call never blocks other clicks; steps on one report are serialised
 by a per-report lock, and quick pack / log / profile writes by one shared lock.
 
---demo keeps the privacy profile, pack and score log in runs/demo/, with a "Start over" button,
+--demo keeps the privacy profile, pack and score log in runs/demo/, with a "Reset demo" button,
 so a video can be re-recorded from a clean first use. Without it the real profile, pack and
 runs/score_log.jsonl are used (Day 7 teaching).
 
@@ -47,7 +47,7 @@ from common.timing import timed
 from deid import pipeline
 from deid import profile as prof
 from extract import learn
-from extract.candidates import find_candidates, prefetch
+from extract.candidates import find_candidates, prefetch, preview
 from extract.define import define_field
 from extract.export import export_items, export_rows
 from extract.pack import load_pack, remove_field, save_pack
@@ -158,6 +158,10 @@ def api_prefetch(b):
     return prefetch(b["deid_id"], pack_path=STATE["pack"])
 
 
+def api_preview(b):
+    return preview(b["deid_id"], pack_path=STATE["pack"])
+
+
 def api_pack(_):
     log = learn.read_log(STATE["log"])
     names = {e["deid_id"]: e["report_id"] for e in log}
@@ -255,7 +259,7 @@ def api_reset_field(b):
 
 def api_reset(_):
     if not STATE["demo"]:
-        return {"error": "Start over is only available with --demo"}
+        return {"error": "Reset demo is only available with --demo"}
     with _WRITE:
         shutil.rmtree(DEMO_DIR, ignore_errors=True)
         pipeline._RUNS.clear()
@@ -435,7 +439,7 @@ def _keys(url) -> list[str] | None:
 GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open,
        "/api/export_summary": api_export_summary, "/api/learned": api_learned}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
-        "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
+        "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/preview": api_preview, "/api/define": api_define, "/api/find": api_find,
         "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget,
         "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
 
@@ -535,6 +539,11 @@ class ExclusiveServer(ThreadingHTTPServer):
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
         super().server_bind()
 
+    def handle_error(self, request, client_address):
+        if isinstance(sys.exc_info()[1], (ConnectionAbortedError, ConnectionResetError, BrokenPipeError)):
+            return          # browser hung up mid-reply (navigate-away, cancel, tab closed): not our bug
+        super().handle_error(request, client_address)
+
 
 def make_server(port: int) -> ThreadingHTTPServer:
     return ExclusiveServer(("127.0.0.1", port), Handler)
@@ -543,7 +552,7 @@ def make_server(port: int) -> ThreadingHTTPServer:
 def main() -> int:
     ap = argparse.ArgumentParser(description="PrivLab local viewer.")
     ap.add_argument("--port", type=int, default=8765)
-    ap.add_argument("--demo", action="store_true", help="separate profile/pack/log in runs/demo/ + Start over")
+    ap.add_argument("--demo", action="store_true", help="separate profile/pack/log in runs/demo/ + Reset demo")
     args = ap.parse_args()
     (ROOT / "runs").mkdir(exist_ok=True)
     logging.basicConfig(filename=ROOT / "runs" / "viewer.log", level=logging.INFO,

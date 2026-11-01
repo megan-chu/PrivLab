@@ -17,7 +17,7 @@ import sys
 from presidio_analyzer import EntityRecognizer, Pattern, PatternRecognizer, RecognizerResult
 
 from common.timing import timed
-from deid.checksums import nhs_valid, nric_valid
+from deid.checksums import iban_valid, luhn_valid, nhs_valid, nric_valid
 from deid.ner import find_names
 from deid.normalise import fold
 from deid.types import PhiSpan
@@ -33,7 +33,7 @@ NOT_NAME = (r"(?!(?:In|The|This|That|Of|And|For|To|On|At|By|With|Surgical|Pathol
             r"Department|Microscopic|Microscopy|Light|Gross|Final|Clinical|History|Comment|Report|"
             r"Frozen|Section|Attending|Specimen|Diagnosis)\b)")
 # OCR tolerant: "0ng" (O read as 0), "L1m" (i read as 1) still count as name words.
-WORD = rf"{NOT_NAME}(?:[A-Z]|0(?=[a-z]))(?:[a-z]|[01](?=[a-z])|'[A-Z])[A-Za-z'\-]*"
+WORD = rf"{NOT_NAME}(?:[A-Z]|0(?=[a-z]))(?:[a-z]|[01](?=[01]?[a-z])|'[A-Z])(?:[A-Za-z'\-]|[01](?=[a-z]))*"   # "B00n"
 PARTICLE = r"(?:binte|binti|bin|bte|s/o|d/o|a/l|a/p|van|von|de|da)\b"   # longest first
 SEP = r"(?:[ \t]+|[ \t]*\n[ \t]*)"                       # spaces, or one line break
 INITIALS = r"(?:[A-Z]\.[ \t]*)*"                          # "A. ", "L. M. "
@@ -64,7 +64,7 @@ FLOOR = r"(?:Floor|Fl\.?|Storey)"
 # and pushed the dev median over 100 ms here, so floor patterns use this instead.
 GAP = r"(?:[ \t]+|\n)"
 ORDINAL_WORD = r"(?:First|Second|Third|Fourth|Fifth|Sixth|Seventh|Eighth|Ninth|Tenth|Eleventh|Twelfth)"
-MRN_OCR = r"[A-Z]{0,3}[\dO]{6,9}"
+MRN_OCR = r"[A-Z]{0,3}[\dO]{6,9}[A-Z]?"
 # Any report type (forms, claims, banking): a label that names an identifier, and a role label before a name.
 ID_LABEL = (r"(?:[A-Za-z]+[ \t]+){0,3}(?i:passport|TIN|tax identification|IBAN|policy|licen[cs]e|plate|registration|"
             r"no\.?|number|ID|ref(?:erence)?(?:[ \t]+no\.?)?)(?![A-Za-z])")   # "Staff ID", "Passport No", "Case File Ref"
@@ -75,7 +75,13 @@ NAME_LINE = rf"{WORD}(?:[ \t]+(?:{PARTICLE}|{WORD}))+"                         #
 ROLE = (r"(?i:name|owner|manager|holder|counsel|officer|investigator|insured|claimant|driver|applicant|customer|"
         r"client|beneficiary|witness|agent|representative|director|signatory|guardian|employee|account holder)")
 PHONE_CUE = r"(?i:tel(?:ephone)?|phone|call|hp|h/p|mobile|mob|office|contact(?: no\.?)?|fax|line)"
-PHONE_VALUE = r"(?=(?:[^\dOlI\n]{0,2}[\dOlI]){7})\(?\+?\d[\dOlI \t().\-]{5,16}[\dOlI]"
+PHONE_VALUE = (r"(?=(?:[^\dOlI\n]{0,2}[\dOlI]){7})\(?\+?\d[\dOlI \t().\-]{5,16}(?:\d|[OlI](?![A-Za-z]))"
+               r"(?:[ \t]*(?:loc|ext)\.?[ \t]*\d+)?")   # trailing O/l/I only when a digit was misread, not a word ("loc")
+# A bank by its name: "DBS Bank", "OCBC Bank Ltd", "Bank of America". Lower case "tumour bank" is a lab term, and
+# so are these words before Bank: "Tissue Bank", "Tumor Bank", "Blood Bank".
+NOT_BANK = r"(?!(?:Tissue|Tumou?r|Blood|Bio|Cord|Cell|Serum|DNA|RNA|Gene|Sample|Specimen|Data|Eye|Bone|Milk|Sperm|Food|Organ|Brain)\b)"
+BANK_NAME = (rf"(?:{NOT_BANK}[A-Z][A-Za-z&'\-]+[ \t]+){{1,3}}Bank(?:[ \t]+(?:Berhad|Bhd|Ltd|Limited|plc|PLC|N\.A\.))?(?![A-Za-z])"
+             r"|Bank[ \t]+of[ \t]+[A-Z][A-Za-z&'\-]+(?:[ \t]+[A-Z][A-Za-z&'\-]+){0,2}")
 # A place by what it is: "Metropolitan Health", "... Cancer Ctr", "Foundation Medicine, Inc."
 INST_WORD = r"(?:Ctr|Cent(?:er|re)|Hospital|Clinic|Institute|Health|Medical|Medicine|Lab(?:oratory|oratories)?|Infirmary)"
 US_STATE = (r"(?:A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|"
@@ -104,6 +110,192 @@ class NhsRecognizer(PatternRecognizer):
         return nhs_valid(pattern_text.replace(".", ""))
 
 
+class CardRecognizer(PatternRecognizer):
+    """A payment card number with or without a label: 13-19 digits, in groups or not. 16 digits in
+    4-4-4-4 groups are masked even with a bad checksum; other lengths must pass the Luhn check."""
+    def __init__(self):
+        super().__init__(supported_entity="ACCOUNT", name="card", global_regex_flags=FLAGS,
+                         patterns=[Pattern("card", r"(?<![\d\-.])(?:\d{4}[ \-]+){3}\d{1,7}(?![\d\-])|(?<![\d\-.])\d{13,19}(?![\d\-.])", 0.6)])
+
+    def validate_result(self, pattern_text: str) -> bool:
+        if re.fullmatch(r"\d{4}(?:[ \-]+\d{4}){3}", pattern_text.strip()):
+            return True                    # 16 digits in groups: mask even if mistyped
+        return luhn_valid(pattern_text)
+
+
+class IbanRecognizer(PatternRecognizer):
+    """An IBAN with or without a label, kept only if its check digits are right."""
+    def __init__(self):
+        super().__init__(supported_entity="ACCOUNT", name="iban", global_regex_flags=FLAGS,
+                         patterns=[Pattern("iban", r"\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{4}){2,7}(?:[ ]?[A-Z0-9]{1,3})?\b", 0.6)])
+
+    def validate_result(self, pattern_text: str) -> bool:
+        return iban_valid(pattern_text)
+
+
+class ParticleNameRecognizer(EntityRecognizer):
+    """A whole name around a particle, in any case: "Nur Aisyah binte Rahman", "mohd rizal bin harun",
+    "Kavitha d/o Rajendran". Words before the particle that are ordinary report words ("the sample from")
+    are trimmed. Lower-case "bin" is also an English word ("sharps bin"), so a name needs a word next to it
+    that is not a report word; "van"/"von" stay Title-case only."""
+    RX = re.compile(r"(?<![A-Za-z'])((?:[A-Za-z][A-Za-z'\-]*[ \t]+){0,3})"
+                    r"(binte|binti|bte|bin|s/o|d/o|a/l|a/p|van der|van|von)[ \t]+"
+                    r"([A-Za-z][A-Za-z'\-]+(?:[ \t]+[A-Za-z][A-Za-z'\-]+)?)(?![A-Za-z'])", re.IGNORECASE)
+
+    def __init__(self):
+        super().__init__(supported_entities=["NAME"], name="particle_name")
+
+    def load(self) -> None:
+        pass
+
+    def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
+        from deid.hold import name_list, vocabulary
+        vocab, names = vocabulary(), name_list()
+        ordinary = lambda w: w.lower() in vocab and w.lower() not in names
+        out = []
+        for m in self.RX.finditer(text):
+            before, particle, after = m.group(1).split(), m.group(2), m.group(3).split()
+            if particle.lower() in ("van", "von", "van der") and not after[0][0].isupper():
+                continue                                              # "van der Meer", not "a van to the clinic"
+            if any(w[0].isupper() for w in before + after):           # a Title-case name: only its capitalised words
+                k = len(before)
+                while k and before[k - 1][0].isupper():
+                    k -= 1
+                before = before[k:]                                   # "husband Ahmad Faizal", "reviewed by van der"
+            while before and ordinary(before[0]):
+                before.pop(0)                                         # "the sample from" is not part of the name
+            if particle.lower() == "bin" and (not before or ordinary(before[-1])) and ordinary(after[0]):
+                continue                                              # "sharps bin by the door"
+            if ordinary(after[0]):
+                continue
+            if len(after) == 2 and ordinary(after[1]):
+                after = after[:1]                                     # "... bin Harun arrived": stop at the name
+            start = text.rfind(before[0], m.start(), m.start(2)) if before else m.start(2)
+            end = text.find(after[-1], m.start(3)) + len(after[-1])
+            out.append(RecognizerResult("NAME", start, end, 0.65, recognition_metadata={"rule": "particle_name"}))
+        return out
+
+
+class ReversedNameRecognizer(EntityRecognizer):
+    """Surname-first names: 'Al-Mansoor, Tariq', 'TAN, K. W.'. Kept only if the surname half is listed."""
+
+    RX = re.compile(
+        rf"(?P<v>{NOT_CAPS}[A-Z][A-Za-z'\-]{{1,29}},[ \t]+(?:[A-Z]\.(?:[ \t]*[A-Z]\.){{0,2}}|[A-Z][A-Za-z'\-]{{2,}}))"
+        r"(?![A-Za-z'\-])", FLAGS)
+
+    def __init__(self):
+        super().__init__(supported_entities=["NAME"], name="reversed_name")
+
+    def load(self) -> None:
+        pass
+
+    def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
+        from deid.hold import SURNAMES, name_list, vocabulary
+        names, vocab = name_list(), vocabulary()
+        out = []
+        for m in self.RX.finditer(text):
+            first, given = (x.strip().lower() for x in m.group("v").split(",", 1))
+            if given in vocab and given not in names or re.sub(r"[^a-z]", "", given) in ("md", "do", "phd", "mb", "bs"):
+                continue                                    # "Hassan, Consultant", "Ramkissoon, M.D.": a title or degree
+            parts = set(first.replace("-", " ").split()) | {first}
+            if any((w in names and w not in vocab) or w in SURNAMES for w in parts):
+                out.append(RecognizerResult("NAME", m.start("v"), m.end("v"), 0.7,
+                                            recognition_metadata={"rule": "reversed_name"}))
+        return out
+
+
+class AddressBlockRecognizer(EntityRecognizer):
+    """A mailing block, as on a statement or letter: a line that is only a name, then 1-5 short lines down to a
+    postcode line ("SG 999999", "Singapore 520088", "50450 Kuala Lumpur"). The name is a NAME, each line an ADDRESS.
+    A line may carry a second column after 3+ spaces (PDF layout): only the first column counts."""
+    NAME_LINE = re.compile(r"(?:(?:Mr|Mrs|Ms|Mdm|Dr|MR|MRS|MS|MDM|DR)\.?[ \t]+)?"
+                           r"[A-Z][A-Za-z'\-]+(?:[ \t][A-Z][A-Za-z'\-]+){1,3}")
+    PART = re.compile(r"[A-Za-z0-9#][A-Za-z0-9 ,.'#/\-]{0,44}")
+    POSTCODE = re.compile(r"(?:(?:[A-Z]{2}|[A-Za-z][A-Za-z .]+)[ \t]+)?\d{5,6}|\d{5,6}[ \t]+[A-Za-z][A-Za-z .]+")
+
+    def __init__(self):
+        super().__init__(supported_entities=["NAME", "ADDRESS"], name="address_block")
+
+    def load(self) -> None:
+        pass
+
+    def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
+        from deid.hold import vocabulary
+
+        lines, pos = [], 0
+        for line in text.split("\n"):
+            lead = len(line) - len(line.lstrip(" \t"))
+            first = re.split(r"[ \t]{3,}", line.strip(" \t"))[0] if line.strip() else ""
+            lines.append((pos + lead, first))
+            pos += len(line) + 1
+        out = []
+        for i, (start, name) in enumerate(lines):
+            if not self.NAME_LINE.fullmatch(name) or all(w.lower() in vocabulary() for w in re.findall(r"[A-Za-z']+", name)):
+                continue
+            block = []
+            for s, part in lines[i + 1:i + 6]:
+                if not part or not self.PART.fullmatch(part):
+                    break
+                block.append((s, part))
+                if self.POSTCODE.fullmatch(part):
+                    out.append(RecognizerResult("NAME", start, start + len(name), 0.7,
+                                                recognition_metadata={"rule": "address_block"}))
+                    out += [RecognizerResult("ADDRESS", s, s + len(p), 0.7, recognition_metadata={"rule": "address_block"})
+                            for s, p in block]
+                    break
+        return out
+
+
+class AddressPartsRecognizer(EntityRecognizer):
+    """An address by its parts, as an address parser reads it: unit, street, building or estate, postcode, and
+    city / state / country. Two or more different parts next to each other (a comma, spaces or one line break
+    between) make one ADDRESS; one part alone never does, so "Level 2 nodes", "Hill's criteria" or "Park et al."
+    stay. At least one part must be a unit, street or building, unless it is a postcode with a place."""
+    CAP = r"[A-Z][A-Za-z'\-]*"
+    PARTS = {
+        "unit": r"#\d{1,3}-\d{1,5}[A-Z]?|(?:Unit|Apt|Apartment|Flat|Suite|Ste)\.?[ \t]?#?\d{1,4}[A-Z]?(?:-\d{1,5})?"
+                r"|Basement(?:[ \t][A-Z][a-z]+)?[ \t]\d{1,2}\b"
+                r"|(?:Level|Lvl)[ \t]\d{1,3}(?=[ \t]*,)",
+        "street": rf"(?:(?:Blk|Block|No\.?)[ \t]?)?(?:\d{{1,5}}[A-Z]?,?[ \t]+)?(?:{CAP}[ \t]+){{1,3}}"
+                  r"(?:Street|St|Avenue|Ave|Road|Rd|Drive|Close|Lane|Ln|Way|Crescent|Cres|Boulevard|Blvd|Terrace|Tce|"
+                  r"Place|Walk|Link|Rise|Grove|Gateway|Highway|Hwy|Square|Loop|Vale)\b\.?(?:[ \t]\d{1,2}\b)?"
+                  rf"|(?:\d{{1,5}}[A-Z]?,?[ \t]+)?(?:Jalan|Jln|Lorong|Lor|Persiaran|Lebuh|Lebuhraya|Taman)\.?(?:[ \t]+{CAP}){{1,3}}(?:[ \t]\d{{1,2}}\b)?",
+        "building": rf"(?:The[ \t]+)?(?:{CAP}[ \t]+){{1,3}}(?:Residences|Residence|Towers|Tower|Court|Gardens|Condominium|"
+                    r"Plaza|Mansions|Apartments|Estate|Heights|Suites|Building|Bldg)\b",
+        "postcode": r"(?<![\d\-.])\d{5,6}(?![\d\-]|\.\d)",
+        "place": r"Singapore|Malaysia|Kuala[ \t]Lumpur|Petaling[ \t]Jaya|Shah[ \t]Alam|Subang[ \t]Jaya|Selangor|Johor[ \t]Bahru|"
+                 r"Johor|Penang|Pulau[ \t]Pinang|Perak|Ipoh|Melaka|Malacca|Kedah|Pahang|Negeri[ \t]Sembilan|Putrajaya|Sabah|"
+                 r"Sarawak|Kuching|Indonesia|Jakarta|Batam|Thailand|Bangkok|Hong[ \t]Kong|United[ \t]Kingdom|"
+                 r"United[ \t]States|USA|Australia",
+    }
+    PART = re.compile("|".join(f"(?P<{k}>{v})" for k, v in PARTS.items()))
+    JOIN = re.compile(r"[ \t]*[,;]?[ \t]*(?:\n[ \t]*)?")
+
+    def __init__(self):
+        super().__init__(supported_entities=["ADDRESS"], name="address_parts")
+
+    def load(self) -> None:
+        pass
+
+    def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
+        out, chain = [], []
+
+        def close():
+            kinds = {k for k, _, _ in chain}
+            if len(kinds) >= 2 and (kinds & {"unit", "street", "building"} or kinds == {"postcode", "place"}):
+                out.append(RecognizerResult("ADDRESS", chain[0][1], chain[-1][2], 0.75,
+                                            recognition_metadata={"rule": "address_parts"}))
+
+        for m in self.PART.finditer(text):
+            if chain and not self.JOIN.fullmatch(text[chain[-1][2]:m.start()]):
+                close()
+                chain = []
+            chain.append((m.lastgroup, m.start(), m.end()))
+        if chain:
+            close()
+        return out
+
+
 def simple(name: str, entity: str, score: float, *regexes: str) -> PatternRecognizer:
     return PatternRecognizer(supported_entity=entity, name=name, global_regex_flags=FLAGS,
                              patterns=[Pattern(f"{name}_{i}", rx, score) for i, rx in enumerate(regexes)])
@@ -126,14 +318,17 @@ class LabelledRecognizer(EntityRecognizer):
         ("DOCTOR", "prof", rf"\bProf(?:essor)?\.?{AFTER_TITLE}(?P<v>{ONE_OR_MORE})"),
         ("NAME", "title", rf"\b(?:{'|'.join(TITLES)})\.?{AFTER_TITLE}(?P<v>{ONE_OR_MORE})"),
         ("DOCTOR", "dr_caps", rf"\b(?P<v>(?i:dr|prof)\.?[ \t]+{CAPS_NAME})\b"),
+        ("DOCTOR", "dr_apos", rf"\b(?:Dr|Prof(?:essor)?)\.?{AFTER_TITLE}"
+                              r"(?P<v>[A-Za-z]+'[A-Z][A-Za-z]+(?:-[A-Z][A-Za-z]+)?)"),
         ("NAME", "title_caps", rf"\b(?i:mr|mrs|ms|mdm|madam|miss)\.?[ \t]+(?P<v>{CAPS_NAME})\b"),
-        ("ADDRESS", "address", r"^Address:[ \t]*(?P<v>[^\n]*[^\s])"),
+        ("ADDRESS", "address", r"^(?:Address|Addr\.?|ADDR\.?):[ \t]*(?P<v>[^\n]*[^\s])"),
         ("HOSPITAL", "hospital", rf"\b(?P<v>{HOSPITAL})\b"),
         # "Facility: Metropolitan Health" + "Cancer Ctr" on the next line: one name, wrapped
         ("HOSPITAL", "facility", r"^[ \t]*(?i:facility|institution|hospital|clinic|referring (?:facility|hospital))[ \t]*:"
                                  rf"[ \t]*(?P<v>[^\n:]*[^\s:](?:\n[ \t]*(?:[A-Z][A-Za-z&'\-]*[ \t]+){{0,4}}{INST_WORD}\.?(?=[ \t]*$))?)"),
         ("HOSPITAL", "company", r"\b(?P<v>(?:[A-Z][A-Za-z&'\-]+[ \t]+){0,3}[A-Z][A-Za-z&'\-]+,?[ \t]+"
                                 r"(?:Inc|LLC|Ltd|Corp|Corporation|GmbH|Pte\.?[ \t]+Ltd)\b\.?)"),
+        ("BANK", "bank", rf"\b(?P<v>{BANK_NAME})"),
         ("ID", "clia", r"\bCLIA(?:[ \t]*(?i:no\.?|number|#))?[ \t]*[:#.]?\s*(?P<v>\d{2}[D\d]\d{7})(?![\dA-Za-z])"),
         # DOB in any format: dates are kept by default, so an unlabelled DOB would stay in the text.
         ("DOB", "dob", rf"\b(?i:DOB|D\.O\.B\.?|Date of birth|Birth ?date|Born|b\.){LSEP}(?:on[ \t]+)?"
@@ -147,7 +342,11 @@ class LabelledRecognizer(EntityRecognizer):
                              rf"Patient no\.?|Case no\.?|Med\.? ?Rec(?:ord)?\.?,?(?: no\.?)?){LSEP}(?P<v>{MRN_OCR})(?![\dA-Za-z])"),
         ("ACCESSION", "lab_label", r"\b(?i:Lab(?:oratory)? no\.?|Accession(?: no\.?| number)?|Our ref|Ref(?:erence)?(?: no\.?)?)"
                                   r"[ \t:#.\-]*(?P<v>[A-Z]{1,3}[ \-/]?\d{2}[ \-/]?\d{4,6})\b"),
+        ("ID", "lab_ref", r"\b(?i:block|cassette|slide|specimen|barcode|reference)\b"
+                          r"(?:[ \t]+(?:marked|labelled|labeled|stamped|numbered))?"
+                          r"[ \t]*:?[ \t]*(?P<v>[A-Z0-9][A-Z0-9/#-]{3,24})(?![A-Z0-9/#-])"),
         ("PHONE", "phone_cue", rf"\b{PHONE_CUE}[ \t:#.]*(?P<v>{PHONE_VALUE})(?!\d)"),
+        ("PHONE", "pager", rf"\b(?P<v>(?i:b/p|pager)[ \t:#.]*{PHONE_VALUE})(?!\d)"),
         ("ADDRESS", "postal", r"\b(?i:postal code|post ?code|zip(?: code)?)(?:[ \t]*[:.])?[ \t]*"
                               r"(?P<v>\d{5,6}|[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})\b"),
         ("MRN", "footer_mrn", rf"^Page \d+ of \d+ *\|[^|\n]*\| *(?P<v>{MRN_VALUE}) *$"),
@@ -169,7 +368,7 @@ class LabelledRecognizer(EntityRecognizer):
     # ALL-CAPS names: TCGA text is often in capitals ("DR. REPORTED BY"), so a capitalised run made
     # only of words from the report vocabulary is not a name.
     CAPS_RULES = {"dr_caps", "title_caps", "next_of_kin", "name_label", "role_label"}
-    DIGIT_RULES = {"id_label", "account_any"}
+    DIGIT_RULES = {"id_label", "account_any", "lab_ref"}
 
     def analyze(self, text: str, entities, nlp_artifacts=None) -> list[RecognizerResult]:
         from deid.hold import vocabulary
@@ -178,12 +377,13 @@ class LabelledRecognizer(EntityRecognizer):
         for entity, rule, rx in self.rules:
             for m in rx.finditer(text):
                 value = re.sub(r"^(?i:dr|prof)\.?\s+", "", m.group("v"))
-                if rule in self.DIGIT_RULES and sum(ch.isdigit() for ch in value) < 3:
-                    continue                              # "NODES EXAMINED", "AGE/SX": not an identifier
+                if rule in self.DIGIT_RULES and sum(ch.isdigit() for ch in value) < (5 if rule == "lab_ref" else 3):
+                    continue                              # "NODES EXAMINED", "AGE/SX", cassette "A1-16": not an identifier
                 if rule in self.CAPS_RULES and value.isupper() and all(
                         w.lower() in vocabulary() for w in re.findall(r"[A-Za-z']+", value)):
                     continue
-                out.append(RecognizerResult(entity, m.start("v"), m.end("v"), 0.85,
+                kind = "BANK" if rule == "company" and re.search(r"\bBank\b", value) else entity   # "OCBC Bank Ltd."
+                out.append(RecognizerResult(kind, m.start("v"), m.end("v"), 0.85,
                                             recognition_metadata={"rule": f"labelled_{rule}"}))
         return out
 
@@ -191,6 +391,13 @@ class LabelledRecognizer(EntityRecognizer):
 RECOGNISERS = [
     NricRecognizer(),
     NhsRecognizer(),
+    CardRecognizer(),
+    IbanRecognizer(),
+    ReversedNameRecognizer(),
+    AddressBlockRecognizer(),
+    AddressPartsRecognizer(),
+    simple("postcode_ref", "ADDRESS", 0.6, r"(?<=\()\d{6}[A-Z](?=\))"),   # a statement's "(999999B)": postcode + letter
+    simple("long_number", "ACCOUNT", 0.5, r"(?<![\d\-.])\d{12,19}(?![\d\-.])"),   # a statement's account number
     simple("ssn_format", "ID", 0.6, r"\b\d{3}[- ]\d{2}[- ]\d{4}\b"),
     simple("email", "EMAIL", 0.9, r"\b[\w.+-]+ ?@ ?[\w-]+(?:[.,][\w-]+)+\b",
            r"\b[\w.+-]+ ?(?:\(at\)|\[at\]) ?[\w-]+(?:\.[\w-]+)+\b",       # "name (at) domain"
@@ -218,7 +425,14 @@ RECOGNISERS = [
            rf"\b[A-Z][a-z]+(?:[ \t][A-Z][a-z]+){{0,2}},[ \t]+{US_STATE}[ \t]+\d{{5}}(?:-\d{{4}})?\b",   # Cambridge, MA 02141
            r"\bS\(?\d{6}\)?(?!\d)",                                  # SG postal code S520088
            r"\b[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}\b"),                   # UK postcode NE1 4XY
-    simple("mrn", "MRN", 0.9, r"\bMRN\d{6,8}\b"),
+    simple("mrn", "MRN", 0.9, r"\bMRN\d{6,8}[A-Z]?\b"),
+    ParticleNameRecognizer(),
+    # S P A C E D  letters: "T A N  K O H  W A H" (single capitals, one space inside a word, two between words)
+    simple("spaced_name", "NAME", 0.6, r"(?<![A-Za-z])[A-Z](?: [A-Z]){2,}(?:  [A-Z](?: [A-Z])+)+(?![A-Za-z])"),
+    simple("phone_ext", "PHONE", 0.6, r"\b(?:ext|extn)\.?[ \t]?\d{3,5}\b|(?<![\w-])x\d{4,5}\b"),
+    simple("station", "ADDRESS", 0.6, r"\b(?:[A-Z][a-z]+[ \t]){1,3}(?:MRT|LRT)(?:[ \t]Station)?\b"),
+    simple("dotted_name", "NAME", 0.6, r"\b(?!(?:Mr|Mrs|Ms|Mdm|Dr|Prof|St)\.)[A-Za-z]{2,}\.[A-Z][a-z]+"),   # not "Mr.Tan"
+    simple("surg_acc", "ACCESSION", 0.8, r"\bSURG-?\d{4}-?\d{4,}\b"),
     simple("floor", "ADDRESS", 0.8,
            rf"\b\d{{1,3}}(?:st|nd|rd|th)?{GAP}{FLOOR}\b",            # "1st Floor", "2 Fl", "3 Storey", "1st\nFloor"
            rf"\b{FLOOR}{GAP}\d{{1,3}}\b",                            # "Floor 1", "Fl 2"
@@ -304,26 +518,54 @@ def find_pattern_phi(text: str, report_id: str | None = None, learned=(), names_
     """learned: the profile's always_remove entries, matched as whole words, any case.
     names_model: also run the local name model (deid/ner.py) to fill gaps; off for the leftover scans.
 
-    Scans a folded copy (look-alike characters made plain, same length); spans keep the original text.
+    Scans a folded copy (look-alike characters made plain) with invisible characters taken out, so "Ta​n"
+    or "Sa­muel" read as one word; every span is mapped back to the original text.
     """
     with timed("presidio", report_id=report_id, chars=len(text)):
-        scan = fold(text)
-        results = []
-        for rec in RECOGNISERS + learned_recognisers(learned):
-            for r in rec.analyze(scan, rec.supported_entities, nlp_artifacts=None):
-                rule = (r.recognition_metadata or {}).get("rule") or rec.name
-                results.append((f"pattern:{rule}", r))
-        kept = resolve_overlaps(results)
-        kept = merge_addresses(scan, kept)
-        found = [(r.entity_type, r.start, r.end, source, round(r.score, 2)) for source, r in kept]
-        with timed("ner", report_id=report_id, chars=len(text)):    # the model only fills gaps
-            found += [] if not names_model else [("NAME", a, b, "ner:spacy", 0.6) for a, b in find_names(scan)
-                      if all(b <= s or a >= e for _, s, e, _, _ in found)]
-        found += propagate_names(scan, found)
+        keep = [i for i, ch in enumerate(text) if ch not in INVISIBLE]
+        scan = fold("".join(text[i] for i in keep))
+        found = _find(scan, learned, names_model, report_id)
+        if len(keep) < len(text):                                     # back to offsets in the original
+            keep.append(len(text))
+            found = [(t, keep[s], keep[e - 1] + 1, source, score) for t, s, e, source, score in found]
     return [
         PhiSpan(id=f"p{i}", type=t, start=s, end=e, text=text[s:e], source=source, score=score)
         for i, (t, s, e, source, score) in enumerate(sorted(found, key=lambda x: x[1]), 1)
     ]
+
+
+INVISIBLE = set("­​‌‍⁠﻿")      # soft hyphen and zero-width characters
+
+
+def _find(scan: str, learned, names_model: bool, report_id) -> list[tuple]:
+    """(type, start, end, source, score) for every identifier in the scan text."""
+    results = []
+    for rec in RECOGNISERS + learned_recognisers(learned):
+        for r in rec.analyze(scan, rec.supported_entities, nlp_artifacts=None):
+            rule = (r.recognition_metadata or {}).get("rule") or rec.name
+            results.append((f"pattern:{rule}", r))
+    kept = merge_addresses(scan, resolve_overlaps(results))
+    found = [(r.entity_type, r.start, r.end, source, round(r.score, 2)) for source, r in kept]
+    with timed("ner", report_id=report_id, chars=len(scan)):    # the model only fills gaps
+        found += [] if not names_model else [("NAME", a, b, "ner:spacy", 0.6) for a, b in find_names(scan)
+                  if all(b <= s or a >= e for _, s, e, _, _ in found)]
+    found += propagate_names(scan, found)
+    found += propagate_postcodes(scan, found)
+    return found
+
+
+def propagate_postcodes(text: str, found: list[tuple]) -> list[tuple]:
+    """Same report: once an address holds a 5-6 digit postcode, its other mentions are masked too, bare or with
+    a letter after it, as a statement prints it in a reference ("(999999B)", "999999 0000111122223333444")."""
+    taken = [(s, e) for _, s, e, _, _ in found]
+    codes = {c for t, s, e, _, _ in found if t == "ADDRESS" for c in re.findall(r"(?<!\d)\d{5,6}(?!\d)", text[s:e])}
+    extra = []
+    for code in codes:
+        for m in re.finditer(rf"(?<![\dA-Za-z]){code}[A-Z]?(?![\dA-Za-z])", text):
+            if not any(a < m.end() and m.start() < b for a, b in taken):
+                extra.append(("ADDRESS", m.start(), m.end(), "pattern:repeat_postcode", 0.8))
+                taken.append((m.start(), m.end()))
+    return extra
 
 
 NAME_PART = re.compile(r"[A-Za-z][A-Za-z'\-]+")

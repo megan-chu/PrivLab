@@ -69,3 +69,118 @@ Low-grade dysplasia in a young patient; hope for a good response.
 # Long ADDRESS
 [[ADDRESS:7010 Kit Creek Road, Morrisville, NC 27560]] (CLIA: [[ID:3402044309]])
 [[ADDRESS:150 Second St., 1st Floor, Cambridge, MA 02141]] (CLIA: [[ID:2202027531]])
+
+# Ambiguous date and time expressions embedded in narrative text
+Operation commenced at 0830 on [[DATE:12/05/24]]; prior excision was on [[DATE:05/12/2023]].
+Seen on [[DATE:last Tuesday]]; follow-up scheduled for [[DATE:next month]] on [[DATE:4th July 2025]].
+Specimen taken on [[DATE:15-Aug-2024]] at [[TIME:14:15 hrs]]; reviewed at [[TIME:9pm]].
+Prior scan performed on [[DATE:03/04/22]]; ambiguous whether [[DATE:3rd April]] or [[DATE:4th March]].
+
+# Embedded identifiers in specimen and lab accession IDs
+Specimen container labelled "[[NAME:TAN, K. W.]] / [[ID:S-24-98432]] / [[DATE:12-04-2024]]".
+Block [[ID:B24-10294A]] ([[NAME:Lim Ah Beng]]) received from external pathology.
+Cassette marked [[ID:S24/912-1]]: section taken by Dr [[DOCTOR:R. Nair]].
+Cross-reference histology accession [[ID:SURG-2024-001298]] with cytology smear.
+
+# Patient age, birthdate, and extreme age qualifiers
+A [[AGE:45-year-old]] male presents with persistent cough; DOB: [[DATE:14/02/1979]].
+Patient is a [[AGE:92 y/o]] female residing in a nursing home.
+Consent obtained from [[AGE:17yo]] emancipated minor [[NAME:Darren Goh]].
+The infant is a [[AGE:6-week-old]] neonate accompanied by mother [[NAME:Fatimah]].
+
+# Occupational, employer, and contextual social identity
+Patient is employed as an engineer at [[ORGANIZATION:Micron Semiconductor Asia]].
+Works as a primary school teacher at [[ORGANIZATION:Raffles Girls' Primary School]].
+Retired transport driver for [[ORGANIZATION:SMRT Corporation]]; no toxic exposures.
+Patient is the managing director of [[ORGANIZATION:DBS Bank Ltd]].
+
+# Digital identifiers and communication metadata
+Report emailed to GP via [[EMAIL:dr.tan_clinic@healthway.sg]] on [[DATE:14/09/2024]].
+Images uploaded to PACS server at [[URL:pacs.singhealth.com.sg/img/view?id=849201]].
+Portal access verified for [[EMAIL:ahkow_tan99@gmail.com]] with 2FA enabled.
+Online consultation link sent via SMS: [[URL:https://telehealth.nhg.com.sg/meet/tk-4821]].
+
+# Edge cases for typical identifiers (NAME, ID, DATE, PHONE, ADDRESS)
+
+# Hyphenated, apostrophe, and particle names
+Post-op check with Dr [[DOCTOR:d'Artois-Smith]]; dressing changed.
+Biopsy reviewed by [[NAME:van der Meer]], resident on duty.
+Seen in consultation with [[NAME:Al-Mansoor, Tariq]].
+Mdm [[NAME:O'Connor-Chua]] tolerated the procedure well.
+
+# OCR artifacts, typos, and spaced lettering in names
+Specimen integrity confirmed by [[NAME:T A N  K O H  W A H]].
+Report dictation transcribed as "[[NAME:Johnathan Smiht]]" [sic].
+Pathology signed out by Prof. [[DOCTOR:L1m B00n Huat]] via digital token.
+Follow-up arranged for [[NAME:Nur.Aisyah]] at polyclinic.
+
+# Punctuation-stripped and alphanumeric ID variations
+NRIC / FIN recorded as [[ID:S1234567D]] on outer envelope.
+Specimen container stamped [[ID:MRN9823411A]] without separator.
+Cross-match unit barcode [[ID:PRBC#88219-02]] verified prior to transfusion.
+Billing reference [[ID:ACC/2024/09/8812]] attached to histology request.
+
+# Informal phone extensions, pagers, and local notations
+Contact on-call registrar via speed dial [[PHONE:ext 4921]] or [[PHONE:x8834]].
+Urgent findings paged to [[PHONE:b/p 9238-1120]] at 1400 hrs.
+Dr [[DOCTOR:Goh]] reachable via hospital trunk line [[PHONE:6321-4311 loc 204]].
+Inform ward counter on [[PHONE:line 3]] or mobile [[PHONE:+65 91234567]].
+
+# Relative, colloquial, and landmark-based addresses
+Patient discharged home to [[ADDRESS:Blk 412 Bedok North Ave 2, #08-114]].
+Resides directly opposite [[ADDRESS:Kallang MRT Station]], near the community centre.
+Specimen couriered from [[ADDRESS:10 Jalan Tan Tock Seng, Basement Lab 2]].
+Accident occurred along the [[ADDRESS:PIE slip road towards Tuas before Exit 14]].
+
+# Negatives: clinical codes and measurements that look like IDs or dates
+TNM staging confirmed as pT2b N1a M0 (AJCC 8th edition).
+Immunohistochemistry profile: ER 80%, PR 40%, HER2 1+, Ki-67 15-20%.
+Flow rate adjusted to 10/20 ml/hr; blood pressure stable at 120/80 mmHg.
+Stained with CK7/CK20 and TTF-1; CDX-2 shows focal positivity.
+
+# Statements, letters and bank details (all values invented)
+[[NAME:JANE SAMPLE DOE]]\n[[ADDRESS:45 EXAMPLE AVENUE]]\n[[ADDRESS:SAMPLE TOWERS]]\n[[ADDRESS:09-04]]\n[[ADDRESS:SG 999999]]
+[[NAME:Mr Alan Example]]\n[[ADDRESS:12 Test Lane]]\n[[ADDRESS:50450 Kuala Lumpur]]
+([[ADDRESS:999999B]])              Statement Date   1 Jan 2030\n[[NAME:JANE SAMPLE DOE]]\n[[ADDRESS:45 EXAMPLE AVENUE]]\n[[ADDRESS:SG 999999]]
+Card account [[ACCOUNT:0000111122223333444]] will be charged on the due date.
+Paid by Visa [[ACCOUNT:4111 1111 1111 1111]] at the hospital pharmacy.
+Refund issued to IBAN [[ACCOUNT:GB82 WEST 1234 5698 7654 32]].
+Co-payment made through [[BANK:Example Bank]] and [[BANK:Bank of Testland]].
+Claim reimbursed by [[BANK:Sample Bank Ltd.]] after review.
+
+# Negatives: bank-like words and long numbers in clinical text
+Tissue was sent to the tumour bank and the Tissue Bank for research use.
+Ki-67 index was 15%; the patient made a swift recovery and was seen at the Visa clinic counter.
+
+# Addresses by their parts: unit, street, building, postcode, city, state, country (all invented)
+Discharged to [[ADDRESS:21 Example Gateway, #12-03, Sample Towers, Singapore 999999]].
+Lives at [[ADDRESS:Unit 5B, Testview Residences, 8 Palm Grove Walk]].
+Correspondence to [[ADDRESS:Apt 3B, 77 Harbour Boulevard]] only.
+Home: [[ADDRESS:10, Jalan Contoh 3, Taman Sample, 50450 Kuala Lumpur, Malaysia]].
+Now staying at [[ADDRESS:Blk 88 Example Ave 3, #05-221]] with her sister.
+Courier to [[ADDRESS:The Example Plaza, Level 7, 1 Test Square]] by noon.
+Sent from [[ADDRESS:40 Ocean Rise]]\n[[ADDRESS:Singapore 999998]]
+Transferred from [[ADDRESS:46000 Petaling Jaya, Selangor]] last month.
+Visit arranged at [[ADDRESS:Sample Heights, 3 Testing Close]].
+
+# Negatives: address words in clinical text
+Level 2 lymph nodes involved; Park et al. reported 3 similar cases.
+Hill's criteria were met after a court-ordered review; the tumour bank received 12345 samples.
+Tissue was sent overseas to Australia for a second opinion.
+
+# Uncued names, development set (written 2 Nov to improve rules without touching the frozen uncued benchmark; all invented)
+[[NAME:Rosnah binte Jaafar]] was told of the result by phone.
+The biopsy was explained to [[NAME:Hafizah binti Mokhtar]] and her husband.
+Results were collected by [[NAME:Iskandar bin Daud]] on Friday.
+[[NAME:Azman bin Salleh]] agreed to the second operation.
+Consent was witnessed by [[NAME:Norliza bte Kassim]].
+[[NAME:nurul ain binte sulaiman]] asked about the margins.
+the sample from [[NAME:mohd rizal bin harun]] arrived late.
+[[NAME:Lee Mei Fong]] brought the earlier slides from the other hospital.
+The family asked that [[NAME:Chua Wen Jie]] be told first.
+Slides were reviewed with [[NAME:Ravi Shankar]] before sign-out.
+[[NAME:Kavitha d/o Rajendran]] signed the consent form.
+[[NAME:Emily Clarke]] requested a copy for her GP.
+The report was read out to [[NAME:Goh Kian Seng]] over the phone.
+[[NAME:Siti Zubaidah]] was accompanied by her mother.
+Discussed at length with [[NAME:Thomas Reyes]], who had questions about grade.

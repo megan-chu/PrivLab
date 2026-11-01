@@ -47,7 +47,7 @@ log = logging.getLogger("privlab.mcp")
 LIMIT = 25
 VIEWER = {"url": None}
 HideType = Literal["NAME", "DOCTOR", "ID", "DOB", "DATE", "MRN", "ACCESSION", "ACCOUNT", "PHONE", "EMAIL",
-                   "ADDRESS", "HOSPITAL"]
+                   "ADDRESS", "HOSPITAL", "BANK"]
 
 INSTRUCTIONS = """PrivLab de-identifies clinical reports on this laptop, then extracts the fields the user defines.
 Order: privlab_deidentify_report -> privlab_confirm_review (repeat while next is "hold" or "flags") ->

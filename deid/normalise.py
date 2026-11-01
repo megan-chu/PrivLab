@@ -1,7 +1,7 @@
 """
 normalise.py - fold look-alike characters before scanning, one character for one character.
 
-Zero-width and no-break spaces become spaces, dashes become "-", and Cyrillic/Greek letters
+Zero-width and no-break spaces become spaces, dashes become "-", full-width letters and digits become ASCII, and Cyrillic/Greek letters
 that look Latin become Latin ("Ѕ7654321F" -> "S7654321F"). Length never changes, so every
 offset found in the folded text points at the same place in the original.
 """
@@ -14,7 +14,8 @@ HOMOGLYPHS = {  # Cyrillic and Greek letters that look like Latin ones
     "у": "y", "ѕ": "s", "і": "i", "ј": "j", "Α": "A", "Β": "B", "Ε": "E", "Ζ": "Z", "Η": "H", "Ι": "I",
     "Κ": "K", "Μ": "M", "Ν": "N", "Ο": "O", "Ρ": "P", "Τ": "T", "Υ": "Y", "Χ": "X", "ο": "o",
 }
-TABLE = str.maketrans({**{c: " " for c in SPACES + ZERO_WIDTH}, **{c: "-" for c in DASHES}, **HOMOGLYPHS})
+FULL_WIDTH = {chr(c): chr(c - 0xFEE0) for c in range(0xFF01, 0xFF5F)}   # "ｊｏ＠ｍａｉｌ" -> "jo@mail"
+TABLE = str.maketrans({**{c: " " for c in SPACES + ZERO_WIDTH}, **{c: "-" for c in DASHES}, **HOMOGLYPHS, **FULL_WIDTH})
 
 
 def fold(text: str) -> str:

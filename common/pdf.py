@@ -6,6 +6,8 @@ Usage: from common.pdf import pdf_text; out = pdf_text(data)   # {"text", "warni
 """
 import io
 import logging
+import re
+import textwrap
 
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
@@ -13,8 +15,44 @@ from pypdf.errors import PdfReadError
 MAX_PDF_BYTES = 10_000_000
 MIN_CHARS = 20                    # less than this is not a report: a scan or an empty file
 NOT_SUPPORTED = "Scanned PDFs, images and other formats are not supported."
+VERTICAL = re.compile(r"(?:^[ \t]*\S[ \t]*\n){3,}[ \t]*\S[ \t]*$", re.MULTILINE)   # 4+ lines of one character each
+# A table row: words, a wide gap, and an amount at the end ("01 OCT   GRAB SINGAPORE     12.50 CR")
+TABLE_ROW = re.compile(r"^.*\S[ \t]{3,}.*\d[\d,]*\.\d{2}(?:[ \t]*(?:CR|DR|-))?[ \t]*$", re.MULTILINE)
+TABLE_ROWS = 5
 
 logging.getLogger("pypdf").setLevel(logging.ERROR)     # malformed-PDF chatter; never to stdout
+
+
+def _clean(text: str) -> str:
+    text = (text or "").replace("\r\n", "\n").replace("\r", "\n")
+    text = VERTICAL.sub(lambda m: "".join(m.group().split()), text)   # margin text, one character per line
+    text = textwrap.dedent("\n".join(line.rstrip() for line in text.split("\n")))   # no page-margin indent
+    return re.sub(r"\n{3,}", "\n\n", text)
+
+
+CELL = re.compile(r"\S+(?:[ \t]{1,11}\S+)*")               # words with gaps under 12 spaces: one column's cell
+
+
+def _tidy(line: str) -> str:
+    """Layout mode spreads one cell's words apart ("JANE    SAMPLE   DOE"): one space between them, and each cell
+    still starts at its own column, so the columns stay aligned."""
+    out = ""
+    for m in CELL.finditer(line):
+        out = out.ljust(m.start()) if len(out) < m.start() else out + "  "
+        out += re.sub(r"[ \t]+", " ", m.group())
+    return out
+
+
+def _page_text(page) -> str:
+    """Plain reading for prose (single spaces, lines that wrap); layout mode only on a page with a table
+    (5+ rows ending in an amount), where it keeps the columns apart. Layout mode copies a justified
+    paragraph's gaps, so prose read that way is ragged."""
+    plain = _clean(page.extract_text())
+    try:
+        layout = _clean("\n".join(_tidy(line) for line in page.extract_text(extraction_mode="layout").split("\n")))
+    except Exception:                                     # layout mode can fail on unusual fonts
+        return plain
+    return layout if len(TABLE_ROW.findall(layout)) >= TABLE_ROWS else plain
 
 
 def pdf_text(data: bytes) -> dict:
@@ -26,7 +64,7 @@ def pdf_text(data: bytes) -> dict:
         reader = PdfReader(io.BytesIO(data))
         if reader.is_encrypted:
             return {"error": "The PDF is password-protected. Remove the password and add it again."}
-        pages = [(p.extract_text() or "").replace("\r\n", "\n").replace("\r", "\n") for p in reader.pages]
+        pages = [_page_text(p) for p in reader.pages]
     except (PdfReadError, ValueError, KeyError, TypeError, OSError) as e:
         return {"error": f"The PDF could not be read ({type(e).__name__}); it may be damaged. Only PDFs with selectable text are supported."}
     if sum(len(p.strip()) for p in pages) < MIN_CHARS:

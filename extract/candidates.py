@@ -14,6 +14,7 @@ the status.
   find_candidates(deid_id, field_key) -> FieldResult dict
   prefetch(deid_id)                   -> makes the one call ahead of time (viewer, after de-id);
                                          no prediction is frozen and no review timer starts
+  preview(deid_id)                    -> where each field's value sits, from that reply only (no call)
 """
 import hashlib
 import threading
@@ -90,6 +91,27 @@ def prefetch(deid_id: str, *, pack_path=None, effort: str | None = None) -> dict
     except Exception as e:   # the click later shows amber "unavailable"; never a crash
         return {"deid_id": deid_id, "status": "error", "reason": type(e).__name__}
     return {"deid_id": deid_id, "status": "ready", "model_ms": model_ms}
+
+
+def preview(deid_id: str, *, pack_path=None) -> dict:
+    """Where each field's value sits, from the read-ahead reply only: never a model call, no prediction
+    frozen, no review timer. A field read under an older definition, or due a blind check, is left out."""
+    result, frozen = pipeline.result_for(deid_id), _REPLIES.get(deid_id)
+    if result is None or frozen is None:
+        return {"deid_id": deid_id, "status": "none"}
+    reply, _, defs = frozen
+    out = {}
+    for f in load_pack(pack_path)["fields"]:
+        if defs.get(f.key) != meaning_key(f) or (not f.multi and _is_blind(deid_id, f.key)):
+            continue
+        fc = next((x for x in reply.fields if x.key == f.key), None)
+        spots = []
+        for c in fc.candidates if fc else []:
+            checked = run_checks(f, c, result.text, result.kept_types)
+            if checked["fail"] is None and checked["start"] is not None:
+                spots.append({"start": checked["start"], "end": checked["end"], "value": checked["value"]})
+        out[f.key] = spots if f.multi else spots[:1]
+    return {"deid_id": deid_id, "status": "ready", "fields": out}
 
 
 def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None,

@@ -10,7 +10,7 @@ from dataclasses import asdict, dataclass, field
 
 PHI_TYPES = (
     "NAME", "ID", "DOB", "DATE", "MRN", "ACCESSION",
-    "DOCTOR", "HOSPITAL", "PHONE", "ADDRESS", "EMAIL", "ACCOUNT",
+    "DOCTOR", "HOSPITAL", "PHONE", "ADDRESS", "EMAIL", "ACCOUNT", "BANK",
 )
 STATUSES = ("proposed", "removed", "kept")  # kept = user unmarked a false alarm
 
@@ -106,7 +106,7 @@ CHECKLIST = {
     "national_ids": ("NRIC/FIN, NHS and SSN numbers", ("ID",), True, True),
     "dob": ("Date of birth", ("DOB",), True, True),
     "other_dates": ("Other dates (collected, reported, diagnosis)", ("DATE",), False, False),
-    "mrn_accession": ("MRN, accession and account numbers", ("MRN", "ACCESSION", "ACCOUNT"), False, True),
+    "mrn_accession": ("MRN, accession, account and card numbers", ("MRN", "ACCESSION", "ACCOUNT"), False, True),
     "phone_email_address": ("Phone, email and address", ("PHONE", "EMAIL", "ADDRESS"), True, True),
-    "hospital": ("Hospital name", ("HOSPITAL",), False, True),
+    "hospital": ("Hospital and bank names", ("HOSPITAL", "BANK"), False, True),
 }

@@ -42,6 +42,21 @@ def test_scanned_page_is_skipped_with_a_warning():
     assert "Invasive ductal carcinoma" in out["text"] and "Page 2 had no selectable text" in out["warnings"][0]
 
 
+def test_margin_text_one_character_per_line_is_joined():
+    out = pdf_text(make_pdf(REPORT + list("RefNo:4821")))
+    assert "RefNo:4821" in out["text"] and "Mary Tan" in out["text"]
+    assert not out["text"].startswith(" ")                                          # no page-margin indent
+
+
+def test_layout_gaps_inside_a_cell_close_and_columns_stay_aligned():
+    from common.pdf import _tidy
+    rows = ["       JANE    SAMPLE   DOE                    Current    Balance              $100.00",
+            "       45  EXAMPLE      AVENUE                 Credit   Limit                 $1,000.00"]
+    out = [_tidy(r) for r in rows]
+    assert out[0].strip().startswith("JANE SAMPLE DOE") and "45 EXAMPLE AVENUE" in out[1]
+    assert out[0].index("Current Balance") == out[1].index("Credit Limit")          # same column, same place
+
+
 def test_scans_images_other_formats_and_locked_pdfs_are_refused():
     assert "looks scanned" in pdf_text(make_pdf([]))["error"]                       # no text layer
     assert "not a PDF" in pdf_text(b"\x89PNG\r\n\x1a\n" + b"0" * 100)["error"]        # an image renamed .pdf

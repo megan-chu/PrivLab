@@ -29,6 +29,23 @@ def nric_valid(s: str) -> bool:
     return NRIC_TABLES[prefix][total % 11] == s[8]
 
 
+def luhn_valid(s: str) -> bool:
+    """Payment card number: 13-19 digits (spaces or hyphens allowed), Luhn check digit."""
+    digits = re.sub(r"[ -]", "", s.strip())
+    if not re.fullmatch(r"\d{13,19}", digits) or len(set(digits)) == 1:
+        return False
+    total = sum(d if i % 2 == 0 else (d * 2 - 9 if d > 4 else d * 2) for i, d in enumerate(int(c) for c in reversed(digits)))
+    return total % 10 == 0
+
+
+def iban_valid(s: str) -> bool:
+    """IBAN, e.g. GB82 WEST 1234 5698 7654 32: country code, 2 check digits, mod-97 == 1."""
+    s = re.sub(r"[ -]", "", s.strip()).upper()
+    if not re.fullmatch(r"[A-Z]{2}\d{2}[A-Z0-9]{11,30}", s):
+        return False
+    return int("".join(str(int(c, 36)) for c in s[4:] + s[:4])) % 97 == 1
+
+
 def nhs_valid(s: str) -> bool:
     """UK NHS number: 10 digits (spaces or hyphens allowed), mod-11 check digit."""
     digits = re.sub(r"[ -]", "", s.strip())

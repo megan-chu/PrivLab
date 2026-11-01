@@ -66,11 +66,9 @@ def test_flags_prechecked_hide_and_layer1_learns(fake_spark, monkeypatch):
     assert r2["counts"] == {"NAME": 1}
 
 
-def test_lowercase_particle_name_is_held_not_sent(fake_spark):
+def test_lowercase_particle_name_is_caught_locally_not_sent(fake_spark):
     r = pipeline.deidentify_report(text="Report handed to siti binte ali at the counter.", profile=profile())
-    held = pipeline.confirm_deid(r["deid_id"])
-    assert held["next"] == "hold" and fake_spark["sent"] == []       # held locally, nothing sent
-    done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []})
+    done = pipeline.confirm_deid(r["deid_id"])                          # a pattern finds it: no question needed
     assert done["next"] == "done" and "siti binte ali" not in done["text"]
     assert all("siti binte ali" not in p for p in fake_spark["sent"])
 
