@@ -202,7 +202,11 @@ def test_list_field_items_each_grounded_and_exported_one_row_per_item(paths):
     assert bad["status"] == "error"                                           # a prediction is needed again
 
     columns, rows, _ = export_rows(pack_path=paths["pack"], log_path=paths["log"])
-    assert "Biomarker" not in columns                                        # not a cell in the wide file
+    assert columns[-1] == "Biomarker"                                       # a list is one cell in the wide file
+    assert rows[0]["Biomarker"] == ("Microsatellite Status: MS-Stable; "
+                                    "Tumor Mutational Burden: 11 Muts/Mb; "
+                                    "TP53: TP53 (NM_000546) rearrangement exon 11; "
+                                    "CCNE1: amplification (equivocal)")     # items joined with ";"
     lists = export_items(pack_path=paths["pack"], log_path=paths["log"])
     cols, item_rows, withheld = lists["biomarker"]
     assert cols == ["case_id", "report_id", "Biomarker", "result"] and withheld == 0
@@ -210,6 +214,42 @@ def test_list_field_items_each_grounded_and_exported_one_row_per_item(paths):
         ("Microsatellite Status", "MS-Stable"), ("Tumor Mutational Burden", "11 Muts/Mb"),
         ("TP53", "TP53 (NM_000546) rearrangement exon 11"), ("CCNE1", "amplification (equivocal)")]
     assert len({x["case_id"] for x in item_rows}) == 1 and item_rows[0]["case_id"]
+
+
+@pytest.mark.parametrize("name, words", [("Cancer Histology", "Morphology of Cancer Tumor. Example value: Adenocarcinoma"),
+                                         ("Tumour Size", None), ("Lymph Node Status", "Example value: N0")])
+def test_title_case_field_names_are_not_refused_as_identifiers(paths, name, words):
+    """1 Nov: "Field name: Cancer Histology" in the prompt was read as a person's name and refused."""
+    paths["spark"]["state"]["reply"] = {**DRAFT, "definition": "The stated value."}
+    assert define_field(name, words, pack_path=paths["pack"])["next"] == "confirm"
+
+
+def test_redefine_saved_as_edited_needs_no_call_and_versions_by_meaning(paths):
+    """The viewer's Save changes: no model call; a new name keeps the version, a new definition or list choice bumps it."""
+    f = load_pack(paths["pack"])["fields"][0]
+    accept = {"key": f.key, "meaning_question": f.meaning, "definition": f.definition, "type": f.type, "unit": f.unit,
+              "range_min": f.range[0], "range_max": f.range[1], "multi": False}
+    sent = len(paths["spark"]["sent"])
+    renamed = define_field("Largest tumour size", "Biggest dimension. Example value: 2.1 cm", accept=accept, pack_path=paths["pack"])["field"]
+    assert renamed["version"] == f.version and renamed["name"] == "Largest tumour size"
+    assert len(load_pack(paths["pack"])["fields"]) == 1                       # replaced in place, not added
+    listed = define_field("Largest tumour size", None, accept={**accept, "multi": True}, pack_path=paths["pack"])["field"]
+    assert listed["version"] == f.version + 1 and listed["multi"]
+    assert len(paths["spark"]["sent"]) == sent                                # no Muse Spark call
+
+
+def test_bulk_accepted_values_are_exported_but_never_score_or_teach(paths):
+    """Extract all: a verified value saved without a person is in the export, but is no evidence of accuracy."""
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    out = confirm(paths, res, candidate_id=res["candidate_id"], phase="bulk")
+    assert out["status"] == "saved"
+    f = load_pack(paths["pack"])["fields"][0]
+    assert f.examples["good"] == [] and f.readiness == "draft"               # nothing learned, nothing checked
+    assert validation(f, read_log(paths["log"]))["checked"] == 0
+    assert export_rows(pack_path=paths["pack"], log_path=paths["log"])[1][0]["tumour size (cm)"] == 2.1
+    unsure = run(paths, REPORT + " Margin clear.", ("3.5", "a quote that is not in the report"))   # new text: no cache hit
+    assert unsure["status"] != "green"
+    assert confirm(paths, unsure, missing=True, phase="bulk")["status"] == "error"     # not verified: needs a person
 
 
 def test_learned_examples_reach_the_next_prompt(paths):

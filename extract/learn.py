@@ -46,7 +46,10 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
                   evidence_text: str | None = None, missing: bool = False, note: str | None = None, *,
                   items: list[dict] | None = None, phase: str = "teach", pack_path=None, log_path=None) -> dict:
     """The user's answer: pick a candidate, or give value + evidence, or say it is not in the report.
-    A list field takes items=[{"value", "evidence_text"}, ...] instead: the whole list, as confirmed."""
+    A list field takes items=[{"value", "evidence_text"}, ...] instead: the whole list, as confirmed.
+
+    phase="bulk": a verified value accepted by "Extract all", not by a person. It is saved for the export but
+    is no evidence of accuracy, so it never scores (validation, score_fields) and never teaches the pack."""
     predicted = _PREDICTIONS.get((deid_id, field_key))
     result = pipeline.result_for(deid_id)
     pack = load_pack(pack_path)
@@ -55,6 +58,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
         return {"status": "error", "reason": "run find_candidates for this report and field first"}
     if predicted.get("blind") and candidate_id:
         return {"status": "error", "reason": "blind check: give value with evidence_text, or missing=True"}
+    if phase == "bulk" and (predicted["status"] != "green" or predicted.get("blind")):
+        return {"status": "error", "reason": "only a verified value can be accepted without review"}
 
     confirmed = (_confirmed_items(result.text, field, items, missing) if field.multi
                  else _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing))
@@ -74,7 +79,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
 
     # 2. Then learn.
     t0 = time.perf_counter()
-    _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
+    if phase != "bulk":
+        _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
     path = log_path or LOG_PATH
     field.readiness = readiness(validation(field, read_log(path) + [entry]))
     put_field(pack, field)
@@ -240,7 +246,8 @@ def more_needed(errors: int, n: int) -> int:
 
 def validation(field, entries: list[dict]) -> dict:
     """Scores for the field's current definition version only."""
-    rows = [e for e in entries if e["field"] == field.key and e.get("field_version", 1) == field.version]
+    rows = [e for e in entries if e["field"] == field.key and e.get("field_version", 1) == field.version
+            and e.get("phase") != "bulk"]                        # accepted without a person: not a check
     green = [e for e in rows if e["predicted"]["status"] == "green"]
     silent = sum(e["outcome"] in ("wrong", "extra") for e in green)
     blind = [e for e in rows if e.get("blind")]

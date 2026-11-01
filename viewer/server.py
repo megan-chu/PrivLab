@@ -204,6 +204,7 @@ def api_confirm_field(b):
         return learn.confirm_field(b["deid_id"], b["field"], candidate_id=b.get("candidate_id"),
                                    value=b.get("value"), evidence_text=b.get("evidence_text"),
                                    missing=bool(b.get("missing")), note=b.get("note"), items=b.get("items"),
+                                   phase="bulk" if b.get("auto") else "teach",
                                    pack_path=STATE["pack"], log_path=STATE["log"])
 
 
@@ -302,7 +303,8 @@ def _list_lines() -> str:
         meaning = " ".join((f.definition or f.meaning).split())
         out.append(f"lists/{f.key}.csv\n  One row per item of \"{f.name}\" [definition v{f.version}]: {meaning}\n"
                    f"  Columns: case_id, report_id (join to extracted_data.csv), {f.name} (the item's label, as "
-                   f"written), result (the text after the colon; empty when the item has no label).\n")
+                   f"written), result (the text after the colon; empty when the item has no label).\n"
+                   f"  extracted_data.csv has the same items joined with \";\" in one \"{f.name}\" cell.\n")
     return "\n".join(out)
 
 
@@ -405,6 +407,9 @@ class Handler(BaseHTTPRequestHandler):
         except spark.OfflineError:
             out = {"error": f"{spark.OFFLINE}. De-identification still works on this device; the second check "
                             "and fields need Muse Spark. Try again when online.", "offline": True}
+        except spark.PhiLeakError:          # the outgoing scan refused: say so plainly; nothing was sent
+            out = {"error": "Not sent: what you typed looks like it contains a name or an ID number. "
+                            "Rephrase it without personal details and try again."}
         except Exception as e:      # never crash the page; details go to the log, not the browser
             log.error("%s failed: %s", fn.__name__, traceback.format_exc())
             out = {"error": f"{type(e).__name__}: something went wrong; see runs/viewer.log"}

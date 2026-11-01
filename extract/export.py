@@ -4,8 +4,10 @@ field, ready for storage and analysis (Excel, pandas, R) without reshaping.
 
 Columns: case_id (random, from the encrypted vault), report_id, reviewed_at, exported_at, then one column per field in pack
 order, headed by the field's name (number fields add their unit: "tumour size (cm)"). Text values are exactly as
-the report writes them; numbers are numbers. An empty cell means not stated (or not reviewed yet). Never free
-text, never evidence positions. Every value is scanned for identifier patterns; a hit is left empty and counted.
+the report writes them; numbers are numbers. A list field joins its items with ";" in one cell; every item
+is also a row in lists/<key>.csv (export_items, in the viewer's .zip). An empty cell means not stated (or not
+reviewed yet). Never free text, never evidence positions. Every value is scanned for identifier patterns; a hit
+is left out and counted.
 
 Usage:
   python -m extract.export --out runs/extracted_data.csv      # or .json; every report in the score log
@@ -39,7 +41,7 @@ def headers(fields) -> dict[str, str]:
 def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[str], list[dict], int]:
     """(columns, rows, number of values withheld by the scan): the latest confirmed value per report and field.
     deid_ids: only these reports (the viewer passes the reports in its list); None = every report in the log."""
-    fields = [f for f in load_pack(pack_path)["fields"] if not f.multi]     # list fields: export_items
+    fields = load_pack(pack_path)["fields"]
     column = headers(fields)
     columns = FIXED + [column[f.key] for f in fields]
     by_report, withheld = {}, 0
@@ -49,12 +51,17 @@ def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[s
         if wanted is not None and e["deid_id"] not in wanted:
             continue
         field = next((f for f in fields if f.key == e["field"]), None)
-        if field is None:                                   # a removed field, or a list field
+        if field is None:                                   # a removed field
             continue
         row = by_report.setdefault(e["deid_id"], {"report_id": e["report_id"]})
         row["reviewed_at"] = e["ts"]
         value = (e["confirmed"] or {}).get("value")         # None: not stated
-        if value is not None and leftover_identifiers(str(value)):
+        if field.multi:                                     # one cell, items joined; each item is also a row in lists/<key>.csv
+            items = [str(v) for v in value] if isinstance(value, list) else []
+            clean = [v for v in items if not leftover_identifiers(v)]
+            withheld += len(items) - len(clean)
+            value = "; ".join(clean) or None
+        elif value is not None and leftover_identifiers(str(value)):
             withheld += 1
             value = None
         row[column[field.key]] = value

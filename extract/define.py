@@ -27,7 +27,8 @@ def define_field(name: str, description: str | None = None, accept: dict | None 
     """Call 1 (accept=None): returns a draft to confirm. Call 2 (accept=draft, possibly edited): saves it."""
     pack = load_pack(pack_path)
     if accept is None:
-        prompt = f"{INSTRUCTIONS}\n\nField name: {name}\nUser's description: {description or '(none)'}"
+        # "Field:", not "Field name:": the outgoing scan reads "name: Cancer Histology" as a person's name
+        prompt = f"{INSTRUCTIONS}\n\nField: {name}\nUser's description: {description or '(none)'}"
         draft = spark.ask(prompt, schema=FieldDraft, step="define")
         return {"next": "confirm", "draft": draft.model_dump(),
                 "question": draft.meaning_question, "note": "Accept as is or edit, then call again with accept=draft."}
