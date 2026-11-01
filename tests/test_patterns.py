@@ -185,3 +185,12 @@ def test_local_name_model_fills_gaps_only():
     assert not any(t in ("Gleason", "Gerota", "DIAGNOSIS") for _, t in hits)    # report wording is not a name
     from deid.patterns import leftover_identifiers
     assert leftover_identifiers("Escalated to Marcus Wong for review.") == []    # final scan stays rules-only
+
+
+@pytest.mark.parametrize("text, name", [
+    ("Signed out by Kuganesan Thanabalasingam: no change.", "Kuganesan Thanabalasingam"),
+    ("Comments from Marcus Zawadzki (surgeon): agree.", "Marcus Zawadzki"),
+])
+def test_a_name_before_a_colon_is_not_a_label(text, name):
+    from deid.hold import hold_flags
+    assert name in [text[a:b] for a, b in hold_flags(text)]                   # red-team round 2, H01 / H03

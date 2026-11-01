@@ -16,6 +16,7 @@ checks the riskiest reports first: high = a pattern left in the output, or the n
 or unqualified; medium = name check not run, or name-like words the user kept visible.
 """
 import gc
+import re
 import secrets
 import time
 from collections import Counter
@@ -35,6 +36,7 @@ from deid.types import DeidResult, PhiSpan
 from deid.vault import encrypt_json, save_vault
 
 STATE_DIR = ROOT / "runs" / "state"
+INSTITUTION = re.compile(r"\b(?:Hospital|Cent(?:er|re)|Clinic|Institute|Infirmary)$")   # a held hospital, not a person
 _RUNS: dict[str, dict] = {}
 
 
@@ -72,13 +74,16 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
         removed = prof.removed_types(profile)
         reusable = prof.reusable_allow_list(profile)
         allow = {a.lower() for a in reusable}
-        spans = [s for s in find_pattern_phi(text, report_id, learned=profile.always_remove)
-                 if s.type in removed and s.text.lower() not in allow]
+        found = find_pattern_phi(text, report_id, learned=profile.always_remove)
+        spans = [s for s in found if s.type in removed and s.text.lower() not in allow]
+        kept_by_choice = [s.text for s in found if s.type not in removed]    # e.g. hospital names you keep
     deid_id = "d_" + secrets.token_hex(4)
     run = {"deid_id": deid_id, "report_id": report_id, "text": text, "profile": profile, "persist": persist,
-           "step": "review", "spans": spans, "allowed": list(reusable), "layer2": "not run",
+           "step": "review", "spans": spans, "allowed": list(reusable) + kept_by_choice, "layer2": "not run",
            "warnings": warnings, "trace": [], "shown_at": time.monotonic(), "review_s": {},
-           "kept_names": 0, "unqualified": False, "priority": None}
+           "kept_names": 0, "unqualified": False, "priority": None,
+           "learn": {"allow": [], "remove": []},       # staged; the profile learns only when the run finishes
+           "allowed_n": len(reusable) + len(kept_by_choice)}     # how much of "allowed" came from the profile
     _trace(run, "layer1", f"Presidio found {len(spans)} identifiers on the laptop. Nothing sent.")
     _RUNS[deid_id] = run
     _save(run)
@@ -110,9 +115,9 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                 spans.append(PhiSpan(id=f"u{len(spans) + 1}", type=a["type"], start=start, end=end,
                                      text=text[start:end], source="user"))
         spans = merge_spans(spans)
-        prof.learn(run["profile"], allow=[s.text for s in kept],      # a model-found name you kept hidden is
-                   remove=[{"text": a["text"], "type": a["type"]} for a in add]   # learned like a held one
-                   + [{"text": s.text, "type": s.type} for s in spans if s.source == "ner:spacy"])
+        _stage(run, allow=[s.text for s in kept],      # a model-found name you kept hidden is
+               remove=[{"text": a["text"], "type": a["type"]} for a in add]   # learned like a held one
+               + [{"text": s.text, "type": s.type} for s in spans if s.source == "ner:spacy"])
         run["allowed"] += [s.text for s in kept]
         run["confirmed"] = spans
         _trace(run, "review", f"You confirmed {len(spans)} identifiers ({len(kept)} unmarked, {len(add)} added).")
@@ -122,7 +127,8 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         holds = []
         for start, end in hold_flags(tagged, run["allowed"], tags):
             o_start, o_end = to_original(tags, start, end)
-            holds.append(PhiSpan(id=f"h{len(holds) + 1}", type="NAME", start=o_start, end=o_end,
+            kind = "HOSPITAL" if INSTITUTION.search(text[o_start:o_end]) else "NAME"
+            holds.append(PhiSpan(id=f"h{len(holds) + 1}", type=kind, start=o_start, end=o_end,
                                  text=text[o_start:o_end], source="hold"))
         if holds:
             run.update(step="hold", holds=holds, shown_at=time.monotonic())
@@ -135,7 +141,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         keep = set((hold_answers or {}).get("keep", ()))
         hide = [h for h in run["holds"] if h.id not in keep]
         kept = [h for h in run["holds"] if h.id in keep]
-        prof.learn(run["profile"], allow=[h.text for h in kept], remove=[{"text": h.text, "type": "NAME"} for h in hide])
+        _stage(run, allow=[h.text for h in kept], remove=[{"text": h.text, "type": h.type} for h in hide])
         run["allowed"] += [h.text for h in kept]
         run["kept_names"] += len(kept)
         spans = merge_spans(run["confirmed"] + hide)
@@ -158,7 +164,9 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                 suspects=suspects(masked.text, run["allowed"], masked.tags))
     except Exception as e:   # API down, timeout, bad JSON, missing key: amber, never a crash
         run["layer2"] = "unavailable"
-        run["warnings"].append(f"Muse Spark check unavailable ({type(e).__name__}). Review the text manually.")
+        run["warnings"].append(f"{spark.OFFLINE}: the second check did not run. De-identification on this device is "
+                               "complete; read the text once before sharing it." if isinstance(e, spark.OfflineError)
+                               else f"Muse Spark check unavailable ({type(e).__name__}). Review the text manually.")
         _trace(run, "layer2", "Muse Spark check unavailable: review manually.", ok=False)
         return _finish(run, spans)
     run["layer2_provider"] = provider
@@ -181,6 +189,21 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                      "Words the model did not rule on are unticked; send their ids as hide if they are identifiers.")}
 
 
+def back_to_review(deid_id: str) -> dict:
+    """From the hold question back to the highlights, to change your answers. Only before any API call:
+    after the name check, going back would mean sending again (start the report again instead)."""
+    run = _RUNS.get(deid_id)
+    if run is None or run["step"] != "hold":
+        return _error(deid_id, "can only go back from the hold question")
+    # A true undo: nothing from the first pass is learned or allowed any more.
+    run.update(step="review", shown_at=time.monotonic(), learn={"allow": [], "remove": []},
+               allowed=run["allowed"][:run["allowed_n"]])
+    run.pop("holds", None)
+    _trace(run, "review", "Back to the highlights; nothing was sent.")
+    _save(run)
+    return {"deid_id": deid_id, "next": "review"}
+
+
 def confirm_deid_flags(deid_id: str, keep=(), hide=()) -> dict:
     """keep: ids of ticked model finds that are false alarms. hide: ids of unticked suspects that are identifiers."""
     run = _RUNS.get(deid_id)
@@ -192,7 +215,7 @@ def confirm_deid_flags(deid_id: str, keep=(), hide=()) -> dict:
               or (s.source == "suspect" and s.id in hide_ids)]
     kept = [s for s in run["flags"] if s not in hidden]
     # Learning: hidden finds are caught locally next time; kept ones are not asked again.
-    prof.learn(run["profile"], allow=[s.text for s in kept], remove=[{"text": s.text, "type": s.type} for s in hidden])
+    _stage(run, allow=[s.text for s in kept], remove=[{"text": s.text, "type": s.type} for s in hidden])
     run["allowed"] += [s.text for s in kept]
     run["kept_names"] += len(kept)
     _trace(run, "flags", f"You hid {len(hidden)} and kept {len(kept)}; hidden ones are learned for next time.")
@@ -215,21 +238,51 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     originals = {}
     for t in tags:
         originals.setdefault(t.surrogate, []).append(text[t.orig_start:t.orig_end])
-    vault_path = save_vault(deid_id, {"case_id": secrets.token_hex(6), "report_id": run["report_id"],
+    case_id = run.setdefault("case_id", secrets.token_hex(6))      # one per report, however often it is finished
+    vault_path = save_vault(deid_id, {"case_id": case_id, "report_id": run["report_id"],
                                       "tags": {k: sorted(set(v)) for k, v in originals.items()}})
     summary = {"total": len(tags), "by_type": dict(Counter(t.type for t in tags)),
                "by_source": dict(Counter(t.source.split(":")[0] for t in tags))}
     result = DeidResult(deid_id=deid_id, report_id=run["report_id"], status="confirmed", text=tagged, tags=tags,
                         summary=summary, profile_version=profile.version, vault_ref=str(vault_path),
                         kept_types=kept, allowed=allowed, seal=make_seal(deid_id, tagged, kept, allowed))
-    run.update(step="done", final_spans=spans, result=result, priority=review_priority(run, len(leftovers)))
+    run.update(step="done", final_spans=spans, result=result, priority=review_priority(run, len(leftovers)),
+               leftovers=leftovers)
+    prof.learn(profile, **run["learn"])          # commit what this run staged (idempotent on a re-finish)
     if run["persist"]:
         prof.save_profile(profile)
     _trace(run, "apply", f"{len(tags)} identifiers replaced with tags; encrypted vault saved.", ok=not leftovers)
     _save(run)
     return {"deid_id": deid_id, "next": "done", "text": tagged, "summary": summary, "layer2": run["layer2"],
             "warnings": run["warnings"], "trace": run["trace"], "review_seconds": run["review_s"],
-            "review_priority": run["priority"]}
+            "review_priority": run["priority"],
+            "leftovers": [{"id": x.id, "type": x.type, "rule": x.source, "start": x.start, "end": x.end}
+                          for x in leftovers]}         # positions in the tagged text; the value only in the viewer
+
+
+def resolve_leftover(deid_id: str, leftover_id: str, action: str) -> dict:
+    """One click on a pattern the output scan still found: "mask" hides it as a tag (learned for next
+    time), "allow" keeps it as a clinical term (learned too). The text is scanned again before anything
+    else can use it; a report stays blocked until no pattern is left."""
+    run = _RUNS.get(deid_id)
+    if run is None or run["step"] != "done":
+        return _error(deid_id, "nothing to fix for this deid_id")
+    hit = next((x for x in run.get("leftovers", []) if x.id == leftover_id), None)
+    if hit is None or action not in ("mask", "allow"):
+        return _error(deid_id, "unknown leftover or action")
+    spans = run["final_spans"]
+    if action == "allow":
+        run["allowed"].append(hit.text)
+        _stage(run, allow=[hit.text])
+    else:
+        start, end = to_original(run["result"].tags, hit.start, hit.end)
+        span = PhiSpan(id=f"x{len(spans) + 1}", type=hit.type, start=start, end=end, text=run["text"][start:end],
+                       source="user")
+        _stage(run, remove=[{"text": span.text, "type": span.type}])
+        spans = merge_spans(spans + [span])
+    run["warnings"] = [w for w in run["warnings"] if "still in the output" not in w]
+    _trace(run, "fix", f"You {'masked' if action == 'mask' else 'allowed'} a {hit.type} pattern the final scan found.")
+    return _finish(run, spans)
 
 
 def review_priority(run: dict, leftovers: int) -> dict:
@@ -307,6 +360,12 @@ def _review_time(run: dict) -> None:
 
 def _trace(run: dict, step: str, message: str, ok: bool = True) -> None:
     run["trace"].append({"step": step, "observe": message, "ok": ok})
+
+
+def _stage(run: dict, allow=(), remove=()) -> None:
+    """What this run will teach the profile; committed in _finish, discarded by back_to_review."""
+    run["learn"]["allow"] += list(allow)
+    run["learn"]["remove"] += list(remove)
 
 
 def _error(deid_id: str, message: str) -> dict:

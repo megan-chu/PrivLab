@@ -17,8 +17,10 @@ whether reasoning appears inside the reply text (stripped below if wrapped in <t
 """
 import hashlib
 import json
+import os
 import re
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 
 from pydantic import BaseModel, ValidationError
@@ -154,14 +156,50 @@ def _model(settings, provider: str) -> str:
 
 
 def _client(settings, provider: str):
+    import httpx
     import openai
 
     if provider not in _clients:
         base_url = {"meta": settings.meta_api_base_url, "baseten": settings.baseten_base_url}[provider]
         api_key = {"meta": settings.meta_api_key, "baseten": settings.baseten_api_key}[provider]
-        # max_retries=1: at most one retry on a network error (CLAUDE.md cost rules)
-        _clients[provider] = openai.OpenAI(base_url=base_url, api_key=api_key, max_retries=1, timeout=60)
+        # max_retries=1: at most one retry on a network error (CLAUDE.md cost rules); connecting may
+        # take 5 s at most, so a dead network fails fast instead of hanging the screen
+        _clients[provider] = openai.OpenAI(base_url=base_url, api_key=api_key, max_retries=1,
+                                           timeout=httpx.Timeout(60.0, connect=5.0))
     return _clients[provider]
+
+
+OFFLINE = "No internet connection"
+
+
+class OfflineError(ConnectionError):
+    """The provider cannot be reached (no internet). Callers show "review manually"; local steps go on."""
+
+
+_REACH: dict[str, tuple[float, bool]] = {}      # provider -> (checked at, reachable)
+
+
+def _check_online(settings, provider: str) -> None:
+    """A 3-second connection test, remembered for 20 s (10 s if it failed), so an offline laptop gets an
+    answer in seconds rather than after two 20-second network timeouts."""
+    import socket
+    from urllib.parse import urlparse
+
+    url = urlparse({"meta": settings.meta_api_base_url, "baseten": settings.baseten_base_url}[provider] or "")
+    if not url.hostname:
+        raise ValueError(f"{provider} base URL is not set in .env")       # a config error, not "offline"
+    if any(os.environ.get(k) for k in ("HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy")):
+        return                     # behind a proxy a direct connect fails even when the API is reachable
+    at, ok = _REACH.get(provider, (0.0, True))
+    if time.monotonic() - at > (20 if ok else 10):
+        try:
+            socket.create_connection((url.hostname, url.port or 443), timeout=3).close()
+            ok = True
+        except OSError:
+            ok = False
+        _REACH[provider] = (time.monotonic(), ok)
+    if not ok:
+        raise OfflineError(f"{provider} cannot be reached: no internet connection")
 
 
 def _request(settings, provider: str, prompt: str, schema: type[BaseModel],
@@ -169,6 +207,7 @@ def _request(settings, provider: str, prompt: str, schema: type[BaseModel],
     """Try strict json_schema output first; fall back to json_object if the API rejects it."""
     import openai
 
+    _check_online(settings, provider)
     client = _client(settings, provider)
     messages = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": prompt}]
     formats = [

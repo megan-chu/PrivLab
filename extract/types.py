@@ -17,10 +17,9 @@ class Field:
     name: str                   # the user's words: "tumour size"
     description: str            # the user's own description
     meaning: str                # the confirmed meaning question
-    type: str                   # "number" | "choice"
+    type: str                   # "number" | "text" (as written)
     unit: str | None = None     # number fields, e.g. "cm"
     range: list[float] | None = None
-    choices: list[str] = field(default_factory=list)
     readiness: str = "draft"
     recent: list[str] = field(default_factory=list)          # last outcomes: accepted / corrected
     examples: dict = field(default_factory=lambda: {"good": [], "bad": []})
@@ -40,11 +39,10 @@ class FieldDraft(BaseModel):
     key: str
     meaning_question: str
     definition: str
-    type: Literal["number", "choice"]
+    type: Literal["number", "text"]
     unit: str | None
     range_min: float | None
     range_max: float | None
-    choices: list[str]
 
 
 class CandidateReply(BaseModel):

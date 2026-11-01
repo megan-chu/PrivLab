@@ -2,7 +2,7 @@
 checks.py - the four in-product checks on every candidate (PLAN.md §4), all deterministic:
 
   evidence_found     the evidence text exists in the de-identified report (we find its position)
-  type_ok            the value parses as the field's type and lies in its range / choices
+  type_ok            a number parses and lies in its range; a text value is not empty
   value_in_evidence  the value as written appears in its evidence (no invented numbers)
   section_ok         the evidence is not only from clinical history or the gross description
 
@@ -55,10 +55,9 @@ def run_checks(field, cand, text: str, kept_types=()) -> dict:
         out["checks"]["value_in_evidence"] = bool(number) and re.search(
             rf"(?<![\d.]){re.escape(number.group())}(?![\d])", evidence.replace(",", ".")) is not None
     else:
-        choice = next((c for c in field.choices if c.lower() == cand.value_text.strip().lower()), None)
-        value = choice
-        out["checks"]["type_ok"] = choice is not None
-        tokens = re.findall(r"[a-z0-9]+", (choice or cand.value_text).lower())
+        value = " ".join(cand.value_text.split()) or None              # as written; no list, no normalising
+        out["checks"]["type_ok"] = value is not None
+        tokens = re.findall(r"[a-z0-9]+", cand.value_text.lower())
         words = [w for w in tokens if len(w) > 2] or tokens          # "T3", "N0", "2": short codes
         out["checks"]["value_in_evidence"] = bool(words) and all(_in_evidence(w, evidence.lower()) for w in words)
     out["value"] = value

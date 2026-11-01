@@ -18,8 +18,8 @@ INSTRUCTIONS = (
     "'Largest tumour dimension on the surgical specimen?'. definition: 2-3 short sentences a registrar "
     "could apply without asking: exactly what counts, where in a pathology report it is usually written, "
     "and what not to count (e.g. history, another specimen, a metastasis, a differential). type: 'number' (a measurement or count) or "
-    "'choice' (one of a fixed list). For number: unit (e.g. 'cm') and a plausible range; choices empty. "
-    "For choice: the usual options as they appear in reports; unit and range null."
+    "'text' (anything else, kept exactly as the report writes it, e.g. pT2a or invasive ductal carcinoma; "
+    "no fixed list). For number: unit (e.g. 'cm') and a plausible range. For text: unit and range null."
 )
 
 
@@ -35,7 +35,7 @@ def define_field(name: str, description: str | None = None, accept: dict | None 
     key = re.sub(r"[^a-z0-9_]", "_", accept["key"].lower()).strip("_") or "field"
     rng = [accept["range_min"], accept["range_max"]] if accept.get("range_min") is not None else None
     f = Field(key=key, name=name, description=description or "", meaning=accept["meaning_question"],
-              definition=accept.get("definition") or "", type=accept["type"], unit=accept.get("unit"), range=rng, choices=list(accept.get("choices") or []),
+              definition=accept.get("definition") or "", type="number" if accept["type"] == "number" else "text", unit=accept.get("unit"), range=rng,
               history=[{"when": datetime.now(SGT).isoformat(timespec="seconds"), "what": "created"}])
     existing = get_field(pack, key)
     if existing and meaning_key(existing) == meaning_key(f):           # same meaning: keep what it learned

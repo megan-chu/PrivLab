@@ -33,7 +33,7 @@ For real hospital data, the two layers alone are not enough, because an identifi
 | **Code-level guard.** Only one module can call the API. Report text reaches it only as a sealed, masked or de-identified object (never a plain string); the one plain-text prompt is a field definition the user types. Every outgoing prompt, including learned examples, is re-scanned, and sending is refused if an identifier pattern is still present. | Built |
 | **Human review before anything leaves the laptop.** The user reviews and corrects the local highlights first; Muse Spark only sees text a person has approved, and anything new it flags gets a second, short review (pre-ticked "hide"). | Built |
 | **Hold rule.** If masked text still contains something that looks like a name (capitalised words not in the report vocabulary, lower-case "x binte y" names), PrivLab pauses and asks before calling the API. | Built |
-| **Two exports, kept apart.** The registry export (CSV) holds a random case id, report id, field values and evidence positions: no report text, so a missed name does not travel onward with the data. The masked report text (one .txt, or a .zip of every finished report) is a separate download the user chooses; a report whose final scan still finds an identifier pattern is withheld from both. | Built |
+| **Two exports, kept apart.** The data export (CSV) has one row per report: a random case id, report id, review time and one column per field, values as written: no report text, so a missed name does not travel onward with the data. The masked report text (one .txt, or a .zip of every finished report) is a separate download the user chooses; **Export everything** puts both in one .zip with a data dictionary (each column's type and the field's definition and version). Only the reports in the current list are exported, and a report whose final scan still finds an identifier pattern is withheld from both. | Built |
 | **Model qualification.** The name check uses a model only after it passes a frozen qualification set under its exact settings (provider, model, effort, prompt). Muse Spark Open and Muse Spark 1.3 both pass (11 of 12, no false alarms); a changed setting needs a new run, so swapping models cannot silently lower privacy. | Built |
 | **Measured exposure.** Evaluation reports the share of planted identifiers that reach the API (missed locally) and the share left after both layers. | Built |
 | **Learns from corrections without leaking.** Confirmed values become examples for later prompts; an example that still contains an identifier pattern is never stored. | Built |
@@ -50,9 +50,10 @@ patterns alone caught 8% at the start); with the hold rule, 100% are caught befo
 held-out test reports give the final figures.
 **Uncued-names benchmark** (56 invented names in 48 short narratives with no cue such as "Patient:" or
 "Dr", Chinese, Malay, Indian and Western names, a quarter in lower case; generated once, frozen by hash,
-never used for tuning): the local patterns and name model catch 61%; with the hold rule, 82% are caught
-before any API call, with 4 questions on 5 name-free sentences. Muse Spark's share of the remaining 18%
-is measured on Day 7.
+never used for tuning): the local patterns and name model catch 61%; with the hold rule, 82–86% are caught
+before any API call, with 4 questions on 5 name-free sentences. With the Muse Spark Open name check, 95%
+(53 of 56). The 3 still missed are Malay names with "binte"; 14% of names reached the API unmasked
+before being caught or missed, which is the exposure a hospital would host the model locally to remove.
 The name check runs on Muse Spark Open so that de-identification can be hosted locally. In an early
 test, before the hold rule caught them locally, it missed 2 of 49 hard names that Muse Spark 1.3 caught;
 Muse Spark 1.3 stays available as a backup, and the held-out test run reports the final figures.

@@ -57,7 +57,7 @@ def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
     draft = mcp.privlab_define_field("tumour size")
     assert draft["next"] == "confirm" and "Did you mean" in draft["say"]
     saved = mcp.privlab_define_field("tumour size", save=True, **{k: draft["draft"][k] for k in (
-        "definition", "type", "unit", "choices", "range_min", "range_max")}, meaning=draft["draft"]["meaning_question"])
+        "definition", "type", "unit", "range_min", "range_max")}, meaning=draft["draft"]["meaning_question"])
     assert saved["field"]["version"] == 1
 
     mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
@@ -71,7 +71,7 @@ def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
     seen += json.dumps(got) + json.dumps(done) + json.dumps(mcp.privlab_list_fields())
     assert "Mary Tan" not in seen and "S1234567D" not in seen                   # nothing raw reached the chat
 
-    csv_out = mcp.privlab_export_file("registry", str(local_keys / "out" / "registry.csv"))
+    csv_out = mcp.privlab_export_file("data", str(local_keys / "out" / "data.csv"))
     assert csv_out["rows"] == 1 and "carcinoma" not in Path(csv_out["path"]).read_text(encoding="utf-8")
     zip_out = mcp.privlab_export_file("masked", str(local_keys / "out" / "masked.zip"))
     with zipfile.ZipFile(zip_out["path"]) as z:
@@ -83,7 +83,7 @@ def test_refusals_are_plain_messages(mcp, local_keys):
     assert "No file" in mcp.privlab_deidentify_report(str(local_keys / "missing.txt"))["say"]
     assert "held-out test" in mcp.privlab_deidentify_report(report_file(local_keys, name="PP0008.txt"))["say"]
     assert mcp.privlab_extract_fields("d_unknown")["next"] == "error"
-    assert "data/" in mcp.privlab_export_file("registry", str(ROOT / "data" / "x.csv"))["say"]
+    assert "data/" in mcp.privlab_export_file("data", str(ROOT / "data" / "x.csv"))["say"]
     assert mcp.privlab_remove_field("nope")["next"] == "error"
 
 
@@ -107,3 +107,11 @@ def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):
         async with Client(params) as client:
             return [t.name for t in (await client.list_tools()).tools]
     assert len(asyncio.run(names())) == 10
+
+
+def test_chat_context_shows_only_tags_and_report_words(mcp, local_keys):
+    text = "Patient: Mary Tan\nSigned out by Oyelaran: agree\nIBAN: GB82 WEST 1234 5698 7654 32\nSeen by 陈小明 and Dr Lee.\n"
+    out = mcp.privlab_deidentify_report(report_file(local_keys, text))
+    seen = json.dumps(out, ensure_ascii=False)
+    assert all(x not in seen for x in ("Oyelaran", "7654", "陈小明", "Mary", "Lee"))  # red-team round 2, M01-M06
+    assert "[PATIENT-1]" in seen

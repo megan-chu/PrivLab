@@ -48,16 +48,19 @@ def reusable_allow_list(profile: PrivacyProfile) -> list[str]:
 def learn(profile: PrivacyProfile, allow=(), remove=()) -> None:
     """allow: false-alarm texts; remove: {"text", "type"} to catch locally next time."""
     allowed = {a.lower() for a in profile.allow_list}
+    known = {(r["text"].lower(), r["type"]) for r in profile.always_remove}
+    added = False
     for text in allow:
         if text.lower() not in allowed:
             profile.allow_list.append(text)
             allowed.add(text.lower())
-    known = {(r["text"].lower(), r["type"]) for r in profile.always_remove}
+            added = True
     for r in remove:
         if (r["text"].lower(), r["type"]) not in known:
             profile.always_remove.append({"text": r["text"], "type": r["type"]})
             known.add((r["text"].lower(), r["type"]))
-    if allow or remove:
+            added = True
+    if added:
         profile.version += 1
 
 

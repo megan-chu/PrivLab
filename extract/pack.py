@@ -13,7 +13,7 @@ PACK_PATH = ROOT / "packs" / "default.yaml"
 
 def meaning_key(f: Field) -> tuple:
     """What a field means, without what it learned. A change here is a new definition version."""
-    return (f.meaning, f.definition, f.type, f.unit, tuple(f.range or ()), tuple(f.choices))
+    return (f.meaning, f.definition, f.type, f.unit, tuple(f.range or ()))
 
 
 def load_pack(path=None) -> dict:
@@ -21,7 +21,10 @@ def load_pack(path=None) -> dict:
     if not path.exists():
         return {"version": 1, "fields": []}
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    return {"version": data.get("version", 1), "fields": [Field(**f) for f in data.get("fields", [])]}
+    fields = [Field(**{k: v for k, v in f.items() if k not in ("choices", "type")},   # an old "choice" field is
+                    type="number" if f.get("type") == "number" else "text")           # read as text; its list dropped
+              for f in data.get("fields", [])]
+    return {"version": data.get("version", 1), "fields": fields}
 
 
 def save_pack(pack: dict, path=None) -> None:

@@ -115,15 +115,16 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
         typed, value = value, parse_number(str(value), None, field.unit)
         if value is None:
             return f"'{typed}' is not a number; for a number field type e.g. 2.1"
-    elif not any(c.lower() == str(value).strip().lower() for c in field.choices):
-        return f"'{value}' is not one of: {', '.join(field.choices)}"
+    else:
+        value = " ".join(str(value).split())                          # text: as written
     return {"value": value, "start": hits[0][0], "end": hits[0][1]}
 
 
 def _same(a, b, kind: str) -> bool:
     if kind == "number":
         return abs(float(a) - float(b)) < 0.05
-    return str(a).strip().lower() == str(b).strip().lower()
+    norm = lambda v: " ".join(str(v).lower().replace(".", " ").split())    # "ductal. carcinoma" = "ductal carcinoma"
+    return norm(a) == norm(b)
 
 
 def _outcome(pred, conf, kind: str) -> str:
@@ -251,7 +252,7 @@ def show_pack(field_key: str | None = None, *, pack_path=None, log_path=None) ->
     """All fields with readiness; with field_key, also its definition and extraction history."""
     pack = load_pack(pack_path)
     log = read_log(log_path)
-    fields = [{"key": f.key, "name": f.name, "type": f.type, "unit": f.unit, "choices": f.choices,
+    fields = [{"key": f.key, "name": f.name, "type": f.type, "unit": f.unit,
                "readiness": f.readiness, "recent": f.recent, "version": f.version,
                "validation": validation(f, log)} for f in pack["fields"]]
     if field_key is None:

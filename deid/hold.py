@@ -48,7 +48,21 @@ INITIALS_BEFORE = re.compile(r"(?:\b[A-Z]\.[ \t]*)+$")   # "L. " before "Kumar"
 INITIALS_AFTER = re.compile(r"^(?:[ \t]*[A-Z]\.)+")       # " B. H." after "Lim"
 # A label, not a name: "Vehicle Plate:", "Staff ID:", "Tax Identification (TIN):"
 LABEL_AFTER = re.compile(r"[ \t]*(?:ID|No\.?|\([^)\n]{1,20}\))?[ \t]*:")
-LABEL_WORDS = {"no", "number", "tax", "id", "ref"}       # in the name list, but label words here
+# Words a form label is made of. A run before ":" is a label only if EVERY word is one of these or report
+# vocabulary: "Signed out by Kuganesan Thanabalasingam:" is a name (red-team round 2, 30 Oct).
+LABEL_NOUNS = {"no", "number", "id", "ref", "reference", "code", "name", "tax", "identification", "tin", "staff",
+               "broker", "member", "policy", "claim", "case", "file", "passport", "licence", "license", "card",
+               "account", "holder", "vehicle", "plate", "make", "model", "registration", "address", "contact",
+               "mobile", "cell", "email", "nationality", "occupation", "employer", "insured", "beneficiary", "owner",
+               "beneficial", "residential", "mailing", "home", "primary", "relationship", "manager"}
+
+
+def is_label(words, text: str, end: int) -> bool:
+    """A form label ("Vehicle Plate:", "Staff ID:", "Tax Identification (TIN):"): followed by a colon, and
+    made only of label nouns and report vocabulary."""
+    vocab = vocabulary()
+    return bool(LABEL_AFTER.match(text, end)) and all(
+        _plain(w) in LABEL_NOUNS or (_plain(w) in vocab and _plain(w) not in name_list()) for w in words)
 WORDPART = rf"{LETTER}(?:{LETTER}|['’\-])*"
 PARTICLE_NAME = re.compile(rf"(?<![A-Za-z'])({WORDPART})[ \t]+"
                            rf"(binte|binti|bin|bte|s/o|d/o|a/l|a/p)[ \t]+"
@@ -132,7 +146,8 @@ def hold_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
         folded, vocab = fold(text), vocabulary()
         flags += [(a, b) for a, b in _raw_suspects(text, allowed, tags, flags)
                   if _listed_name(folded[a:b], vocab)]
-    return sorted(flags)
+    phrases = {" ".join(a.lower().split()) for a in allowed}     # "Riverside General Hospital" as a whole
+    return sorted(f for f in flags if " ".join(text[f[0]:f[1]].lower().split()) not in phrases)
 
 
 def _title_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
@@ -177,9 +192,8 @@ def _title_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
             continue
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
-        if LABEL_AFTER.match(text, run[-1].end()) and not any(
-                _plain(m.group()) in name_list() - LABEL_WORDS or m.group().lower() in SURNAMES for m in words):
-            continue                         # a form label ("Vehicle Plate:", "Make:"); "Mary Tan:" stays held
+        if is_label([m.group() for m in words], text, run[-1].end()):
+            continue                         # a form label ("Vehicle Plate:", "Make:"); a name before ":" stays held
         start, end = run[0].start(), run[-1].end()
         if m := INITIALS_BEFORE.search(text[:start]):     # include initials, so none are left visible
             start = m.start()

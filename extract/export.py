@@ -1,65 +1,88 @@
 """
-export.py - structured-only registry export from confirmed values (PLAN.md §3C).
+export.py - the extracted-data export from confirmed values (PLAN.md §3C): one row per report, one column per
+field, ready for storage and analysis (Excel, pandas, R) without reshaping.
 
-One row per confirmed field: case id (random, from the encrypted vault), report id, field,
-value, unit, outcome and evidence position. Never free text. Every value is scanned for
-identifier patterns; a hit is left out and counted.
+Columns: case_id (random, from the encrypted vault), report_id, reviewed_at, exported_at, then one column per field in pack
+order, headed by the field's name (number fields add their unit: "tumour size (cm)"). Text values are exactly as
+the report writes them; numbers are numbers. An empty cell means not stated (or not reviewed yet). Never free
+text, never evidence positions. Every value is scanned for identifier patterns; a hit is left empty and counted.
 
 Usage:
-  python -m extract.export --out runs/registry_export.csv
+  python -m extract.export --out runs/extracted_data.csv      # or .json; every report in the score log
 """
 import argparse
 import csv
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 
 from deid.patterns import leftover_identifiers
 from deid.vault import load_vault
 from extract.learn import read_log
-from extract.pack import get_field, load_pack
+from extract.pack import load_pack
 
-COLUMNS = ["case_id", "report_id", "field", "value", "unit", "outcome", "evidence_start", "evidence_end"]
+FIXED = ["case_id", "report_id", "reviewed_at", "exported_at"]
+SGT = timezone(timedelta(hours=8))
 
 
-def export_rows(*, pack_path=None, log_path=None) -> tuple[list[dict], int]:
-    """Latest confirmed value per (report, field). Returns (rows, number withheld by the scan)."""
-    pack, latest = load_pack(pack_path), {}
+def header(field) -> str:
+    return f"{field.name} ({field.unit})" if field.type == "number" and field.unit else field.name
+
+
+def headers(fields) -> dict[str, str]:
+    """Field key -> column header. Two fields with the same name (and unit) get their key appended, so
+    neither overwrites the other's column."""
+    plain = [header(f) for f in fields]
+    return {f.key: h if plain.count(h) == 1 else f"{h} [{f.key}]" for f, h in zip(fields, plain)}
+
+
+def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[str], list[dict], int]:
+    """(columns, rows, number of values withheld by the scan): the latest confirmed value per report and field.
+    deid_ids: only these reports (the viewer passes the reports in its list); None = every report in the log."""
+    fields = load_pack(pack_path)["fields"]
+    column = headers(fields)
+    columns = FIXED + [column[f.key] for f in fields]
+    by_report, withheld = {}, 0
+    exported_at = datetime.now(SGT).isoformat(timespec="seconds")
+    wanted = None if deid_ids is None else set(deid_ids)
     for e in read_log(log_path):
-        latest[(e["deid_id"], e["field"])] = e
-    rows, withheld = [], 0
-    for (deid_id, key), e in latest.items():
-        conf = e["confirmed"] or {}
-        value = conf.get("value")
+        if wanted is not None and e["deid_id"] not in wanted:
+            continue
+        field = next((f for f in fields if f.key == e["field"]), None)
+        if field is None:                                   # a removed field
+            continue
+        row = by_report.setdefault(e["deid_id"], {"report_id": e["report_id"]})
+        row["reviewed_at"] = e["ts"]
+        value = (e["confirmed"] or {}).get("value")         # None: not stated
         if value is not None and leftover_identifiers(str(value)):
             withheld += 1
-            continue
-        field = get_field(pack, key)
+            value = None
+        row[column[field.key]] = value
+    rows = []
+    for deid_id, row in by_report.items():
         try:
             case_id = load_vault(deid_id)["case_id"]
         except (OSError, KeyError, ValueError):
             case_id = None
-        rows.append({"case_id": case_id, "report_id": e["report_id"], "field": key, "value": value,
-                     "unit": field.unit if field and field.type == "number" else None,
-                     "outcome": "not stated" if not conf else "confirmed",
-                     "evidence_start": conf.get("start"), "evidence_end": conf.get("end")})
-    return rows, withheld
+        rows.append({c: ({**row, "case_id": case_id, "exported_at": exported_at}).get(c) for c in columns})
+    return columns, rows, withheld
 
 
 def write_export(path, *, pack_path=None, log_path=None) -> dict:
-    rows, withheld = export_rows(pack_path=pack_path, log_path=log_path)
+    columns, rows, withheld = export_rows(pack_path=pack_path, log_path=log_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.suffix == ".json":
         path.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
     else:
-        with open(path, "w", encoding="utf-8", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=COLUMNS)
+        with open(path, "w", encoding="utf-8-sig", newline="") as f:      # -sig: Excel reads UTF-8 correctly
+            w = csv.DictWriter(f, fieldnames=columns)
             w.writeheader()
             w.writerows(rows)
     return {"rows": len(rows), "withheld": withheld, "path": str(path)}
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Export confirmed field values (no free text).")
+    ap = argparse.ArgumentParser(description="Export confirmed field values: one row per report (no free text).")
     ap.add_argument("--out", required=True, help="a .csv or .json path")
     from pathlib import Path
     print(write_export(Path(ap.parse_args().out)))

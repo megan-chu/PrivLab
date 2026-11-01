@@ -95,6 +95,22 @@ def test_keep_goes_to_allow_list(fake_spark):
     assert "Bloom" in done["text"] and "Bloom" in p.allow_list
 
 
+@pytest.mark.usefixtures("no_names_model")
+def test_back_to_review_unlearns_the_first_pass(fake_spark):
+    """Keep "Tan Ah Wing" visible, reach the hold question, go back, hide it after all: the profile must not
+    carry the kept name as a false alarm, or every later report would leave it unmasked."""
+    p = profile()
+    r = pipeline.deidentify_report(text=HARD, profile=p, show_text=True)
+    name = next(d["id"] for d in r["detections"] if d["text"] == "Tan Ah Wing")
+    assert pipeline.confirm_deid(r["deid_id"], unmark=[name])["next"] == "hold"
+    assert pipeline.back_to_review(r["deid_id"])["next"] == "review"
+    assert p.allow_list == [] and p.always_remove == []                     # nothing learned yet
+    done = confirm(r["deid_id"], use_spark=False)                            # second pass: hide everything
+    assert done["next"] == "done" and "Tan Ah Wing" not in done["text"]
+    assert "Tan Ah Wing" not in p.allow_list and "Tan Ah Wing" not in done["text"]
+    assert any(x["text"] == "Rajesh Kumar" for x in p.always_remove)        # the final answers are learned
+
+
 def test_spark_failure_is_amber_not_a_crash(fake_spark):
     fake_spark["state"]["fail"] = TimeoutError("slow")
     r = pipeline.deidentify_report(text=HARD, profile=profile())
@@ -274,3 +290,53 @@ def test_qualification_key_changes_with_any_setting(local_keys, monkeypatch):
     monkeypatch.delenv("BASETEN_MODEL")
     monkeypatch.setitem(spark.DEFAULT_EFFORT, "baseten", "minimal")
     assert qualify.qualification_key("baseten") != key                         # or lowers the effort
+
+
+@pytest.mark.parametrize("action", ["mask", "allow"])
+def test_one_click_fix_for_a_pattern_left_in_the_output(fake_spark, monkeypatch, action):
+    real = pipeline.find_pattern_phi
+    monkeypatch.setattr(pipeline, "find_pattern_phi",                         # Layer 1 misses the NRIC ...
+                        lambda *a, **k: [s for s in real(*a, **k) if s.type != "ID"])
+    r = pipeline.deidentify_report(text="Patient: Mary Tan  NRIC: S1234567D\nDIAGNOSIS: carcinoma.",
+                                   profile=new_profile()[0])
+    done = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    assert [x["type"] for x in done["leftovers"]] == ["ID"]                   # ... the final scan does not
+    assert "left in the output" in " ".join(done["review_priority"]["reasons"])
+    from deid.vault import load_vault
+    case_id = load_vault(r["deid_id"])["case_id"]
+    fixed = pipeline.resolve_leftover(r["deid_id"], done["leftovers"][0]["id"], action)
+    assert fixed["next"] == "done" and fixed["leftovers"] == []
+    assert load_vault(r["deid_id"])["case_id"] == case_id                     # the fix keeps the report's case id
+    assert ("S1234567D" in fixed["text"]) == (action == "allow")
+    assert not any("left in the output" in x for x in fixed["review_priority"]["reasons"])
+    assert pipeline.resolve_leftover(r["deid_id"], "nope", "mask")["next"] == "error"
+
+
+def test_kept_by_choice_and_remembered_phrases_are_not_asked(fake_spark):
+    from deid.hold import hold_flags
+    from deid.profile import checklist
+    choices = {c["key"]: c["default"] for c in checklist()}
+    choices["hospital"] = False                                              # you keep hospital names
+    r = pipeline.deidentify_report(text=load_report("PP0002"), profile=new_profile(choices)[0])
+    out = pipeline.confirm_deid(r["deid_id"], use_spark=False, show_text=True)
+    assert out["next"] == "done"                                             # no "Riverside General Hospital?"
+    text = "Seen at Riverside General Hospital today."
+    assert hold_flags(text) and not hold_flags(text, allowed=["Riverside General Hospital"])
+
+
+def test_back_from_the_hold_question_only_before_anything_is_sent(fake_spark, no_names_model):
+    r = pipeline.deidentify_report(text="Report handed to ming wei at the desk.", profile=new_profile()[0])
+    held = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    assert held["next"] == "hold"
+    assert pipeline.back_to_review(r["deid_id"])["next"] == "review"
+    assert pipeline.back_to_review(r["deid_id"])["next"] == "error"         # already back
+    again = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    assert again["next"] == "hold" and fake_spark["sent"] == []              # nothing was ever sent
+
+
+def test_a_held_hospital_is_labelled_hospital(fake_spark, no_names_model):
+    from deid.profile import checklist
+    choices = {c["key"]: c["default"] for c in checklist()}
+    r = pipeline.deidentify_report(text="Seen at Kampong Glam Community Clinic last week.", profile=new_profile(choices)[0])
+    held = pipeline.confirm_deid(r["deid_id"], use_spark=False, show_text=True)
+    assert held["next"] == "hold" and held["hold"][0]["type"] == "HOSPITAL" and "[HOSPITAL-" in held["hold"][0]["context"]

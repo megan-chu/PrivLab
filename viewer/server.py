@@ -14,8 +14,9 @@ by a per-report lock, and quick pack / log / profile writes by one shared lock.
 so a video can be re-recorded from a clean first use. Without it the real profile, pack and
 runs/score_log.jsonl are used (Day 7 teaching).
 
-Exports: /api/export.csv (registry fields, structured only) and /api/deid_export (de-identified
-text: ?deid_id=… for one report as .txt, none for every finished report as .zip). A report whose
+Exports (only the reports in the page's list, ?ids=...; a missing or blank ids exports nothing):
+/api/export.csv (extracted data, one row per report, no text) and /api/deid_export (de-identified
+text: ?deid_id=… for one report as .txt, ?ids=… for the listed finished reports as .zip). A report whose
 output scan still found an identifier pattern is never exported.
 
 Usage:
@@ -38,6 +39,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from common import spark
 from common.config import ROOT
 from common.data import load_report, manifest
 from common.pdf import pdf_text
@@ -47,7 +49,7 @@ from deid import profile as prof
 from extract import learn
 from extract.candidates import find_candidates, prefetch
 from extract.define import define_field
-from extract.export import COLUMNS, export_rows
+from extract.export import export_rows
 from extract.pack import load_pack, remove_field, save_pack
 
 PAGE = Path(__file__).with_name("index.html")
@@ -80,8 +82,20 @@ def api_open(b):
 
 def api_profile(_):
     p = prof.load_profile()
-    return {"exists": p is not None, "checklist": prof.checklist(),
+    return {"exists": p is not None, "checklist": prof.checklist(), "remove": p.remove if p else None,
             "allow": len(p.allow_list) if p else 0, "learned": len(p.always_remove) if p else 0}
+
+
+def api_profile_choices(b):
+    """Change what is hidden. Keeps what the profile learned (allow and remove lists)."""
+    with _WRITE:
+        p = prof.load_profile() or prof.new_profile()[0]
+        for key, on in (b.get("choices") or {}).items():
+            if key in p.remove:
+                p.remove[key] = bool(on)
+        p.version += 1
+        prof.save_profile(p)
+    return api_profile(None)
 
 
 def _start(text: str, name: str, choices) -> dict:
@@ -147,7 +161,7 @@ def api_prefetch(b):
 def api_pack(_):
     log = learn.read_log(STATE["log"])
     return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "definition": f.definition, "description": f.description,
-                        "type": f.type, "unit": f.unit, "range": f.range, "choices": f.choices,
+                        "type": f.type, "unit": f.unit, "range": f.range,
                         "readiness": learn.readiness(v), "recent": f.recent, "version": f.version,
                         "validation": v, "history": f.history,
                         "checks": [{"when": e["ts"], "version": e.get("field_version", 1), "status": e["predicted"]["status"],
@@ -162,6 +176,14 @@ def api_define(b):
         return define_field(b["name"], b.get("description"), pack_path=STATE["pack"])
     with _WRITE:
         return define_field(b["name"], b.get("description"), accept=b["accept"], pack_path=STATE["pack"])
+
+
+def api_back(b):
+    return _locked_step(b["deid_id"], lambda: pipeline.back_to_review(b["deid_id"]))
+
+
+def api_fix_leak(b):
+    return _locked_step(b["deid_id"], lambda: pipeline.resolve_leftover(b["deid_id"], b["leftover_id"], b["action"]))
 
 
 def api_remove_field(b):
@@ -194,22 +216,27 @@ def api_reset(_):
     return {"ok": True}
 
 
-def export_csv() -> bytes:
-    """Structured fields only (extract/export.py): case id, report, field, value, evidence position."""
-    rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"])
+def export_csv(deid_ids=None) -> bytes:
+    """One row per report, one column per field (extract/export.py); no report text, no positions."""
+    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
+    return _csv(columns, rows)
+
+
+def _csv(columns, rows) -> bytes:
     buf = io.StringIO()
-    writer = csv.DictWriter(buf, fieldnames=COLUMNS, lineterminator="\n")
+    writer = csv.DictWriter(buf, fieldnames=columns, lineterminator="\n")
     writer.writeheader()
     writer.writerows(rows)
-    return buf.getvalue().encode("utf-8")
+    return buf.getvalue().encode("utf-8-sig")              # -sig: Excel opens UTF-8 correctly
 
 
-def _finished(deid_id: str | None = None) -> list[tuple[str, str]]:
-    """(file name, de-identified text) of finished reports; a report whose output scan still found an
-    identifier pattern is withheld."""
+def _finished(deid_id: str | None = None, deid_ids=None) -> list[tuple[str, str]]:
+    """(file name, de-identified text) of finished reports (one, or only deid_ids); a report whose output scan
+    still found an identifier pattern is withheld."""
     out, seen = [], set()
     for did, run in list(pipeline._RUNS.items()):
-        if (deid_id and did != deid_id) or run.get("step") != "done" or not run.get("result"):
+        if (deid_id and did != deid_id) or (deid_ids is not None and did not in deid_ids) \
+                or run.get("step") != "done" or not run.get("result"):
             continue
         if any("left in the output" in x for x in (run.get("priority") or {}).get("reasons", [])):
             continue
@@ -220,9 +247,9 @@ def _finished(deid_id: str | None = None) -> list[tuple[str, str]]:
     return out
 
 
-def deid_download(deid_id: str | None) -> tuple[bytes, str, str] | None:
-    """One report as .txt, or every finished report as .zip. None if there is nothing to export."""
-    files = _finished(deid_id)
+def deid_download(deid_id: str | None, deid_ids=None) -> tuple[bytes, str, str] | None:
+    """One report as .txt, or the finished reports (only deid_ids, if given) as .zip. None if there is nothing."""
+    files = _finished(deid_id, deid_ids)
     if not files:
         return None
     if deid_id:
@@ -231,13 +258,77 @@ def deid_download(deid_id: str | None) -> tuple[bytes, str, str] | None:
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         for name, text in files:
             z.writestr(name, text)
-    return buf.getvalue(), "application/zip", "privlab_deidentified.zip"
+    return buf.getvalue(), "application/zip", f"privlab_deidentified_{_stamp()}.zip"
+
+
+DICTIONARY_TXT = """PrivLab export: data dictionary ({when})
+
+extracted_data.csv
+  One row per report, one column per field. Values are exactly as the report writes them; number fields
+  carry their unit in the column name, e.g. "tumour size (cm)". An empty cell means not stated (or not
+  reviewed yet).
+
+  Column            Type      Meaning
+  case_id           text      Random id for the report (the link to the original stays in PrivLab's encrypted vault)
+  report_id         text      The report's file name
+  reviewed_at       datetime  When its last value was confirmed
+  exported_at       datetime  When this file was made
+{fields}
+
+masked/
+  The full text of each de-identified report, with identifiers replaced by tags such as [PATIENT-1].
+  A report where a possible identifier was left in the text is not included.
+
+Contains no original identifiers. Made on this device by PrivLab.
+"""
+
+
+def _field_lines() -> str:
+    """One entry per field column: its header, type and definition (version)."""
+    from extract.export import headers
+    fields = load_pack(STATE["pack"])["fields"]
+    column, out = headers(fields), []
+    for f in fields:
+        kind = "number" if f.type == "number" else "text"     # the unit is already in the column name
+        meaning = " ".join((f.definition or f.meaning).split())
+        out.append(f"  {column[f.key]:<17} {kind:<9} {meaning} [definition v{f.version}]")
+    return "\n".join(out)
+
+
+def export_all(deid_ids) -> bytes | None:
+    """Everything for the listed reports in one .zip: the extracted data, the masked texts and a data dictionary.
+    None if there is nothing to export."""
+    from datetime import datetime
+    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
+    masked = _finished(None, deid_ids)
+    if not rows and not masked:
+        return None
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("data_dictionary.txt", DICTIONARY_TXT.format(when=datetime.now().strftime("%d %b %Y, %H:%M"),
+                                                                fields=_field_lines()))
+        if rows:
+            z.writestr("extracted_data.csv", _csv(columns, rows))
+        for name, text in masked:
+            z.writestr(f"masked/{name}", text)
+    return buf.getvalue()
+
+
+def _stamp() -> str:
+    from datetime import datetime
+    return datetime.now().strftime("%Y%m%d-%H%M")
+
+
+def _ids(url) -> list[str]:
+    """The reports the page lists (?ids=d_1,d_2). Missing or blank means none: a link opened without the
+    page's click handler (middle-click, copied address) must never export reports from other sessions."""
+    return [x for x in (parse_qs(url.query).get("ids", [""])[0]).split(",") if x]
 
 
 GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
-        "/api/confirm_field": api_confirm_field, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
+        "/api/confirm_field": api_confirm_field, "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
 
 
 # --------------------------------------------------------------------------
@@ -250,15 +341,26 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
         if url.path == "/api/export.csv":
             try:
-                body = export_csv()
+                body = export_csv(_ids(url))
             except Exception:
                 log.error("export failed: %s", traceback.format_exc())
                 return self._json(500, {"error": "export failed; see runs/viewer.log"})
             return self._send(200, body, "text/csv; charset=utf-8",
-                              {"Content-Disposition": 'attachment; filename="privlab_registry.csv"'})
+                              {"Content-Disposition": f'attachment; filename="privlab_extracted_data_{_stamp()}.csv"'})
+        if url.path == "/api/export_all":
+            try:
+                body = export_all(_ids(url))
+            except Exception:
+                log.error("export failed: %s", traceback.format_exc())
+                return self._json(500, {"error": "export failed; see runs/viewer.log"})
+            if body is None:
+                return self._json(404, {"error": "Nothing to export yet."})
+            return self._send(200, body, "application/zip",
+                              {"Content-Disposition": f'attachment; filename="privlab_export_{_stamp()}.zip"'})
         if url.path == "/api/deid_export":
             try:
-                out = deid_download(parse_qs(url.query).get("deid_id", [None])[0])
+                one = parse_qs(url.query).get("deid_id", [None])[0]
+                out = deid_download(one, None if one else _ids(url))
             except Exception:
                 log.error("de-identified export failed: %s", traceback.format_exc())
                 return self._json(500, {"error": "export failed; see runs/viewer.log"})
@@ -285,6 +387,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             with timed("viewer_" + fn.__name__):
                 out = fn(arg)
+        except spark.OfflineError:
+            out = {"error": f"{spark.OFFLINE}. De-identification still works on this device; the second check "
+                            "and fields need Muse Spark. Try again when online.", "offline": True}
         except Exception as e:      # never crash the page; details go to the log, not the browser
             log.error("%s failed: %s", fn.__name__, traceback.format_exc())
             out = {"error": f"{type(e).__name__}: something went wrong; see runs/viewer.log"}

@@ -19,6 +19,7 @@ import contextlib
 import functools
 import logging
 import os
+import re
 import sys
 import threading
 import traceback
@@ -30,10 +31,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))      # works fro
 from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 
+from common import spark
 from common.config import ROOT
 from common.data import manifest
 from common.pdf import pdf_text
 from deid import pipeline
+from deid.hold import _plain, name_list, vocabulary
 from extract import learn
 from extract.candidates import find_candidates
 from extract.define import define_field
@@ -59,6 +62,24 @@ the assistant. Follow "next" and relay "say" in every response."""
 # --------------------------------------------------------------------------
 # Helpers
 # --------------------------------------------------------------------------
+TOKEN = re.compile(r"\[[A-Z]+-\d+\]|>>|<<|[^\W_]+")
+
+
+def scrub(context: str) -> str:
+    """Context for the chat (a cloud model): only tags and ordinary report words. Anything else, such as an
+    identifier the local rules missed, becomes "..." and any number "#" (red-team round 2, 30 Oct)."""
+    vocab, names = vocabulary(), name_list()
+
+    def one(m):
+        w = m.group()
+        if w.startswith("[") or w in (">>", "<<"):
+            return w
+        if any(c.isdigit() for c in w):
+            return "#"
+        return w if _plain(w) in vocab and _plain(w) not in names else "..."
+    return TOKEN.sub(one, context)
+
+
 def _page(items: list, offset: int, limit: int) -> dict:
     offset, limit = max(0, offset), max(1, min(limit, 100))
     more = offset + limit < len(items)
@@ -76,6 +97,10 @@ def _safe(fn):
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
+        except spark.OfflineError:
+            return {"next": "offline", "error": spark.OFFLINE,
+                    "say": f"{spark.OFFLINE}. De-identification still works on this laptop; the second check and "
+                           "fields need Muse Spark. Try again when online."}
         except Exception as e:
             log.error("%s failed: %s", fn.__name__, traceback.format_exc())
             return {"next": "error", "error": f"{type(e).__name__}: something went wrong; see runs/mcp.log",
@@ -129,6 +154,7 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
                 "say": f"De-identified on this laptop: {s['total']} identifiers replaced with tags. Next: "
                        "privlab_extract_fields, or privlab_export_file(kind='masked')."}
     items = out.get("items") or out.get("detections") or out.get("hold") or out.get("flags") or []
+    items = [{**i, "context": scrub(i.get("context", ""))} for i in items]
     page = _page(items, offset, limit)
     say = {"review": f"{page['total_count']} identifiers found on this laptop; nothing has been sent. Ask the user "
                      "which ids to keep visible (false alarms) and whether anything was missed, then call "
@@ -201,12 +227,12 @@ def privlab_confirm_review(deid_id: str, keep_ids: list[str] = [], hide_ids: lis
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
 @_safe
 def privlab_define_field(name: str, description: str = "", save: bool = False, meaning: str = "",
-                         definition: str = "", type: Literal["number", "choice"] | None = None, unit: str = "",
-                         choices: list[str] = [], range_min: float | None = None,
+                         definition: str = "", type: Literal["number", "text"] | None = None, unit: str = "",
+                         range_min: float | None = None,
                          range_max: float | None = None) -> dict:
     """Use when the user wants to collect a field (e.g. "tumour size"). Only the name and the user's words are sent.
     Arguments: save=False returns a draft to confirm ("Did you mean ...?"); save=True saves it, using the
-    draft's details or the user's changes (meaning, definition, type, unit, choices, range).
+    draft's details or the user's changes (meaning, definition, type, unit, range). Text values are kept as written.
     Returns: the draft, or the saved field. Next: privlab_extract_fields."""
     if not save:
         out = define_field(name, description or None, pack_path=viewer.STATE["pack"])
@@ -218,12 +244,12 @@ def privlab_define_field(name: str, description: str = "", save: bool = False, m
         msg = "To save, give meaning and type (from the draft: call with save=False first)."
         return {"next": "error", "error": msg, "say": msg}
     accept = {"key": name, "meaning_question": meaning, "definition": definition, "type": type,
-              "unit": unit or None, "range_min": range_min, "range_max": range_max, "choices": choices}
+              "unit": unit or None, "range_min": range_min, "range_max": range_max}
     with viewer._WRITE:
         out = define_field(name, description or None, accept=accept, pack_path=viewer.STATE["pack"])
     f = out["field"]
     return {"next": "done", "field": {k: f[k] for k in ("key", "name", "meaning", "definition", "type", "unit",
-                                                        "range", "choices", "version")},
+                                                        "range", "version")},
             "say": f"Saved '{name}' (definition v{f['version']}). It will be filled on every report."}
 
 
@@ -232,7 +258,7 @@ def privlab_define_field(name: str, description: str = "", save: bool = False, m
 def privlab_list_fields(offset: int = 0, limit: int = LIMIT) -> dict:
     """Use when the user asks what PrivLab collects, or how accurate a field is.
     Returns: each field's definition, version, readiness and accuracy (95% bound on wrong verified values)."""
-    keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "choices", "version", "readiness",
+    keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "version", "readiness",
             "validation")
     fields = [{k: f[k] for k in keep} for f in viewer.api_pack(None)["fields"]]
     return {"next": "done", **_page(fields, offset, limit),
@@ -304,24 +330,28 @@ def privlab_confirm_field(deid_id: str, field: str, candidate_id: str = "", valu
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
-def privlab_export_file(kind: Literal["registry", "masked"], out_path: str) -> dict:
-    """Use when the user wants a file. registry = structured fields as CSV (no report text);
+def privlab_export_file(kind: Literal["data", "masked"], out_path: str) -> dict:
+    """Use when the user wants a file, for the reports of this session. data = a CSV with one row per report and
+    one column per field
+    (values as written, no report text);
     masked = every finished report's de-identified text as a .zip. Written on this laptop.
     Returns: the file path and how much it holds (never the contents)."""
     p = Path(out_path).expanduser().resolve()
     if ROOT / "data" in p.parents:
         return {"next": "error", "error": "Not inside data/.", "say": "Choose a folder outside PrivLab's data/ folder."}
     p.parent.mkdir(parents=True, exist_ok=True)
-    if kind == "registry":
-        body = viewer.export_csv()
+    session = list(pipeline._RUNS)
+    if kind == "data":
+        body = viewer.export_csv(session)
         p.write_bytes(body)
-        rows = body.decode("utf-8").count("\n") - 1
-        return {"next": "done", "path": str(p), "rows": rows, "say": f"Wrote {rows} registry rows to {p}."}
-    out = viewer.deid_download(None)
+        rows = body.decode("utf-8-sig").count("\n") - 1
+        return {"next": "done", "path": str(p), "rows": rows,
+                "say": f"Wrote {rows} report row(s), one column per field, to {p}."}
+    out = viewer.deid_download(None, session)
     if out is None:
         return {"next": "error", "error": "Nothing finished.", "say": "No de-identified reports to export yet."}
     p.write_bytes(out[0])
-    n = len(viewer._finished())
+    n = len(viewer._finished(None, session))
     return {"next": "done", "path": str(p), "reports": n, "say": f"Wrote {n} masked report(s) to {p}."}
 
 
@@ -348,18 +378,18 @@ def deidentify_batch(folder: str) -> str:
             "privlab_export_file(kind='masked') to a path I choose.")
 
 
-@mcp.prompt(title="Fill registry fields")
-def fill_registry_fields(path: str) -> str:
-    return (f"Make {path} safe with PrivLab, then fill my registry fields: privlab_deidentify_report, review with me, "
+@mcp.prompt(title="Fill my fields")
+def fill_fields(path: str) -> str:
+    return (f"Make {path} safe with PrivLab, then fill my fields: privlab_deidentify_report, review with me, "
             "privlab_confirm_review until done; privlab_extract_fields; for each field show the value with its quote "
             "and ask me to confirm, correct or mark not stated (privlab_confirm_field; for a blind check, ask me first "
-            "without showing PrivLab's value); then privlab_export_file(kind='registry').")
+            "without showing PrivLab's value); then privlab_export_file(kind='data').")
 
 
 @mcp.prompt(title="Set up my fields")
 def set_up_fields(fields: str) -> str:
     return (f"Help me define these fields in PrivLab: {fields}. For each: privlab_define_field(save=False), show me "
-            "the 'Did you mean' question, definition, type and choices; change anything I ask; then save=True. "
+            "the 'Did you mean' question, definition and type; change anything I ask; then save=True. "
             "Finish with privlab_list_fields.")
 
 

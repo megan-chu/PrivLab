@@ -92,3 +92,42 @@ def test_request_path_with_fake_client(monkeypatch, tmp_path, local_keys):
     log = (tmp_path / "usage.log").read_text(encoding="utf-8")
     assert "json_object\tlive\tin=50\tout=10" in log and "\tcached\t" in log
     assert "hand-written" not in log
+
+
+def test_proxy_skips_the_probe_and_a_blank_url_is_a_config_error(monkeypatch):
+    """Behind an HTTP proxy a direct connect fails although the API is reachable; an unset URL is not "offline"."""
+    import socket
+    from types import SimpleNamespace
+
+    import common.spark as spark
+    from common.config import load_config
+
+    def no_network(*a, **k):
+        raise OSError("blocked")
+    monkeypatch.setattr(socket, "create_connection", no_network)
+    monkeypatch.setattr(spark, "_REACH", {})
+    monkeypatch.setenv("HTTPS_PROXY", "http://proxy.hospital.local:8080")
+    spark._check_online(load_config(), "baseten")                              # no OfflineError
+    monkeypatch.delenv("HTTPS_PROXY")
+    with pytest.raises(ValueError, match="base URL"):
+        spark._check_online(SimpleNamespace(meta_api_base_url="", baseten_base_url=""), "baseten")
+
+
+def test_offline_fails_fast_and_is_remembered(monkeypatch):
+    """No internet: an OfflineError at once (callers show "review manually"), not two 20-second timeouts."""
+    import socket
+    import time
+
+    import common.spark as spark
+    from common.config import load_config
+    tries = []
+    def no_network(*a, **k):
+        tries.append(a)
+        raise OSError("network is unreachable")
+    monkeypatch.setattr(socket, "create_connection", no_network)
+    monkeypatch.setattr(spark, "_REACH", {})
+    t0 = time.perf_counter()
+    for _ in range(3):
+        with pytest.raises(spark.OfflineError):
+            spark._check_online(load_config(), "baseten")
+    assert time.perf_counter() - t0 < 1 and len(tries) == 1                 # checked once, then remembered

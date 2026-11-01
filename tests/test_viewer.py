@@ -118,3 +118,33 @@ def test_viewer_adds_a_text_pdf_and_refuses_a_scan(viewer):
     scan = viewer.api_add({"name": "scan.pdf", "pdf": base64.b64encode(make_pdf([])).decode(), "choices": {}})
     assert scan["refused"] and "not supported" in scan["error"]
     assert viewer.api_add({"name": "x.pdf", "pdf": "%%%", "choices": {}})["refused"]
+
+
+def test_export_everything_in_one_zip(viewer):
+    import io, zipfile
+    out = viewer.api_add({"name": "a.txt", "text": "Patient: Mary Tan\nDIAGNOSIS: carcinoma.", "choices": {}})
+    pipeline.confirm_deid(out["deid_id"], use_spark=False)
+    with zipfile.ZipFile(io.BytesIO(viewer.export_all([out["deid_id"]]))) as z:
+        names = z.namelist()
+        assert "data_dictionary.txt" in names and "masked/a_deidentified.txt" in names
+        assert "Mary Tan" not in z.read("masked/a_deidentified.txt").decode("utf-8")
+    assert viewer.export_all(["d_not_listed"]) is None                        # only the listed reports
+
+
+def test_export_links_without_ids_export_nothing(viewer):
+    from urllib.parse import urlparse
+    out = viewer.api_add({"name": "a.txt", "text": "Patient: Mary Tan\nDIAGNOSIS: carcinoma.", "choices": {}})
+    pipeline.confirm_deid(out["deid_id"], use_spark=False)
+    assert viewer._ids(urlparse("/api/export_all")) == [] and viewer._ids(urlparse("/api/export_all?ids=")) == []
+    assert viewer.export_all([]) is None and viewer.deid_download(None, []) is None     # a copied link, no list
+    assert viewer.export_all([out["deid_id"]]) is not None
+    assert viewer.export_csv([]).decode("utf-8-sig").count("\n") == 1                   # header only
+
+
+def test_privacy_choices_can_change_after_first_use(viewer):
+    out = viewer.api_add({"name": "a.txt", "text": "Seen at Riverside General Hospital. Patient: Mary Tan", "choices": {}})
+    assert out["next"] == "review" and any(d["type"] == "HOSPITAL" for d in out["detections"])   # defaults hide it
+    prof = viewer.api_profile_choices({"choices": {"hospital": False}})
+    assert prof["remove"]["hospital"] is False and prof["exists"]
+    again = viewer.api_add({"name": "a.txt", "text": "Seen at Riverside General Hospital. Patient: Mary Tan"})
+    assert not any(d["type"] == "HOSPITAL" for d in again["detections"])                      # now kept

@@ -6,7 +6,7 @@ One Muse Spark call per report covers every field in the pack (cached), and sees
 sealed DeidResult text. The reply is frozen per report: later fields on the same report reuse it,
 even after a correction changed the pack's examples, so teaching 7 fields costs one call per
 report, not seven, and every field's prediction exists before any feedback on that report.
-A field whose DEFINITION changed since (meaning, type, unit, range, choices) gets a new call, so a
+A field whose DEFINITION changed since (meaning, type, unit, range) gets a new call, so a
 refined definition is previewed with its new meaning; learned examples alone never trigger one.
 The model proposes; code finds the evidence, runs the checks, detects the section and decides
 the status.
@@ -46,7 +46,7 @@ def _field_spec(f) -> str:
     if f.type == "number":
         spec += f", unit {f.unit or '-'}" + (f", range {f.range[0]}-{f.range[1]}" if f.range else "")
     else:
-        spec += f", one of: {', '.join(f.choices)}"
+        spec += ", text exactly as written in the report"
     for ex in f.examples.get("good", [])[-3:]:
         spec += f"\n  correct example: \"{ex['context']}\" -> {ex['value']}"
     for ex in f.examples.get("bad", [])[-3:]:
@@ -113,7 +113,9 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     try:
         reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
     except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
-        return _result(deid_id, field, "amber", None, [], f"Muse Spark unavailable ({type(e).__name__}); review manually")
+        why = (f"{spark.OFFLINE}: extraction needs Muse Spark. Try again when online, or enter the value"
+               if isinstance(e, spark.OfflineError) else f"Muse Spark unavailable ({type(e).__name__}); review manually")
+        return _result(deid_id, field, "amber", None, [], why)
 
     proposed = next((fc.candidates for fc in reply.fields if fc.key == field.key), [])
     cands = []

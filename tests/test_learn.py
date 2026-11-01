@@ -157,10 +157,19 @@ def test_history_and_export_have_no_free_text(paths):
     hist = show_pack("tumour_size", pack_path=paths["pack"], log_path=paths["log"])
     assert hist["definition_history"][0]["what"] == "created"
     assert hist["extraction_history"][0]["outcome"] == "correct"
-    rows, withheld = export_rows(pack_path=paths["pack"], log_path=paths["log"])
-    assert withheld == 0 and rows[0]["value"] == 2.1 and rows[0]["case_id"]
+    columns, rows, withheld = export_rows(pack_path=paths["pack"], log_path=paths["log"])
+    assert columns == ["case_id", "report_id", "reviewed_at", "exported_at", "tumour size (cm)"]   # one column per field
+    assert withheld == 0 and rows[0]["tumour size (cm)"] == 2.1 and rows[0]["case_id"] and rows[0]["exported_at"]
+    assert export_rows(pack_path=paths["pack"], log_path=paths["log"], deid_ids=["d_other"])[1] == []   # only the listed reports
+    assert len(export_rows(pack_path=paths["pack"], log_path=paths["log"], deid_ids=[res["deid_id"]])[1]) == 1
     assert all("carcinoma" not in str(v) for row in rows for v in row.values())
     assert "carcinoma" not in str(hist["extraction_history"])
+
+
+def test_same_named_fields_get_their_own_columns(paths):
+    define_field("tumour size", None, accept={**DRAFT, "key": "tumour_size_2"}, pack_path=paths["pack"])
+    columns = export_rows(pack_path=paths["pack"], log_path=paths["log"])[0]
+    assert columns[-2:] == ["tumour size (cm) [tumour_size]", "tumour size (cm) [tumour_size_2]"]   # neither overwrites the other
 
 
 def test_learned_examples_reach_the_next_prompt(paths):
@@ -224,8 +233,8 @@ def test_deid_review_time_per_step(fake_spark):
 
 
 def test_one_call_per_report_even_after_a_correction(paths):
-    grade = {"key": "grade", "meaning_question": "Histological grade?", "type": "choice",
-             "unit": None, "range_min": None, "range_max": None, "choices": ["1", "2", "3"]}
+    grade = {"key": "grade", "meaning_question": "Histological grade?", "type": "text",
+             "unit": None, "range_min": None, "range_max": None}
     paths["spark"]["state"]["reply"] = grade
     define_field("grade", None, accept=grade, pack_path=paths["pack"])
     r = pipeline.deidentify_report(text=REPORT + " Grade 2.", profile=new_profile()[0])
@@ -273,3 +282,16 @@ def test_remove_field(paths):
     assert remove_field(pack, "tumour_size") and not remove_field(pack, "tumour_size")
     save_pack(pack, paths["pack"])
     assert load_pack(paths["pack"])["fields"] == []
+
+
+def test_text_values_are_kept_as_written(paths):
+    stage = {"key": "stage", "meaning_question": "Overall stage?", "definition": "The stated overall stage.",
+             "type": "choice", "unit": None, "range_min": None, "range_max": None}       # an old "choice" draft
+    out = define_field("stage", None, accept=stage, pack_path=paths["pack"])
+    assert out["field"]["type"] == "text" and "choices" not in out["field"]
+    r = pipeline.deidentify_report(text="DIAGNOSIS: Invasive ductal carcinoma. Stage: pT2a N0.", profile=new_profile()[0])
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    paths["spark"]["state"]["reply"] = {"fields": [{"key": "stage", "candidates": [
+        {"value_text": "pT2a", "unit_text": None, "evidence_text": "Stage: pT2a N0", "reason": "t", "confidence": 0.9}]}]}
+    res = find_candidates(r["deid_id"], "stage", pack_path=paths["pack"])
+    assert res["status"] == "green" and res["value"] == "pT2a"            # as written, no list to match
