@@ -1,0 +1,55 @@
+PATIENT INFORMATION
+Patient Name: Arthur Pendelton
+DOB: May 14, 1964
+Sex: Male
+MRN: MRN-7824901
+Disease: Lung adenocarcinoma
+ORDERING PHYSICIAN
+Physician: Dr. Sarah Jenkins, MD
+Facility: Metropolitan Health
+Cancer Ctr
+Facility ID: MHCC-4091
+Additional: Dr. Robert Chen, MD
+Pathologist: Dr. Laura Vance, MD,
+PhD
+SPECIMEN DETAILS
+Specimen Site: Right upper lobe (Lung)
+Specimen ID: SP-2026-99381A
+Specimen Type: FFPE Core Biopsy
+Collection Date: October 15, 2026
+Received Date: October 18, 2026
+COMPANION DIAGNOSTIC (CDX) ASSOCIATED FINDINGS
+Genomic Findings Detected FDA-Approved Therapeutic Options
+MET exon 14 splice site (2888-14_2888-4del11)
+Transcript: NM_000245 | VAF: 19.3%
+Tabrecta™ (capmatinib)
+NTRK1 SYT11-NTRK1 fusion
+Targeted capture rearrangement
+Vitrakvi® (larotrectinib)
+Tumor Mutational Burden (TMB) ≥ 10 Muts/Mb
+11 Muts/Mb (TMB-High)
+Keytruda® (pembrolizumab)
+Note on MSI: For Microsatellite Instability (MSI) results, confirmatory testing using
+a validated orthogonal method should be performed.
+OTHER ALTERATIONS & BIOMARKERS IDENTIFIED
+Microsatellite Status: MS-Stable
+Tumor Mutational Burden: 11 Muts/Mb
+MAP2K1 (MEK1): D67N (21.4% VAF)
+TP53: TP53 (NM_000546) rearrangement exon 11
+CCNE1: amplification (equivocal)
+FGF10: amplification
+RAD21: amplification (equivocal)
+TGFBR2: R497* (subclonal)
+ABOUT THE TEST: FoundationOne® CDx is a next-generation sequencing-based
+companion diagnostic for comprehensive genomic profiling of solid tumors.
+Results
+reported in professional services sections are informative and not prescriptive for
+labeled indications unless designated under FDA-approved companion diagnostic
+claims.
+Electronically signed by: J. Keith Killian, M.D.
+Julia Elvin, M.D., Ph.D., Laboratory Director (CLIA: 2202027531)
+Shakti Ramkissoon, M.D., Ph.D., M.M. Sc., Laboratory Director (CLIA:
+3402044309)
+Foundation Medicine, Inc. | 1.888.988.3639
+7010 Kit Creek Road, Morrisville, NC 27560 (CLIA: 3402044309)
+150 Second St., 1st Floor, Cambridge, MA 02141 (CLIA: 2202027531)

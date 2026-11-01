@@ -187,6 +187,27 @@ def test_local_name_model_fills_gaps_only():
     assert leftover_identifiers("Escalated to Marcus Wong for review.") == []    # final scan stays rules-only
 
 
+def test_genomic_report_identifiers_caught_locally():
+    """A US genomic (NGS) report: before 1 Nov these reached the Muse Spark name check unmasked."""
+    from pathlib import Path
+
+    from deid.mask import apply_tags
+    text = (Path(__file__).parent / "genomic_report.txt").read_text(encoding="utf-8")
+    tagged, _ = apply_tags(text, find_pattern_phi(text))
+    for leaked in ("1.888.988.3639", "2202027531", "3402044309", "Foundation Medicine", "Metropolitan Health",
+                   "Cancer Ctr", "Morrisville, NC 27560", "Cambridge, MA 02141"):
+        assert leaked not in tagged, leaked
+    names = {s.text for s in find_pattern_phi(text) if s.type in ("NAME", "DOCTOR")}
+    assert not names & {"Vitrakvi®", "Keytruda®", "M.M. Sc"}                   # brands and degrees are not people
+    assert {"J. Keith Killian", "Julia Elvin", "Shakti Ramkissoon"} <= names
+    from deid.hold import hold_flags
+    tagged, tags = apply_tags(text, find_pattern_phi(text))
+    assert len(hold_flags(tagged, (), tags)) <= 1                             # was 23 questions on 1 Nov
+    clinical = "Certified under CLIA '88 as qualified. Ki-67 index 12.5.2024 batch v1.2.3. Stage pT2, N0 12345."
+    assert find_pattern_phi(clinical, names_model=False) == [] or all(
+        s.type == "DATE" for s in find_pattern_phi(clinical, names_model=False))     # no CLIA, phone or address
+
+
 @pytest.mark.parametrize("text, name", [
     ("Signed out by Kuganesan Thanabalasingam: no change.", "Kuganesan Thanabalasingam"),
     ("Comments from Marcus Zawadzki (surgeon): agree.", "Marcus Zawadzki"),
@@ -194,3 +215,28 @@ def test_local_name_model_fills_gaps_only():
 def test_a_name_before_a_colon_is_not_a_label(text, name):
     from deid.hold import hold_flags
     assert name in [text[a:b] for a, b in hold_flags(text)]                   # red-team round 2, H01 / H03
+
+
+@pytest.mark.parametrize("text, name", [
+    ("Results discussed with Marcus Zawadzki today.", "Marcus Zawadzki"),
+    ("Collection Date confirmed by Kuganesan Thanabalasingam: no change.", "Kuganesan Thanabalasingam"),
+    ("Sample from Tan Ah Wing Status: pending.", "Tan Ah Wing Status"),
+    ("Reviewed by Sean McDonald and Ana DeSouza.", "Sean McDonald"),
+])
+def test_lab_wording_rules_still_hold_names(text, name):
+    """The 1 Nov rules for lab and genomic wording (labels, units, codes, products) must not let a name through."""
+    from deid.hold import hold_flags
+    assert any(name in text[a:b] or text[a:b] in name for a, b in hold_flags(text))
+
+
+@pytest.mark.parametrize("text, held", [
+    ("Started on Osimertinib and Tagrisso after Biopsy Review.", []),          # drugs, terms: nothing says "person"
+    ("Fusion partner Vitrakvi Larotrectinib noted.", []),
+    ("Discussed with Okonkwo today.", ["Okonkwo"]),                             # a person cue
+    ("The patient lives in Jurong West now.", ["Jurong West"]),                 # a place cue
+    ("Slides sent to Raffles Medical for review.", ["Raffles Medical"]),       # an institution word
+    ("Not identifiers: [PERSON-1], Siti Rahmah.", ["Siti Rahmah"]),             # listed beside a name
+])
+def test_hold_needs_evidence_of_a_person_or_place(text, held):
+    from deid.hold import hold_flags
+    assert [text[a:b] for a, b in hold_flags(text)] == held

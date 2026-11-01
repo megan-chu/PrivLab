@@ -120,7 +120,7 @@ def test_viewer_adds_a_text_pdf_and_refuses_a_scan(viewer):
     assert viewer.api_add({"name": "x.pdf", "pdf": "%%%", "choices": {}})["refused"]
 
 
-def test_export_everything_in_one_zip(viewer):
+def test_export_everything_in_one_zip(viewer, fake_spark):
     import io, zipfile
     out = viewer.api_add({"name": "a.txt", "text": "Patient: Mary Tan\nDIAGNOSIS: carcinoma.", "choices": {}})
     pipeline.confirm_deid(out["deid_id"], use_spark=False)
@@ -129,6 +129,15 @@ def test_export_everything_in_one_zip(viewer):
         assert "data_dictionary.txt" in names and "masked/a_deidentified.txt" in names
         assert "Mary Tan" not in z.read("masked/a_deidentified.txt").decode("utf-8")
     assert viewer.export_all(["d_not_listed"]) is None                        # only the listed reports
+    define_field("Biomarker", None, accept={"key": "biomarker", "meaning_question": "Biomarkers?", "type": "text",
+                 "unit": None, "range_min": None, "range_max": None, "multi": True}, pack_path=viewer.STATE["pack"])
+    fake_spark["state"]["reply"] = {"fields": [{"key": "biomarker", "candidates": [
+        {"value_text": "DIAGNOSIS: carcinoma", "unit_text": None, "evidence_text": "DIAGNOSIS: carcinoma", "reason": "t", "confidence": 0.9}]}]}
+    res = viewer.api_find({"deid_id": out["deid_id"], "field": "biomarker"})
+    viewer.api_confirm_field({"deid_id": out["deid_id"], "field": "biomarker", "items": [{"value": i["value"], "evidence_text": i["evidence_text"]} for i in res["items"]]})
+    with zipfile.ZipFile(io.BytesIO(viewer.export_all([out["deid_id"]]))) as z:
+        assert "lists/biomarker.csv" in z.namelist() and "lists/biomarker.csv" in z.read("data_dictionary.txt").decode("utf-8")
+        assert z.read("lists/biomarker.csv").decode("utf-8-sig").splitlines()[0] == "case_id,report_id,Biomarker,result"
 
 
 def test_export_links_without_ids_export_nothing(viewer):

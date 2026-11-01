@@ -70,6 +70,10 @@ ROLE = (r"(?i:name|owner|manager|holder|counsel|officer|investigator|insured|cla
         r"client|beneficiary|witness|agent|representative|director|signatory|guardian|employee|account holder)")
 PHONE_CUE = r"(?i:tel(?:ephone)?|phone|call|hp|h/p|mobile|mob|office|contact(?: no\.?)?|fax|line)"
 PHONE_VALUE = r"(?=(?:[^\dOlI\n]{0,2}[\dOlI]){7})\(?\+?\d[\dOlI \t().\-]{5,16}[\dOlI]"
+# A place by what it is: "Metropolitan Health", "... Cancer Ctr", "Foundation Medicine, Inc."
+INST_WORD = r"(?:Ctr|Cent(?:er|re)|Hospital|Clinic|Institute|Health|Medical|Medicine|Lab(?:oratory|oratories)?|Infirmary)"
+US_STATE = (r"(?:A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|PA|RI|S[CD]|T[NX]|"
+            r"UT|V[AT]|W[AIVY])")
 
 
 # --------------------------------------------------------------------------
@@ -119,6 +123,12 @@ class LabelledRecognizer(EntityRecognizer):
         ("NAME", "title_caps", rf"\b(?i:mr|mrs|ms|mdm|madam|miss)\.?[ \t]+(?P<v>{CAPS_NAME})\b"),
         ("ADDRESS", "address", r"^Address:[ \t]*(?P<v>[^\n]*[^\s])"),
         ("HOSPITAL", "hospital", rf"\b(?P<v>{HOSPITAL})\b"),
+        # "Facility: Metropolitan Health" + "Cancer Ctr" on the next line: one name, wrapped
+        ("HOSPITAL", "facility", r"^[ \t]*(?i:facility|institution|hospital|clinic|referring (?:facility|hospital))[ \t]*:"
+                                 rf"[ \t]*(?P<v>[^\n:]*[^\s:](?:\n[ \t]*(?:[A-Z][A-Za-z&'\-]*[ \t]+){{0,4}}{INST_WORD}\.?(?=[ \t]*$))?)"),
+        ("HOSPITAL", "company", r"\b(?P<v>(?:[A-Z][A-Za-z&'\-]+[ \t]+){0,3}[A-Z][A-Za-z&'\-]+,?[ \t]+"
+                                r"(?:Inc|LLC|Ltd|Corp|Corporation|GmbH|Pte\.?[ \t]+Ltd)\b\.?)"),
+        ("ID", "clia", r"\bCLIA(?:[ \t]*(?i:no\.?|number|#))?[ \t]*[:#.]?\s*(?P<v>\d{2}[D\d]\d{7})(?![\dA-Za-z])"),
         # DOB in any format: dates are kept by default, so an unlabelled DOB would stay in the text.
         ("DOB", "dob", rf"\b(?i:DOB|D\.O\.B\.?|Date of birth|Birth ?date|Born|b\.){LSEP}(?:on[ \t]+)?"
                        rf"(?P<v>{DATE_ANY})"),
@@ -185,7 +195,8 @@ RECOGNISERS = [
            r"(?<![\d+\-])\b[689]\d{3}[ -]?\d{4}\b(?![\-\d])",   # Singapore local, no +65
            r"\(\+\d{1,3}\) ?\d{3,4}[ -]?\d{4}\b",                  # (+65) 9123 4567
            r"\b07\d{3} ?\d{6}\b",                                   # UK mobile
-           r"\b\d{3}-\d{3}-\d{4}\b"),                               # US 555-231-8846
+           r"\b\d{3}-\d{3}-\d{4}\b",                                # US 555-231-8846
+           r"(?<![\d.])(?:1\.)?\d{3}\.\d{3}\.\d{4}(?![\d.])"),       # US 1.888.988.3639
     simple("date", "DATE", 0.6,
            r"\b\d{1,2}/\d{1,2}/\d{4}\b",
            r"\b\d{4}-\d{2}-\d{2}\b",
@@ -198,6 +209,7 @@ RECOGNISERS = [
            rf"\b\d{{1,5}} (?:[A-Z][a-z]+ ){{1,3}}{STREET}\b",
            r"\b\d{1,5} (?:Jalan|Jln|Lorong|Lor)\.? [A-Z][a-z]+(?: [A-Z][a-z]+){0,2}",
            r"\bSingapore \d{6}\b",
+           rf"\b[A-Z][a-z]+(?:[ \t][A-Z][a-z]+){{0,2}},[ \t]+{US_STATE}[ \t]+\d{{5}}(?:-\d{{4}})?\b",   # Cambridge, MA 02141
            r"\bS\(?\d{6}\)?(?!\d)",                                  # SG postal code S520088
            r"\b[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}\b"),                   # UK postcode NE1 4XY
     simple("mrn", "MRN", 0.9, r"\bMRN\d{6,8}\b"),

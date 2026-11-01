@@ -229,10 +229,11 @@ def privlab_confirm_review(deid_id: str, keep_ids: list[str] = [], hide_ids: lis
 def privlab_define_field(name: str, description: str = "", save: bool = False, meaning: str = "",
                          definition: str = "", type: Literal["number", "text"] | None = None, unit: str = "",
                          range_min: float | None = None,
-                         range_max: float | None = None) -> dict:
+                         range_max: float | None = None, multi: bool = False) -> dict:
     """Use when the user wants to collect a field (e.g. "tumour size"). Only the name and the user's words are sent.
     Arguments: save=False returns a draft to confirm ("Did you mean ...?"); save=True saves it, using the
     draft's details or the user's changes (meaning, definition, type, unit, range). Text values are kept as written.
+    multi=True makes it a list (e.g. biomarker results): every item the report states, exported one row per item.
     Returns: the draft, or the saved field. Next: privlab_extract_fields."""
     if not save:
         out = define_field(name, description or None, pack_path=viewer.STATE["pack"])
@@ -244,12 +245,12 @@ def privlab_define_field(name: str, description: str = "", save: bool = False, m
         msg = "To save, give meaning and type (from the draft: call with save=False first)."
         return {"next": "error", "error": msg, "say": msg}
     accept = {"key": name, "meaning_question": meaning, "definition": definition, "type": type,
-              "unit": unit or None, "range_min": range_min, "range_max": range_max}
+              "unit": unit or None, "range_min": range_min, "range_max": range_max, "multi": multi}
     with viewer._WRITE:
         out = define_field(name, description or None, accept=accept, pack_path=viewer.STATE["pack"])
     f = out["field"]
     return {"next": "done", "field": {k: f[k] for k in ("key", "name", "meaning", "definition", "type", "unit",
-                                                        "range", "version")},
+                                                        "range", "multi", "version")},
             "say": f"Saved '{name}' (definition v{f['version']}). It will be filled on every report."}
 
 
@@ -311,14 +312,17 @@ def privlab_extract_fields(deid_id: str) -> dict:
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
 def privlab_confirm_field(deid_id: str, field: str, candidate_id: str = "", value: str = "",
-                          evidence_text: str = "", not_stated: bool = False, note: str = "") -> dict:
+                          evidence_text: str = "", not_stated: bool = False, note: str = "",
+                          items: list[str] = []) -> dict:
     """Use when the user confirms or corrects one field's value. Scored first, then PrivLab learns.
     Arguments: candidate_id to accept a candidate; or value + evidence_text (exact words from the de-identified
     text) to correct it; or not_stated=True; note = optional reason PrivLab's pick was wrong.
+    For a list field: items = every item as written in the text (the whole list), or not_stated=True.
     Returns: saved, outcome, readiness. A blind check reveals PrivLab's answer only now."""
     with viewer._WRITE:
         out = learn.confirm_field(deid_id, field, candidate_id=candidate_id or None, value=value or None,
                                   evidence_text=evidence_text or None, missing=not_stated, note=note or None,
+                                  items=[{"value": x, "evidence_text": x} for x in items] or None,
                                   pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
     if out.get("status") != "saved":
         return {"next": "error", "error": out.get("reason"), "say": out.get("reason")}

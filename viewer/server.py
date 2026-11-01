@@ -49,7 +49,7 @@ from deid import profile as prof
 from extract import learn
 from extract.candidates import find_candidates, prefetch
 from extract.define import define_field
-from extract.export import export_rows
+from extract.export import export_items, export_rows
 from extract.pack import load_pack, remove_field, save_pack
 
 PAGE = Path(__file__).with_name("index.html")
@@ -161,7 +161,7 @@ def api_prefetch(b):
 def api_pack(_):
     log = learn.read_log(STATE["log"])
     return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "definition": f.definition, "description": f.description,
-                        "type": f.type, "unit": f.unit, "range": f.range,
+                        "type": f.type, "unit": f.unit, "range": f.range, "multi": f.multi,
                         "readiness": learn.readiness(v), "recent": f.recent, "version": f.version,
                         "validation": v, "history": f.history,
                         "checks": [{"when": e["ts"], "version": e.get("field_version", 1), "status": e["predicted"]["status"],
@@ -203,7 +203,7 @@ def api_confirm_field(b):
     with _WRITE:
         return learn.confirm_field(b["deid_id"], b["field"], candidate_id=b.get("candidate_id"),
                                    value=b.get("value"), evidence_text=b.get("evidence_text"),
-                                   missing=bool(b.get("missing")), note=b.get("note"),
+                                   missing=bool(b.get("missing")), note=b.get("note"), items=b.get("items"),
                                    pack_path=STATE["pack"], log_path=STATE["log"])
 
 
@@ -275,7 +275,7 @@ extracted_data.csv
   exported_at       datetime  When this file was made
 {fields}
 
-masked/
+{lists}masked/
   The full text of each de-identified report, with identifiers replaced by tags such as [PATIENT-1].
   A report where a possible identifier was left in the text is not included.
 
@@ -286,7 +286,7 @@ Contains no original identifiers. Made on this device by PrivLab.
 def _field_lines() -> str:
     """One entry per field column: its header, type and definition (version)."""
     from extract.export import headers
-    fields = load_pack(STATE["pack"])["fields"]
+    fields = [f for f in load_pack(STATE["pack"])["fields"] if not f.multi]
     column, out = headers(fields), []
     for f in fields:
         kind = "number" if f.type == "number" else "text"     # the unit is already in the column name
@@ -295,20 +295,35 @@ def _field_lines() -> str:
     return "\n".join(out)
 
 
+def _list_lines() -> str:
+    """One block per list field: its own file, one row per item (a report with eight biomarkers = eight rows)."""
+    out = []
+    for f in [f for f in load_pack(STATE["pack"])["fields"] if f.multi]:
+        meaning = " ".join((f.definition or f.meaning).split())
+        out.append(f"lists/{f.key}.csv\n  One row per item of \"{f.name}\" [definition v{f.version}]: {meaning}\n"
+                   f"  Columns: case_id, report_id (join to extracted_data.csv), {f.name} (the item's label, as "
+                   f"written), result (the text after the colon; empty when the item has no label).\n")
+    return "\n".join(out)
+
+
 def export_all(deid_ids) -> bytes | None:
     """Everything for the listed reports in one .zip: the extracted data, the masked texts and a data dictionary.
     None if there is nothing to export."""
     from datetime import datetime
     columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
+    lists = export_items(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
     masked = _finished(None, deid_ids)
-    if not rows and not masked:
+    if not rows and not masked and not any(r for _, r, _ in lists.values()):
         return None
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("data_dictionary.txt", DICTIONARY_TXT.format(when=datetime.now().strftime("%d %b %Y, %H:%M"),
-                                                                fields=_field_lines()))
+                                                                fields=_field_lines(), lists=_list_lines()))
         if rows:
             z.writestr("extracted_data.csv", _csv(columns, rows))
+        for key, (cols, items, _) in lists.items():
+            if items:
+                z.writestr(f"lists/{key}.csv", _csv(cols, items))
         for name, text in masked:
             z.writestr(f"masked/{name}", text)
     return buf.getvalue()

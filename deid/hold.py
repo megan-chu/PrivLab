@@ -32,6 +32,11 @@ REPORT_WORDS = {"department", "anatomical", "pathology", "surgical", "report", "
 MONTHS = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec", "january",
           "february", "march", "april", "june", "july", "august", "september", "october", "november", "december"}
 TITLES = {"mr", "mrs", "ms", "mdm", "madam", "miss", "sister", "dr", "prof", "professor"}
+# Words a person's name is never made of, from lab and genomic reports (1 Nov): degrees and company
+# suffixes ("Ph.D.", "Inc."), job titles ("Laboratory Director") and lab wording.
+NOT_NAMES = {"ph", "phd", "md", "msc", "sc", "mbbs", "frcpa", "frcpath", "dphil", "inc", "ltd", "llc", "corp",
+             "director", "officer", "supervisor", "technologist", "scientist", "physician", "oncologist",
+             "coordinator", "attending", "resident", "floor", "suite", "unit", "building", "level"}
 PARTICLES = {"bin", "binte", "binti", "bte", "s/o", "d/o", "a/l", "a/p"}
 SURNAMES = {"tan", "hope", "rose", "mark"}
 # Common surnames that are also ordinary English words: a Title-case mention flags for review
@@ -55,14 +60,87 @@ LABEL_NOUNS = {"no", "number", "id", "ref", "reference", "code", "name", "tax", 
                "account", "holder", "vehicle", "plate", "make", "model", "registration", "address", "contact",
                "mobile", "cell", "email", "nationality", "occupation", "employer", "insured", "beneficiary", "owner",
                "beneficial", "residential", "mailing", "home", "primary", "relationship", "manager"}
+# What a lab or genomic report labels ("Collection Date:", "Microsatellite Status:", "Tumor Mutational Burden:"):
+# a run before ":" that ends in one of these, and holds no listed name, is a label.
+LABEL_HEADS = {"date", "status", "type", "site", "result", "results", "findings", "burden", "score", "level",
+               "method", "source", "sample", "specimen", "test", "panel", "gene", "variant", "transcript",
+               "interpretation", "biomarker", "biomarkers", "options", "number", "id", "code", "name"}
 
 
 def is_label(words, text: str, end: int) -> bool:
-    """A form label ("Vehicle Plate:", "Staff ID:", "Tax Identification (TIN):"): followed by a colon, and
-    made only of label nouns and report vocabulary."""
+    """A form label ("Vehicle Plate:", "Staff ID:", "Collection Date:"): followed by a colon, and made only of
+    label nouns and report vocabulary, or ending in a label head word with no listed name in it."""
     vocab = vocabulary()
-    return bool(LABEL_AFTER.match(text, end)) and all(
-        _plain(w) in LABEL_NOUNS or (_plain(w) in vocab and _plain(w) not in name_list()) for w in words)
+    if not LABEL_AFTER.match(text, end):
+        return False
+    if all(_plain(w) in LABEL_NOUNS or (_plain(w) in vocab and _plain(w) not in name_list()) for w in words):
+        return True
+    return _plain(words[-1]) in LABEL_HEADS and not any(
+        _plain(w) in name_list() and _plain(w) not in vocab or _plain(w) in SURNAMES for w in words)
+
+
+EVIDENCE = True       # hold only on evidence of a person (1 Nov); False = any unknown Title-case word, as before
+CUE_BEFORE = re.compile(r"(?i:\b(?:by|with|dr|mr|mrs|ms|mdm|madam|prof|professor|cc|attn|signed|seen|reviewed|"
+                        r"discussed|consented|informed|called|contacted|told|son|daughter|wife|husband|mother|"
+                        r"father|brother|sister|nok|kin|patient|pt|named|surgeon|pathologist|physician|doctor)"
+                        r"\.?|[A-Z]\.)[ \t,:]*$")
+CUE_AFTER = re.compile(r"^(?:,?[ \t]*(?:M\.?D\b|MBBS|FRC\w*|Ph\.?D|R\.?N\b)|[ \t]+(?:consented|agreed|reported|"
+                       r"said|states|stated|declined|was|is|has|had)\b|[ \t]*\((?i:surgeon|patient|son|daughter|"
+                       r"wife|husband|mother|father|brother|sister|nok|relative)\)|[ \t]*['’]s\b)")
+PERSON_TAG = re.compile(r"\[(?:PATIENT|PERSON|DOCTOR|NAME)-\d+\]")
+# A place or organisation: "lives in Jurong West", "Slides sent to Raffles Medical", "transferred from Mount Elizabeth"
+PLACE_CUE = re.compile(r"(?i:\b(?:lives|living|resides|residing|staying|stays|moved|born|works|working|employed|"
+                       r"sent|referred|transferred|admitted|discharged|travelled|traveled|returned|visited)"
+                       r"[ \t]+(?:in|at|to|from|near)|\b(?:resident|native)[ \t]+of)[ \t]+$")
+PLACE_WORD = {"medical", "hospital", "clinic", "centre", "center", "ctr", "health", "healthcare", "institute",
+              "infirmary", "polyclinic", "laboratory", "laboratories", "lab", "labs", "diagnostics", "estate",
+              "town", "village", "street", "road", "avenue", "park", "heights", "gardens", "west", "east", "north",
+              "south", "central"}
+
+
+def _person_evidence(words, text: str, start: int, end: int) -> bool:
+    """Something says this is a person or a place: a listed name, a person cue next to it ("signed by", "Dr",
+    ", M.D.", "consented", "(son)"), a person tag beside it ("[PATIENT-1] Wing"), an institution or place word in
+    it ("Raffles Medical", "Jurong West"), or a place cue before it ("lives in"). An unknown word with none of
+    these (a drug, gene or lab term) is not asked about."""
+    vocab = vocabulary()
+    if any((_plain(w) in name_list() and _plain(w) not in vocab) or w.lower() in SURNAMES for w in words):
+        return True
+    if len(words) >= 2 and any(_plain(w) in PLACE_WORD for w in words):
+        return True
+    before, after = text[max(0, start - 40):start], text[end:end + 30]
+    line = before.split("\n")[-1]
+    if CUE_BEFORE.search(line) or CUE_AFTER.match(after) or PLACE_CUE.search(line):
+        return True
+    # Listed together with a name: "Rajesh Kumar, Siti Rahmah", "Tan Ah Kow and Siti Rahmah"
+    side = re.search(r"([A-Z][\w'’\-]+(?:[ \t]+[A-Z][\w'’\-]+){0,3})[ \t]*(?:,|\band\b|&)[ \t]*$", line)
+    side = side or re.match(r"[ \t]*(?:,|\band\b|&)[ \t]*([A-Z][\w'’\-]+(?:[ \t]+[A-Z][\w'’\-]+){0,3})", after)
+    if side and any((_plain(w) in name_list() and _plain(w) not in vocab) or w.lower() in SURNAMES
+                    for w in side.group(1).split()):
+        return True
+    sep = r"[ \t]*(?:,|\band\b|&)?[ \t]*"                     # "[PERSON-1] Wing", "[PERSON-1], Siti Rahmah"
+    return bool(re.search(rf"{PERSON_TAG.pattern}{sep}$", before) or re.match(rf"{sep}{PERSON_TAG.pattern}", after))
+
+
+def _not_a_name(word: str, text: str, start: int, end: int) -> bool:
+    """Shapes a person's name never has (lab and genomic reports): a unit after a number or around "/"
+    ("11 Muts/Mb", "1st Floor"), a code with an ALL-CAPS part ("TMB-High", "MS-Stable", "FDA-Approved"),
+    a product name joined from long words ("FoundationOne"; "McDonald", "DeSouza" stay names), a degree,
+    company suffix or job title."""
+    before, after = text[max(0, start - 12):start], text[end:end + 1]
+    if re.search(r"\d\w*[ \t]+$|/$", before) or after == "/":
+        return True
+    if any(len(p) >= 2 and p.isupper() for p in word.split("-")) and "-" in word:
+        return True
+    if re.fullmatch(r"[A-Z][a-z]{4,}[A-Z][a-z]+", word):
+        return True
+    return _plain(word) in NOT_NAMES
+
+
+def _defined_term(words, text: str, end: int) -> bool:
+    """A term defined by its acronym: "Tumor Mutational Burden (TMB)", "Microsatellite Instability (MSI)"."""
+    m = re.match(r"[ \t]*\(([A-Z]{2,6})\)", text[end:])
+    return bool(m) and len(words) >= 2 and m.group(1) == "".join(w[0].upper() for w in words)[:len(m.group(1))]
 WORDPART = rf"{LETTER}(?:{LETTER}|['’\-])*"
 PARTICLE_NAME = re.compile(rf"(?<![A-Za-z'])({WORDPART})[ \t]+"
                            rf"(binte|binti|bin|bte|s/o|d/o|a/l|a/p)[ \t]+"
@@ -188,8 +266,13 @@ def _title_flags(text: str, allowed=(), tags=None) -> list[tuple[int, int]]:
     flags = []
     for run in runs:
         words = [m for m in run if m.group() not in PARTICLES]
-        if not words or not any(_unknown(m.group(), vocab, allowed) for m in words):
+        if not words or not any(_unknown(m.group(), vocab, allowed) and not _not_a_name(m.group(), text, m.start(), m.end())
+                                for m in words):
             continue
+        if _defined_term([m.group() for m in words], text, run[-1].end()):
+            continue                         # "Tumor Mutational Burden (TMB)": a term, not a person
+        if EVIDENCE and not _person_evidence([m.group() for m in words], text, run[0].start(), run[-1].end()):
+            continue                         # unknown, but nothing says it is a person: not asked
         if len(words) == 1 and _sentence_start(text, words[0].start()):
             continue
         if is_label([m.group() for m in words], text, run[-1].end()):

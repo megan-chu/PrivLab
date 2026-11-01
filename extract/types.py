@@ -20,6 +20,7 @@ class Field:
     type: str                   # "number" | "text" (as written)
     unit: str | None = None     # number fields, e.g. "cm"
     range: list[float] | None = None
+    multi: bool = False         # a list: every value the report states, each with its own quote
     readiness: str = "draft"
     recent: list[str] = field(default_factory=list)          # last outcomes: accepted / corrected
     examples: dict = field(default_factory=lambda: {"good": [], "bad": []})

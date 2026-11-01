@@ -44,8 +44,9 @@ def remember_prediction(result: dict) -> None:
 
 def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None, value=None,
                   evidence_text: str | None = None, missing: bool = False, note: str | None = None, *,
-                  phase: str = "teach", pack_path=None, log_path=None) -> dict:
-    """The user's answer: pick a candidate, or give value + evidence, or say it is not in the report."""
+                  items: list[dict] | None = None, phase: str = "teach", pack_path=None, log_path=None) -> dict:
+    """The user's answer: pick a candidate, or give value + evidence, or say it is not in the report.
+    A list field takes items=[{"value", "evidence_text"}, ...] instead: the whole list, as confirmed."""
     predicted = _PREDICTIONS.get((deid_id, field_key))
     result = pipeline.result_for(deid_id)
     pack = load_pack(pack_path)
@@ -55,7 +56,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     if predicted.get("blind") and candidate_id:
         return {"status": "error", "reason": "blind check: give value with evidence_text, or missing=True"}
 
-    confirmed = _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing)
+    confirmed = (_confirmed_items(result.text, field, items, missing) if field.multi
+                 else _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing))
     if isinstance(confirmed, str):
         return {"status": "error", "reason": confirmed}
     outcome = _outcome(predicted["value"], confirmed["value"] if confirmed else None, field.type)
@@ -91,6 +93,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     out = {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
            "start": confirmed["start"] if confirmed else None, "end": confirmed["end"] if confirmed else None,
            "readiness": field.readiness}              # start/end: the confirmed quote, in the de-identified text
+    if field.multi:
+        out["items"] = confirmed["items"] if confirmed else []
     if entry["blind"]:                                 # revealed only after the user answered
         out.update(blind=True, predicted=predicted["value"])
     return out
@@ -120,14 +124,33 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
     return {"value": value, "start": hits[0][0], "end": hits[0][1]}
 
 
+def _confirmed_items(text, field, items, missing):
+    """A list field: every item located in the text; value is the list of values, items keep their quotes."""
+    if missing:
+        return None
+    if not items:
+        return "give items=[{value, evidence_text}, ...], or missing=True"
+    out = []
+    for it in items:
+        value = " ".join(str(it.get("value") or "").split())
+        hits = locate(text, it.get("evidence_text") or value)
+        if not value or not hits:
+            return f"item '{value or '?'}' not found in the de-identified report"
+        out.append({"value": value, "start": hits[0][0], "end": hits[0][1]})
+    return {"value": [i["value"] for i in out], "start": out[0]["start"], "end": out[0]["end"], "items": out}
+
+
 def _same(a, b, kind: str) -> bool:
     if kind == "number":
         return abs(float(a) - float(b)) < 0.05
     norm = lambda v: " ".join(str(v).lower().replace(".", " ").split())    # "ductal. carcinoma" = "ductal carcinoma"
+    if isinstance(a, list) or isinstance(b, list):                        # a list: the same set of items
+        return sorted(norm(x) for x in (a or [])) == sorted(norm(x) for x in (b or []))
     return norm(a) == norm(b)
 
 
 def _outcome(pred, conf, kind: str) -> str:
+    pred, conf = (pred or None if isinstance(pred, list) else pred), (conf or None if isinstance(conf, list) else conf)
     if pred is None and conf is None:
         return "true_empty"
     if pred is None:

@@ -49,7 +49,7 @@ def find_names(text: str) -> list[tuple[int, int]]:
     nlp = _model()
     if nlp is None:
         return []
-    from deid.hold import _plain, is_label, vocabulary
+    from deid.hold import NOT_NAMES, _plain, is_label, vocabulary
 
     vocab, out = vocabulary(), []
     # Only text around a capitalised word that is not report vocabulary can hold a name: the model reads
@@ -76,6 +76,10 @@ def find_names(text: str) -> list[tuple[int, int]]:
             continue                            # cut mid-word ("Gross Descriptio|n"): not a name
         if is_label(re.findall(r"[^\W\d_]+", text[start:end]), text, end):
             continue                            # a form label ("Claim Ref:"), as in the hold rule
+        if re.search(r"[®™]", text[start:end + 1]):
+            continue                            # a brand ("Keytruda®", "Tabrecta™"): never a person
+        if all(_plain(w) in NOT_NAMES or len(w) == 1 for w in re.findall(r"[^\W\d_]+", text[start:end])):
+            continue                            # a degree ("M.M. Sc", "Ph.D.") or job title
         if _looks_like_name(text[start:end], vocab):
             if out and re.fullmatch(rf"[ \t]+(?:{PARTICLE_RX})[ \t]+", text[out[-1][1]:start], re.IGNORECASE):
                 out[-1] = (out[-1][0], end)     # "Nur Aisyah" + "bte" + "Rahman": one name

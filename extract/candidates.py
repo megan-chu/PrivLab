@@ -47,6 +47,8 @@ def _field_spec(f) -> str:
         spec += f", unit {f.unit or '-'}" + (f", range {f.range[0]}-{f.range[1]}" if f.range else "")
     else:
         spec += ", text exactly as written in the report"
+    if f.multi:
+        spec += "\n  a list: one candidate per item the report states (e.g. one per biomarker line), all of them"
     for ex in f.examples.get("good", [])[-3:]:
         spec += f"\n  correct example: \"{ex['context']}\" -> {ex['value']}"
     for ex in f.examples.get("bad", [])[-3:]:
@@ -94,7 +96,7 @@ def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str
                     blind_checks: bool = False) -> dict:
     """blind_checks: sometimes hide the answer, so the user's label is not anchored on it."""
     blind = blind_checks and _is_blind(deid_id, field_key)
-    return _find(deid_id, field_key, pack_path, effort, blind)
+    return _find(deid_id, field_key, pack_path, effort, blind)         # a list field is never blind (see _find)
 
 
 def _is_blind(deid_id: str, field_key: str) -> bool:
@@ -109,6 +111,7 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     field = get_field(pack, field_key)
     if field is None:
         return {"deid_id": deid_id, "status": "error", "reason": f"no field '{field_key}' in the pack; define it first"}
+    blind = blind and not field.multi
 
     try:
         reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
@@ -134,6 +137,13 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
 
     if not cands:
         return _result(deid_id, field, "missing", None, ranked, "Not stated in this report", model_ms, blind)
+    if field.multi:                           # every verified candidate is an item; one failed check makes it amber
+        items = _items(valid)
+        if not items:
+            return _result(deid_id, field, "amber", None, ranked, f"No item passed the checks ({ranked[0]['fail']})", model_ms)
+        failed = len(cands) - len(valid)
+        reason = f"{failed} of {len(cands)} items could not be verified in the text" if failed else None
+        return _result(deid_id, field, "amber" if failed else "green", None, ranked, reason, model_ms, items=items)
     if not valid:
         return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms, blind)
     top = valid[0]
@@ -150,11 +160,23 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     return _result(deid_id, field, "amber", top, ranked, reason, model_ms, blind)
 
 
+def _items(valid: list) -> list:
+    """The verified candidates as list items, in report order, one per quote."""
+    seen, items = set(), []
+    for c in sorted(valid, key=lambda c: c["start"]):
+        if (c["start"], c["end"]) not in seen:
+            seen.add((c["start"], c["end"]))
+            items.append({k: c[k] for k in ("id", "value", "start", "end", "evidence_text", "section")})
+    return items
+
+
 def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None,
-            model_ms: int | None = None, blind: bool = False) -> dict:
+            model_ms: int | None = None, blind: bool = False, items: list | None = None) -> dict:
     from extract.learn import remember_prediction
 
     result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms, "blind": blind}
+    if field.multi:
+        result.update(items=items or [], value=[i["value"] for i in items or []])
     remember_prediction(result)                 # frozen before any feedback ("test then learn")
     if blind:                                   # the user answers without seeing it
         return {**_build(deid_id, field, "blind", None, [], "Blind check: find the value yourself"),

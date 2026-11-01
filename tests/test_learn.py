@@ -172,6 +172,46 @@ def test_same_named_fields_get_their_own_columns(paths):
     assert columns[-2:] == ["tumour size (cm) [tumour_size]", "tumour size (cm) [tumour_size_2]"]   # neither overwrites the other
 
 
+GENOMIC = ("Microsatellite Status: MS-Stable\nTumor Mutational Burden: 11 Muts/Mb\nMAP2K1 (MEK1): D67N (21.4% VAF)\n"
+           "TP53: TP53 (NM_000546) rearrangement exon 11\nCCNE1: amplification (equivocal)\n")
+
+
+def test_list_field_items_each_grounded_and_exported_one_row_per_item(paths):
+    from extract.export import export_items
+    draft = {"key": "biomarker", "meaning_question": "What biomarker results are reported?", "type": "text",
+             "unit": None, "range_min": None, "range_max": None, "multi": True}
+    define_field("Biomarker", None, accept=draft, pack_path=paths["pack"])
+    assert load_pack(paths["pack"])["fields"][-1].multi
+    r = pipeline.deidentify_report(text=GENOMIC, profile=new_profile()[0])
+    held = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    if held["next"] == "hold":                                                # "Microsatellite Status" looks like a name: keep it
+        pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": [h["id"] for h in held["hold"]]}, use_spark=False)
+    lines = GENOMIC.strip().split("\n")
+    paths["spark"]["state"]["reply"] = {"fields": [{"key": "biomarker", "candidates": [
+        {"value_text": l, "unit_text": None, "evidence_text": l, "reason": "t", "confidence": 0.9} for l in lines[:3]]
+        + [{"value_text": "KRAS: G12C", "unit_text": None, "evidence_text": "KRAS: G12C", "reason": "t", "confidence": 0.9}]}]}
+    res = find_candidates(r["deid_id"], "biomarker", pack_path=paths["pack"], blind_checks=True)
+    assert res["status"] == "amber" and "1 of 4" in res["reason"]           # the invented KRAS line failed its check
+    assert [i["value"] for i in res["items"]] == lines[:3] and all(i["start"] is not None for i in res["items"])
+    assert GENOMIC[res["items"][1]["start"]:res["items"][1]["end"]] == lines[1]
+
+    items = [{"value": l, "evidence_text": l} for l in lines[:2] + lines[3:]]   # drop MAP2K1, add TP53 and CCNE1
+    out = confirm_field(r["deid_id"], "biomarker", items=items, pack_path=paths["pack"], log_path=paths["log"])
+    assert out["status"] == "saved" and out["outcome"] == "wrong" and len(out["items"]) == 4
+    bad = confirm_field(r["deid_id"], "biomarker", items=[{"value": "EGFR: L858R"}], pack_path=paths["pack"], log_path=paths["log"])
+    assert bad["status"] == "error"                                           # a prediction is needed again
+
+    columns, rows, _ = export_rows(pack_path=paths["pack"], log_path=paths["log"])
+    assert "Biomarker" not in columns                                        # not a cell in the wide file
+    lists = export_items(pack_path=paths["pack"], log_path=paths["log"])
+    cols, item_rows, withheld = lists["biomarker"]
+    assert cols == ["case_id", "report_id", "Biomarker", "result"] and withheld == 0
+    assert [(x["Biomarker"], x["result"]) for x in item_rows] == [
+        ("Microsatellite Status", "MS-Stable"), ("Tumor Mutational Burden", "11 Muts/Mb"),
+        ("TP53", "TP53 (NM_000546) rearrangement exon 11"), ("CCNE1", "amplification (equivocal)")]
+    assert len({x["case_id"] for x in item_rows}) == 1 and item_rows[0]["case_id"]
+
+
 def test_learned_examples_reach_the_next_prompt(paths):
     res = run(paths, REPORT, ("9", "specimen 9 x 6 x 3 cm"), ("2.1", "tumour 2.1 cm"))
     confirm(paths, res, candidate_id="c2")
