@@ -50,13 +50,15 @@ def context(text: str, start: int, end: int, width: int = 40) -> str:
 
 
 def load_cases(split: str) -> list[dict]:
-    if split in ("hard", "redteam", "uncued"):
+    if split in ("hard", "redteam", "uncued", "lab"):
         from eval.hard_cases import CASES_FILE, parse
         if split == "uncued":
             from eval.uncued_benchmark import check_frozen
             if problem := check_frozen():
                 raise SystemExit(problem)
-        path = CASES_FILE if split == "hard" else CASES_FILE.with_name(f"{split}.txt")
+        path = CASES_FILE if split == "hard" else CASES_FILE.with_name("lab_reports.txt" if split == "lab" else f"{split}.txt")
+        if split == "lab" and not path.exists():
+            raise SystemExit("data/hard_cases/lab_reports.txt not found: add the lab-report test set first.")
         return [{"id": f"{split[0].upper()}{i:02d}", **c} for i, c in enumerate(parse(path), 1)]
     return [{"id": r["report_id"], "category": r["cancer_type"], "text": load_report(r["report_id"]),
              "phi": load_phi_truth(r["report_id"])["phi"]} for r in manifest(split)]
@@ -170,18 +172,18 @@ def _git_commit() -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Score de-identification against the answer key.")
-    ap.add_argument("--split", default="dev", choices=["dev", "extra", "test", "hard", "redteam", "uncued"])
+    ap.add_argument("--split", default="dev", choices=["dev", "extra", "test", "hard", "redteam", "uncued", "lab"])
     ap.add_argument("--mode", default="pipeline", choices=["patterns", "pipeline", "spark"])
     ap.add_argument("--final", action="store_true", help="required to score the test split")
     ap.add_argument("--allow-api", action="store_true", help="required for --mode spark (live calls)")
-    ap.add_argument("--show-misses", action="store_true", help="write misses with context (dev/extra/hard only)")
+    ap.add_argument("--show-misses", action="store_true", help="write misses with context (dev/extra/hard/lab only)")
     args = ap.parse_args()
     if args.split == "test" and not args.final:
         ap.error("the test split is for the final evaluation only; add --final if this is it")
     if args.mode == "spark" and not args.allow_api:
         ap.error("--mode spark makes live Muse Spark calls; add --allow-api once approved")
     if args.show_misses and args.split == "test":
-        ap.error("miss lists are dev/extra/hard only")
+        ap.error("miss lists are dev/extra/hard/lab only")
 
     result = score(load_cases(args.split), args.mode)
     print_report(result, args.split)

@@ -160,14 +160,18 @@ def api_prefetch(b):
 
 def api_pack(_):
     log = learn.read_log(STATE["log"])
+    names = {e["deid_id"]: e["report_id"] for e in log}
+    # the reports whose answers the field is learning from (its examples), newest last, each once
+    learning = lambda f: list(dict.fromkeys(names.get(x.get("report"), "an earlier report")
+                                            for x in f.examples.get("good", []) + f.examples.get("bad", [])))
     return {"fields": [{"key": f.key, "name": f.name, "meaning": f.meaning, "definition": f.definition, "description": f.description,
-                        "type": f.type, "unit": f.unit, "range": f.range, "multi": f.multi,
+                        "type": f.type, "unit": f.unit, "range": f.range, "multi": f.multi, "learning_from": learning(f),
                         "readiness": learn.readiness(v), "recent": f.recent, "version": f.version,
                         "validation": v, "history": f.history,
                         "checks": [{"when": e["ts"], "version": e.get("field_version", 1), "status": e["predicted"]["status"],
                                     "predicted": e["predicted"]["value"], "confirmed": (e["confirmed"] or {}).get("value"),
                                     "outcome": e["outcome"], "blind": e.get("blind", False)}
-                                   for e in reversed(log) if e["field"] == f.key][:20]}
+                                   for e in reversed(log) if e["field"] == f.key and e.get("phase") != "reset"][:20]}
                        for f in load_pack(STATE["pack"])["fields"] for v in [learn.validation(f, log)]]}
 
 
@@ -208,6 +212,47 @@ def api_confirm_field(b):
                                    pack_path=STATE["pack"], log_path=STATE["log"])
 
 
+def _report_names() -> dict:
+    """deid_id -> report name, from the score log (examples remember the deid_id they came from)."""
+    return {e["deid_id"]: e["report_id"] for e in learn.read_log(STATE["log"])}
+
+
+def api_learned(_):
+    """What PrivLab has learned, for the viewer's Learned tab: the privacy profile's two lists and each
+    field's examples. Local only: the always-hide list holds real names."""
+    p, names = prof.load_profile(), _report_names()
+    src = lambda x: names.get(x.get("report"), "an earlier report")
+    return {"hide": p.always_remove if p else [], "keep": p.allow_list if p else [],
+            "fields": [{"key": f.key, "name": f.name, "version": f.version,
+                        "good": [{"value": x.get("value"), "context": x["context"], "from": src(x)} for x in f.examples.get("good", [])],
+                        "bad": [{"context": x["context"], "reason": x.get("reason", ""), "from": src(x)} for x in f.examples.get("bad", [])]}
+                       for f in load_pack(STATE["pack"])["fields"]]}
+
+
+def api_forget(b):
+    """Undo one learned entry: kind hide | keep (privacy profile) or good | bad (a field's example, by index)."""
+    from extract.pack import get_field, put_field
+    kind, ok = b.get("kind"), False
+    with _WRITE:
+        if kind in ("hide", "keep"):
+            p = prof.load_profile()
+            if p is not None and prof.forget(p, allow=b.get("text") if kind == "keep" else None,
+                                             remove={"text": str(b.get("text", "")), "type": str(b.get("type", ""))} if kind == "hide" else None):
+                prof.save_profile(p); ok = True
+        elif kind in ("good", "bad"):
+            pack = load_pack(STATE["pack"]); f = get_field(pack, str(b.get("field", ""))); i = int(b.get("index", -1))
+            if f is not None and 0 <= i < len(f.examples.get(kind, [])):
+                f.examples[kind].pop(i); put_field(pack, f); save_pack(pack, STATE["pack"]); ok = True
+        else:
+            return {"error": "Unknown kind."}
+    return {"ok": True} if ok else {"error": "Nothing to remove: it may already be gone."}
+
+
+def api_reset_field(b):
+    with _WRITE:
+        return learn.reset_field(b["deid_id"], b["field"], pack_path=STATE["pack"], log_path=STATE["log"])
+
+
 def api_reset(_):
     if not STATE["demo"]:
         return {"error": "Start over is only available with --demo"}
@@ -217,9 +262,9 @@ def api_reset(_):
     return {"ok": True}
 
 
-def export_csv(deid_ids=None) -> bytes:
-    """One row per report, one column per field (extract/export.py); no report text, no positions."""
-    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
+def export_csv(deid_ids=None, keys=None) -> bytes:
+    """One row per report, one column per field (only keys, if given: the ticked fields); no report text."""
+    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids, keys=keys)
     return _csv(columns, rows)
 
 
@@ -284,22 +329,27 @@ Contains no original identifiers. Made on this device by PrivLab.
 """
 
 
-def _field_lines() -> str:
+def _pack_fields(keys=None) -> list:
+    fields = load_pack(STATE["pack"])["fields"]
+    return fields if keys is None else [f for f in fields if f.key in set(keys)]
+
+
+def _field_lines(keys=None) -> str:
     """One entry per field column: its header, type and definition (version)."""
     from extract.export import headers
-    fields = [f for f in load_pack(STATE["pack"])["fields"] if not f.multi]
+    fields = _pack_fields(keys)
     column, out = headers(fields), []
     for f in fields:
-        kind = "number" if f.type == "number" else "text"     # the unit is already in the column name
+        kind = "list" if f.multi else "number" if f.type == "number" else "text"   # a number's unit is in its column name
         meaning = " ".join((f.definition or f.meaning).split())
         out.append(f"  {column[f.key]:<17} {kind:<9} {meaning} [definition v{f.version}]")
     return "\n".join(out)
 
 
-def _list_lines() -> str:
+def _list_lines(keys=None) -> str:
     """One block per list field: its own file, one row per item (a report with eight biomarkers = eight rows)."""
     out = []
-    for f in [f for f in load_pack(STATE["pack"])["fields"] if f.multi]:
+    for f in [f for f in _pack_fields(keys) if f.multi]:
         meaning = " ".join((f.definition or f.meaning).split())
         out.append(f"lists/{f.key}.csv\n  One row per item of \"{f.name}\" [definition v{f.version}]: {meaning}\n"
                    f"  Columns: case_id, report_id (join to extracted_data.csv), {f.name} (the item's label, as "
@@ -308,19 +358,19 @@ def _list_lines() -> str:
     return "\n".join(out)
 
 
-def export_all(deid_ids) -> bytes | None:
+def export_all(deid_ids, keys=None) -> bytes | None:
     """Everything for the listed reports in one .zip: the extracted data, the masked texts and a data dictionary.
-    None if there is nothing to export."""
+    keys: only these fields (the ticked ones). None if there is nothing to export."""
     from datetime import datetime
-    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
-    lists = export_items(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids)
+    columns, rows, _ = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids, keys=keys)
+    lists = export_items(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=deid_ids, keys=keys)
     masked = _finished(None, deid_ids)
     if not rows and not masked and not any(r for _, r, _ in lists.values()):
         return None
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("data_dictionary.txt", DICTIONARY_TXT.format(when=datetime.now().strftime("%d %b %Y, %H:%M"),
-                                                                fields=_field_lines(), lists=_list_lines()))
+                                                                fields=_field_lines(keys), lists=_list_lines(keys)))
         if rows:
             z.writestr("extracted_data.csv", _csv(columns, rows))
         for key, (cols, items, _) in lists.items():
@@ -329,6 +379,40 @@ def export_all(deid_ids) -> bytes | None:
         for name, text in masked:
             z.writestr(f"masked/{name}", text)
     return buf.getvalue()
+
+
+def export_summary(kind: str, deid_ids=(), deid_id: str | None = None) -> dict:
+    """What a download holds and what it leaves out, with the reason, for the viewer's confirmation.
+    kind: csv (extracted data), deid (masked reports .zip), one (one masked report .txt), all (everything .zip).
+    Reports are named by deid_id; the viewer shows its own names. No report text."""
+    ids = [deid_id] if deid_id else list(deid_ids or [])
+    latest = {}
+    for e in learn.read_log(STATE["log"]):
+        if e["deid_id"] in ids:
+            latest[(e["deid_id"], e["field"])] = e
+    confirmed = {d for (d, _), e in latest.items() if e.get("phase") != "reset"}     # a value still confirmed
+
+    def masked_why(did):                                 # None: its masked text is in the download
+        run = pipeline._RUNS.get(did)
+        if run is None or run.get("step") != "done" or not run.get("result"):
+            return "not de-identified yet"
+        if any("left in the output" in x for x in (run.get("priority") or {}).get("reasons", [])):
+            return "possible identifier left in the text"
+        return None
+
+    included, excluded = [], []
+    for did in ids:
+        why_masked = masked_why(did)
+        why_data = None if did in confirmed else (why_masked or "no field confirmed yet")
+        why = {"csv": why_data, "deid": why_masked, "one": why_masked,
+               "all": None if why_data is None or why_masked is None else why_masked}[kind]
+        (excluded.append({"deid_id": did, "why": why}) if why else included.append(did))
+    withheld = export_rows(pack_path=STATE["pack"], log_path=STATE["log"], deid_ids=ids)[2] if kind in ("csv", "all") else 0
+    return {"kind": kind, "included": included, "excluded": excluded, "withheld_values": withheld}
+
+
+def api_export_summary(q):
+    return export_summary(str(q.get("kind", "csv")), [x for x in str(q.get("ids", "")).split(",") if x], q.get("deid_id") or None)
 
 
 def _stamp() -> str:
@@ -342,10 +426,18 @@ def _ids(url) -> list[str]:
     return [x for x in (parse_qs(url.query).get("ids", [""])[0]).split(",") if x]
 
 
-GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open}
+def _keys(url) -> list[str] | None:
+    """The fields ticked for extraction (?fields=a,b); missing means every field in the pack."""
+    raw = parse_qs(url.query).get("fields", [None])[0]
+    return None if raw is None else [x for x in raw.split(",") if x]
+
+
+GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open,
+       "/api/export_summary": api_export_summary, "/api/learned": api_learned}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/define": api_define, "/api/find": api_find,
-        "/api/confirm_field": api_confirm_field, "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
+        "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget,
+        "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
 
 
 # --------------------------------------------------------------------------
@@ -358,7 +450,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
         if url.path == "/api/export.csv":
             try:
-                body = export_csv(_ids(url))
+                body = export_csv(_ids(url), _keys(url))
             except Exception:
                 log.error("export failed: %s", traceback.format_exc())
                 return self._json(500, {"error": "export failed; see runs/viewer.log"})
@@ -366,7 +458,7 @@ class Handler(BaseHTTPRequestHandler):
                               {"Content-Disposition": f'attachment; filename="privlab_extracted_data_{_stamp()}.csv"'})
         if url.path == "/api/export_all":
             try:
-                body = export_all(_ids(url))
+                body = export_all(_ids(url), _keys(url))
             except Exception:
                 log.error("export failed: %s", traceback.format_exc())
                 return self._json(500, {"error": "export failed; see runs/viewer.log"})

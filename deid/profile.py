@@ -45,23 +45,40 @@ def reusable_allow_list(profile: PrivacyProfile) -> list[str]:
     return [a for a in profile.allow_list if len(a.split()) >= 2]
 
 
-def learn(profile: PrivacyProfile, allow=(), remove=()) -> None:
-    """allow: false-alarm texts; remove: {"text", "type"} to catch locally next time."""
+def learn(profile: PrivacyProfile, allow=(), remove=()) -> dict:
+    """allow: false-alarm texts; remove: {"text", "type", "from"?} to catch locally next time ("from": the
+    report it was learned on, shown later as "Learned from …"). Returns what is new: {"allow", "remove"}."""
     allowed = {a.lower() for a in profile.allow_list}
     known = {(r["text"].lower(), r["type"]) for r in profile.always_remove}
-    added = False
+    new = {"allow": [], "remove": []}
     for text in allow:
         if text.lower() not in allowed:
             profile.allow_list.append(text)
             allowed.add(text.lower())
-            added = True
+            new["allow"].append(text)
     for r in remove:
         if (r["text"].lower(), r["type"]) not in known:
-            profile.always_remove.append({"text": r["text"], "type": r["type"]})
+            entry = {"text": r["text"], "type": r["type"], **({"from": r["from"]} if r.get("from") else {})}
+            profile.always_remove.append(entry)
             known.add((r["text"].lower(), r["type"]))
-            added = True
-    if added:
+            new["remove"].append(entry)
+    if new["allow"] or new["remove"]:
         profile.version += 1
+    return new
+
+
+def forget(profile: PrivacyProfile, allow: str | None = None, remove: dict | None = None) -> bool:
+    """Undo one learned entry ("What PrivLab has learned" → Remove). True if something was removed."""
+    before = (len(profile.allow_list), len(profile.always_remove))
+    if allow is not None:
+        profile.allow_list = [a for a in profile.allow_list if a.lower() != allow.lower()]
+    if remove is not None:
+        profile.always_remove = [r for r in profile.always_remove
+                                 if (r["text"].lower(), r["type"]) != (remove["text"].lower(), remove["type"])]
+    changed = before != (len(profile.allow_list), len(profile.always_remove))
+    if changed:
+        profile.version += 1
+    return changed
 
 
 def load_profile(path=None) -> PrivacyProfile | None:

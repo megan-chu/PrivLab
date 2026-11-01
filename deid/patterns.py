@@ -58,6 +58,12 @@ DATE_ANY = (rf"(?:{D}{{1,2}}[/.\-]{D}{{1,2}}[/.\-](?:{D}{{4}}|{D}{{2}})|\d{{4}}-
             rf"\d{{1,2}}{ORDINAL}[ \-]{MONTHS}[ \-,]*(?:\d{{4}}|\d{{2}})|{MONTHS} \d{{1,2}}{ORDINAL},? \d{{4}}|"
             rf"{MONTHS} \d{{4}})")
 STREET = r"(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Close|Lane|Ln|Way|Crescent|Cres)"   # longest first
+# Title-case only: "pelvic floor" is anatomy, "FL 33101" is Florida, "Level 2 nodes" are neck levels.
+FLOOR = r"(?:Floor|Fl\.?|Storey)"
+# Newline-tolerant separator with disjoint branches. SEP's padded `\n` branch backtracked at digit starts
+# and pushed the dev median over 100 ms here, so floor patterns use this instead.
+GAP = r"(?:[ \t]+|\n)"
+ORDINAL_WORD = r"(?:First|Second|Third|Fourth|Fifth|Sixth|Seventh|Eighth|Ninth|Tenth|Eleventh|Twelfth)"
 MRN_OCR = r"[A-Z]{0,3}[\dO]{6,9}"
 # Any report type (forms, claims, banking): a label that names an identifier, and a role label before a name.
 ID_LABEL = (r"(?:[A-Za-z]+[ \t]+){0,3}(?i:passport|TIN|tax identification|IBAN|policy|licen[cs]e|plate|registration|"
@@ -213,6 +219,10 @@ RECOGNISERS = [
            r"\bS\(?\d{6}\)?(?!\d)",                                  # SG postal code S520088
            r"\b[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}\b"),                   # UK postcode NE1 4XY
     simple("mrn", "MRN", 0.9, r"\bMRN\d{6,8}\b"),
+    simple("floor", "ADDRESS", 0.8,
+           rf"\b\d{{1,3}}(?:st|nd|rd|th)?{GAP}{FLOOR}\b",            # "1st Floor", "2 Fl", "3 Storey", "1st\nFloor"
+           rf"\b{FLOOR}{GAP}\d{{1,3}}\b",                            # "Floor 1", "Fl 2"
+           rf"\b(?:{ORDINAL_WORD}{GAP}{FLOOR}|Ground{GAP}Floor)\b"),     # "First Floor", "Ground Floor"
     LabelledRecognizer(),
 ]
 
@@ -228,6 +238,30 @@ def resolve_overlaps(results: list[tuple[str, RecognizerResult]]) -> list[tuple[
         if all(r.end <= k.start or r.start >= k.end for _, k in kept):
             kept.append((source, r))
     return sorted(kept, key=lambda x: x[1].start)
+
+
+_UNIT = (r"(?:\d{1,3}(?:st|nd|rd|th)?[ \t]+floor|level[ \t]+\d{1,3}|suite[ \t]+\d+|unit[ \t]+\d+"
+         r"|#\d{1,4}-\d{1,4}|blk[ \t]+\d+)")
+_GAP = re.compile(rf"[,. \t]*(?:{_UNIT}[, \t][,. \t]*)?", re.IGNORECASE)
+
+
+def merge_addresses(text, kept):
+    """Join ADDRESS spans split only by punctuation or one unit part ("1st Floor", "Suite 200")."""
+    out, first, cur = [], None, None
+    for source, r in kept:
+        if r.entity_type == "ADDRESS" and cur is not None and _GAP.fullmatch(text[cur.end:r.start]):
+            cur = RecognizerResult("ADDRESS", cur.start, r.end, max(cur.score, r.score))
+        else:
+            if cur is not None:
+                out.append((first, cur))
+                first, cur = None, None
+            if r.entity_type == "ADDRESS":
+                first, cur = source, r
+            else:
+                out.append((source, r))
+    if cur is not None:
+        out.append((first, cur))
+    return out
 
 
 TAG_ONLY = re.compile(r"(?:\s*\[[A-Z]+-\d+\]\s*[,;]?)+")
@@ -280,6 +314,7 @@ def find_pattern_phi(text: str, report_id: str | None = None, learned=(), names_
                 rule = (r.recognition_metadata or {}).get("rule") or rec.name
                 results.append((f"pattern:{rule}", r))
         kept = resolve_overlaps(results)
+        kept = merge_addresses(scan, kept)
         found = [(r.entity_type, r.start, r.end, source, round(r.score, 2)) for source, r in kept]
         with timed("ner", report_id=report_id, chars=len(text)):    # the model only fills gaps
             found += [] if not names_model else [("NAME", a, b, "ner:spacy", 0.6) for a, b in find_names(scan)

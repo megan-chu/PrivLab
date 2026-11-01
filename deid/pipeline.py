@@ -88,7 +88,7 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
     _RUNS[deid_id] = run
     _save(run)
     return {"deid_id": deid_id, "next": "review", "counts": dict(Counter(s.type for s in spans)),
-            "detections": [_detection(text, spans, s, show_text) for s in spans],
+            "detections": [_learned_from(_detection(text, spans, s, show_text), s, profile) for s in spans],
             "kept_by_choice": list(prof.kept_types(profile)), "warnings": warnings}
 
 
@@ -248,7 +248,11 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
                         kept_types=kept, allowed=allowed, seal=make_seal(deid_id, tagged, kept, allowed))
     run.update(step="done", final_spans=spans, result=result, priority=review_priority(run, len(leftovers)),
                leftovers=leftovers)
-    prof.learn(profile, **run["learn"])          # commit what this run staged (idempotent on a re-finish)
+    # commit what this run staged (idempotent on a re-finish); each learned identifier keeps the report it came from
+    new = prof.learn(profile, allow=run["learn"]["allow"],
+                     remove=[{**x, "from": run["report_id"]} for x in run["learn"]["remove"]])
+    run["learned"] = {"allow": run.get("learned", {}).get("allow", []) + new["allow"],
+                      "remove": run.get("learned", {}).get("remove", []) + new["remove"]}
     if run["persist"]:
         prof.save_profile(profile)
     _trace(run, "apply", f"{len(tags)} identifiers replaced with tags; encrypted vault saved.", ok=not leftovers)
@@ -256,6 +260,9 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     return {"deid_id": deid_id, "next": "done", "text": tagged, "summary": summary, "layer2": run["layer2"],
             "warnings": run["warnings"], "trace": run["trace"], "review_seconds": run["review_s"],
             "review_priority": run["priority"],
+            # what this report taught the profile (the viewer says so; the MCP chat reply leaves it out: it holds names)
+            "learned": {"hide": [{"text": x["text"], "type": x["type"]} for x in run["learned"]["remove"]],
+                        "keep": run["learned"]["allow"]},
             "leftovers": [{"id": x.id, "type": x.type, "rule": x.source, "start": x.start, "end": x.end}
                           for x in leftovers]}         # positions in the tagged text; the value only in the viewer
 
@@ -348,6 +355,14 @@ def _detection(text: str, spans: list[PhiSpan], target: PhiSpan, show_text: bool
     d = {"id": target.id, "type": target.type, "source": target.source, "context": context}
     if show_text:                        # local viewer only: the identifier and where it is
         d.update(text=target.text, start=target.start, end=target.end)
+    return d
+
+
+def _learned_from(d: dict, span: PhiSpan, profile) -> dict:
+    """A find made by a learned entry says so, and which report taught it ("Learned from report_1")."""
+    if span.source == "pattern:learned":
+        entry = next((r for r in profile.always_remove if r["text"].lower() == span.text.lower()), {})
+        d.update(learned=True, learned_from=entry.get("from"))
     return d
 
 

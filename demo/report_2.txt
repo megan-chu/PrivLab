@@ -1,0 +1,31 @@
+Merlion Medical Centre
+
+Patient: Nurul Aisyah Binte Yusof
+NRIC: S8430217A
+DOB: 3 October 1979
+MRN: MRN843021
+Accession: SP26-00457
+
+CLINICAL HISTORY:
+47-year-old woman with a right breast lump. Mammogram shows architectural
+distortion in the upper inner quadrant. No family history of breast cancer.
+
+GROSS DESCRIPTION:
+Received a wide local excision measuring 11.0 x 7.5 x 4.0 cm. The specimen
+label was cross-checked while zola mensah watched. Sectioning reveals a firm
+tumour measuring 1.7 cm in greatest dimension with irregular borders. The
+tumour is 5 mm from the medial margin and 7 mm from the lateral margin.
+Ten sentinel nodes are submitted separately.
+
+MICROSCOPIC:
+Sections show invasive lobular carcinoma with e-cadherin loss. Nottingham
+histologic grade 2. No lymphovascular invasion is seen. All ten nodes are
+negative for metastasis (0/10). ER positive, PR positive, HER2 negative
+by immunostain.
+
+DIAGNOSIS:
+Invasive lobular carcinoma, Nottingham grade 2. Margins clear.
+No nodal metastasis.
+
+Reported by:
+Dr Siti Aminah, Pathologist

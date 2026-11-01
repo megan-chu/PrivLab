@@ -38,10 +38,17 @@ def headers(fields) -> dict[str, str]:
     return {f.key: h if plain.count(h) == 1 else f"{h} [{f.key}]" for f, h in zip(fields, plain)}
 
 
-def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[str], list[dict], int]:
-    """(columns, rows, number of values withheld by the scan): the latest confirmed value per report and field.
-    deid_ids: only these reports (the viewer passes the reports in its list); None = every report in the log."""
+def _fields(pack_path, keys) -> list:
+    """The pack's fields, or only those in keys (the fields ticked for extraction), in pack order."""
     fields = load_pack(pack_path)["fields"]
+    return fields if keys is None else [f for f in fields if f.key in set(keys)]
+
+
+def export_rows(*, pack_path=None, log_path=None, deid_ids=None, keys=None) -> tuple[list[str], list[dict], int]:
+    """(columns, rows, number of values withheld by the scan): the latest confirmed value per report and field.
+    deid_ids: only these reports (the viewer passes the reports in its list); None = every report in the log.
+    keys: only these fields (the ones ticked for extraction); None = every field in the pack."""
+    fields = _fields(pack_path, keys)
     column = headers(fields)
     columns = FIXED + [column[f.key] for f in fields]
     by_report, withheld = {}, 0
@@ -52,6 +59,9 @@ def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[s
             continue
         field = next((f for f in fields if f.key == e["field"]), None)
         if field is None:                                   # a removed field
+            continue
+        if e.get("phase") == "reset":                       # a confirmed value undone: not in the export
+            by_report.get(e["deid_id"], {}).pop(column[field.key], None)
             continue
         row = by_report.setdefault(e["deid_id"], {"report_id": e["report_id"]})
         row["reviewed_at"] = e["ts"]
@@ -67,6 +77,8 @@ def export_rows(*, pack_path=None, log_path=None, deid_ids=None) -> tuple[list[s
         row[column[field.key]] = value
     rows = []
     for deid_id, row in by_report.items():
+        if not any(column[f.key] in row for f in fields):  # every value reset: no row
+            continue
         try:
             case_id = load_vault(deid_id)["case_id"]
         except (OSError, KeyError, ValueError):
@@ -81,11 +93,11 @@ def split_item(item: str) -> tuple[str, str]:
     return (name.strip(), result.strip()) if sep and name.strip() else (item.strip(), "")
 
 
-def export_items(*, pack_path=None, log_path=None, deid_ids=None) -> dict[str, tuple[list[str], list[dict], int]]:
+def export_items(*, pack_path=None, log_path=None, deid_ids=None, keys=None) -> dict[str, tuple[list[str], list[dict], int]]:
     """One long table per list field, key -> (columns, rows, withheld): a row per item, so a report with eight
     biomarkers gives eight rows. Columns: case_id, report_id, <field name> (the item's label, as written),
-    result (after the colon). Joins extracted_data.csv on case_id."""
-    pack = load_pack(pack_path)
+    result (after the colon). Joins extracted_data.csv on case_id. keys: only these fields."""
+    pack = {"fields": _fields(pack_path, keys)}
     wanted = None if deid_ids is None else set(deid_ids)
     latest = {}
     for e in read_log(log_path):

@@ -2,6 +2,7 @@
 import pytest
 
 from common.data import load_phi_truth, load_report
+from deid.mask import apply_tags
 from deid.patterns import find_pattern_phi
 
 
@@ -29,6 +30,13 @@ def found(text: str) -> list[tuple[str, str]]:
     ("signed by Dr Lee Mei Xuan, Consultant", ("DOCTOR", "Dr Lee Mei Xuan")),
     ("Address: 14 Hawthorn Close, Leeds LS6 2QT\n", ("ADDRESS", "14 Hawthorn Close, Leeds LS6 2QT")),
     ("Whitfield NHS Foundation Trust Hospital\n", ("HOSPITAL", "Whitfield NHS Foundation Trust Hospital")),
+    ("Meet on the 1st Floor lobby", ("ADDRESS", "1st Floor")),
+    ("Floor 2 lobby is closed", ("ADDRESS", "Floor 2")),
+    ("First Floor lobby", ("ADDRESS", "First Floor")),
+    ("Ground Floor lobby", ("ADDRESS", "Ground Floor")),
+    ("2nd Fl lobby", ("ADDRESS", "2nd Fl")),
+    ("3 Storey carpark", ("ADDRESS", "3 Storey")),
+    ("Meet on the 1st\nFloor lobby", ("ADDRESS", "1st\nFloor")),
 ])
 def test_recogniser_examples(text, expected):
     assert expected in found(text)
@@ -51,6 +59,12 @@ def test_labelled_or_lowercase_ids_are_caught():
 ])
 def test_tcga_placeholders_are_not_doctors(text):
     assert not [t for t, _ in found(text) if t == "DOCTOR"]
+
+
+def test_floor_words_outside_addresses_are_not_masked():
+    assert not [t for t, _ in found("pelvic floor intact; floor of mouth clear.") if t == "ADDRESS"]
+    assert not [t for t, _ in found("discharged to Miami, FL.") if t == "ADDRESS"]   # US state, not "Fl"
+    assert not [t for t, _ in found("Level 2 lymph nodes involved.") if t == "ADDRESS"]   # neck levels
 
 
 def test_doctor_name_stops_before_heading():
@@ -240,3 +254,30 @@ def test_lab_wording_rules_still_hold_names(text, name):
 def test_hold_needs_evidence_of_a_person_or_place(text, held):
     from deid.hold import hold_flags
     assert [text[a:b] for a, b in hold_flags(text)] == held
+
+
+@pytest.mark.parametrize("text,full,clia", [
+    ("7010 Kit Creek Road, Morrisville, NC 27560 (CLIA: 3402044309)",
+     "7010 Kit Creek Road, Morrisville, NC 27560", "3402044309"),
+    ("150 Second St., 1st Floor, Cambridge, MA 02141 (CLIA: 2202027531)",
+     "150 Second St., 1st Floor, Cambridge, MA 02141", "2202027531"),
+])
+def test_adjacent_address_parts_merge_into_one_span(text, full, clia):
+    spans = find_pattern_phi(text)
+    assert [(s.type, s.text) for s in spans if s.type == "ADDRESS"] == [("ADDRESS", full)]
+    assert [s.text for s in spans if s.type == "ID"] == [clia]
+
+
+def test_addresses_do_not_merge_across_lines_or_types():
+    spans = find_pattern_phi("Address: 12 Jalan Besar\nPhone: +65 6123 4567")
+    assert [(s.type, s.text) for s in spans if s.type == "ADDRESS"] == [("ADDRESS", "12 Jalan Besar")]
+    assert [s.type for s in spans if s.type == "PHONE"]
+    two = find_pattern_phi("12 Jalan Besar\n14 Hawthorn Close")
+    assert [(s.type, s.text) for s in two if s.type == "ADDRESS"] == [
+        ("ADDRESS", "12 Jalan Besar"), ("ADDRESS", "14 Hawthorn Close")]
+
+
+def test_merged_address_masks_as_one_tag():
+    text = "7010 Kit Creek Road, Morrisville, NC 27560 (CLIA: 3402044309)"
+    tagged, _ = apply_tags(text, find_pattern_phi(text))
+    assert tagged == "[ADDRESS-1] (CLIA: [ID-1])"

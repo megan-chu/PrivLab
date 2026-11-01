@@ -1,0 +1,32 @@
+Harbourview General Hospital
+
+Patient: Goh Mei Ling
+NRIC: S7125893I
+DOB: 14 June 1957
+MRN: MRN712345
+Accession: SP26-00123
+
+CLINICAL HISTORY:
+68-year-old woman with a left breast lump. Mammogram shows a suspicious
+mass in the upper outer quadrant. No family history of breast cancer.
+The nurse asked that zola mensah receive a copy.
+
+GROSS DESCRIPTION:
+Received a wide local excision measuring 9.0 x 6.0 x 3.0 cm. The specimen
+is inked and serially sectioned. Sectioning reveals a firm tumour measuring
+2.1 x 1.8 x 1.5 cm with irregular borders. The tumour is 4 mm from the
+anterior margin and 6 mm from the posterior margin. Twelve sentinel nodes
+are submitted separately.
+
+MICROSCOPIC:
+Sections show invasive ductal carcinoma, Nottingham histologic grade 3
+(tubules 3, nuclei 3, mitoses 2). DCIS is present. No lymphovascular
+invasion is seen. All twelve nodes are negative for metastasis (0/12).
+ER positive, PR positive, HER2 negative by immunostain.
+
+DIAGNOSIS:
+Invasive ductal carcinoma, Nottingham grade 3. Margins clear.
+No nodal metastasis.
+
+Reported by:
+Dr Tan Kok Wee, Pathologist

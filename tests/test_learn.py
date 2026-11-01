@@ -233,9 +233,51 @@ def test_redefine_saved_as_edited_needs_no_call_and_versions_by_meaning(paths):
     renamed = define_field("Largest tumour size", "Biggest dimension. Example value: 2.1 cm", accept=accept, pack_path=paths["pack"])["field"]
     assert renamed["version"] == f.version and renamed["name"] == "Largest tumour size"
     assert len(load_pack(paths["pack"])["fields"]) == 1                       # replaced in place, not added
-    listed = define_field("Largest tumour size", None, accept={**accept, "multi": True}, pack_path=paths["pack"])["field"]
-    assert listed["version"] == f.version + 1 and listed["multi"]
+    refined = define_field("Largest tumour size", None, accept={**accept, "definition": "Largest invasive focus."}, pack_path=paths["pack"])["field"]
+    assert refined["version"] == f.version                                    # never checked yet: refining keeps v1
     assert len(paths["spark"]["sent"]) == sent                                # no Muse Spark call
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    confirm(paths, res, candidate_id=res["candidate_id"])                     # now it has been checked once
+    listed = define_field("Largest tumour size", None, accept={**accept, "definition": "Largest invasive focus.", "multi": True},
+                          pack_path=paths["pack"])["field"]
+    assert listed["version"] == f.version + 1 and listed["multi"]            # a new meaning after a check: v2
+
+
+def test_a_list_item_joined_over_two_lines_is_grounded(paths):
+    """The viewer's ⤵ join: one finding the report wraps over two lines is saved as one item, its quote found."""
+    text = "Tumor Mutational Burden (TMB) ≥ 10 Muts/Mb\n11 Muts/Mb (TMB-High)\nTP53: R248Q\n"
+    define_field("Biomarker", None, accept={"key": "biomarker", "meaning_question": "Biomarkers?", "type": "text",
+                 "unit": None, "range_min": None, "range_max": None, "multi": True}, pack_path=paths["pack"])
+    r = pipeline.deidentify_report(text=text, profile=new_profile()[0])
+    held = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    if held["next"] == "hold":
+        pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": [h["id"] for h in held["hold"]]}, use_spark=False)
+    lines = text.strip().split("\n")
+    paths["spark"]["state"]["reply"] = {"fields": [{"key": "biomarker", "candidates": [
+        {"value_text": l, "unit_text": None, "evidence_text": l, "reason": "t", "confidence": 0.9} for l in lines]}]}
+    find_candidates(r["deid_id"], "biomarker", pack_path=paths["pack"])
+    joined = f"{lines[0]} {lines[1]}"                                         # the viewer joins with a space
+    out = confirm_field(r["deid_id"], "biomarker", items=[{"value": joined, "evidence_text": joined},
+                        {"value": lines[2], "evidence_text": lines[2]}], pack_path=paths["pack"], log_path=paths["log"])
+    assert out["status"] == "saved" and len(out["items"]) == 2
+    assert text[out["items"][0]["start"]:out["items"][0]["end"]] == f"{lines[0]}\n{lines[1]}"   # both lines, as written
+
+
+def test_reset_clears_the_export_but_keeps_the_check(paths):
+    """Reset value (after a redefinition): gone from the export; the earlier answer still scores; ask again works."""
+    from extract.learn import reset_field
+    res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    confirm(paths, res, candidate_id=res["candidate_id"])
+    f = load_pack(paths["pack"])["fields"][0]
+    assert reset_field(res["deid_id"], "tumour_size", pack_path=paths["pack"], log_path=paths["log"])["status"] == "reset"
+    assert export_rows(pack_path=paths["pack"], log_path=paths["log"])[1] == []          # no value: no row
+    assert validation(f, read_log(paths["log"]))["checked"] == 1                         # the real answer still counts
+    assert reset_field(res["deid_id"], "tumour_size", pack_path=paths["pack"], log_path=paths["log"])["status"] == "error"
+    show_pack("tumour_size", pack_path=paths["pack"], log_path=paths["log"])             # history copes with a reset
+    again = find_candidates(res["deid_id"], "tumour_size", pack_path=paths["pack"])     # read again, answer anew
+    confirm(paths, again, missing=True)
+    rows = export_rows(pack_path=paths["pack"], log_path=paths["log"])[1]
+    assert len(rows) == 1 and rows[0]["tumour size (cm)"] is None
 
 
 def test_bulk_accepted_values_are_exported_but_never_score_or_teach(paths):

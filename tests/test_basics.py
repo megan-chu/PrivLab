@@ -54,3 +54,13 @@ def test_labelled_ssn_gets_an_ssn_tag():
     text = "Patient: Daniel Martinez    SSN: 967-97-6295\n"
     tagged, _ = apply_tags(text, find_pattern_phi(text))
     assert "[SSN-1]" in tagged and "[ID-1]" not in tagged
+
+
+def test_lab_split_parses_a_lab_reports_file(tmp_path, monkeypatch):
+    import eval.hard_cases as hard_cases
+    from eval.score_deid import load_cases
+    (tmp_path / "lab_reports.txt").write_text("# Lab reports\nReport [[NAME:Toung Chu]] leaked.\n", encoding="utf-8")
+    monkeypatch.setattr(hard_cases, "CASES_FILE", tmp_path / "hard_cases.txt")
+    cases = load_cases("lab")
+    assert [c["id"] for c in cases] == ["L01"]
+    assert cases[0]["phi"] == [{"type": "NAME", "text": "Toung Chu", "start": 7, "end": 16}]

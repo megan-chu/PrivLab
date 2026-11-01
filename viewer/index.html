@@ -95,17 +95,21 @@ svg { width: 16px; height: 16px; flex: none; }
 .dot.high { background: var(--refused); } .dot.medium { background: var(--review); } .dot.low { background: var(--verified); }
 
 .center { min-width: 0; display: flex; flex-direction: column; min-height: 0; }
-.stepper { display: flex; align-items: center; gap: var(--s2); padding: var(--s4) var(--s8) 0; min-height: 40px; }
+.stepper { display: flex; align-items: center; gap: var(--s2); padding: var(--s4) var(--s6) 0; min-height: 40px; }
 .step { display: flex; align-items: center; gap: var(--s2); color: var(--ink-muted); font-weight: 600; font-size: 13px; }
 .step .n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--f-mono); background: var(--surface-sunken); color: var(--ink-muted); }
 .step.on { color: var(--ink); } .step.on .n { background: var(--hema); color: var(--on-hema); }
 .step.done .n { background: var(--verified-bg); color: var(--verified); }
 .step-line { width: 28px; height: 1px; background: var(--line); }
-.where { padding: var(--s2) var(--s8) var(--s3); display: flex; gap: var(--s2); align-items: center; font-size: 13px; line-height: 18px; color: var(--ink-muted); min-height: 40px; }
-.docwrap { flex: 1; overflow: auto; padding: 0 var(--s8) var(--s8); min-height: 0; }
-.doc { background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s8); white-space: pre-wrap;
-  font: 15px/24px var(--f-sans); max-width: calc(68ch + 64px); margin: 0 auto; overflow-wrap: anywhere; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(68ch + 64px); margin: 0 auto var(--s3); }
+.where { padding: var(--s2) var(--s6) var(--s3); display: flex; gap: var(--s2); align-items: center; font-size: 13px; line-height: 18px; color: var(--ink-muted); min-height: 40px; }
+/* The report uses the middle column's width (up to ~110 characters a line), so a long report scrolls less */
+.docwrap { --doc-w: calc(110ch + 48px); flex: 1; overflow: auto; padding: 0 var(--s6) var(--s6); min-height: 0; }
+.doc { background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s6); white-space: pre-wrap;
+  font: 15px/22px var(--f-sans); max-width: var(--doc-w); margin: 0 auto; overflow-wrap: anywhere; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; max-width: var(--doc-w); margin: 0 auto var(--s3); }
+/* teaching a field: the report shows what to do and is outlined as the place to select */
+.teachbar { max-width: var(--doc-w); margin: 0 auto var(--s3); padding: var(--s2) var(--s3); border-radius: var(--r-md); background: var(--eosin-tint); color: var(--ink); font-size: 14px; line-height: 20px; }
+.doc.teaching { outline: 2px dashed var(--hema); outline-offset: 3px; }
 mark { color: inherit; border-radius: var(--r-sm); padding: 1px 2px; cursor: pointer; transition: background .12s var(--ease); }
 mark.kept { background: transparent !important; text-decoration: line-through; text-decoration-color: var(--line-strong); box-shadow: inset 0 0 0 1px var(--line); }
 mark.added { box-shadow: inset 0 0 0 2px var(--hema); }
@@ -129,6 +133,9 @@ mark.pulse { animation: pulse 1s var(--ease) 1; }
 .t-NAME, .t-DOCTOR, .t-ID, .t-DOB, .t-DATE, .t-MRN, .t-ACCESSION, .t-ACCOUNT, .t-PHONE, .t-EMAIL, .t-ADDRESS, .t-HOSPITAL { background: var(--idb); }
 .chip[class*="t-"] { box-shadow: inset 0 0 0 1px var(--idk); }
 .chip { display: inline-flex; align-items: center; height: 24px; padding: 0 var(--s2); border-radius: var(--r-sm); font-size: 13px; color: var(--ink); }
+/* a find made by something PrivLab learned on an earlier report */
+.learnt { display: inline-flex; align-items: center; margin-left: var(--s1); padding: 0 6px; border-radius: 999px; font: 600 11px/18px var(--f-sans);
+  background: var(--verified-bg); color: var(--verified); cursor: help; }
 
 /* ---------- side panel ---------- */
 .panel { background: var(--surface-raised); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; min-width: 0; position: relative; }
@@ -153,6 +160,28 @@ body.resizing { cursor: col-resize; user-select: none; }
 .link:hover { text-decoration: underline; }
 .kbd { font: 500 11px var(--f-mono); padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--r-sm); color: var(--ink-muted); }
 .hint { text-align: center; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
+/* The status line right above the main button: the result of the last action and whether you can go on,
+   where your eyes already are. Announced to screen readers as it changes. */
+.pstatus { display: flex; gap: var(--s2); align-items: flex-start; padding: 6px var(--s3); border-radius: var(--r-md); font-size: 13px; line-height: 18px; }
+.pstatus .gl { flex: none; font: 700 13px/18px var(--f-mono); width: 14px; text-align: center; }
+.pstatus.ok { background: var(--verified-bg); color: var(--verified); } .pstatus.warn { background: var(--review-bg); color: var(--review); }
+.pstatus.bad { background: var(--refused-bg); color: var(--refused); } .pstatus.busy, .pstatus.info { background: var(--surface-sunken); color: var(--ink-muted); }
+.pstatus .link { min-height: 0; font-size: 13px; color: inherit; text-decoration: underline; }
+.pstatus .spin { margin-top: 2px; }
+/* the main button carries its key; while it works the other actions in the dock dim */
+.kbdin { margin-left: auto; padding: 1px 6px; border: 1px solid rgba(255,255,255,.35); border-radius: var(--r-sm); font: 500 11px/16px var(--f-mono); opacity: .85; }
+.btn.secondary .kbdin { border-color: var(--line); }
+.btn .kbdin:first-child { margin-left: 0; }
+#pfoot.busy .link, #pfoot.busy .btn.secondary { opacity: .45; pointer-events: none; }
+/* privacy card: one headline, the biggest categories as quiet chips, the rest behind "+n more" */
+.pcard { padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--verified-bg); margin-bottom: var(--s4); }
+.pcard-h { display: flex; gap: var(--s2); align-items: baseline; font-size: 15px; color: var(--verified); }
+.pcard-h .gl { font: 700 14px var(--f-mono); }
+.pcard .sm { margin: 2px 0 var(--s2) 22px; }
+.tchips { display: flex; flex-wrap: wrap; gap: 6px; margin-left: 22px; }
+.tchip { display: inline-flex; align-items: center; min-height: 24px; padding: 0 var(--s2); border-radius: 999px; font-size: 12px; color: var(--ink-muted); background: var(--idb, rgba(28,25,48,.06)); }
+.tchip.more { background: transparent; color: var(--hema); font-weight: 600; cursor: pointer; }
+.tchip.more:hover { background: rgba(28,25,48,.06); }
 .big { display: flex; align-items: baseline; gap: var(--s2); margin-bottom: var(--s3); }
 .big b { font: 600 28px/34px var(--f-display); }
 .banner { display: flex; gap: var(--s3); align-items: flex-start; padding: var(--s3) var(--s4); border-radius: var(--r-md); margin-bottom: var(--s4); font-size: 14px; }
@@ -233,7 +262,7 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .skel { height: 64px; border-bottom: 1px solid var(--line); background: var(--surface-sunken); position: relative; overflow: hidden; }
 .skel::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); animation: sh 1.3s infinite; }
 @keyframes sh { to { transform: translateX(100%); } }
-.docskel { max-width: calc(68ch + 64px); margin: 0 auto; display: grid; gap: 12px; padding: var(--s8); background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); }
+.docskel { max-width: var(--doc-w); margin: 0 auto; display: grid; gap: 12px; padding: var(--s8); background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--r-md); }
 .docskel i { display: block; height: 12px; border-radius: var(--r-sm); background: var(--surface-sunken); }
 
 /* empty state */
@@ -390,6 +419,24 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 <div class="floatbar" id="floatbar" role="toolbar" aria-label="Selection"></div>
 <input type="file" id="fileInput" accept=".txt,text/plain,.pdf,application/pdf" multiple hidden>
 <div class="toast" id="toast" role="status"></div>
+<dialog class="sheet" id="learnDlg" aria-labelledby="learnDlgT">
+  <div class="sh"><b id="learnDlgT">How PrivLab learns</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
+  <div class="sb" style="font-size:14px;line-height:21px">
+    <p><b>No AI model is retrained.</b> PrivLab keeps two small memories on this device and uses them on the next report.</p>
+    <p><b>De-identification:</b> names and IDs you hide, and second-check finds you keep hidden, go on an <i>always hide</i> list
+      (encrypted). Next time they are caught on this device, before anything is sent. Highlights you keep visible go on a
+      <i>not identifiers</i> list and are not asked about again. Single words are used in their own report only: they could be
+      ordinary words ("tan-coloured").</p>
+    <p><b>Extraction:</b> each field keeps your latest 3 confirmed answers and 3 corrections, with a few words of the masked
+      text around them. They travel with the next reports, so Muse Spark is steered by your answers.</p>
+    <p><b>Only from you:</b> values saved by <i>Extract all</i>, and values you reset, never teach it. An example that still
+      contains an identifier is never kept.</p>
+    <p><b>It proves itself before it is trusted:</b> every answer is scored before PrivLab learns from it. A field shows
+      <i>Ready</i> only when at most 5% of its verified values can be wrong, with 95% confidence (for example 59 verified
+      values with no error). About 1 in 10 values is a blind check: PrivLab's answer is hidden until you give yours.</p>
+    <p><b>You stay in control:</b> see and remove everything in <i>Fields → Learned</i>.</p>
+  </div>
+</dialog>
 
 <script>
 "use strict";
@@ -431,7 +478,18 @@ async function api(path, body) {
     return {error: "The PrivLab server is not reachable. Start it with python -m viewer.server, then try again.", offline: true};
   }
 }
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), Math.max(3600, msg.length * 60)); }
+// A short message. near="panel" (default): just above the panel's status line, where you clicked;
+// near="center": the bottom centre, for actions in the report or the report list.
+function toast(msg, near = "panel") {
+  const t = $("toast"), foot = $("pfoot"), panel = foot.parentElement.getBoundingClientRect();
+  const onPanel = near === "panel" && foot.style.display !== "none" && panel.width;
+  if (onPanel) {
+    const top = foot.getBoundingClientRect().top;
+    Object.assign(t.style, {left: `${panel.left + panel.width / 2}px`, bottom: `${innerHeight - top + 8}px`, maxWidth: `${panel.width - 32}px`});
+  } else Object.assign(t.style, {left: "", bottom: "", maxWidth: ""});
+  t.textContent = msg; t.classList.add("show"); clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove("show"), Math.max(3600, msg.length * 60));
+}
 const cur = () => S.reports[S.cur];
 const trace = (r, msg, where, ok = true) => r.trace.push({msg, where, ok});
 const fmtSecs = (s) => s < 60 ? `${Math.round(s)} s` : `${Math.floor(s / 60)} min ${Math.round(s % 60)} s`;
@@ -500,7 +558,7 @@ function renderTop() {
   } else if (rs.length) parts.push(`<b>${exported}</b> downloaded`);
   $("value").innerHTML = parts.join(" · ");
   const ids = listedIds();              // the menu links always carry the current list, even when opened without a click
-  $("expDeid").href = `/api/deid_export?ids=${ids}`; $("expAll").href = `/api/export_all?ids=${ids}`; $("expCsv").href = `/api/export.csv?ids=${ids}`;
+  $("expDeid").href = `/api/deid_export?ids=${ids}`; $("expAll").href = `/api/export_all?ids=${ids}${fieldsQ()}`; $("expCsv").href = `/api/export.csv?ids=${ids}${fieldsQ()}`;
 }
 // Removing reports always takes two steps: the × (or Select → Remove N) opens a confirmation, and only its
 // Remove button removes. S.picking: the reports ticked in Select mode (null = not selecting);
@@ -560,7 +618,7 @@ function removeReports(keys) {
   S.confirmRm = null; if (S.picking) S.picking = S.reports.length > 1 ? new Set() : null;
   hideFloat(); render();
   toast(names.length === 1 ? `Removed ${names[0]}. It is no longer in this list or in its exports.`
-    : `Removed ${names.length} reports. They are no longer in this list or in its exports.`);
+    : `Removed ${names.length} reports. They are no longer in this list or in its exports.`, "center");
 }
 function select(i) { S.cur = i; S.adding = false; S.draftErr = null; hideFloat(); render(); $("docwrap").scrollTop = 0; }   // the add-field card closes; what you typed is kept
 function render() { renderTop(); renderRail(); renderMain(); }
@@ -615,7 +673,13 @@ const LOCAL = `<span class="wb local">This device</span>`, CLOUD = `<span class=
 const where = (html) => $("where").innerHTML = html;
 const running = (txt) => `<span class="running"><span class="spin"></span>${esc(txt)}</span>`;
 function setDoc(html, legend = "") { $("view").innerHTML = `${legend ? `<div class="legend">${legend}</div>` : ""}<div class="doc" id="doc">${html}</div>`; }
-function setPanel(body, foot) { $("pbody").innerHTML = body; $("pfoot").innerHTML = foot || ""; $("pfoot").style.display = foot ? "" : "none"; }
+// status: [kind, html] for the line above the main button; kind ok | warn | bad | busy | info
+function setPanel(body, foot, status) {
+  const gl = {ok: "✓", warn: "!", bad: "×", info: "i"};
+  const line = status ? `<div class="pstatus ${status[0]}" role="status" aria-live="polite">${status[0] === "busy"
+    ? '<span class="spin"></span>' : `<span class="gl" aria-hidden="true">${gl[status[0]]}</span>`}<span>${status[1]}</span></div>` : "";
+  $("pbody").innerHTML = body; $("pfoot").innerHTML = line + (foot || ""); $("pfoot").style.display = foot || line ? "" : "none";
+}
 const tip = (key, text) => store.get("tip:" + key) ? "" : `<div class="tip"><span>${text}</span><button data-tip="${key}">Got it</button></div>`;
 $("pbody").addEventListener("click", (e) => { const d = e.target.closest("[data-redefine]"); if (d) chatOpen(S.fields.find((f) => f.key === d.dataset.redefine)); });
 $("pbody").addEventListener("click", (e) => { const t = e.target.closest("[data-tip]"); if (t) { store.set("tip:" + t.dataset.tip, "1"); t.parentElement.remove(); } });
@@ -624,7 +688,7 @@ const banner = (kind, title, text) => `<div class="banner ${kind}" role="${kind 
 function renderMain() {
   const r = cur();
   if (!r) { viewEmpty(); if (S.side) renderSide(null); return; }
-  if (S.side && extracting()) { mainView(r); renderSide(r); return; }
+  if (S.side && extracting()) { mainView(r); renderSide(r); teachCue(); return; }
   mainView(r);
 }
 function mainView(r) {
@@ -681,7 +745,7 @@ async function addFiles(files) {
   const fromAdd = S.cur === -1, pdf = (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf",
     txt = (f) => /\.txt$/i.test(f.name) || f.type === "text/plain";
   const other = [...files].filter((f) => !pdf(f) && !txt(f)).map((f) => f.name);
-  if (other.length) toast(`Not supported: ${other.join(", ")}. PrivLab accepts text files (.txt) and PDFs with selectable text. Scanned PDFs, images and other formats are not supported.`);
+  if (other.length) toast(`Not supported: ${other.join(", ")}. PrivLab accepts text files (.txt) and PDFs with selectable text. Scanned PDFs, images and other formats are not supported.`, "center");
   for (const f of files) {
     if (pdf(f)) await addPdf(f);
     else if (txt(f)) await addText(f.name, await f.text());
@@ -721,7 +785,7 @@ async function layer1(r) {
   clearTimeout(slow);
   if (res.refused) {                        // a file PrivLab does not accept: say why, keep no report
     S.reports.splice(S.reports.indexOf(r), 1); S.cur = Math.min(S.cur, S.reports.length - 1);
-    toast(`${r.name}: ${res.error}`); return render();
+    toast(`${r.name}: ${res.error}`, "center"); return render();
   }
   if (res.error) { r.step = "failed"; r.error = {title: "This report could not be de-identified", text: res.error, retry: () => layer1(r)}; return refresh(r); }
   if (res.next === "profile") { S.choices = {}; return layer1(r); }      // never a setup screen: defaults, changeable later
@@ -742,13 +806,14 @@ function viewLoading(r) {
   else $("view").innerHTML = `<div class="docskel" aria-label="Opening the report">${Array.from({length: 14}, (_, k) => `<i style="width:${55 + (k * 37) % 45}%"></i>`).join("")}</div>`;
   setPanel(`<h2 class="h1">De-identifying</h2><p class="lede">Everything in this step runs on this device. Nothing is sent.</p>
     ${checklist([["Report opened", "done", "Kept in memory only"], ["Finding identifiers", "run", "Names, ID numbers, dates of birth, contact details"],
-      ["Your review", "todo", "You check every highlight before anything else happens"]])}`, `<button class="btn primary" disabled>De-identifying…</button>`);
+      ["Your review", "todo", "You check every highlight before anything else happens"]])}`, `<button class="btn primary" disabled>De-identifying…</button>`,
+    ["busy", "Finding identifiers on this device. Nothing is sent."]);
 }
 function viewFailed(r) {
   stepper(0); where("");
   setDoc(esc(r.preview || r.text || ""));
   setPanel(banner("refused", esc(r.error.title), esc(r.error.text)), `<button class="btn primary" id="retry">Try again</button>
-    <button class="btn secondary" id="drop1">Remove this report</button>`);
+    <button class="btn secondary" id="drop1">Remove this report</button>`, ["bad", `Not de-identified. ${esc(r.error.text)}`]);
   $("retry").onclick = r.error.retry;
   $("drop1").onclick = () => { S.reports.splice(S.cur, 1); S.cur = S.reports.length - 1; render(); };
 }
@@ -778,6 +843,7 @@ function wireProfile(r) {
     const res = await api("/api/profile_choices", {choices});
     if (res.error) return toast(res.error);
     S.profile = res; S.editProfile = false;
+    toast("Privacy profile saved. Re-checking on this device; nothing is sent.");
     S.reports.filter((x) => x.step === "review" && x.req).forEach((x) => x === r ? reviewAgain(x) : (x.carry = keptKeys(x), layer1(x)));
   };
 }
@@ -797,18 +863,20 @@ function viewReview(r) {
   stepper(0); where(`${LOCAL}<span>Nothing has left this device</span>`);
   const c = counts(r), n = Object.values(c).reduce((a, b) => a + b, 0);
   setDoc(marked(r.text, reviewMarks(r)), Object.entries(c).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join(""));
-  setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
-    ${tip("review", "Click a highlight to keep it visible. Select any text in the report to hide something PrivLab missed.")}
+  setPanel(`${tip("review", "If anything identifying is not highlighted, select it, choose its type and click Hide — PrivLab learns from it. Click a highlight to keep it visible instead.")}
     <h2 class="h1">Review what will be hidden</h2>
     ${S.editProfile ? profileEditor() : `<p class="sm" style="margin:0 0 var(--s3)"><span class="muted">${hidingSummary()}</span> · <button class="link" id="changeProfile">Change</button></p>`}
     <div class="big"><b>${n}</b><span class="muted">identifiers found on this device</span></div>
     <ul class="list">${r.dets.map((d) => `<li class="item"><input type="checkbox" class="toggle" data-det="${d.id}" ${r.unmark.has(d.id) ? "" : "checked"} aria-label="Hide ${esc(d.text)}">
-      <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}</div><button class="link" data-go="${d.id}">Show</button></li>`).join("")}
+      <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}${d.learned
+        ? ` <span class="learnt" title="You hid this on an earlier report; PrivLab now catches it on this device, before anything is sent">Learned${d.learned_from ? ` from ${esc(d.learned_from)}` : ""}</span>` : ""}</div><button class="link" data-go="${d.id}">Show</button></li>`).join("")}
       ${r.add.map((a, i) => `<li class="item"><input type="checkbox" class="toggle" checked data-add="${i}" aria-label="Stop hiding ${esc(a.text)}">
       <div class="grow"><span class="chip t-${a.type}">${TL[a.type] || a.type}</span> ${esc(a.text)} <span class="sm muted">added by you</span></div></li>`).join("")}</ul>
     ${traceBlock(r)}`,
     `<button class="btn primary" id="go">Hide ${n} and check for names</button>
-     <div class="hint">Identifiers are masked on this device first <span class="kbd">Enter</span></div>`);
+     <div class="hint"><span class="kbd">Enter</span></div>`,
+    r.error ? ["bad", `<b>${esc(r.error.title)}.</b> ${esc(r.error.text)}`]
+      : ["info", `${n} will be hidden${r.unmark.size ? `, ${r.unmark.size} kept visible` : ""}. Masked on this device first. Your report has not been sent anywhere — it is safe to continue.`]);
   $("go").onclick = () => confirmReview(r);
   wireProfile(r);
   document.querySelectorAll("[data-det]").forEach((i) => i.onchange = () => toggleKeep(r, i.dataset.det));
@@ -846,7 +914,8 @@ function viewChecking(r) {
     <p class="lede">Your report was de-identified on this device. A second check now reads only the masked text, with every identifier already replaced by a tag, for any name the rules missed. No personal information is sent. You can open other reports while you wait.</p>
     ${checklist([[`${n} identifiers hidden`, "done", "On this device"], ["Masked text sealed and scanned for leftovers", "done", "On this device"],
       ["Second check for missed names", "run", "Muse Spark reads the masked text only"], ["Replace with tags", "todo", "Originals go to the encrypted vault on this device"]])}
-    ${traceBlock(r)}`, `<button class="btn primary" disabled>Checking…</button>`);
+    ${traceBlock(r)}`, `<button class="btn primary" disabled>Checking…</button>`,
+    ["busy", `${n} identifiers hidden on this device. Second check reading the masked text only…`]);
 }
 
 function viewQuestion(r) {
@@ -857,11 +926,10 @@ function viewQuestion(r) {
   setDoc(marked(r.text, [...base, ...q.items.map((x) => ({start: x.start, end: x.end, id: x.id, title: "Click to change",
     cls: (hold ? "hold" : x.ticked ? "flag" : "suspect") + (q.picked.has(x.id) ? "" : " kept")}))]));   // unticked = stays visible
   const already = r.dets.filter((d) => !r.unmark.has(d.id)).length + r.add.length;
-  setPanel(`${r.error ? banner("refused", esc(r.error.title), esc(r.error.text)) : ""}
-    <h2 class="h1">Review what will be hidden</h2>
+  setPanel(`<h2 class="h1">Review what will be hidden</h2>
     <div class="big"><b>${already}</b><span class="muted">identifiers you confirmed are hidden</span></div>
     <p class="label" style="margin:var(--s4) 0 var(--s1)">${hold ? `${q.items.length} more look like names` : `The second check found ${q.items.length} more`}</p>
-    <p class="sm muted" style="margin:0">${hold ? "Found on this device; nothing has been sent. Ticked ones will be hidden; untick any that are not names, and PrivLab learns."
+    <p class="sm muted" style="margin:0">${hold ? "Found on this device — your report has not been sent anywhere. Ticked ones will be hidden; untick any that are not names, and PrivLab learns."
       : "It read the masked text only. Its finds are ticked to hide; words it could not decide are unticked: tick any that identify a person."}</p>
     <p class="sm" style="margin:var(--s2) 0 0">${hold ? `<button class="link" id="qBack">← Back to the highlights</button> <span class="muted">to change what you kept or hid</span>`
       : r.req ? `<button class="link" id="qAgain">Review identifiers again</button> <span class="muted">starts this report over; the second check runs again after you confirm</span>` : ""}</p>
@@ -870,7 +938,9 @@ function viewQuestion(r) {
     <ul class="list">${q.items.map((x) => `<li class="item"><input type="checkbox" class="toggle" data-q="${x.id}" ${q.picked.has(x.id) ? "checked" : ""} aria-label="Hide ${esc(x.text)}">
       <div class="grow">${esc(x.text)} <span class="sm muted">${x.source === "suspect" ? "undecided" : esc(TL[x.type] || x.type)}</span>
       <div class="ctx">${esc(x.context)}</div></div><button class="link" data-go="${x.id}">Show</button></li>`).join("")}</ul>${traceBlock(r)}`,
-    `<button class="btn primary" id="go">${q.picked.size ? `Hide ${q.picked.size} more` : "Hide nothing more"} and ${hold ? "check for names" : "finish"}</button>`);
+    `<button class="btn primary" id="go">${q.picked.size ? `Hide ${q.picked.size} more` : "Hide nothing more"} and ${hold ? "check for names" : "finish"}</button>`,
+    r.error ? ["bad", `<b>${esc(r.error.title)}.</b> ${esc(r.error.text)}`]
+      : ["info", `${q.picked.size} of ${q.items.length} ticked to hide${q.items.length - q.picked.size ? `, ${q.items.length - q.picked.size} kept visible` : ""}. ${hold ? "Nothing has been sent yet." : "The second check read masked text only."}`]);
   const boxes = [...document.querySelectorAll("[data-q]")];
   boxes.forEach((i, k) => i.onclick = (e) => {
     const [a, b] = e.shiftKey && q.last != null ? [Math.min(q.last, k), Math.max(q.last, k)] : [k, k];
@@ -913,6 +983,22 @@ function finishDeid(r, res) {
   trace(r, `${res.summary.total} identifiers replaced with tags; originals in the encrypted vault.`, "local");
   if (!leftover && S.fields.length && extracting()) prefetch(r);
   refresh(r);
+  const msg = learnedMessage(res.learned);
+  if (msg) { trace(r, msg, "local"); toast(msg); }
+}
+// What a finished report taught the privacy profile, in plain words. Single-word names and single words you
+// kept are not reused across reports (they can be ordinary words), so the message says so.
+function learnedMessage(l) {
+  if (!l) return "";
+  const q = (xs) => xs.slice(0, 3).map((x) => `“${x}”`).join(", ") + (xs.length > 3 ? ` and ${xs.length - 3} more` : "");
+  const single = (t) => t.split(/\s+/).length < 2;
+  const hide = l.hide.filter((x) => !(single(x.text) && ["NAME", "DOCTOR"].includes(x.type))).map((x) => x.text);
+  const keep = l.keep.filter((t) => !single(t));
+  const once = l.hide.length - hide.length + l.keep.length - keep.length;
+  const parts = [hide.length && `${q(hide)} will be hidden on this device next time, before anything is sent`,
+    keep.length && `${q(keep)} won't be asked about again`,
+    once && `${once} single word${once === 1 ? "" : "s"} kept for this report only (it could be an ordinary word)`].filter(Boolean);
+  return parts.length ? `Learned from this report: ${parts.join("; ")}.` : "";
 }
 function prefetch(r) {
   r.prefetch = "running";
@@ -939,10 +1025,26 @@ function viewSafe(r) {
   const toExtract = S.reports.filter((x) => needOf(x) === "extract").length;      // this one included
   const ok = ["clean", "flagged"].includes(res.layer2);
   setDoc(marked(r.dtext, redactions(r.dtext)));
-  setPanel(`${bulkBanner()}${ok ? banner("verified", "De-identified on this device", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2]} No personal information left this device.`)
-                 : banner("review", "De-identified on this device. Please read it once", `${res.summary.total} identifiers hidden. ${LAYER2[res.layer2] || ""} No personal information left this device.`)}
+  // Dock: one readiness line (title + what it rests on), the main button with its Enter key, then quiet extras.
+  // (pl, PLURAL and ENTER are defined with the other helpers)
+  // "Final scan" is said only because it passed: a report with a pattern left is blocked and never shown here.
+  const nf = chosen().length, scan = "Final scan found no identifier left";
+  const status = !ok ? ["warn", `<b>Please read the text once</b><br>${LAYER2[res.layer2] || "The second check did not run."}`]
+    : !extracting() ? ["ok", `<b>Ready to download</b><br>${scan}`]
+    : !S.fields.length ? ["info", `<b>Add a field to extract</b><br>${scan}`]
+    : !nf ? ["warn", `<b>Select at least one field</b><br>${scan}`]
+    : ni >= 0 ? ["ok", `<b>${pl(needN, "report")} still to review</b><br>Fields are extracted once every report is reviewed`]
+    : ["ok", `<b>Ready to extract</b><br>${scan} · ${pl(nf, "field")} selected${toExtract > 1 ? ` · ${pl(toExtract, "report")}` : ""}`];
+  // Privacy card: one headline; the biggest 3 categories as quiet chips, the rest behind "+n more"
+  const types = Object.entries(res.summary.by_type).sort((a, b) => b[1] - a[1]);
+  const chip = ([t, k]) => `<span class="tchip t-${t}">${k} ${k === 1 ? (t === "DOCTOR" ? "Clinician" : TL[t] || t) : PLURAL[t] || `${TL[t] || t}s`}</span>`;
+  const more = types.length - 3;
+  setPanel(`${bulkBanner()}${ok ? "" : banner("review", "Please read it once before sharing", `${LAYER2[res.layer2] || ""} The text is de-identified on this device; nothing personal left it.`)}
+    <div class="pcard"><div class="pcard-h"><span class="gl" aria-hidden="true">✓</span><b>${pl(res.summary.total, "identifier")} masked on this device</b></div>
+      <div class="sm muted">Originals stay encrypted on this device.</div>
+      <div class="tchips">${types.slice(0, 3).map(chip).join("")}${more > 0 && !S.typesOpen ? `<button class="tchip more" id="moreTypes" aria-expanded="false">+${more} more ▾</button>` : ""}
+        ${S.typesOpen ? types.slice(3).map(chip).join("") + (more > 0 ? `<button class="tchip more" id="moreTypes" aria-expanded="true">Show less ▴</button>` : "") : ""}</div></div>
     ${pr.level !== "low" ? `<p class="sm"><b>Review priority ${pr.level}.</b> ${pr.reasons.map(esc).join("; ")}.</p>` : ""}
-    <div class="legend" style="margin:0">${Object.entries(res.summary.by_type).map(([t, k]) => `<span class="chip t-${t}">${TL[t] || t} · ${k}</span>`).join("")}</div>
     ${extracting() && S.fields.length ? `<div class="fhead" style="margin-top:var(--s6)"><h2 class="h1" style="margin:0">Fields to extract
         <span class="hint-i" tabindex="0" role="img" aria-label="${PACK_NOTE}" title="${PACK_NOTE}">i</span></h2><button class="link" id="manageFields">Manage fields</button></div>
       ${S.fields.length > 1 ? `<div class="factions" style="margin:0 0 var(--s2)"><button class="link" id="pickAll">Select all</button><button class="link" id="pickNone">Select none</button>
@@ -956,21 +1058,21 @@ function viewSafe(r) {
       <p class="sm muted" style="margin:var(--s2) 0 0">${extractSummary()}</p>` : ""}
     ${Object.keys(r.saved).length || !r.req ? "" : `<p class="sm"><button class="link" id="reviewAgain">Review identifiers again</button> <span class="muted">Runs again on this device; nothing is sent until you confirm.</span></p>`}
     ${traceBlock(r)}`,
-    !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
+    !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text${ENTER}</a>
         ${nextButton("secondary")}`
-    : S.fields.length ? `${ni >= 0 ? `<button class="btn primary" id="next" data-next="${ni}">Next: review ${shortName(S.reports[ni])} ${icon("arrow")}</button>` : ""}
-      ${ni < 0 && toExtract > 1 && chosen().length ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""}>Extract all ${toExtract} reports ${icon("arrow")}</button>
+    : S.fields.length ? `${ni >= 0 ? `<button class="btn primary" id="next" data-next="${ni}">Next: review ${shortName(S.reports[ni])}${ENTER}</button>` : ""}
+      ${ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""}>Extract all ${toExtract} reports${ENTER}</button>
         <button class="btn secondary" id="each">Review each report, from the top</button>`
-      : `<button class="btn ${ni >= 0 ? "secondary" : "primary"}" id="go"${chosen().length ? "" : " disabled"}>${!chosen().length ? "Select at least one field"
-        : ni >= 0 ? "Extract this report now"
-        : `Extract ${chosen().length < S.fields.length ? `${chosen().length} of ${S.fields.length}` : chosen().length} field${S.fields.length > 1 ? "s" : ""} ${icon("arrow")}`}</button>`}
-      <a class="link" style="align-self:center" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")} Download de-identified text (.txt)</a>
-      <div class="hint">${ni >= 0 ? `${needN} report${needN > 1 ? "s" : ""} still need${needN > 1 ? "" : "s"} review; fields are extracted once all are reviewed`
-        : toExtract > 1 ? "Extract all saves verified values by itself and stops only on reports that need you" : r.prefetch === "ready" ? "Fields ready: read ahead of time" : r.prefetch === "running" ? "Reading the fields ahead of time" : ""} <span class="kbd">Enter</span></div>`
-    : `<button class="btn primary" id="addField">${icon("plus")}Add a field to extract</button>
-      <a class="link" style="align-self:center" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")} Download de-identified text (.txt)</a>`);
-  if ($("go")) $("go").onclick = () => openFields(r);
-  if ($("bulk")) $("bulk").onclick = () => bulkExtract();
+      : `<button class="btn ${ni >= 0 ? "secondary" : "primary"}" id="go"${nf ? "" : " disabled"}>${!nf ? "Select at least one field"
+        : ni >= 0 ? "Extract this report now" : `Extract ${pl(nf, "field")}${ENTER}`}</button>`}
+      <a class="link quiet" style="align-self:center" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")} Export masked .txt</a>`
+    : `<button class="btn primary" id="addField">${icon("plus")}Add a field to extract${ENTER}</button>
+      <a class="link quiet" style="align-self:center" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")} Export masked .txt</a>`, status);
+  // On click: the button shows it is working at once, and the other actions dim, so nothing runs twice
+  const working = (b) => { b.disabled = true; b.innerHTML = '<span class="spin"></span> Extracting…'; $("pfoot").classList.add("busy"); };
+  if ($("go")) $("go").onclick = () => { working($("go")); openFields(r); };
+  if ($("bulk")) $("bulk").onclick = () => { working($("bulk")); bulkExtract(); };
+  if ($("moreTypes")) $("moreTypes").onclick = () => { S.typesOpen = !S.typesOpen; renderMain(); };
   if ($("each")) $("each").onclick = () => goTo(S.reports.findIndex((x) => needOf(x) === "extract" && !x.leftover));   // from the top
   if ($("addField")) $("addField").onclick = () => chatOpen();
   if ($("manageFields")) $("manageFields").onclick = () => { S.side = "fields"; renderMain(); };
@@ -994,6 +1096,10 @@ const needOf = (r) => r.step === "approved" ? null
   : ["safe", "fields"].includes(r.step) ? "extract"
   : ["failed", "blocked"].includes(r.step) ? "fix" : "review";
 const shortName = (r) => esc(r.name.length > 28 ? r.name.slice(0, 28) + "…" : r.name);
+const pl = (n, word, plural) => `${n} ${n === 1 ? word : plural || `${word}s`}`;          // 1 field, 3 fields
+const PLURAL = {NAME: "Names", DOCTOR: "Clinicians", ID: "ID numbers", DOB: "Dates of birth", DATE: "Dates", MRN: "MRNs",
+  ACCESSION: "Accession numbers", ACCOUNT: "Accounts", PHONE: "Phone numbers", EMAIL: "Emails", ADDRESS: "Addresses", HOSPITAL: "Hospitals"};
+const ENTER = `<span class="kbdin" aria-hidden="true">↵ Enter</span>`;                   // the key that presses the main button
 // Extract all: every reviewed report is read; a verified value is saved for the export by itself (never scored,
 // never learned: no person checked it); anything else (blind check, nothing stated, needs review, refused) stops
 // that report, which is listed for you and opened first.
@@ -1210,24 +1316,30 @@ function viewFields(r) {
   const loading = open.some((f) => !r.results[f.key]) && !r.error;
   const act = r.reading ? S.fields.find((x) => x.key === r.reading.key) : null;
   const actLine = r.reading ? `Reading ${esc(act ? act.name : r.reading.key)} (${r.reading.i} of ${r.reading.n})…` : "Extracting fields";
+  const bulkRunning = S.bulk && S.bulk.running;
   let foot;
-  if (S.bulk && S.bulk.running) foot = `<button class="btn primary" disabled>Extracting all reports…</button>`;
-  else if (loading) foot = `<button class="btn primary" disabled>${actLine}</button>`;
+  if (bulkRunning) foot = `<button class="btn primary" disabled><span class="spin"></span> Extracting all reports…</button>`;
+  else if (r.error && !loading) foot = `<button class="btn primary" id="retry">Try again</button>`;
+  else if (loading) foot = `<button class="btn primary" disabled><span class="spin"></span> Extracting…</button>`;
   else if (verified.length) foot = `<button class="btn primary" id="confirmAll">Confirm ${verified.length} verified value${verified.length > 1 ? "s" : ""}</button>
-    <div class="hint">${pending.length ? `${pending.length} still need${pending.length > 1 ? "" : "s"} your review · ` : ""}<span class="kbd">↑</span> <span class="kbd">↓</span> fields · <span class="kbd">R</span> confirm</div>`;
+    <div class="hint"><span class="kbd">↑</span> <span class="kbd">↓</span> fields · <span class="kbd">R</span> confirm</div>`;
   else if (open.length) foot = `<button class="btn primary" disabled>Review ${open.length} field${open.length > 1 ? "s" : ""} above</button>`;
-  else {
-    const next = S.reports.findIndex((x, i) => i !== S.cur && x.step !== "approved");
-    foot = `<button class="btn primary" id="approve" data-next="-1">Back to Export ${icon("arrow")}</button>
-      <div class="hint">Every field is confirmed <span class="kbd">Enter</span></div>`;
-  }
-  setPanel(`${bulkBanner()}${loading && !(S.bulk && S.bulk.running) ? `<p class="running" style="margin:0 0 var(--s3)"><span class="spin"></span>${actLine}</p>` : ""}
-    ${r.error ? banner("refused", esc(r.error.title), `${esc(r.error.text)} <button class="link" id="retry">Try again</button>`) : ""}
-    ${!loading && pending.length ? banner("review", `${pending.length} field${pending.length > 1 ? "s" : ""} need${pending.length > 1 ? "" : "s"} your answer`, "Confirm, edit or mark each one not stated; the last one takes you to Export.") : ""}
+  else foot = `<button class="btn primary" id="approve" data-next="-1">Back to Export ${icon("arrow")}</button><div class="hint"><span class="kbd">Enter</span></div>`;
+  // Can you go on? Said right above the button; a field that needs you is a link to it
+  const links = (fs) => fs.map((f) => `<button class="link" data-focusfield="${f.key}">${esc(f.name)}</button>`).join(", ");
+  const statusLine = bulkRunning ? ["busy", `Extracting all reports · ${S.bulk.done} of ${S.bulk.total}`]
+    : r.error ? ["bad", `<b>${esc(r.error.title)}.</b> ${esc(r.error.text)}`]
+    : loading ? ["busy", actLine]
+    : pending.length ? ["warn", `${pending.length} field${pending.length > 1 ? "s need" : " needs"} your answer: ${links(pending)}.${verified.length ? ` ${verified.length} verified, ready to confirm.` : ""}`]
+    : verified.length ? ["ok", `${verified.length} verified value${verified.length > 1 ? "s" : ""}, ready to confirm. Confirming the last one finishes the report.`]
+    : ["ok", "Every field is confirmed. This report is in Extracted data (.csv)."];
+  setPanel(`${bulkBanner()}
     ${tip("fields", "Select a field to see its quote in the report. To correct a value, select the right text in the report.")}
     <h2 class="h1">Extract fields</h2>
     ${fieldGroups(r)}
-    ${S.adding ? "" : addFieldRow()}${traceBlock(r)}`, foot);
+    ${S.adding ? "" : addFieldRow()}${traceBlock(r)}`, foot, statusLine);
+  document.querySelectorAll("#pfoot [data-focusfield]").forEach((b) => b.onclick = () => {
+    const k = b.dataset.focusfield; r.toggled[k] = true; focusField(r, k); });
   wireAddField();
   if ($("confirmAll")) $("confirmAll").onclick = () => confirmAll(r);
   document.querySelectorAll("[data-bulk]").forEach((b) => b.onclick = () => confirmAll(r));
@@ -1258,8 +1370,10 @@ function fieldRow(r, f) {
     ${open ? `<div class="fbody">${body}</div>` : ""}</div>`;
 }
 const stripTags = (h) => String(h).replace(/<[^>]+>/g, "");
-const accLine = (f) => { const v = f.validation; return !v || !v.checked ? "not checked yet"
-  : `${v.correct} of ${v.checked} right${v.ready ? " · Ready" : ""}`; };
+// how accurate the field has been, and whose answers it is learning from ("learning from report_1")
+const accLine = (f) => { const v = f.validation, l = f.learning_from || [];
+  const acc = !v || !v.checked ? "not checked yet" : `${v.correct} of ${v.checked} right${v.ready ? " · Ready" : ""}`;
+  return l.length ? `${acc} · <span title="Its examples come from your answers on: ${esc(l.join(", "))}">learning from ${l.length === 1 ? esc(l[0]) : `${l.length} reports`}</span>` : acc; };
 // One line: what it means (cut to fit, full text on hover) and how accurate it has been
 const defLine = (f) => `<div class="fmeta"><span class="fdefline" title="${esc(f.definition || f.meaning)}">${esc(f.definition || f.meaning)}</span>
   <span class="faccline" title="Accuracy on the reports you confirmed">${accLine(f)}</span></div>`;
@@ -1275,7 +1389,8 @@ function fieldParts(r, f) {       // {pill, value, body} for one field
     const note = saved.blind ? `Blind check: ${saved.predicted != null ? `PrivLab had ${val(saved.predicted)}` : "PrivLab found nothing"}. ${corrected ? "Counted as an error; PrivLab learned from it." : "You agreed."}`
       : saved.auto ? "Saved by Extract all: verified by the checks, not reviewed by you. Not counted in accuracy."
       : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed.";
-    const q = saved.start != null ? `<div class="fquote">“${esc(r.dtext.slice(saved.start, saved.end).slice(0, 160))}” · characters ${saved.start}–${saved.end}</div>` : "";
+    const q = (saved.start != null ? `<div class="fquote">“${esc(r.dtext.slice(saved.start, saved.end).slice(0, 160))}” · characters ${saved.start}–${saved.end}</div>` : "")
+      + resetLink(f);
     return {pill: pill(saved.value == null ? "not-stated" : "verified"), value: saved.value != null ? val(saved.value) : "Not stated",
             body: `<div class="sm muted">${note}</div>${q}`};
   }
@@ -1306,21 +1421,41 @@ function fieldParts(r, f) {       // {pill, value, body} for one field
       <div class="choices">${valid.map((c) => `<button class="choice" data-act="pick" data-key="${f.key}" data-cid="${c.id}" data-show="${c.id}">${val(c.value)}</button>`).join("")}</div>`
       + quote(focusC || valid[0]) + whyHtml(focusC || valid[0], true, f.key) + acts(btn("edit", "Edit value"), btn("missing", "Not stated"))};
 }
+const resetLink = (f) => `<div class="factions"><button class="link" data-reset="${f.key}" title="Clear this value; PrivLab reads it again with the current definition">Reset value</button></div>`;
+// Reset value: undo a confirmed value (e.g. after redefining the field) and read it again with the current
+// definition. The earlier answer stays in the log and still counts; the export no longer holds it.
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-reset]"), r = cur();
+  if (!b || !r) return;
+  e.stopPropagation();
+  const key = b.dataset.reset, f = S.fields.find((x) => x.key === key);
+  const out = await api("/api/reset_field", {deid_id: r.deid, field: key});
+  if (out.error || out.status !== "reset") return toast(out.error || out.reason || "Not reset. Try again.");
+  delete r.saved[key]; delete r.results[key]; delete r.lists[key]; if (r.toggled) r.toggled[key] = true;
+  if (r.step === "approved") { r.step = "fields"; r.approvedAt = null; }
+  trace(r, `${f ? f.name : key}: value reset; read again with the current definition.`, "local");
+  toast(`${f ? f.name : key} reset. PrivLab reads it again with the current definition.`);
+  openFields(r);
+}, true);
 // A list field's card: one chip per item (click: its quote; ×: drop it before confirming). "Use as" on a
 // selected block adds one item per line. Confirm saves the whole list; the export has one row per item.
 function listParts(r, f, res, saved, btn, acts) {
   const items = listItems(r, f);
-  const chips = (drop) => `<div class="choices">${items.map((it) => `<button class="choice" data-show="${it.id}" data-key="${f.key}" title="${esc(it.evidence_text || it.value)}">${esc(it.value)}${drop ? ` <span data-drop="${it.id}" aria-label="Remove ${esc(it.value)}">×</span>` : ""}</button>`).join("")}</div>`;
+  // × drops an item; ⤵ joins it with the next one, for a finding the report wraps over two lines
+  // ("Tumor Mutational Burden (TMB) ≥ 10 Muts/Mb" + "11 Muts/Mb (TMB-High)")
+  const chips = (drop) => `<div class="choices">${items.map((it, i) => `<button class="choice" data-show="${it.id}" data-key="${f.key}" title="${esc(it.evidence_text || it.value)}">${esc(it.value)}${drop ? ` <span data-drop="${it.id}" aria-label="Remove ${esc(it.value)}" title="Remove">×</span>` : ""}${drop && i < items.length - 1 ? ` <span data-join="${it.id}" aria-label="Join ${esc(it.value)} with the next item" title="Join with the next item (one finding over two lines)">⤵</span>` : ""}</button>`).join("")}</div>`;
   if (saved) {
     const corrected = !["correct", "true_empty"].includes(saved.outcome);
     return {pill: pill(saved.value == null ? "not-stated" : "verified"), value: saved.value == null ? "Not stated" : `${items.length} item${items.length === 1 ? "" : "s"}`,
-            body: `<div class="sm muted">${saved.auto ? "Saved by Extract all: verified, not reviewed by you." : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div>${saved.value == null ? "" : chips(false)}`};
+            body: `<div class="sm muted">${saved.auto ? "Saved by Extract all: verified, not reviewed by you." : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed."}</div>${saved.value == null ? "" : chips(false)}${resetLink(f)}`};
   }
   const [k] = status(res), n = items.length;
-  const found = (res.items || []).length, dropped = found - items.filter((it) => !String(it.id).startsWith("u")).length;
-  const added = items.filter((it) => String(it.id).startsWith("u")).length;
-  const tally = `<div class="sm" style="margin-top:var(--s2)"><b>${n} selected</b> <span class="muted">· ${found} found by PrivLab${dropped ? ` · ${dropped} dropped by you` : ""}${added ? ` · ${added} added by you` : ""}</span></div>`;
-  const hint = `${tally}<div class="freason">${esc(res.reason || "")} ${n ? "Click × to drop an item." : ""} To add items, select their lines in the report and choose <b>Use as</b>: one item per line.</div>`;
+  const found = (res.items || []).length, ids = new Set((res.items || []).map((it) => it.id));
+  const joinedParts = items.reduce((k, it) => k + (it.parts || []).filter((p) => ids.has(p)).length, 0);
+  const dropped = found - items.filter((it) => ids.has(it.id)).length - joinedParts;
+  const added = items.filter((it) => String(it.id).startsWith("u")).length, joined = items.filter((it) => it.parts).length;
+  const tally = `<div class="sm" style="margin-top:var(--s2)"><b>${n} selected</b> <span class="muted">· ${found} found by PrivLab${dropped ? ` · ${dropped} dropped by you` : ""}${joined ? ` · ${joined} joined by you` : ""}${added ? ` · ${added} added by you` : ""}</span></div>`;
+  const hint = `${tally}<div class="freason">${esc(res.reason || "")} ${n ? "× drops an item; ⤵ joins it with the next one (a finding over two lines)." : ""} To add items, select their lines in the report and choose <b>Use as</b>: one item per line.</div>`;
   if (k === "not-found" && !n) return {pill: pill("not-found"), value: "Not found",
     body: hint + acts(btn("edit", "Select items in the report"), btn("missing", "It is not stated"))};
   const confirm = n ? `<button class="btn secondary inline" data-act="items" data-key="${f.key}">Confirm ${n} item${n === 1 ? "" : "s"}</button>` : "";
@@ -1415,12 +1550,16 @@ async function saveRedefined(f, d, words) {
                   range_min: f.range ? f.range[0] : null, range_max: f.range ? f.range[1] : null, multi: d.multi};
   const res = await api("/api/define", {name: d.name.trim(), description: words, accept});
   if (res.error || !res.field) return toast(`Not saved. ${res.error || "Try again."}`);
-  const meaningChanged = res.field.version !== f.version;
+  // the meaning, not the version number: a field never checked keeps v1 when refined, but still means something new
+  const meaningChanged = d.definition.trim() !== (f.definition || f.meaning).trim() || d.multi !== !!f.multi;
+  const newVersion = res.field.version !== f.version;
   for (const x of S.reports) if (meaningChanged && !x.saved[f.key]) { delete x.results[f.key]; delete x.lists[f.key]; }
+  const stale = meaningChanged ? S.reports.filter((x) => x.saved[f.key]).length : 0;
   S.redefine = null; S.draftField = {}; S.draftErr = null; S.draftFocus = null; S.side = "fields";
   await loadFields(); renderMain();
-  toast(meaningChanged ? `Saved ${res.field.name} as definition v${res.field.version}. Its accuracy starts again; reports not yet confirmed are read with the new meaning.`
-    : `Saved ${res.field.name}. Same meaning, so its accuracy and learning are kept.`);
+  toast(!meaningChanged ? `Saved ${res.field.name}. Same meaning, so its accuracy and learning are kept.`
+    : `Saved ${res.field.name}${newVersion ? ` as definition v${res.field.version}; its accuracy starts again` : ""}. Reports not yet confirmed are read with the new meaning.`
+      + (stale ? ` ${stale} report${stale === 1 ? " has" : "s have"} a value confirmed before: open ${stale === 1 ? "it" : "them"} and use Reset value on this field to read it again.` : ""));
 }
 const WHY = {evidence_found: () => "The quote is in the report", type_ok: () => "It is a valid value for this field",
   value_in_evidence: () => "The value appears in the quote", no_identifiers: () => "The quote holds no identifiers",
@@ -1472,6 +1611,20 @@ function wireRows(r) {
     e.stopPropagation(); const key = x.closest("[data-key]").dataset.key;
     r.lists[key] = listItems(r, S.fields.find((f) => f.key === key)).filter((it) => it.id !== x.dataset.drop); renderMain();
   });
+  pb.querySelectorAll("[data-join]").forEach((x) => x.onclick = (e) => {            // join an item with the next one
+    e.stopPropagation(); const key = x.closest("[data-key]").dataset.key;
+    const items = listItems(r, S.fields.find((f) => f.key === key)), i = items.findIndex((it) => it.id === x.dataset.join);
+    const [a, b] = [items[i], items[i + 1]];
+    if (!a || !b) return;
+    const start = a.start != null && b.start != null ? Math.min(a.start, b.start) : null;
+    const end = a.end != null && b.end != null ? Math.max(a.end, b.end) : null;
+    const text = start != null ? r.dtext.slice(start, end) : `${a.value} ${b.value}`;     // the report's words, both lines
+    const value = text.replace(/\s+/g, " ").trim();
+    items.splice(i, 2, {id: `j${++seq}`, value, evidence_text: value, start, end,
+                        parts: [...(a.parts || [a.id]), ...(b.parts || [b.id])]});
+    r.lists[key] = items; renderMain();
+    toast(`Joined into one item: “${value.slice(0, 60)}${value.length > 60 ? "…" : ""}”`);
+  });
   if ($("edSave")) {
     $("edSave").onclick = (e) => {
       e.stopPropagation();
@@ -1510,23 +1663,36 @@ async function act(r, kind, key, cid, typed) {   // kind: accept, pick, missing,
   await loadFields();                        // fresh accuracy and history
   const f = S.fields.find((x) => x.key === key);
   trace(r, `${f ? f.name : key}: ${out.outcome === "correct" ? "confirmed" : out.outcome === "true_empty" ? "confirmed not stated" : "edited; PrivLab learned from it"}.`, "local");
+  // what this answer taught the field, said once, in plain words (Extract all never gets here: it never teaches)
+  const was = (r.results[key] || {}).value, show = (v) => `“${Array.isArray(v) ? v.join("; ").slice(0, 40) : String(v).slice(0, 40)}”`;
+  const taught = !f ? "" : out.outcome === "correct" ? `Learned: ${f.name} keeps your answer on ${r.name} as an example for the next reports.`
+    : ["wrong", "extra"].includes(out.outcome) && was != null ? `Learned from your correction: next time ${f.name} avoids ${show(was)}${out.value != null ? ` and looks for values like ${show(out.value)}` : ""}.`
+    : out.outcome === "missed" ? `Learned: ${f.name} will look for values like ${show(out.value)} next time.` : "";
+  if (taught) trace(r, taught, "local");
   if (r.step === "fields" && chosen().every((x) => r.saved[x.key])) {
     trace(r, "Every field confirmed: done.", "local");
     approve(r);
     const ni = nextNeed();                   // a batch moves on to the next report that needs you; Export comes at the end
     if (r === cur() && ni >= 0) {
       const left = S.reports.filter((x) => needOf(x)).length;
-      toast(`${r.name} done. Now ${S.reports[ni].name} (${left} report${left === 1 ? "" : "s"} left).`);
+      toast(`${r.name} done. Now ${S.reports[ni].name} (${left} report${left === 1 ? "" : "s"} left).${taught ? ` ${taught}` : ""}`);
       goTo(ni);
-    }
+    } else if (taught) toast(taught);
     return;
   }
   refresh(r);
+  if (taught && !S.confirmingAll) toast(taught);
 }
 async function confirmAll(r) {
+  let n = 0;
+  S.confirmingAll = true;                    // one summary at the end, not a message per value
+  try { await confirmEach(r, (k) => n += k); } finally { S.confirmingAll = false; }
+  if (n && r === cur() && r.step === "fields") toast(`${n} verified value${n === 1 ? "" : "s"} confirmed. PrivLab keeps them as examples for the next reports.`);
+}
+async function confirmEach(r, count) {
   for (const f of chosen()) {
     const res = r.results[f.key];
-    if (res && status(res)[0] === "verified" && !r.saved[f.key]) await act(r, f.multi ? "items" : "accept", f.key, res.candidate_id);
+    if (res && status(res)[0] === "verified" && !r.saved[f.key]) { await act(r, f.multi ? "items" : "accept", f.key, res.candidate_id); count(r.saved[f.key] ? 1 : 0); }
   }
 }
 
@@ -1539,25 +1705,27 @@ function viewApproved(r) {
   setDoc(marked(r.dtext, quoteMarks(r)), evidenceLegend(r));
   document.querySelectorAll("[data-legend]").forEach((b) => b.onclick = () => focusField(r, b.dataset.legend));
   const filled = Object.values(r.saved).filter((o) => o.value != null).length;
+  const unstated = Object.values(r.saved).filter((o) => o.value == null).length;
   const next = nextNeed();                    // review first, then extraction; a failed report keeps its own retry
   const need = next >= 0 ? needOf(S.reports[next]) : null;
   const nextLabel = next < 0 ? `${icon("plus")}Add more reports` : `Next: ${need} ${shortName(S.reports[next])} ${icon("arrow")}`;
   const approved = S.reports.filter((x) => x.step === "approved").length, waiting = S.reports.length - approved;
   const all = next < 0 && S.reports.length > 1 && !waiting;
-  setPanel(`${bulkBanner()}${all ? banner("verified", `All ${approved} reports done`, "Every report is reviewed and extracted. Download the batch below.")
-      : banner("verified", `Done at ${clock(r.approvedAt)}`, `${filled} field${filled === 1 ? "" : "s"} filled, ${r.typed} typed by hand, in ${fmtSecs((r.doneAt - r.openedAt) / 1000)}. Fields are now read-only.`)}
+  const statusLine = ["ok", all ? `All ${approved} reports done. Download the batch above.`
+    : `${shortName(r)} done at ${clock(r.approvedAt)} — ${filled} field${filled === 1 ? "" : "s"} confirmed${unstated ? `, ${unstated} not stated` : ""}. In Extracted data (.csv).${
+      waiting ? ` ${waiting} more report${waiting === 1 ? "" : "s"} to finish.` : ""}`];
+  setPanel(`${bulkBanner()}<h2 class="h1">${all ? `All ${approved} reports done` : "Done"}</h2>
     <div class="fields" role="list">${S.fields.filter((f) => r.saved[f.key] || !S.skip.has(f.key)).map((f) => { const o = r.saved[f.key], on = r.focus && r.focus.key === f.key;
       return `<div class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-frow="${f.key}" data-pick="${f.key}"><div class="fhead"><span class="fname">${esc(f.name)}</span>
       ${o ? pill(o.value == null ? "not-stated" : "verified") : ""}</div><div class="fval">${o ? (o.value != null ? esc(o.value) + unit(f, o.value) : "Not stated") : "–"}</div>
-      ${o && o.start != null ? `<div class="fquote">“${esc(r.dtext.slice(o.start, o.end).slice(0, 140))}”</div>` : ""}</div>`; }).join("")}</div>
-    <div class="split"><a class="btn secondary" href="/api/export.csv?ids=${listedIds()}" title="${approved} finished report${approved === 1 ? "" : "s"}, one row each. No report text.">${icon("down")}Extracted data (.csv)</a>
+      ${o && o.start != null ? `<div class="fquote">“${esc(r.dtext.slice(o.start, o.end).slice(0, 140))}”</div>` : ""}${o ? resetLink(f) : ""}</div>`; }).join("")}</div>
+    <div class="split"><a class="btn secondary" href="/api/export.csv?ids=${listedIds()}${fieldsQ()}" title="${approved} finished report${approved === 1 ? "" : "s"}, one row each. No report text.">${icon("down")}Extracted data (.csv)</a>
       <details class="menu"><summary class="btn secondary" aria-label="Other download formats" title="Other formats">▾</summary>
         <div class="pop"><a href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}">This masked report (.txt)</a>
-          <a href="/api/export_all?ids=${listedIds()}">Everything (.zip)<span>Data, masked reports and a data dictionary</span></a></div></details></div>
-    ${waiting ? `<p class="sm muted" style="margin:var(--s2) 0 0">${waiting} report${waiting === 1 ? " is" : "s are"} still in progress and not in the downloads yet.</p>` : ""}
+          <a href="/api/export_all?ids=${listedIds()}${fieldsQ()}">Everything (.zip)<span>Data, masked reports and a data dictionary</span></a></div></details></div>
     ${traceBlock(r)}`,
     `<button class="btn primary" id="go">${nextLabel}</button>
-     <div class="hint">${next >= 0 ? "" : "Every finished report is in Extracted data (.csv) under Export."} <span class="kbd">Enter</span></div>`);
+     <div class="hint"><span class="kbd">Enter</span></div>`, statusLine);
   $("go").onclick = () => next >= 0 ? goTo(next) : (S.cur = -1, render());
   document.querySelectorAll("[data-pick]").forEach((b) => {
     b.onclick = () => focusField(r, b.dataset.pick);
@@ -1578,10 +1746,21 @@ function hideFloat() { $("floatbar").style.display = "none"; }
 document.addEventListener("mouseup", (e) => {
   if (e.target.closest("#floatbar")) return;
   setTimeout(() => {
-    const r = cur(), sel = docSelection();
-    if (!r || !sel || !["review", "fields"].includes(r.step)) return hideFloat();
+    const r = cur(), sel = docSelection(), c = S.chat;
+    const teaching = c && c.stage === "teach" && r && r.dtext && !r.leftover;
+    if (!r || !sel || !(teaching || ["review", "fields"].includes(r.step))) return hideFloat();
     const bar = $("floatbar");
-    if (r.step === "review") {
+    if (teaching) {                            // you show a field its value: before or after it is saved
+      bar.innerHTML = `<span style="padding:0 var(--s2)">Use as</span><b style="padding:0 var(--s2)">${esc(c.name)}</b><button id="fbTeach">Use</button>`;
+      $("fbTeach").onclick = async () => {
+        hideFloat(); window.getSelection().removeAllRanges();
+        say("you", `This one: “${esc(sel.text.slice(0, 80))}”`);
+        if (!r.results[c.key]) return chatFind(r, sel.text);     // PrivLab reads it first, then your value is saved
+        c.stage = "done"; S.side = null;
+        say("note", taughtNote());
+        useAs(r, S.fields.find((x) => x.key === c.key), sel.text);
+      };
+    } else if (r.step === "review") {
       bar.innerHTML = `<span style="padding:0 var(--s2)">Hide as</span><select id="fbType" aria-label="Identifier type">${TYPES.map((t) => `<option value="${t}">${TL[t]}</option>`).join("")}</select>
         <button id="fbGo">Hide</button>`;
       $("fbGo").onclick = () => { r.add.push({text: sel.text, type: $("fbType").value}); hideFloat(); window.getSelection().removeAllRanges(); renderMain(); };
@@ -1694,13 +1873,16 @@ function renderSide(r) {
   const n = S.fields.length, c = S.chat;
   const tabs = `<div class="ptabs"><div class="seg" role="tablist" aria-label="Fields">
       <button role="tab" id="tabFields" aria-pressed="${S.side === "fields"}">Fields · ${n}</button>
-      <button role="tab" id="tabNew" aria-pressed="${S.side === "chat" || S.side === "new"}">${icon("plus")} New field</button></div>
+      <button role="tab" id="tabNew" aria-pressed="${S.side === "chat" || S.side === "new"}">${icon("plus")} New field</button>
+      <button role="tab" id="tabLearned" aria-pressed="${S.side === "learned"}">Learned</button></div>
     <button class="link" id="sideClose">Close</button></div>`;
-  if (S.side === "new") {
+  if (S.side === "learned") {
+    setPanel(`${tabs}${learnedHtml()}`);
+  } else if (S.side === "new") {
     setPanel(`${tabs}<div class="fields">${addFieldRow(true)}</div>`);       // this tab is the card itself
     wireAddField();
   } else if (S.side === "fields") {
-    setPanel(`${tabs}<p class="lede">The fields PrivLab fills on every report. Each one learns from your corrections.</p>
+    setPanel(`${tabs}<p class="lede">The fields PrivLab fills on every report. Each one learns from your corrections. <button class="link" data-learn>How learning works</button></p>
       <ul class="list flist">${n ? S.fields.map((f) => `<li class="item"><div class="grow"><b>${esc(f.name)}</b> ${readiness(f.readiness)}
         ${fieldDef(f, true)}</div>
         <button class="link" data-redefine="${f.key}">Redefine</button><button class="link" data-remove="${f.key}">Remove</button></li>`).join("")
@@ -1719,8 +1901,53 @@ function renderSide(r) {
   }
   $("tabFields").onclick = () => { S.side = "fields"; renderMain(); };
   $("tabNew").onclick = () => chatOpen();
+  $("tabLearned").onclick = () => { S.side = "learned"; S.learned = null; renderMain(); };
   $("sideClose").onclick = () => { S.side = null; afterSideClose(); renderMain(); };
 }
+// "What PrivLab has learned": the privacy profile's two lists and each field's examples, each with Remove.
+// Read fresh from the server each time the tab opens; local only (the always-hide list holds real names).
+function learnedHtml() {
+  const L = S.learned;
+  if (!L) {
+    api("/api/learned").then((res) => { S.learned = res.error ? {error: res.error} : res; if (S.side === "learned") renderMain(); });
+    return `<p class="running"><span class="spin"></span>Loading what PrivLab has learned…</p>`;
+  }
+  if (L.error) return banner("refused", "Could not load", esc(L.error));
+  const single = (t) => t.split(/\s+/).length < 2;
+  const row = (main, sub, attrs) => `<li class="item"><div class="grow">${main}${sub ? `<div class="sm muted">${sub}</div>` : ""}</div>
+    <button class="link" ${attrs}>Remove</button></li>`;
+  const none = (t) => `<li class="item muted sm">${t}</li>`;
+  const hide = L.hide.map((x, i) => row(`<span class="chip t-${x.type}">${TL[x.type] || x.type}</span> ${esc(x.text)}`,
+    [x.from && `from ${esc(x.from)}`, single(x.text) && ["NAME", "DOCTOR"].includes(x.type) && "a single word: used in its own report only"].filter(Boolean).join(" · "),
+    `data-forget="hide" data-i="${i}"`)).join("") || none("Nothing yet. Names you hide, and second-check finds you keep hidden, appear here.");
+  const keep = L.keep.map((t, i) => row(esc(t), single(t) ? "a single word: used in its own report only" : "", `data-forget="keep" data-i="${i}"`)).join("")
+    || none("Nothing yet. Highlights you keep visible appear here.");
+  const fields = L.fields.map((f) => `<p class="fname" style="margin:var(--s4) 0 var(--s1)">${esc(f.name)} <span class="muted">· definition v${f.version}</span></p>
+    <ul class="list">${f.good.map((x, i) => row(`<span style="color:var(--verified)">✓</span> <b>${esc(Array.isArray(x.value) ? x.value.join("; ") : x.value)}</b>`,
+        `“…${esc(x.context.slice(0, 90))}…” · from ${esc(x.from)}`, `data-forget="good" data-field="${f.key}" data-i="${i}"`)).join("")}
+      ${f.bad.map((x, i) => row(`<span style="color:var(--refused)">✗</span> not this: “…${esc(x.context.slice(0, 70))}…”`,
+        `${esc(x.reason)} · from ${esc(x.from)}`, `data-forget="bad" data-field="${f.key}" data-i="${i}"`)).join("")}
+      ${f.good.length || f.bad.length ? "" : none("No examples yet: confirm or correct a value to teach it.")}</ul>`).join("");
+  return `<h2 class="h1">What PrivLab has learned</h2>
+    <p class="lede">Kept on this device. Remove anything you don't want it to use. <button class="link" data-learn>How learning works</button></p>
+    <p class="label">De-identification · always hide (${L.hide.length})</p><ul class="list">${hide}</ul>
+    <p class="label" style="margin-top:var(--s4)">De-identification · not identifiers (${L.keep.length})</p><ul class="list">${keep}</ul>
+    <p class="label" style="margin-top:var(--s4)">Extraction · examples it learns from (latest 3 right + 3 wrong per field)</p>${fields || '<p class="sm muted">No fields yet.</p>'}`;
+}
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-forget]");
+  if (b && S.learned) {
+    const kind = b.dataset.forget, i = +b.dataset.i;
+    const body = kind === "hide" ? {kind, text: S.learned.hide[i].text, type: S.learned.hide[i].type}
+      : kind === "keep" ? {kind, text: S.learned.keep[i]} : {kind, field: b.dataset.field, index: i};
+    const res = await api("/api/forget", body);
+    if (res.error) return toast(res.error);
+    S.learned = null; await loadFields(); renderMain();
+    toast(kind === "hide" || kind === "keep" ? "Removed. PrivLab no longer uses it on new reports."
+      : "Example removed. The next reports are read without it.");
+  }
+  if (e.target.closest("[data-learn]")) $("learnDlg").showModal();
+});
 function afterSideClose() {
   const r = cur();
   if (!S.side && r && r.step === "fields") openFields(r);           // fill fields added meanwhile
@@ -1732,8 +1959,14 @@ function chatFooter(c) {
   return {
     name: input("Field name, for example tumour size"),
     refine: input("What should it mean? In your own words"),
-    confirm: `<button class="btn primary" id="cYes">Yes, save this field</button><button class="btn secondary" id="cNo">Not quite</button>`,
-    preview: `<button class="btn primary" id="pYes">Yes, that's it</button><button class="btn secondary" id="pNo">No, that's not it</button>`,
+    // 1 answer "Did you mean…?"; 2 check it on the open report: PrivLab finds it, or you select it
+    confirm: `<button class="btn primary" id="cYes">Yes, that's what I mean</button><button class="btn secondary" id="cNo">Not quite: change the meaning</button>`,
+    check: `<button class="btn primary" id="kFind">Find it in this report ${icon("arrow")}</button>
+      <button class="btn secondary" id="kTeach">I'll select it myself</button><button class="link" id="kSkip" style="align-self:center">Skip for now</button>`,
+    preview: `<button class="btn primary" id="pYes">Yes, that's it</button><button class="btn secondary" id="pTeach">No: I'll select the right value</button>
+      <button class="link" id="pNo" style="align-self:center">Not quite: change the meaning</button>`,
+    teach: `<div class="pstatus info" role="status"><span class="gl" aria-hidden="true">i</span><span>${teachText()}</span></div>
+      <button class="btn secondary" id="tBack">Back</button>`,
     missing: `<button class="btn primary" id="mYes">Correct, it is not stated</button><button class="btn secondary" id="mNo">It is stated</button>`,
     done: `<button class="btn primary" id="dMore">${icon("plus")}Add another field</button><button class="btn secondary" id="dBack">Back to the report</button>`,
   }[c.stage];
@@ -1750,12 +1983,39 @@ function wireChat(r) {
   if ($("cNo")) $("cNo").onclick = () => { say("you", "Not quite"); say("spark", "What should it mean instead? Describe it in your own words, for example <i>only the invasive tumour, not the whole specimen</i>."); c.stage = "refine"; renderMain(); };
   if ($("pYes")) $("pYes").onclick = () => chatPreviewYes(r);
   if ($("pNo")) $("pNo").onclick = () => { say("you", "No, that's not it"); say("spark", "What did you mean? Describe it in your own words, and I will look again."); c.stage = "refine"; if (r) delete r.results[c.key]; renderMain(); };
+  const teach = (said) => {                  // you show the value: select it in the report, then Use as
+    say("you", said); say("spark", teachText());
+    c.back = c.stage; c.stage = "teach"; renderMain();
+  };
+  if ($("kFind")) $("kFind").onclick = () => chatFind(r);
+  if ($("kTeach")) $("kTeach").onclick = () => teach("I'll select it myself");
+  if ($("kSkip")) $("kSkip").onclick = () => { say("you", "Skip for now"); say("note", "Saved. It will be filled when you extract."); c.stage = "done"; renderMain(); };
+  if ($("pTeach")) $("pTeach").onclick = () => teach("No: I'll select the right value");
+  if ($("tBack")) $("tBack").onclick = () => { c.stage = c.back || "check"; renderMain(); };
   if ($("mYes")) $("mYes").onclick = async () => { say("you", "Correct, it is not stated"); await act(r, "missing", c.key); say("note", "Saved as not stated. PrivLab learns from it."); c.stage = "done"; renderMain(); };
   if ($("mNo")) $("mNo").onclick = () => { say("you", "It is stated"); say("spark", "Select the right text in the report, then choose <b>Use as</b> and this field. That teaches me where to look."); c.stage = "done"; renderMain(); };
   if ($("dMore")) $("dMore").onclick = () => { S.chat = null; chatOpen(); };
   if ($("dBack")) $("dBack").onclick = () => { S.side = null; afterSideClose(); renderMain(); };
   const det = $("cDetails");
   if (det) det.onclick = () => { c.editDetails = !c.editDetails; renderMain(); };
+}
+const canPreview = () => { const r = cur(); return !!(r && r.dtext && !r.leftover && ["safe", "fields", "approved"].includes(r.step)); };
+const teachText = () => {
+  const c = S.chat, f = c && S.fields.find((x) => x.key === c.key), multi = f ? f.multi : c && c.draft && c.draft.multi;
+  return multi ? `In the report, select all the lines for <b>${esc(c ? c.name : "this field")}</b> at once — the whole list, not one by one — then choose <b>Use as</b> in the bar that appears. Each line becomes one item, so leave out any header line.`
+    : `In the report, select the value for <b>${esc(c ? c.name : "this field")}</b>, then choose <b>Use as</b> in the bar that appears.`;
+};
+const taughtNote = () => {
+  const c = S.chat, f = c && S.fields.find((x) => x.key === c.key);
+  return f && f.multi ? "Added to the list on its card: check the items there and click Confirm. PrivLab learns from it."
+    : "Saved as the correct value. PrivLab learns from it, so the next report starts closer.";
+};
+// While you teach a field, the report says so above itself and is outlined, so the next step is visible there
+function teachCue() {
+  const c = S.chat, doc = document.querySelector("#view .doc");
+  if (!doc || !(c && c.stage === "teach" && S.side === "chat")) return;
+  doc.classList.add("teaching");
+  $("view").insertAdjacentHTML("afterbegin", `<div class="teachbar" role="status">${teachText()}</div>`);
 }
 function chatOpen(field) {
   S.side = "chat";
@@ -1809,33 +2069,44 @@ function readDetails() {
   if ($("dUnit")) d.unit = $("dUnit").value.trim() || null;
   if ($("dMulti")) d.multi = $("dMulti").checked;
 }
+// Step 1, "Did you mean…?" → Yes: the field is saved. Step 2, if a report is open: check it there, either
+// PrivLab finds it (chatFind) or you select it ("teach"; the value is saved after PrivLab's own read of the
+// report, so its prediction is frozen first and the accuracy score stays honest).
 async function chatSave(r) {
   const c = S.chat;
   readDetails();
-  say("you", "Yes, save this field");
+  say("you", "Yes, that's what I mean");
   c.busy = true; renderMain();
   const accept = {...c.draft, key: c.key || c.draft.key};
   const res = await api("/api/define", {name: c.name, description: c.desc || null, accept});
-  if (res.error || !res.field) { c.busy = false; say("spark", `The field was not saved. ${esc(res.error || "")}`); c.stage = "confirm"; return renderMain(); }
+  c.busy = false;
+  if (res.error || !res.field) { say("spark", `The field was not saved. ${esc(res.error || "")}`); c.stage = "confirm"; return renderMain(); }
   c.key = res.field.key;
   await loadFields();
   say("note", `Saved <b>${esc(c.name)}</b>. It will be filled on every report.`);
   for (const x of S.reports) { delete x.results[c.key]; delete x.lists[c.key]; }   // re-read with the new meaning
   S.reports.filter((x) => x !== r && x.step === "safe" && x.prefetch !== "running").forEach(prefetch);
-  if (!r || !r.dtext || r.leftover || !["safe", "fields"].includes(r.step)) {
-    c.busy = false; c.stage = "done";
+  if (!canPreview()) {
+    c.stage = "done";
     say("spark", "Open a de-identified report and I will highlight this field in it.");
     return renderMain();
   }
-  r.step = "fields"; renderMain();
+  if (S.pendingUse) { const text = S.pendingUse; S.pendingUse = null; return chatFind(r, text); }   // started from a selection
+  say("spark", `Let's check it on <b>${esc(r.name)}</b>. Shall I find it, or will you select it in the report?`);
+  c.stage = "check"; renderMain();
+}
+async function chatFind(r, taught) {        // taught: text you selected, saved as the value once PrivLab has read the report
+  const c = S.chat;
+  if (!taught) say("you", "Find it in this report");
+  c.busy = true; r.step = "fields"; renderMain();
   const found = await api("/api/find", {deid_id: r.deid, field: c.key});
   c.busy = false;
   if (found.error || found.status === "error") { say("spark", `I could not read the report. ${esc(found.error || found.reason || "")}`); c.stage = "done"; return renderMain(); }
   r.results[c.key] = found;
-  if (S.pendingUse) {                       // started from a selection: save that text as the value
-    const text = S.pendingUse; S.pendingUse = null;
-    c.busy = false; c.stage = "done"; S.side = null; renderMain();
-    return useAs(r, S.fields.find((x) => x.key === c.key), text);
+  if (taught) {
+    say("note", taughtNote());
+    c.stage = "done"; S.side = null; renderMain();
+    return useAs(r, S.fields.find((x) => x.key === c.key), taught);
   }
   const [k] = status(found), cand = (found.candidates || []).find((x) => x.id === found.candidate_id) || (found.candidates || []).find((x) => !x.fail);
   const f = S.fields.find((x) => x.key === c.key);
@@ -1875,7 +2146,7 @@ async function removeField(b) {
   await loadFields(); renderMain();
   toast("Field removed. Values already exported are not changed.");
 }
-async function loadFields() { const p = await api("/api/pack"); S.fields = p.fields || []; }
+async function loadFields() { const p = await api("/api/pack"); if (!p.error) S.fields = p.fields || []; return !p.error; }
 
 // ======================================================================
 // Keyboard and start-up
@@ -1914,22 +2185,50 @@ $("modeDeid").onclick = () => { S.side = null; setMode("deid"); };
 $("modeBoth").onclick = () => setMode("both");
 // Exports hold only the reports in the list on the left, never ones from an earlier session
 const listedIds = () => S.reports.filter((x) => x.deid).map((x) => x.deid).join(",");
+// ... and only the fields ticked for extraction (all of them when none is unticked, or in De-identify only)
+const fieldsQ = () => !extracting() || !S.skip.size ? "" : `&fields=${chosen().map((f) => encodeURIComponent(f.key)).join(",")}`;
 $("expDeid").onclick = (e) => {
   $("expDeid").href = `/api/deid_export?ids=${listedIds()}`;
   if (!S.reports.some((x) => ["safe", "fields", "approved"].includes(x.step))) { e.preventDefault(); toast("Nothing to export yet. De-identify a report first."); }
   $("exportMenu").open = false;
 };
 $("expAll").onclick = (e) => {
-  $("expAll").href = `/api/export_all?ids=${listedIds()}`;
+  $("expAll").href = `/api/export_all?ids=${listedIds()}${fieldsQ()}`;
   if (!S.reports.some((x) => ["safe", "fields", "approved"].includes(x.step))) { e.preventDefault(); toast("Nothing to export yet. De-identify a report first."); }
   $("exportMenu").open = false;
 };
 $("expCsv").onclick = (e) => {
-  $("expCsv").href = `/api/export.csv?ids=${listedIds()}`;
+  $("expCsv").href = `/api/export.csv?ids=${listedIds()}${fieldsQ()}`;
   if (!S.reports.some((x) => Object.keys(x.saved).length)) { e.preventDefault(); toast("Nothing to export yet. Confirm a field first."); }
   $("exportMenu").open = false;
 };
 document.addEventListener("click", (e) => { if (!e.target.closest("#exportMenu")) $("exportMenu").open = false; });
+
+// Download confirmation, for every download link: first ask the server what the file will hold. Nothing in it:
+// no empty file, just why. Otherwise download, then say what is in it and what was left out, and why.
+const DL_KIND = (u) => u.pathname === "/api/export.csv" ? "csv" : u.pathname === "/api/export_all" ? "all"
+  : u.pathname === "/api/deid_export" ? (u.searchParams.get("deid_id") ? "one" : "deid") : null;
+document.addEventListener("click", async (e) => {
+  const a = e.target.closest("a[href^='/api/']");
+  if (!a || e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const u = new URL(a.href, location.href), kind = DL_KIND(u);
+  if (!kind) return;
+  e.preventDefault();
+  for (const m of document.querySelectorAll("details.menu[open]")) m.open = false;
+  const q = new URLSearchParams({kind, ids: u.searchParams.get("ids") || "", deid_id: u.searchParams.get("deid_id") || ""});
+  const s = await api(`/api/export_summary?${q}`);
+  if (s.error) return toast(`Not downloaded. ${s.error}`);
+  const nm = (id) => (S.reports.find((x) => x.deid === id) || {}).name || id;
+  const what = {csv: "Extracted data", deid: "masked reports", one: "masked report", all: "everything"}[kind];
+  const left = s.excluded.map((x) => `${nm(x.deid_id)} (${x.why})`);
+  const leftList = left.slice(0, 3).join(", ") + (left.length > 3 ? `, and ${left.length - 3} more` : "");
+  if (!s.included.length) return toast(`Nothing downloaded: no report is ready for ${what}.${left.length ? ` ${leftList}.` : ""}`);
+  const dl = document.createElement("a"); dl.href = u.href; dl.download = ""; document.body.appendChild(dl); dl.click(); dl.remove();
+  const n = s.included.length, held = s.withheld_values;
+  toast(`Downloaded ${kind === "one" ? `${nm(s.included[0])}, masked` : `${what} for ${n} report${n === 1 ? "" : "s"}`}.`
+    + (left.length ? ` Not included: ${leftList}.` : "")
+    + (held ? ` ${held} value${held === 1 ? " was" : "s were"} left out because ${held === 1 ? "it looks" : "they look"} like an identifier.` : ""));
+});
 
 $("resetBtn").onclick = async () => {
   const b = $("resetBtn");
@@ -1951,7 +2250,10 @@ $("resetBtn").onclick = async () => {
   S.samples = reps.reports || []; S.demo = !!reps.demo; S.profile = prof;
   $("mode").style.display = S.demo ? "" : "none";
   $("resetBtn").style.display = S.demo ? "" : "none";
-  await loadFields();
+  if (!await loadFields()) {
+    $("view").innerHTML = `<div class="empty">${banner("refused", "Field pack did not load", "The server did not answer. Reload this page; your fields are kept in the pack file on this device.")}</div>`;
+    return;
+  }
   setMode(S.mode);
   openFromLink();
 })();

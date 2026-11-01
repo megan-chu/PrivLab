@@ -150,6 +150,62 @@ def test_export_links_without_ids_export_nothing(viewer):
     assert viewer.export_csv([]).decode("utf-8-sig").count("\n") == 1                   # header only
 
 
+def test_download_summary_names_what_is_left_out_and_why(viewer, fake_spark):
+    pack = viewer.STATE["pack"]
+    fake_spark["state"]["reply"] = DRAFT
+    define_field("tumour size", None, accept=DRAFT, pack_path=pack)
+    done = viewer.api_add({"name": "a.txt", "text": REPORT, "choices": {}})            # de-identified and a field confirmed
+    pipeline.confirm_deid(done["deid_id"], use_spark=False)
+    fake_spark["state"]["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm", "reason": "t", "confidence": 0.9}]}]}
+    res = viewer.api_find({"deid_id": done["deid_id"], "field": "tumour_size"})
+    viewer.api_confirm_field({"deid_id": done["deid_id"], "field": "tumour_size", "candidate_id": res["candidate_id"]})
+    masked_only = viewer.api_add({"name": "b.txt", "text": "Patient: John Lim\nDIAGNOSIS: adenoma.", "choices": {}})
+    pipeline.confirm_deid(masked_only["deid_id"], use_spark=False)                 # de-identified, nothing confirmed
+    in_review = viewer.api_add({"name": "c.txt", "text": "Patient: Mary Tan\nDIAGNOSIS: carcinoma.", "choices": {}})
+    ids = [done["deid_id"], masked_only["deid_id"], in_review["deid_id"]]
+
+    csv = viewer.export_summary("csv", ids)
+    assert csv["included"] == [done["deid_id"]]
+    assert {(x["deid_id"], x["why"]) for x in csv["excluded"]} == {
+        (masked_only["deid_id"], "no field confirmed yet"), (in_review["deid_id"], "not de-identified yet")}
+    zipped = viewer.export_summary("deid", ids)
+    assert zipped["included"] == ids[:2] and zipped["excluded"] == [{"deid_id": in_review["deid_id"], "why": "not de-identified yet"}]
+    pipeline._RUNS[masked_only["deid_id"]]["priority"] = {"level": "high", "reasons": ["1 identifier pattern(s) left in the output"]}
+    one = viewer.export_summary("one", deid_id=masked_only["deid_id"])
+    assert one["included"] == [] and one["excluded"][0]["why"] == "possible identifier left in the text"
+    assert viewer.export_summary("all", ids)["included"] == [done["deid_id"]]
+    assert "Mary Tan" not in json.dumps(csv)                                           # ids and reasons only
+
+
+def test_learned_view_lists_and_forgets_with_the_source_report(viewer, fake_spark):
+    """Hide a name on report 1: the profile remembers it came from report 1, report 2 says so, and Remove undoes it."""
+    text = "Patient: Mary Tan\nThe nurse asked that zola mensah receive a copy.\n"
+    out = viewer.api_add({"name": "report_1.txt", "text": text, "choices": {}})
+    held = pipeline.confirm_deid(out["deid_id"], add=[{"text": "zola mensah", "type": "NAME"}], use_spark=False)
+    if held["next"] == "hold":
+        held = pipeline.confirm_deid(out["deid_id"], hold_answers={"keep": []}, use_spark=False)
+    assert {"text": "zola mensah", "type": "NAME"} in held["learned"]["hide"]
+    learned = viewer.api_learned(None)
+    assert {"text": "zola mensah", "type": "NAME", "from": "report_1"} in learned["hide"]
+    again = viewer.api_add({"name": "report_2.txt", "text": "Seen while zola mensah watched.\n"})
+    found = next(d for d in again["detections"] if d["text"].lower() == "zola mensah")
+    assert found["learned"] and found["learned_from"] == "report_1"                     # caught on the laptop
+    assert viewer.api_forget({"kind": "hide", "text": "zola mensah", "type": "NAME"})["ok"]
+    assert viewer.api_learned(None)["hide"] == []
+    assert "error" in viewer.api_forget({"kind": "hide", "text": "zola mensah", "type": "NAME"})
+
+
+def test_export_only_the_ticked_fields(viewer, fake_spark):
+    pack = viewer.STATE["pack"]
+    fake_spark["state"]["reply"] = DRAFT
+    define_field("tumour size", None, accept=DRAFT, pack_path=pack)
+    define_field("margin", None, accept={"key": "margin", "meaning_question": "Margin?", "type": "text", "unit": None,
+                 "range_min": None, "range_max": None}, pack_path=pack)
+    assert viewer.export_csv([], ["margin"]).decode("utf-8-sig").splitlines()[0] == "case_id,report_id,reviewed_at,exported_at,margin"
+    assert "tumour size" in viewer.export_csv([]).decode("utf-8-sig").splitlines()[0]    # no ?fields: every field
+
+
 def test_privacy_choices_can_change_after_first_use(viewer):
     out = viewer.api_add({"name": "a.txt", "text": "Seen at Riverside General Hospital. Patient: Mary Tan", "choices": {}})
     assert out["next"] == "review" and any(d["type"] == "HOSPITAL" for d in out["detections"])   # defaults hide it

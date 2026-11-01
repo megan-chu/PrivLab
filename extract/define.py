@@ -43,6 +43,9 @@ def define_field(name: str, description: str | None = None, accept: dict | None 
     if existing and meaning_key(existing) == meaning_key(f):           # same meaning: keep what it learned
         f.version, f.examples, f.recent, f.readiness = existing.version, existing.examples, existing.recent, existing.readiness
         f.history = existing.history + [{"when": f.history[0]["when"], "what": "redefined, same meaning"}]
+    elif existing and existing.readiness == "draft" and not any(existing.examples.values()):
+        f.version = existing.version             # refined before its first check: nothing to start again
+        f.history = existing.history + [{"when": f.history[0]["when"], "what": "refined before first use"}]
     elif existing:            # a new meaning: old examples and scores were confirmed under the old one
         f.version = existing.version + 1
         f.history = existing.history + [{"when": f.history[0]["when"],

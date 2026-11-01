@@ -130,6 +130,27 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
     return {"value": value, "start": hits[0][0], "end": hits[0][1]}
 
 
+def reset_field(deid_id: str, field_key: str, *, pack_path=None, log_path=None) -> dict:
+    """Undo a confirmed value (e.g. after the field was redefined). The earlier check stays in the log: it was a
+    real answer and is still scored. A "reset" entry follows it, so the export no longer holds the value; resets
+    never score and never teach. Read the field again (find_candidates) to answer it anew."""
+    result = pipeline.result_for(deid_id)
+    field = get_field(load_pack(pack_path), field_key)
+    path = log_path or LOG_PATH
+    latest = next((e for e in reversed(read_log(path)) if e["deid_id"] == deid_id and e["field"] == field_key), None)
+    if result is None or field is None or latest is None or latest.get("phase") == "reset":
+        return {"status": "error", "reason": "nothing confirmed to reset for this report and field"}
+    entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id, "report_id": result.report_id,
+             "split": _split(result.report_id), "phase": "reset", "field": field.key, "field_version": field.version,
+             "blind": False, "predicted": {"value": None, "status": "reset", "start": None, "end": None, "reason": None},
+             "confirmed": None, "outcome": "reset"}
+    path.parent.mkdir(exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry) + "\n")
+    _PREDICTIONS.pop((deid_id, field_key), None)
+    return {"status": "reset", "field": field.key}
+
+
 def _confirmed_items(text, field, items, missing):
     """A list field: every item located in the text; value is the list of values, items keep their quotes."""
     if missing:
@@ -247,7 +268,7 @@ def more_needed(errors: int, n: int) -> int:
 def validation(field, entries: list[dict]) -> dict:
     """Scores for the field's current definition version only."""
     rows = [e for e in entries if e["field"] == field.key and e.get("field_version", 1) == field.version
-            and e.get("phase") != "bulk"]                        # accepted without a person: not a check
+            and e.get("phase") not in ("bulk", "reset")]         # accepted without a person, or undone: not a check
     green = [e for e in rows if e["predicted"]["status"] == "green"]
     silent = sum(e["outcome"] in ("wrong", "extra") for e in green)
     blind = [e for e in rows if e.get("blind")]
@@ -294,7 +315,7 @@ def show_pack(field_key: str | None = None, *, pack_path=None, log_path=None) ->
                     "predicted": e["predicted"]["value"], "status": e["predicted"]["status"],
                     "confirmed": (e["confirmed"] or {}).get("value"), "outcome": e["outcome"],
                     "blind": e.get("blind", False), "readiness_after": e.get("readiness_after")}
-                   for e in reversed(log) if e["field"] == field_key]
+                   for e in reversed(log) if e["field"] == field_key and e.get("phase") != "reset"]
     return {"field": {**next(f for f in fields if f["key"] == field_key), "meaning": field.meaning,
                       "definition": field.definition, "description": field.description, "range": field.range},
             "definition_history": field.history, "extraction_history": extractions}
