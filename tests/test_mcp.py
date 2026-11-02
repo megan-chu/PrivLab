@@ -52,15 +52,17 @@ def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
     did = out["deid_id"]
 
     mcp.spark_state["reply"] = DRAFT
-    draft = mcp.privlab_fields("draft", name="tumour size")
+    assert mcp.privlab_fields("draft", name="tumour size")["next"] == "ask"        # its meaning and an example first
+    draft = mcp.privlab_fields("draft", name="tumour size", description="largest tumour size", example="2.1 cm")
     assert draft["next"] == "confirm" and "Did you mean" in draft["say"]
-    saved = mcp.privlab_fields("save", name="tumour size", **{k: draft["draft"][k] for k in (
-        "definition", "type", "unit", "range_min", "range_max")}, meaning=draft["draft"]["meaning_question"])
-    assert saved["field"]["version"] == 1
-
     mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
         {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
          "reason": "diagnosis line", "confidence": 0.9}]}]}
+    saved = mcp.privlab_fields("save", name="tumour size", **{k: draft["draft"][k] for k in (
+        "definition", "type", "unit", "range_min", "range_max")}, meaning=draft["draft"]["meaning_question"])
+    assert saved["field"]["version"] == 1 and saved["next"] == "preview"
+    assert saved["preview"]["value"] == 2.1 and "Invasive ductal carcinoma" in saved["say"]   # shown on a report
+    seen += json.dumps(saved)
     got = mcp.privlab_extract(did)
     field = got["fields"][0]
     assert field["status"] == "green" and field["value"] == 2.1
@@ -92,6 +94,35 @@ def test_paging_resume_and_the_viewer_link(mcp, local_keys):
     assert rest["next"] == "review" and len(rest["items"]) == 1 and not rest["has_more"]
     assert rest["items"][0]["id"] != out["items"][0]["id"]
     assert mcp.privlab_deidentify()["next"] == "start"                       # no arguments: how to start, and the link
+
+
+def test_same_file_again_continues_and_removed_reports_leave_the_session(mcp, local_keys):
+    import viewer.server as viewer
+    first = mcp.privlab_deidentify(report_file(local_keys))
+    again = mcp.privlab_deidentify(report_file(local_keys))
+    assert again["deid_id"] == first["deid_id"] and "already started" in again["say"]
+    folder = mcp.privlab_deidentify(str(local_keys))
+    assert [r["deid_id"] for r in folder["reports"] if r["report"] == "mine"] == [first["deid_id"]]
+    row = next(r for r in viewer.api_session(None)["reports"] if r["deid_id"] == first["deid_id"])
+    assert (row["step"], row["saved"]) == ("review", 0)                  # what the page compares with its own
+    mcp.privlab_review(first["deid_id"])
+    row = next(r for r in viewer.api_session(None)["reports"] if r["deid_id"] == first["deid_id"])
+    assert row["step"] == "done"                                         # done in the chat: the page catches up
+    viewer.api_remove({"deid_ids": [first["deid_id"]]})
+    assert first["deid_id"] not in [r["deid_id"] for r in viewer.api_session(None)["reports"]]
+    assert mcp.privlab_deidentify(report_file(local_keys))["deid_id"] != first["deid_id"]   # removed: starts afresh
+
+
+def test_a_big_folder_names_what_was_not_processed_and_continues(mcp, local_keys, monkeypatch):
+    monkeypatch.setattr(mcp, "MAX_FOLDER", 2)
+    for i in range(1, 6):
+        report_file(local_keys, REPORT, f"PP{i:04d}.txt")
+    first = mcp.privlab_deidentify(str(local_keys))
+    assert len(first["reports"]) == 2 and first["not_processed"] == ["PP0003.txt", "PP0004.txt", "PP0005.txt"]
+    assert "PP0003 to PP0005" in first["say"]
+    second = mcp.privlab_deidentify(str(local_keys))                     # again: the next ones, the first kept
+    assert sum(not r.get("already_started") for r in second["reports"]) == 2 and second["not_processed"] == ["PP0005.txt"]
+    assert mcp._names(["b.txt", "a7.txt", "x.pdf", "y.txt"]) == "b, a7, x and 1 more"
 
 
 def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):
@@ -155,7 +186,7 @@ def test_a_folder_in_bulk_verified_values_alone_and_a_suggested_save_folder(mcp,
         assert mcp.privlab_review(r["deid_id"])["next"] == "done"
 
     mcp.spark_state["reply"] = DRAFT
-    d = mcp.privlab_fields("draft", name="tumour size")["draft"]
+    d = mcp.privlab_fields("draft", name="tumour size", description="largest tumour size", example="2.1 cm")["draft"]
     mcp.privlab_fields("save", name="tumour size", meaning=d["meaning_question"], type="number", unit="cm",
                        definition=d["definition"], range_min=0.1, range_max=30)
     mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [

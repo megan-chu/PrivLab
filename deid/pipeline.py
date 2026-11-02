@@ -16,6 +16,7 @@ checks the riskiest reports first: high = a pattern left in the output, or the n
 or unqualified; medium = name check not run, or name-like words the user kept visible.
 """
 import gc
+import logging
 import re
 import secrets
 import threading
@@ -35,6 +36,8 @@ from deid.qualify import choose_provider
 from deid.seal import make_seal
 from deid.types import DeidResult, PhiSpan
 from deid.vault import encrypt_json, save_vault
+
+log = logging.getLogger("privlab.deid")
 
 STATE_DIR = ROOT / "runs" / "state"
 INSTITUTION = re.compile(r"\b(?:Hospital|Cent(?:er|re)|Clinic|Institute|Infirmary)$")   # a held hospital, not a person
@@ -179,6 +182,8 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                 masked, text, run["report_id"], provider=provider,
                 suspects=suspects(masked.text, run["allowed"], masked.tags))
     except Exception as e:   # API down, timeout, bad JSON, missing key: amber, never a crash
+        log.warning("second check did not run for %s (%s): %s: %s", run["report_id"], provider,
+                    type(e).__name__, str(e)[:200])               # the error only, never report text
         run["layer2"] = "unavailable"
         run["warnings"].append(f"{spark.OFFLINE}: the second check did not run. De-identification on this device is "
                                "complete; read the text once before sharing it." if isinstance(e, spark.OfflineError)

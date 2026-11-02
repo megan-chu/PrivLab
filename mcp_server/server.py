@@ -74,8 +74,10 @@ is up to now, and continue from there.
    and whether anything was missed.
 2. De-identify: privlab_review with the user's answers. Only now is the masked text sent, once, for a
    safety check. If "next" is "hold" or "flags", ask the user and call privlab_review again.
-3. Choose fields: privlab_fields(action="list"). For a new one: action="draft" with the user's words, show
-   the "Did you mean" definition, then action="save" once the user agrees.
+3. Choose fields: privlab_fields(action="list"). For a new one, ask the user for its name, what it means in
+   their words and one example value as a report writes it; action="draft" with all three; show the "Did you
+   mean" definition; action="save" once the user agrees. The save previews the field on one report: show the
+   value and its quote and ask if that is what they want (if not, draft again with their correction).
 4. Extract: privlab_extract(deid_id). Show each value with its quote. Ask the user to confirm, correct or mark
    it "not stated", then send all the answers in one privlab_extract(deid_id, answers) call. A blind check: ask
    for the value without showing PrivLab's.
@@ -262,10 +264,16 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
         text, rid, warnings = _read(path)
         if text is None:
             return {"next": "error", "error": rid, "say": rid}
+        again = _started(Path(path).expanduser().resolve(), text)
+        if again:
+            _show(again)
+            out = _step(pipeline.report_state(again), 0, limit)
+            return {**out, "say": "This file was already started in this session; continuing it. " + out.get("say", "")}
         with viewer._WRITE:                     # first use creates the default privacy profile
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         out["warnings"] = out.get("warnings", []) + warnings
         SOURCES[out.get("deid_id", "")] = Path(path).expanduser().resolve()
+        STARTED[(SOURCES[out.get("deid_id", "")], hash(text))] = out.get("deid_id", "")
         _show(out.get("deid_id", ""))
         return _step(out, 0, limit)
     if deid_id:
@@ -276,22 +284,49 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
 
 MAX_FOLDER = 100
 SOURCES: dict[str, Path] = {}             # deid_id -> the file it came from (for a default output folder)
+STARTED: dict[tuple, str] = {}            # (file, text) -> deid_id: the same file again continues, not a copy
+
+
+def _started(path: Path, text: str) -> str | None:
+    """The report already started from this file with this text, if it is still in the session (not removed)."""
+    d = STARTED.get((path, hash(text)))
+    return d if d in pipeline._RUNS else None
+
+
+def _names(names: list[str]) -> str:
+    """File names for a sentence: a range if they run in sequence (PP0101 to PP0200), else the first few."""
+    m = [re.fullmatch(r"(.*?)(\d+)", Path(n).stem) for n in names]
+    if (len(names) > 2 and all(m) and len({(x[1], len(x[2])) for x in m}) == 1
+            and [int(x[2]) for x in m] == list(range(int(m[0][2]), int(m[0][2]) + len(m)))):
+        return f"{Path(names[0]).stem} to {Path(names[-1]).stem}"
+    return ", ".join(Path(n).stem for n in names[:3]) + (f" and {len(names) - 3} more" if len(names) > 3 else "")
 
 
 def _folder(folder: Path) -> dict:
-    """Every .txt and .pdf in a folder (not its subfolders), de-identified on this computer; nothing is sent."""
+    """Every .txt and .pdf in a folder (not its subfolders), de-identified on this computer; nothing is sent.
+    At most MAX_FOLDER new reports per call; files already started do not count, so calling again continues."""
     files = sorted(f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in (".txt", ".pdf"))
     if not files:
         return {"next": "error", "error": "No .txt or .pdf files.", "say": f"There are no .txt or .pdf reports in {folder}."}
-    reports, skipped = [], []
-    for f in files[:MAX_FOLDER]:
+    reports, skipped, left = [], [], []
+    started = {p for p, _ in STARTED}
+    for f in files:
+        if sum(not r.get("already_started") for r in reports) >= MAX_FOLDER and f.resolve() not in started:
+            left.append(f.name)
+            continue
         text, rid, warnings = _read(str(f))
         if text is None:
             skipped.append({"file": f.name, "reason": rid})
             continue
+        again = _started(f.resolve(), text)
+        if again:
+            reports.append({"deid_id": again, "report": rid, "already_started": True,
+                            "found": len(pipeline._RUNS[again]["spans"])})
+            continue
         with viewer._WRITE:
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         SOURCES[out["deid_id"]] = f.resolve()
+        STARTED[(f.resolve(), hash(text))] = out["deid_id"]
         reports.append({"deid_id": out["deid_id"], "report": rid, "found": sum((out.get("counts") or {}).values()),
                         "counts": out.get("counts"), "possible_names": sum(d["source"] == "hold" for d in out["detections"])})
     if reports:
@@ -299,10 +334,13 @@ def _folder(folder: Path) -> dict:
     total = sum(r["found"] for r in reports)
     say = (f"{len(reports)} report(s) read on this computer; {total} personal details found and hidden, nothing sent yet."
            + (f" {len(skipped)} file(s) skipped." if skipped else "")
-           + (f" Only the first {MAX_FOLDER} files were read." if len(files) > MAX_FOLDER else "")
+           + (f" PrivLab reads {MAX_FOLDER} new reports at a time, so {len(left)} were not processed yet: {_names(left)}."
+              " Tell the user, and offer to run the same folder again to continue with them (reports already"
+              " started are kept, not read twice)." if left else "")
            + " Ask the user whether to review any (they are all listed in the browser) or to hide them all; then call"
              " privlab_review for each report." + _see(reports[0]["deid_id"] if reports else "", "check every report"))
-    return {"next": "review_batch", "reports": reports, "skipped": skipped, "viewer_url": _url(), "say": say}
+    return {"next": "review_batch", "reports": reports, "skipped": skipped, "not_processed": left,
+            "viewer_url": _url(), "say": say}
 
 
 # --- 2. De-identify --------------------------------------------------------------------------------------------
@@ -346,16 +384,18 @@ def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] =
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=True))
 @_safe
 def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", name: str = "",
-                   description: str = "", meaning: str = "", definition: str = "",
+                   description: str = "", example: str = "", meaning: str = "", definition: str = "",
                    type: Literal["number", "text"] | None = None, unit: str = "", range_min: float | None = None,
                    range_max: float | None = None, multi: bool = False, offset: int = 0, limit: int = LIMIT) -> dict:
     """Use for the user's fields (what PrivLab fills in, e.g. "tumour size").
     action="list": every field with its definition, version, readiness and accuracy.
-    action="draft": name + description (the user's words; only these are sent) -> a precise definition to confirm
-    ("Did you mean ...?"). action="save": save it with the draft's details or the user's changes (meaning,
-    definition, type, unit, range; multi=True for a list such as biomarker results). action="remove": stop
-    collecting the field called name; only when the user asks, after confirming.
-    Returns: the fields, the draft, or the saved field. Next: privlab_extract."""
+    action="draft": name + description (what it means, in the user's words) + example (one value as a report
+    writes it, e.g. "2.1 cm"); ask the user for any that is missing. Only these are sent -> a precise definition
+    to confirm ("Did you mean ...?"). action="save": save it with the draft's details or the user's changes
+    (meaning, definition, type, unit, range; multi=True for a list such as biomarker results), then preview it on
+    one de-identified report. action="remove": stop collecting the field called name; only when the user asks,
+    after confirming.
+    Returns: the fields, the draft, or the saved field and its preview. Next: privlab_extract."""
     if action == "list":
         keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "version", "readiness", "validation")
         fields = [{k: f[k] for k in keep} for f in viewer.api_pack(None)["fields"]]
@@ -372,7 +412,13 @@ def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", 
             save_pack(pack, viewer.STATE["pack"])
         return {"next": "done", "say": f"Removed '{name}'. Its past confirmations stay in the score log."}
     if action == "draft":
-        d = define_field(name, description or None, pack_path=viewer.STATE["pack"])["draft"]
+        missing = [w for w, v in (("what it means, in the user's words (description)", description),
+                                  ("one example value as a report writes it (example)", example)) if not v.strip()]
+        if missing:
+            return {"next": "ask", "missing": missing,
+                    "say": f"Before drafting '{name}', ask the user for: {'; '.join(missing)}."}
+        d = define_field(name, f"{description.strip()}. Example value: {example.strip()}",   # as the viewer sends it
+                         pack_path=viewer.STATE["pack"])["draft"]
         return {"next": "confirm", "draft": d,
                 "say": f"Did you mean: {d['meaning_question']} {d.get('definition', '')} Ask the user; then call "
                        "again with action='save' and these details (changed if the user wants)."}
@@ -383,9 +429,30 @@ def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", 
               "unit": unit or None, "range_min": range_min, "range_max": range_max, "multi": multi}
     with viewer._WRITE:
         f = define_field(name, description or None, accept=accept, pack_path=viewer.STATE["pack"])["field"]
-    return {"next": "done", "field": {k: f[k] for k in ("key", "name", "meaning", "definition", "type", "unit",
-                                                        "range", "multi", "version")},
-            "say": f"Saved '{name}' (definition v{f['version']}). It will be filled on every report."}
+    saved = {k: f[k] for k in ("key", "name", "meaning", "definition", "type", "unit", "range", "multi", "version")}
+    return {"next": "preview", "field": saved, **_preview(f["key"], name)}
+
+
+def _preview(key: str, name: str) -> dict:
+    """The new field on one de-identified report of this session (one model call, cached for its extraction)."""
+    deid_id = next((d for d, r in reversed(pipeline._RUNS.items()) if r["step"] == "done"), None)
+    if deid_id is None:
+        return {"say": f"Saved '{name}'. De-identify a report to see it filled in."}
+    r = find_candidates(deid_id, key, pack_path=viewer.STATE["pack"])
+    report = pipeline._RUNS[deid_id]["report_id"]
+    if r.get("status") == "error":
+        return {"say": f"Saved '{name}'. The preview could not run: {r.get('reason')}."}
+    value = r.get("items") and "; ".join(str(i["value"]) for i in r["items"]) or r.get("value")
+    if value is None and not r.get("candidates") and r.get("status") == "amber":          # the model call failed
+        return {"say": f"Saved '{name}'. The preview could not run ({r.get('reason')}); it will be read at extraction."}
+    if value is None:
+        return {"preview": {"report": report, "value": None},
+                "say": f"Saved '{name}'. On {report} PrivLab found no value. Ask the user if that is right; if not, "
+                       "draft again with a clearer description or example."}
+    return {"preview": {"report": report, "value": value, "quote": r.get("evidence_text"), "status": r.get("status")},
+            "viewer_url": _url(deid_id),
+            "say": f"Saved '{name}'. Preview on {report}: {value}, from \"{r.get('evidence_text')}\". Ask the user if "
+                   "that is the value they want; if not, draft again with their correction."}
 
 
 # --- 4. Extract --------------------------------------------------------------------------------------------------
@@ -533,8 +600,9 @@ def deidentify_batch(folder: str) -> str:
 
 @mcp.prompt(title="Set up my fields")
 def set_up_fields(fields: str) -> str:
-    return (f"Help me define these fields in PrivLab: {fields}. For each: privlab_fields(action='draft'), show me the "
-            "'Did you mean' question, definition and type; change anything I ask; then action='save'. "
+    return (f"Help me define these fields in PrivLab: {fields}. For each: ask me what it means and one example value "
+            "if I have not said; privlab_fields(action='draft'), show me the 'Did you mean' question, definition and "
+            "type; change anything I ask; then action='save' and show me the preview. "
             "Finish with privlab_fields(action='list').")
 
 
@@ -575,8 +643,8 @@ def start_viewer() -> None:
 
 def main() -> None:
     (ROOT / "runs").mkdir(exist_ok=True)
-    logging.basicConfig(filename=ROOT / "runs" / "mcp.log", level=logging.INFO,
-                        format="%(asctime)s %(name)s %(message)s")
+    logging.basicConfig(filename=ROOT / "runs" / "mcp.log", level=logging.INFO, force=True,   # the MCP SDK
+                        format="%(asctime)s %(name)s %(message)s")       # already put a handler on the root logger
     with contextlib.redirect_stdout(sys.stderr):        # stdout is the protocol: no stray prints
         pipeline.warm_up()
         start_viewer()
