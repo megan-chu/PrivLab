@@ -78,6 +78,12 @@ def api_reports(_):
                         for r in manifest() if r["split"] in ("dev", "extra")], "demo": STATE["demo"]}
 
 
+def api_session(_):
+    """Every report of this PrivLab session, oldest first, whether added on the page or in the chat (MCP server,
+    same process): the page lists them all, even after a reload. Ids and names only; the text comes from api_open."""
+    return {"reports": [{"deid_id": d, "report_id": r["report_id"], "step": r["step"]} for d, r in pipeline._RUNS.items()]}
+
+
 def api_open(b):
     """A report started in the chat (MCP server, same process): where it is up to, with its text (local only)."""
     return pipeline.report_state(str(b.get("deid_id", "")), show_text=True)
@@ -445,7 +451,7 @@ def _keys(url) -> list[str] | None:
     return None if raw is None else [x for x in raw.split(",") if x]
 
 
-GET = {"/api/reports": api_reports, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open,
+GET = {"/api/reports": api_reports, "/api/session": api_session, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open,
        "/api/export_summary": api_export_summary, "/api/learned": api_learned}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/preview": api_preview, "/api/define": api_define, "/api/find": api_find,

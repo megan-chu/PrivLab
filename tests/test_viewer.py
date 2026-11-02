@@ -276,3 +276,11 @@ def test_the_three_demo_samples_load_and_hide_their_identifiers(viewer):
         assert out["next"] == "review" and out["sample"], rid
         found = {d["text"] for d in out["detections"]}
         assert {"demo_breast": "Goh Mei Ling", "demo_lung": "Rahman, Daniel Arif", "demo_colon": "Chua Li Hua"}[rid] in found
+
+
+def test_the_session_lists_every_report_for_the_page(viewer):
+    a = viewer.api_add({"name": "first.txt", "text": "Patient: Mary Tan\nDIAGNOSIS: carcinoma", "choices": {}})
+    b = viewer.api_add({"name": "second.txt", "text": "Patient: John Lim\nDIAGNOSIS: carcinoma", "choices": {}})
+    ids = [x["deid_id"] for x in viewer.api_session(None)["reports"]]
+    assert ids.index(a["deid_id"]) < ids.index(b["deid_id"])                # oldest first, both listed
+    assert "text" not in json.dumps(viewer.api_session(None))                # ids and names only

@@ -2622,6 +2622,7 @@ $("resetBtn").onclick = async () => {
     return;
   }
   setMode(S.mode);
+  await syncSession();
   openFromLink();
 })();
 // A report started in the chat (MCP server): the link is http://127.0.0.1:8765/#d_1a2b3c4d
@@ -2630,16 +2631,32 @@ async function openFromLink() {
   if (!id) return;
   const i = S.reports.findIndex((x) => x.deid === id);
   if (i >= 0) return select(i);
-  const res = await api(`/api/open?deid_id=${id}`);
-  if (res.error || res.next === "error") return toast("That report is not open in this PrivLab session. Start it again from the chat.");
-  const r = newReport(res.report_id || "Report from chat", {fromChat: true});
-  // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
-  Object.assign(r, {deid: id, text: res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
-  S.reports.push(r); S.cur = S.reports.length - 1;
-  trace(r, "Started in the chat; opened here.", "local");
-  applyState(r, res);
+  if (!(await addFromServer(id))) return toast("That report is not open in this PrivLab session. Start it again from the chat.");
+  S.cur = S.reports.length - 1;
   render();
 }
+// A report this PrivLab session already holds (added in the chat, or on this page before a reload): into the list
+async function addFromServer(id, name) {
+  const res = await api(`/api/open?deid_id=${id}`);
+  if (res.error || res.next === "error") return false;
+  const r = newReport(name || res.report_id || "Report from chat", {fromChat: true});
+  // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
+  Object.assign(r, {deid: id, text: res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
+  S.reports.push(r);
+  trace(r, "Started in the chat or before a reload; opened here.", "local");
+  applyState(r, res);
+  return true;
+}
+// Every report of the session: on load, and when you come back to this tab (the chat may have added some)
+async function syncSession() {
+  if (S.reports.some((x) => !x.deid)) return;            // a report of this page is still loading: next time
+  const s = await api("/api/session");
+  const known = new Set(S.reports.map((x) => x.deid));
+  let added = 0;
+  for (const x of s.reports || []) if (!known.has(x.deid_id) && await addFromServer(x.deid_id, x.report_id)) added++;
+  if (added) { if (S.cur < 0 && !location.hash) render(); else renderRail(); toast(`${added} report${added === 1 ? "" : "s"} from the chat added to the list.`); }
+}
+addEventListener("focus", () => syncSession());
 function applyState(r, res) {           // where the server says the report is (report_state)
   if (res.next === "done") return finishDeid(r, res);
   if (res.next === "review") r.step = "review";
