@@ -80,8 +80,26 @@ def api_reports(_):
 
 def api_session(_):
     """Every report of this PrivLab session, oldest first, whether added on the page or in the chat (MCP server,
-    same process): the page lists them all, even after a reload. Ids and names only; the text comes from api_open."""
-    return {"reports": [{"deid_id": d, "report_id": r["report_id"], "step": r["step"]} for d, r in pipeline._RUNS.items()]}
+    same process): the page lists them all, even after a reload. Ids and names only; the text comes from api_open.
+    step and saved (fields with a confirmed value) let the page notice what was done in the chat."""
+    latest = {}
+    for e in learn.read_log(STATE["log"]):
+        latest[(e["deid_id"], e["field"])] = e.get("phase")
+    saved = {}
+    for (d, _), phase in latest.items():
+        if phase != "reset":
+            saved[d] = saved.get(d, 0) + 1
+    return {"reports": [{"deid_id": d, "report_id": r["report_id"], "step": r["step"], "saved": saved.get(d, 0)}
+                        for d, r in pipeline._RUNS.items()]}
+
+
+def api_remove(b):
+    """Reports removed on the page leave the session list too, so a reload or the chat does not bring them back.
+    Their run files stay on disk, for audit."""
+    ids = [str(d) for d in b.get("deid_ids") or []]
+    for d in ids:
+        pipeline._RUNS.pop(d, None)
+    return {"removed": len(ids)}
 
 
 def api_open(b):
@@ -194,7 +212,7 @@ def api_pack(_):
                                     "predicted": e["predicted"]["value"], "confirmed": (e["confirmed"] or {}).get("value"),
                                     "outcome": e["outcome"], "blind": e.get("blind", False)}
                                    for e in reversed(log) if e["field"] == f.key and e.get("phase") != "reset"][:20]}
-                       for f in load_pack(STATE["pack"])["fields"] for v in [learn.validation(f, log)]]}
+                       for fs in [load_pack(STATE["pack"])["fields"]] for f in fs for v in [learn.validation(f, log, fs)]]}
 
 
 def api_define(b):
@@ -230,6 +248,7 @@ def api_confirm_field(b):
         return learn.confirm_field(b["deid_id"], b["field"], candidate_id=b.get("candidate_id"),
                                    value=b.get("value"), evidence_text=b.get("evidence_text"),
                                    missing=bool(b.get("missing")), note=b.get("note"), items=b.get("items"),
+                                   at=b["at"] if isinstance(b.get("at"), int) else None,
                                    phase="bulk" if b.get("auto") else "teach",
                                    pack_path=STATE["pack"], log_path=STATE["log"])
 
@@ -458,7 +477,7 @@ GET = {"/api/reports": api_reports, "/api/session": api_session, "/api/profile":
        "/api/export_summary": api_export_summary, "/api/learned": api_learned}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/preview": api_preview, "/api/define": api_define, "/api/find": api_find,
-        "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget,
+        "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget, "/api/remove": api_remove,
         "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
 
 

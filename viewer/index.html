@@ -253,7 +253,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 .fname { font: 600 12px/16px var(--f-sans); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); }
 .fval { font: 500 15px/22px var(--f-mono); font-variant-numeric: tabular-nums; margin-top: var(--s1); color: var(--ink); }
 .fquote { font: italic 13px/19px var(--f-sans); color: var(--ink-muted); margin-top: var(--s1); overflow-wrap: anywhere; }
-.fmeta { display: flex; align-items: baseline; gap: var(--s2); margin-top: var(--s1); min-width: 0; }
+.fmeta { display: flex; flex-direction: column; gap: 2px; margin-top: var(--s1); min-width: 0; }
 .dlist { display: grid; gap: var(--s2); }
 .dlrow { display: grid; grid-template-columns: 20px 1fr; column-gap: var(--s3); padding: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md);
   color: var(--ink); text-decoration: none; background: var(--surface-raised); }
@@ -267,8 +267,9 @@ body.resizing { cursor: col-resize; user-select: none; }
 .fright { display: flex; align-items: center; gap: var(--s2); flex: none; }
 .chev { border: 0; background: none; cursor: pointer; padding: 2px 8px; border-radius: var(--r-sm); color: var(--ink-muted); font-size: 14px; line-height: 20px; }
 .chev:hover { background: var(--surface-sunken); color: var(--ink); }
-.fdefline { flex: 1; min-width: 0; font-size: 13px; line-height: 18px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.faccline { flex: none; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.fdefline { min-width: 0; font-size: 13px; line-height: 18px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.faccline { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--verified); }
+.faccline .fsent { color: var(--review); }
 .fbody { margin-top: var(--s3); }
 .fcard { cursor: pointer; }
 .addrow { display: grid; gap: var(--s3); cursor: default; }
@@ -345,6 +346,10 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 /* samples: one compact row of chips after a label */
 .samples { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s2); margin-top: var(--s6); }
 .samples[hidden], .ways[hidden] { display: none; }
+.teachcard { margin: var(--s3) 0 0; padding: var(--s3) var(--s4); border: 1px solid var(--line); border-left: 3px solid var(--hema);
+  border-radius: var(--r-md); background: var(--surface-raised); font-size: 13px; line-height: 19px; }
+.teachcard b { display: block; color: var(--ink); margin-bottom: 2px; }
+.teachcard .muted { display: block; margin-top: 4px; }
 .ways { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); margin-top: var(--s6); }
 .way { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s3) var(--s4); background: var(--surface-raised);
   display: grid; gap: 4px; font-size: 13px; line-height: 18px; color: var(--ink-muted); text-align: left; }
@@ -463,6 +468,13 @@ mark.ev.on { background: rgba(var(--fc), .2); box-shadow: inset 0 -3px 0 rgb(var
 .fdef { display: grid; grid-template-columns: auto 1fr; gap: 2px var(--s3); margin: var(--s2) 0 0; font-size: 13px; line-height: 18px; }
 .fdef dt { color: var(--ink-muted); }
 .fdef dd { margin: 0; color: var(--ink); }
+.acc { display: grid; gap: 4px; }
+.ameter { margin-top: var(--s2); max-width: 320px; }
+.abar { height: 8px; border-radius: 999px; background: var(--surface-sunken); border: 1px solid var(--line); overflow: hidden; }
+.abar i { display: block; height: 100%; min-width: 8px; border-radius: 999px; background: var(--verified); }
+.aends { display: flex; justify-content: space-between; margin-top: 2px; font-size: 11px; line-height: 14px; color: var(--ink-muted); }
+.abar.done i { background: var(--verified); }
+.astage { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; margin-top: var(--s2); font-size: 13px; line-height: 18px; color: var(--ink); }
 .msg .defn { display: block; margin-top: var(--s2); }
 button.step { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
 button.step:hover { color: var(--hema); }
@@ -584,7 +596,7 @@ dialog.sheet.wide { width: 860px; }
         <p><b>Your answers become examples.</b> Every time you confirm or fix a value, PrivLab keeps it as an example. Next
           time, the AI sees your examples (never names or ID numbers), so it picks values the way you would.</p>
         <p><b>Only your checks count.</b> Values saved by <i>Extract all</i>, or ones you reset, don't teach it.</p>
-        <p><b>It earns your trust.</b> A field only gets the <i>Ready</i> badge after about 60 checks with no mistakes.
+        <p><b>It earns your trust.</b> A field is only marked <i>Proven accurate</i> once your checks show at most 5 in 100 of its values are wrong.
           Now and then PrivLab hides its answer and asks you first, so you're never just nodding along.</p></section>
     </div>
     <p class="lfoot">Changed your mind about something? You can see and undo all of it in <i>Fields → Learned</i>.</p>
@@ -689,8 +701,9 @@ function docSelection() {
   let a = pre.toString().length, b = a + range.toString().length;
   while (a > 0 && /\S/.test(full[a - 1]) && /\S/.test(full[a])) a--;            // snap to whole words
   while (b < full.length && /\S/.test(full[b]) && /\S/.test(full[b - 1])) b++;
-  const text = full.slice(a, b).trim().replace(/[.,;:]+$/, "");
-  return text ? {text, rect: range.getBoundingClientRect()} : null;
+  const raw = full.slice(a, b), text = raw.trim().replace(/[.,;:]+$/, "");
+  // at: where it starts in the report, so a word that occurs twice is saved where you selected it
+  return text ? {text, at: a + raw.length - raw.trimStart().length, rect: range.getBoundingClientRect()} : null;
 }
 function showMark(id) {
   const m = document.querySelector(`.doc mark[data-id="${CSS.escape(id)}"]`);
@@ -713,11 +726,13 @@ const RSTATE = {
   need: ["Needs you", "review", "", "Waiting for your answer."],
   bad: ["Error", "refused", "", "Something went wrong. Open it to retry or remove it."],
   refused: ["Refused", "refused", "", "An identifier pattern is still in the text, so it is withheld from every export."]};
+// What Extract all left for you on a report, minus the fields you have answered since
+const needsOf = (r) => (r.needs || []).filter((n) => !n.key || !r.saved[n.key]).map((n) => n.text);
 function railState(r) {
   if (r.step === "failed") return RSTATE.bad;
   if (r.step === "blocked") return RSTATE.refused;
   if (r.step === "approved" || r.step === "safe" && (!extracting() || r.exported)) return RSTATE.done;
-  if (["hold", "flags"].includes(r.step) || r.step === "fields" && r.needs && r.needs.length) return RSTATE.need;
+  if (["hold", "flags"].includes(r.step) || r.step === "fields" && needsOf(r).length) return RSTATE.need;
   return ["loading", "review"].includes(r.step) ? RSTATE.new : RSTATE.prog;
 }
 function renderTop() {
@@ -741,6 +756,7 @@ function renderTop() {
     if (avg) parts.push(`<b>${fmtSecs(avg)}</b> per report`);
   } else if (rs.length) parts.push(`<b>${exported}</b> downloaded`);
   $("value").innerHTML = parts.join(" · ");
+  $("value").title = $("value").textContent;
   const ids = listedIds();              // the menu links always carry the current list, even when opened without a click
   $("expDeid").href = `/api/deid_export?ids=${ids}`; $("expAll").href = `/api/export_all?ids=${ids}${fieldsQ()}`; $("expCsv").href = `/api/export.csv?ids=${ids}${fieldsQ()}`;
 }
@@ -758,7 +774,7 @@ function renderRail() {
         <div class="factions"><button class="danger" data-bulkyes>Remove ${n}</button><button class="link" data-rmno>Keep</button></div></div>`
     : `<div class="rbar"><span class="muted">${n} selected</span>
         <button class="link" data-pickall>${n === S.reports.length ? "Select none" : "Select all"}</button>
-        ${n ? `<button class="link" data-bulk style="color:var(--refused)">Remove ${n}…</button>` : ""}</div>`;
+        ${n ? `<button class="link" data-bulk style="color:var(--refused)">Remove ${plural(n)}</button>` : ""}</div>`;
   $("rail").innerHTML = S.reports.length ? bar + S.reports.map((r, i) => {
     const [label, cls, ic, why] = railState(r);
     const pill = `<span class="pill ${cls}" title="${why}">${ic ? icon(ic) : ""}${label}</span>`;
@@ -807,6 +823,8 @@ function removeReports(keys) {
   const gone = new Set(keys), shown = cur();
   const names = S.reports.filter((x) => gone.has(x.key)).map((x) => x.name);
   S.reports.filter((x) => gone.has(x.key) && x.original).forEach((x) => URL.revokeObjectURL(x.original));   // a PDF's copy
+  const ids = S.reports.filter((x) => gone.has(x.key) && x.deid).map((x) => x.deid);
+  if (ids.length) api("/api/remove", {deid_ids: ids});           // off the session list: a reload does not bring them back
   S.reports = S.reports.filter((x) => !gone.has(x.key));
   S.cur = shown && !gone.has(shown.key) ? S.reports.indexOf(shown) : Math.min(Math.max(S.cur, 0), S.reports.length - 1);
   S.confirmRm = null; if (S.picking) S.picking = S.reports.length > 1 ? new Set() : null;
@@ -980,7 +998,7 @@ function viewEmpty() {
       '<span class="t-NAME hl">Sarah Jenkins</span> → <span class="chip t-NAME">[PERSON-1]</span> · <span class="t-MRN hl">MRN 849204</span> → <span class="chip t-MRN">[MRN-1]</span>'],
     ...(extracting() ? [
       ["Choose fields", TAG3, "Add a field and define it, teach me with an example, then pick the fields to use on this and every later document.",
-        "From your words I draft a precise definition for you to approve. Your fields are kept for every later document: untick the ones a batch doesn't need, redefine or remove them anytime. A field shows <b>Ready</b> once your answers prove it accurate.",
+        "From your words I draft a precise definition for you to approve. Your fields are kept for every later document: untick the ones a batch doesn't need, redefine or remove them anytime. A field shows <b>Proven accurate</b> once your answers prove it.",
         "Fields that get sharper with every document you check.",
         '<span class="mpill">+ Cancer stage</span> <span class="mpill">+ Tumor size (cm)</span>'],
       ["Extract", TAG4, "Based on the fields you picked, defined and taught, the AI extracts each value for you and highlights it in your document. You confirm or correct.",
@@ -1052,7 +1070,11 @@ async function addFiles(files) {
   const fromAdd = S.cur === -1, prev = cur(), pdf = (f) => /\.pdf$/i.test(f.name) || f.type === "application/pdf",
     txt = (f) => /\.txt$/i.test(f.name) || f.type === "text/plain";
   const other = [...files].filter((f) => !pdf(f) && !txt(f)).map((f) => f.name);
-  if (other.length) toast(`I can't read ${other.join(", ")}. Please give me a text file (.txt) or a PDF you can copy text from — I can't read scanned pages or photos yet.`, "center");
+  const room = Math.max(0, MAX_REPORTS - S.reports.length), ok = files.filter((f) => pdf(f) || txt(f));
+  if (ok.length > room) {                  // same limit as a folder in the chat; say which files were left out
+    toast(`PrivLab holds up to ${MAX_REPORTS} reports at a time${room ? `, so it added the first ${room}` : ""}. Not added: ${fileNames(ok.slice(room).map((f) => f.name))}. Export what you need, then remove finished reports (Select → Remove) and add these.`, "center");
+    files = ok.slice(0, room);
+  } else if (other.length) toast(`I can't read ${other.join(", ")}. Please give me a text file (.txt) or a PDF you can copy text from — I can't read scanned pages or photos yet.`, "center");
   for (const f of files) {
     if (pdf(f)) await addPdf(f);
     else if (txt(f)) await addText(f.name, await f.text());
@@ -1088,7 +1110,17 @@ function addSample(id) {
   const label = (SAMPLES.find(([x]) => x === id) || [id, id])[1];
   return start(newReport(label, {sample: true, cancer: "Sample"}), "/api/deid", {report_id: id});
 }
+// File names for a sentence: a range if they run in sequence (PP0101 to PP0200), else the first few
+function fileNames(names) {
+  const stem = (n) => n.replace(/\.[^.]+$/, ""), m = names.map((n) => stem(n).match(/^(.*?)(\d+)$/));
+  const seq = names.length > 2 && m.every((x) => x && x[1] === m[0][1] && x[2].length === m[0][2].length
+    && +x[2] === +m[0][2] + m.indexOf(x));
+  return seq ? `${stem(names[0])} to ${stem(names[names.length - 1])}`
+    : names.slice(0, 3).map(stem).join(", ") + (names.length > 3 ? ` and ${names.length - 3} more` : "");
+}
+const MAX_REPORTS = 100;                   // one batch, as for a folder in the chat (MAX_FOLDER)
 async function start(r, path, body) {
+  if (S.reports.length >= MAX_REPORTS) return toast(`PrivLab holds up to ${MAX_REPORTS} reports at a time. Export what you need, then remove finished reports (Select → Remove) to add more.`, "center");
   r.req = {path, body};
   S.reports.push(r); S.cur = S.reports.length - 1;
   if (!S.profile.exists && !S.choices) S.choices = {};        // first use: the defaults; change them on the review screen
@@ -1321,7 +1353,7 @@ function learnedMessage(l) {
 function prefetch(r) {
   r.prefetch = "running";
   api("/api/prefetch", {deid_id: r.deid}).then((p) => {
-    r.prefetch = p.status === "ready" ? "ready" : "none"; delete r.preview;
+    r.prefetch = p.status === "ready" ? "ready" : "none"; delete r.fieldPreview;
     if (p.status === "ready") trace(r, `Fields read ahead of time (${(p.model_ms / 1000).toFixed(1)} s).`, "cloud");
     if (r === cur() && ["safe", "choose"].includes(r.step)) renderMain();
   });
@@ -1387,7 +1419,7 @@ function previewMarks(r) {
   const marks = redactions(r.dtext), taken = [];
   S.fields.forEach((f, i) => {
     if (S.skip.has(f.key)) return;
-    for (const p of (r.preview || {})[f.key] || []) {
+    for (const p of (r.fieldPreview || {})[f.key] || []) {
       if (taken.some(([a, b]) => p.start < b && a < p.end)) continue;
       taken.push([p.start, p.end]);
       marks.push({start: p.start, end: p.end, id: `pv:${f.key}`, title: `Preview · ${f.name}: ${p.value}`, cls: `ev fc${i % 6} rev first last`});
@@ -1396,8 +1428,8 @@ function previewMarks(r) {
   return marks;
 }
 function previewLegend(r) {
-  if (!r.preview) return r.prefetch === "running" ? `<span class="sm muted">Reading fields ahead…</span>` : "";
-  const shown = S.fields.map((f, i) => [f, i]).filter(([f]) => !S.skip.has(f.key) && (r.preview[f.key] || []).length);
+  if (!r.fieldPreview) return r.prefetch === "running" ? `<span class="sm muted">Reading fields ahead…</span>` : "";
+  const shown = S.fields.map((f, i) => [f, i]).filter(([f]) => !S.skip.has(f.key) && (r.fieldPreview[f.key] || []).length);
   return `${shown.map(([f, i]) => `<span class="lchip fc${i % 6}"><span class="sw"></span><span class="ln">${esc(f.name)}</span></span>`).join("")}
     <span class="sm muted" title="From the reading done in the background: nothing new is sent. A field due a blind check, or with no value found, is not shown.">Preview · you check each value in Extract</span>`;
 }
@@ -1407,8 +1439,8 @@ function viewChoose(r) {
   const needN = S.reports.filter((x) => needOf(x) === "review").length;
   const toExtract = S.reports.filter((x) => needOf(x) === "extract").length;      // this one included
   setDoc(marked(r.dtext, previewMarks(r)), previewLegend(r));
-  if (r.prefetch === "ready" && !r.preview) api("/api/preview", {deid_id: r.deid}).then((p) => {
-    r.preview = p.status === "ready" ? p.fields : {};
+  if (r.prefetch === "ready" && !r.fieldPreview) api("/api/preview", {deid_id: r.deid}).then((p) => {
+    r.fieldPreview = p.status === "ready" ? p.fields : {};
     if (r === cur() && r.step === "choose") renderMain(); });
   const nf = chosen().length;
   const status = !S.fields.length ? ["info", "<b>Add a field</b><br>Describe it in your own words, or select an example in the document"]
@@ -1426,11 +1458,21 @@ function viewChoose(r) {
           <button class="chev" data-defopen="${f.key}" aria-expanded="${open}" aria-label="${open ? "Hide" : "Show"} the definition of ${esc(f.name)}">${open ? "▴" : "▾"}</button></span></div>
           ${open ? fieldDef(f) : defLine(f)}</div>`; }).join("")}${S.adding ? addFieldRow() : ""}</div>
       ${S.adding ? "" : addFieldRow()}
-      <p class="sm muted" style="margin:var(--s2) 0 0">${extractSummary()}</p>`
+      <p class="sm muted" style="margin:var(--s2) 0 0">${extractSummary()}</p>
+      ${ni < 0 && toExtract > TEACH_N && nf && newFields() && !quicker(toExtract) ? `<div class="teachcard"><b>Your fields are new. Teach PrivLab first.</b>
+        Confirm the values on ${TEACH_N} reports and PrivLab learns how you answer. Then it extracts the other
+        ${toExtract - TEACH_N} by itself, and you only check the ones it is unsure of (and a few blind checks).
+        <span class="muted">The more reports you review, the more accurate it gets.</span></div>`
+      : ni < 0 && nf && newFields() && quicker(toExtract) ? `<div class="teachcard"><b>Only ${toExtract} reports: reviewing them all is quicker than proving PrivLab.</b>
+        Proving your fields takes about ${toProve()} reviewed reports, so check each one yourself.
+        <span class="muted">Every report you review still teaches PrivLab for your next batch.</span></div>` : ""}`
     : `<h2 class="h1">Choose fields</h2><p class="lede">No fields yet. Add one in your own words, or select an example value in the document and choose <b>+</b>.</p>${addFieldRow()}`}
     ${traceBlock(r)}`,
     S.fields.length ? `${ni >= 0 ? `<button class="btn primary two" id="next" data-next="${ni}">${nextAction(ni)}</button>` : ""}
-      ${ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} reports</button>
+      ${ni < 0 && toExtract > TEACH_N && nf && newFields() && !quicker(toExtract) ? `<button class="btn primary" id="teach3" title="Confirm the values on ${TEACH_N} reports yourself; then PrivLab extracts the rest and shows you only what needs you">Teach on ${TEACH_N}, then extract the rest</button>
+        <button class="btn secondary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} now</button>
+        <button class="link quiet" style="align-self:center" id="each" title="Confirm every value of every report yourself: the most accurate, and it teaches PrivLab the most">Review every report</button>`
+      : ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} reports</button>
         <button class="btn secondary" id="each" title="Open Extract on each report in turn and confirm its values yourself">Extract one by one</button>`
       : `<button class="btn ${ni >= 0 ? "secondary" : "primary"}" id="go"${nf ? "" : " disabled"}>${!nf ? "Select at least one field"
         : ni >= 0 ? "Extract this report now" : `Extract ${pl(nf, "field")}`}</button>`}
@@ -1443,6 +1485,10 @@ function viewChoose(r) {
   if ($("bulk")) $("bulk").onclick = () => { working($("bulk")); bulkExtract(); };
   if ($("moreTypes")) $("moreTypes").onclick = () => { S.typesOpen = !S.typesOpen; renderMain(); };
   if ($("each")) $("each").onclick = () => goTo(S.reports.findIndex((x) => needOf(x) === "extract" && !x.leftover));   // from the top
+  if ($("teach3")) $("teach3").onclick = () => {      // review a few first; Export offers to extract the rest
+    S.teach = {n: TEACH_N, from: S.reports.filter((x) => x.step === "approved").length};
+    goTo(S.reports.findIndex((x) => needOf(x) === "extract" && !x.leftover));
+  };
   if ($("addField")) $("addField").onclick = () => chatOpen();
   if ($("pBack")) $("pBack").onclick = () => goStep(r, "deid");
   if ($("manageFields")) $("manageFields").onclick = () => { S.side = "fields"; renderMain(); };
@@ -1466,7 +1512,7 @@ const needOf = (r) => r.step === "approved" ? null
   : ["failed", "blocked"].includes(r.step) ? "fix" : "review";
 // A button that moves on to another report says what you will do there; the report's name sits underneath
 const nextAction = (i, lead = "Next report") => `<span>${lead}: ${needOf(S.reports[i]) === "review" ? "review identifiers" : "extract values"}</span>
-  <span class="bsub">${shortName(S.reports[i])}</span>`;
+  <span class="bsub" title="${esc(S.reports[i].name)}">${shortName(S.reports[i])}</span>`;
 const shortName = (r) => esc(r.name.length > 28 ? r.name.slice(0, 28) + "…" : r.name);
 const pl = (n, word, plural) => `${n} ${n === 1 ? word : plural || `${word}s`}`;          // 1 field, 3 fields
 const PLURAL = {NAME: "Names", DOCTOR: "Clinicians", ID: "ID numbers", DOB: "Dates of birth", DATE: "Dates", MRN: "MRNs",
@@ -1486,7 +1532,7 @@ async function bulkExtract() {
       if (res.error || res.status === "error") { r.error = {title: "Fields could not be extracted", text: res.error || res.reason}; break; }
       r.results[f.key] = res;
     }
-    const need = r.error ? ["could not be read"] : [];
+    const need = r.error ? [{text: "could not be read"}] : [];
     for (const f of fields) {
       const res = r.results[f.key];
       if (r.saved[f.key] || !res) continue;
@@ -1496,18 +1542,18 @@ async function bulkExtract() {
           ? {items: (res.items || []).map((it) => ({value: it.value, evidence_text: it.evidence_text}))} : {candidate_id: res.candidate_id})});
         if (!out.error && out.status === "saved") { r.saved[f.key] = {...out, auto: true}; continue; }
       }
-      need.push(`${f.name}: ${NEED_LABEL[k] || k}`);
+      need.push({key: f.key, text: `${f.name}: ${NEED_LABEL[k] || k}`});
     }
     r.needs = need;
     if (!need.length && fields.every((f) => r.saved[f.key])) {
       Object.assign(r, {step: "approved", doneAt: performance.now(), approvedAt: new Date()});
       trace(r, "Extract all: every value verified and saved without review.", "local");
-    } else trace(r, `Extract all: stopped for you (${need.join("; ")}).`, "local", false);
+    } else trace(r, `Extract all: stopped for you (${need.map((n) => n.text).join("; ")}).`, "local", false);
     S.bulk.done++; render();
   }
   S.bulk.running = false;
-  const first = S.reports.findIndex((x) => x.needs && x.needs.length && x.step !== "approved");
-  const stopped = S.reports.filter((x) => x.needs && x.needs.length && x.step !== "approved").length;
+  const first = S.reports.findIndex((x) => needsOf(x).length && x.step !== "approved");
+  const stopped = S.reports.filter((x) => needsOf(x).length && x.step !== "approved").length;
   toast(stopped ? `${todo.length - stopped} of ${todo.length} reports are done. ${stopped} still need${stopped === 1 ? "s" : ""} you — see the list above.`
     : `All ${todo.length} reports are done.`);
   select(first >= 0 ? first : S.reports.indexOf(todo[todo.length - 1]));
@@ -1517,13 +1563,13 @@ function bulkBanner() {
   if (!S.bulk) return "";
   if (S.bulk.running) return `<div class="banner info" role="status"><span class="spin" style="margin-top:4px"></span><div><b>Reading all reports · ${S.bulk.done} of ${S.bulk.total} done</b>
     <span>Answers I'm sure about are saved on their own; the ones I need your help with will be listed here when I finish.</span></div></div>`;
-  const left = S.reports.map((x, i) => [x, i]).filter(([x]) => x.needs && x.needs.length && x.step !== "approved");
+  const left = S.reports.map((x, i) => [x, i]).filter(([x]) => needsOf(x).length && x.step !== "approved");
   if (!left.length) return "";
   return `<div class="banner review" role="alert"><span class="gl">!</span><div><b>${left.length} report${left.length === 1 ? " needs" : "s need"} your review</b>
     <span>Everything else is done and saved.</span>
     <ul class="list" style="margin-top:var(--s1)">${left.map(([x, i]) => `<li class="item" style="padding:var(--s1) 0"><div class="grow">
       <button class="link" data-goto="${i}" style="min-height:24px">${shortName(x)}</button>${i === S.cur ? ' <span class="sm muted">(open)</span>' : ""}
-      <div class="sm muted">${x.needs.map(esc).join(" · ")}</div></div></li>`).join("")}</ul></div></div>`;
+      <div class="sm muted">${needsOf(x).map(esc).join(" · ")}</div></div></li>`).join("")}</ul></div></div>`;
 }
 document.addEventListener("click", (e) => { const g = e.target.closest("[data-goto]"); if (g) goTo(+g.dataset.goto); });
 // The batch order: review every report's identifiers first, then extract report after report. The fields are
@@ -1549,7 +1595,7 @@ function viewBlocked(r) {
   setPanel(banner("refused", "Possible identifier left in the text", `The final scan on this device found ${items.length || "a"} pattern${items.length === 1 ? "" : "s"} that look${items.length === 1 ? "s" : ""} like an identifier. Nothing more is sent for this report until ${items.length === 1 ? "it is" : "each is"} resolved.`)
     + `<ul class="list">${items.map((x) => `<li class="item"><div class="grow"><span class="chip t-${x.type}">${TL[x.type] || x.type}</span>
         <span class="fquote">“${esc(r.dtext.slice(x.start, x.end))}”</span>
-        <div class="sm muted">${esc(ruleName(x.rule))} · characters ${x.start}–${x.end}</div>
+        <div class="sm muted">${esc(ruleName(x.rule))}</div>
         <div class="factions"><button class="btn secondary inline" data-fix="mask" data-id="${x.id}">Hide as ${TL[x.type] || x.type} tag</button>
           <button class="link" data-fix="allow" data-id="${x.id}">Not an identifier: allow</button>
           <button class="link" data-go="leak:${x.id}">Show</button></div></div></li>`).join("")}</ul>
@@ -1752,15 +1798,19 @@ function fieldRow(r, f) {
 }
 const stripTags = (h) => String(h).replace(/<[^>]+>/g, "");
 // how accurate the field has been, and whose answers it is learning from ("learning from report_1")
-const accLine = (f) => { const v = f.validation, l = f.learning_from || [];
-  const acc = !v || !v.checked ? "not checked yet" : `${v.correct} of ${v.checked} right${v.ready ? " · Ready" : ""}`;
-  return l.length ? `${acc} · <span title="Its examples come from your answers on: ${esc(l.join(", "))}">learning from ${l.length === 1 ? esc(l[0]) : `${l.length} reports`}</span>` : acc; };
-// One line: what it means (cut to fit, full text on hover) and how accurate it has been
-const defLine = (f) => `<div class="fmeta"><span class="fdefline" title="${esc(f.definition || f.meaning)}">${esc(f.definition || f.meaning)}</span>
-  <span class="faccline" title="Accuracy on the reports you confirmed">${accLine(f)}</span></div>`;
+// PrivLab's first guesses: how many were right, and how many it sent to you instead of saving
+const accLine = (f) => { const v = f.validation;
+  if (!v || !v.checked) return `<span class="faccline">Not checked yet</span>`;
+  const sent = v.checked - (v.green ?? 0);
+  return `<span class="faccline" title="PrivLab's first guess on each report you checked, before your answer taught it">${v.correct} of ${v.checked} right${
+    sent ? ` · <span class="fsent">${sent} sent to you for review</span>` : ""}${v.ready ? " · Proven accurate" : ""}</span>`; };
+// What the field means, in one short sentence (the ▾ shows the whole definition); then how accurate it has been
+const firstSentence = (t) => (t || "").split(/(?<=\.)\s(?=[A-Z])/)[0];      // "e.g. lung" is not an end
+const defLine = (f) => `<div class="fmeta"><span class="fdefline" title="${esc(f.definition || f.meaning)}">${esc(firstSentence(f.definition || f.meaning))}</span>
+  ${accLine(f)}</div>`;
 function fieldParts(r, f) {       // {pill, value, body} for one field
   const res = r.results[f.key], saved = r.saved[f.key], editor = r.editing === f.key ? editorHtml(r, f) : "";
-  const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}${c.start != null ? ` · characters ${c.start}–${c.end}` : ""}</div>` : "";
+  const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}</div>` : "";
   const btn = (a, label, cid) => `<button class="link" data-act="${a}" data-key="${f.key}"${cid ? ` data-cid="${cid}"` : ""}>${label}</button>`;
   const acts = (...b) => `<div class="factions">${b.join("")}</div>${editor}`;
   const val = (v) => `${esc(v)}${unit(f, v)}`;
@@ -1770,7 +1820,7 @@ function fieldParts(r, f) {       // {pill, value, body} for one field
     const note = saved.blind ? `Blind check: ${saved.predicted != null ? `PrivLab had ${val(saved.predicted)}` : "PrivLab found nothing"}. ${corrected ? "Counted as an error; PrivLab learned from it." : "You agreed."}`
       : saved.auto ? "Saved by Extract all: verified by the checks, not reviewed by you. Not counted in accuracy."
       : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed.";
-    const q = (saved.start != null ? `<div class="fquote">“${esc(r.dtext.slice(saved.start, saved.end).slice(0, 160))}” · characters ${saved.start}–${saved.end}</div>` : "")
+    const q = (saved.start != null ? `<div class="fquote">“${esc(r.dtext.slice(saved.start, saved.end).slice(0, 160))}”</div>` : "")
       + resetLink(f);
     return {pill: pill(saved.value == null ? "not-stated" : "verified"), value: saved.value != null ? val(saved.value) : "Not stated",
             body: `<div class="sm muted">${note}</div>${q}`};
@@ -2014,7 +2064,7 @@ function wireRows(r) {
       const v = $("edVal").value.trim();
       if (!v) return toast("Type the answer first, then save.");
       if (!r.edit || !r.edit.evidence) return toast("Not saved yet — first highlight the words in the report where you found this answer, then save. That shows me where to look next time.");
-      act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence, note: $("edNote") ? $("edNote").value.trim() || null : null});
+      act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence, at: r.edit.at, note: $("edNote") ? $("edNote").value.trim() || null : null});
     };
     $("edCancel").onclick = (e) => { e.stopPropagation(); r.editing = null; r.edit = null; renderMain(); };
     $("edVal").onclick = (e) => e.stopPropagation();
@@ -2051,10 +2101,12 @@ async function act(r, kind, key, cid, typed) {   // kind: accept, pick, missing,
   const taught = !f ? "" : out.outcome === "correct" ? `Learned: ${f.name} keeps your answer on ${r.name} as an example for the next reports.`
     : ["wrong", "extra"].includes(out.outcome) && was != null ? `Learned from your correction: next time ${f.name} avoids ${show(was)}${out.value != null ? ` and looks for values like ${show(out.value)}` : ""}.`
     : out.outcome === "missed" ? `Learned: ${f.name} will look for values like ${show(out.value)} next time.` : "";
+  const again = out.counted === false && kind !== "items" && !r.saved[key].auto
+    ? ` ${r.name} was checked before, so this answer teaches PrivLab but does not change its accuracy count.` : "";
   if (taught) trace(r, taught, "local");
-  if (taught) toast(taught);                 // the last confirm stays here: you finish the report yourself
+  if (taught || again) toast(taught + again);                 // the last confirm stays here: you finish the report yourself
   refresh(r);
-  if (taught && !S.confirmingAll) toast(taught);
+  if ((taught || again) && !S.confirmingAll) toast(taught + again);
 }
 async function confirmAll(r) {
   let n = 0;
@@ -2073,6 +2125,30 @@ async function confirmEach(r, count) {
 // Step 4: export (a report is done when its last field is confirmed)
 // ======================================================================
 function approve(r) { r.step = "approved"; r.doneAt = performance.now(); r.approvedAt = new Date(); render(); }
+const TEACH_N = 3;                         // reports to teach on before extracting the rest of a batch
+// A field is new until you have checked a few of its values yourself
+const newFields = () => chosen().some((f) => ((f.validation || {}).checked || 0) < TEACH_N);
+// Reports still to review before every chosen field is Ready (pooled bound; 59 if a field has no checks yet)
+const toProve = () => Math.max(0, ...chosen().map((f) => f.validation ? f.validation.more_needed : 59));
+// When the batch left is no bigger than that, reviewing it all is quicker than proving PrivLab
+const quicker = (n) => n > 1 && n <= toProve();
+// Export, once the reports you chose to teach on are done: extract the rest, or keep reviewing
+function teachDone() {
+  if (!S.teach) return "";
+  const done = S.reports.filter((x) => x.step === "approved").length - S.teach.from;
+  const rest = S.reports.filter((x) => needOf(x) === "extract" && !x.leftover).length;
+  if (done < S.teach.n || !rest) return "";
+  if (quicker(rest)) return `<div class="teachcard"><b>Only ${rest} reports left: reviewing them is quicker than proving PrivLab.</b>
+    Proving your fields takes about ${toProve()} more reviewed reports.
+    <span class="muted">Every report you review still teaches PrivLab for your next batch.</span>
+    <div class="factions" style="margin-top:var(--s2)"><button class="btn primary inline" id="keepTeach">Keep reviewing</button>
+    <button class="link" id="restBulk">Extract the other ${rest}</button></div></div>`;
+  return `<div class="teachcard"><b>PrivLab has learned from your ${done} reports.</b> Extract the other ${rest} now: values it
+    verifies are saved by themselves, and you only check the ones it is unsure of and a few blind checks.
+    <span class="muted">Or keep reviewing: every report you check makes it more accurate.</span>
+    <div class="factions" style="margin-top:var(--s2)"><button class="btn primary inline" id="restBulk">Extract the other ${rest}</button>
+    <button class="link" id="keepTeach">Keep reviewing</button></div></div>`;
+}
 function viewApproved(r) {
   stepper(3); where(`${STEP_TAG.export}<span>Downloads are made on this device</span>`);
   setDoc(marked(r.dtext, quoteMarks(r)), evidenceLegend(r));
@@ -2087,7 +2163,8 @@ function viewApproved(r) {
   const statusLine = ["ok", all ? `All ${approved} reports done. Download the batch above.`
     : `${shortName(r)} done at ${clock(r.approvedAt)} — ${filled} field${filled === 1 ? "" : "s"} confirmed${unstated ? `, ${unstated} not stated` : ""}. In Extracted data (.csv).${
       waiting ? ` ${waiting} more report${waiting === 1 ? "" : "s"} to finish.` : ""}`];
-  setPanel(`${bulkBanner()}${backLink("Extract", "Correct or reset a value. Finish the report again to return here.")}<h2 class="h1">Export</h2><p class="lede">${all ? `All ${approved} reports are done.` : "This report is done. To change a value, go back to Extract."}</p>
+  setPanel(`${bulkBanner()}${teachDone()}${backLink("Extract", "Correct or reset a value. Finish the report again to return here.")}<h2 class="h1">Export</h2><p class="lede">${all ? `All ${approved} reports are done.` : "This report is done. To change a value, go back to Extract."}</p>${
+    r.fromChat ? `<p class="sm muted">Started in your AI assistant? Say “continue” there: it sees what you did here.</p>` : ""}
     <div class="fields" role="list">${S.fields.filter((f) => r.saved[f.key] || !S.skip.has(f.key)).map((f) => { const o = r.saved[f.key], on = r.focus && r.focus.key === f.key;
       return `<div class="frow ${on ? "on" : ""}" role="listitem" tabindex="0" data-frow="${f.key}" data-pick="${f.key}"><div class="fhead"><span class="fname">${esc(f.name)}</span>
       ${o ? pill(o.value == null ? "not-stated" : "verified") : ""}</div><div class="fval">${o ? (o.value != null ? esc(o.value) + unit(f, o.value) : "Not stated") : "–"}</div>
@@ -2102,6 +2179,8 @@ function viewApproved(r) {
     ${traceBlock(r)}`,
     `<button class="btn primary${next < 0 ? "" : " two"}" id="go">${nextLabel}</button>`, statusLine);
   $("go").onclick = () => next >= 0 ? goTo(next) : (S.cur = -1, render(), glowAdd());
+  if ($("restBulk")) $("restBulk").onclick = () => { S.teach = null; bulkExtract(); };
+  if ($("keepTeach")) $("keepTeach").onclick = () => { S.teach = null; const n = nextNeed(); n >= 0 ? goTo(n) : renderMain(); };
   $("pBack").onclick = () => openFields(r);
   document.querySelectorAll("[data-pick]").forEach((b) => {
     b.onclick = () => focusField(r, b.dataset.pick);
@@ -2135,7 +2214,7 @@ document.addEventListener("mouseup", (e) => {
         if (!r.results[c.key]) return chatFind(r, sel.text);     // PrivLab reads it first, then your value is saved
         c.stage = "done"; S.side = null;
         say("note", taughtNote());
-        useAs(r, S.fields.find((x) => x.key === c.key), sel.text);
+        useAs(r, S.fields.find((x) => x.key === c.key), sel.text, sel.at);
       };
     } else if (r.step === "review") {
       bar.innerHTML = `<span style="padding:0 var(--s2)">Hide as</span><select id="fbType" aria-label="Identifier type">${TYPES.map((t) => `<option value="${t}">${TL[t]}</option>`).join("")}</select>
@@ -2154,7 +2233,7 @@ document.addEventListener("mouseup", (e) => {
            <button class="fbgo" id="fbUse">✓ Save</button>`
         : `${quoted}<span class="fbl">Every field has a value</span>`)
         + `<span class="sep"></span><button class="fbplus" data-newfield aria-label="Add a field from this text" title="Add a field from this text">+</button>`;
-      if ($("fbUse")) $("fbUse").onclick = () => useAs(r, S.fields.find((x) => x.key === $("fbField").value), sel.text);
+      if ($("fbUse")) $("fbUse").onclick = () => useAs(r, S.fields.find((x) => x.key === $("fbField").value), sel.text, sel.at);
       bar.querySelector("[data-newfield]").onclick = () => {   // the selection becomes the new field's first value
         S.pendingUse = sel.text; S.adding = true; S.side = null;
         S.draftField = {...S.draftField, example: S.draftField.example || sel.text.slice(0, 80)};   // the selection is its example
@@ -2170,7 +2249,7 @@ document.addEventListener("mouseup", (e) => {
 $("docwrap").addEventListener("scroll", hideFloat);
 // "Use as": one number (7,950.00 -> 7950.00), or for a text field the selection as written, is saved at
 // once; anything else opens the value editor, scrolled into view, with the selection as its quote.
-function useAs(r, f, text) {
+function useAs(r, f, text, at) {
   if (f.multi) {                               // a list: one item per selected line, added to the list to confirm
     hideFloat(); window.getSelection().removeAllRanges(); S.side = null;
     const items = listItems(r, f), have = new Set(items.map((it) => it.value.toLowerCase()));
@@ -2187,8 +2266,8 @@ function useAs(r, f, text) {
   const nums = (text.match(/\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g) || []).map((n) => n.replace(/,/g, ""));
   const value = f.type === "number" ? (nums.length === 1 ? nums[0] : null) : text.trim().replace(/\s+/g, " ") || null;
   hideFloat(); window.getSelection().removeAllRanges(); S.side = null;
-  if (value != null) return act(r, "typed", f.key, null, {value, evidence_text: text});   // text: the selection, as written
-  r.editing = f.key; r.edit = {key: f.key, evidence: text, value: nums[0] || ""};
+  if (value != null) return act(r, "typed", f.key, null, {value, evidence_text: text, at});   // text: the selection, as written
+  r.editing = f.key; r.edit = {key: f.key, evidence: text, at, value: nums[0] || ""};
   renderMain();
   const ed = $("edVal");
   if (ed) { ed.closest(".frow").scrollIntoView({block: "nearest"}); ed.focus(); }
@@ -2215,23 +2294,30 @@ $("fieldsBtn").onclick = () => { S.side = S.side ? null : "fields"; afterSideClo
 $("keysBtn").onclick = () => $("keysDlg").showModal();
 const OUTCOME = {correct: "right", true_empty: "right, not stated", wrong: "wrong value", missed: "missed", extra: "gave a value the report does not state"};
 const when = (iso) => { const d = new Date(iso); return isNaN(d) ? iso : d.toLocaleString("en-GB", {day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"}); };
-function accuracyHtml(f) {    // the current definition version only; "verified" = shown green
+function accuracyHtml(f) {    // who checked your values, and how far PrivLab is from Ready; the detail is in History
   const v = f.validation;
-  if (!v || !v.checked) return "Not checked yet. Every value you confirm is a test.";
-  const lines = [`${v.correct} of ${v.checked} right on definition v${v.version}`,
-    v.green ? `${v.silent_errors} wrong of ${v.green} shown as verified` : "None shown as verified yet",
-    v.ready ? "Proven: at most 5% of verified values are wrong (95% confidence)"
-      : `${v.more_needed} more correct verified values to prove at most 5% are wrong`,
-    `${Math.round(v.review_rate * 100)}% needed your review`];
-  if (v.blind) lines.push(`Blind checks: ${v.blind_correct} of ${v.blind} right`);
-  return lines.map(esc).join("<br>");
+  if (!v || !v.checked) return "Not checked yet.";
+  const d = {yours: v.checked, auto: 0, ...v.data}, done = v.ready ? 1 : v.checked / (v.checked + v.more_needed);
+  return `<div class="acc"><span>${d.auto ? `<b>${d.auto}</b> found by PrivLab · ` : ""}<b>${d.yours}</b> checked by you and learned by PrivLab</span>
+    ${v.silent_errors ? `<span class="sm" style="color:var(--review)">${v.silent_errors} found by PrivLab ${v.silent_errors === 1 ? "was" : "were"} wrong</span>` : ""}
+    <div class="ameter" title="${v.ready ? "With 95% confidence, at most 5% of the values PrivLab verifies are wrong"
+      : `About ${v.more_needed} more checked reports to prove it`}">
+      <div class="abar${v.ready ? " done" : ""}" role="progressbar" aria-valuenow="${Math.round(done * 100)}" aria-valuemin="0" aria-valuemax="100"
+        aria-label="Progress to proven accurate"><i style="width:${Math.round(done * 100)}%"></i></div>
+      <div class="aends"><span>Learning</span><span>Proven accurate</span></div></div>
+    <div class="astage">${v.ready
+      ? `<span>At most 5 in 100 of its values are wrong.</span>`
+      : `<span class="muted">Every report you check makes PrivLab more accurate.</span>`}</div></div>`;
 }
 function historyHtml(f) {
   const val = (x) => x == null ? "not stated" : esc(x) + unit(f, x);
   const defs = (f.history || []).map((h) => `<li>${esc(when(h.when))} · ${esc(h.what)}</li>`).join("");
   const checks = (f.checks || []).map((c) => `<li>${esc(when(c.when))} · v${c.version} · PrivLab ${val(c.predicted)}${c.status === "green" ? " (verified)" : ""}
     → you ${val(c.confirmed)} · ${OUTCOME[c.outcome] || c.outcome}${c.blind ? " · blind" : ""}</li>`).join("");
-  return `<details class="fhist"><summary>History</summary><b>Definition</b><ul>${defs}</ul>
+  const v = f.validation || {}, o = v.outcomes;        // first guesses, one per report, on the current definition
+  const sum = o ? `<p class="sm" style="margin:0 0 var(--s2)">First guesses: ${o.right} right · ${o.corrected} corrected · ${o.missed} missed · ${o.extra} extra${
+    v.blind ? ` · blind checks ${v.blind_correct} of ${v.blind} right` : ""}</p>` : "";
+  return `<details class="fhist"><summary>History</summary>${sum}<b>Definition</b><ul>${defs}</ul>
     <b>Checks, newest first</b><ul>${checks || "<li>None yet</li>"}</ul></details>`;
 }
 function fieldDef(f, full) {  // what a field means, what values it takes, how accurate it is, and (full) its history
@@ -2244,7 +2330,7 @@ function fieldDef(f, full) {  // what a field means, what values it takes, how a
     ${f.description ? `<dt>Your words</dt><dd>“${esc(f.description)}”</dd>` : ""}
     <dt>Accuracy</dt><dd>${accuracyHtml(f)}</dd></dl>${full ? historyHtml(f) : ""}`;
 }
-function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "Ready" : x === "learning" ? "Learning" : "New"}</span>`; }
+function readiness(x) { return `<span class="pill ${x === "ready" ? "verified" : ""}">${x === "ready" ? "✓ Proven" : x === "learning" ? "Learning" : "New"}</span>`; }
 const specLine = (d) => (d.multi ? "A list, one row per item in the export: " : "") + (d.type === "number"
   ? `A number${d.unit ? ` in ${esc(d.unit)}` : ""}${d.range_min != null ? `, ${d.range_min}–${d.range_max}` : (d.range ? `, ${d.range[0]}–${d.range[1]}` : "")}`
   : "Text, exactly as written in the report");
@@ -2465,7 +2551,7 @@ async function chatSave(r) {
   c.key = res.field.key;
   await loadFields();
   say("note", `Saved <b>${esc(c.name)}</b>. I'll fill it on every report.`);
-  for (const x of S.reports) { delete x.results[c.key]; delete x.lists[c.key]; delete x.preview; }   // re-read with the new meaning
+  for (const x of S.reports) { delete x.results[c.key]; delete x.lists[c.key]; delete x.fieldPreview; }   // re-read with the new meaning
   S.reports.filter((x) => x !== r && ["safe", "choose"].includes(x.step) && x.prefetch !== "running").forEach(prefetch);
   if (!canPreview()) {
     c.stage = "done";
@@ -2669,14 +2755,44 @@ async function addFromServer(id, name) {
 }
 // Every report of the session: on load, and when you come back to this tab (the chat may have added some)
 async function syncSession() {
-  if (S.reports.some((x) => !x.deid)) return;            // a report of this page is still loading: next time
-  const s = await api("/api/session");
-  const known = new Set(S.reports.map((x) => x.deid));
-  let added = 0;
-  for (const x of s.reports || []) if (!known.has(x.deid_id) && await addFromServer(x.deid_id, x.report_id)) added++;
-  if (added) { if (S.cur < 0 && !location.hash) render(); else renderRail(); toast(`${added} report${added === 1 ? "" : "s"} from the chat added to the list.`); }
+  if (syncSession.busy || S.reports.some((x) => !x.deid)) return;     // a report of this page is still loading: next time
+  syncSession.busy = true;
+  try {
+    const s = await api("/api/session");
+    const known = new Map(S.reports.map((x) => [x.deid, x]));
+    let added = 0, updated = 0;
+    for (const x of s.reports || []) {
+      const r = known.get(x.deid_id);
+      if (!r) { if (await addFromServer(x.deid_id, x.report_id)) added++; }
+      else if (behind(r, x)) { if (await updateFromServer(r)) updated++; r.synced = x.saved; }   // asked once per change
+    }
+    if (added || updated) {
+      updated || (S.cur < 0 && !location.hash) ? render() : renderRail();     // an added report does not move you
+      toast([added && `${added} report${added === 1 ? "" : "s"} from the chat added to the list.`,
+        updated && `${updated} report${updated === 1 ? "" : "s"} updated with what you did in the chat.`].filter(Boolean).join(" "));
+    }
+  } finally { syncSession.busy = false; }
+}
+// The chat moved a report further than this page shows: de-identified it, or saved more of its values
+const behind = (r, x) => !r.editing && r.step !== "loading"
+  && ((x.step === "done" && ["review", "hold", "checking", "flags"].includes(r.step)) || x.saved > Object.keys(r.saved).length) && !(r.synced === x.saved && x.step === "done" && reviewed(r));
+async function updateFromServer(r) {      // true only if something changed: a 4-second check must not redraw your screen
+  const res = await api(`/api/open?deid_id=${r.deid}`);
+  if (res.error || res.next === "error") return false;
+  let changed = false;
+  if (res.next === "done" && !reviewed(r)) { r.dets = res.confirmed || r.dets; applyState(r, res); changed = true; }
+  const fresh = Object.keys(res.saved || {}).filter((k) => !r.saved[k]);
+  if (fresh.length) {
+    for (const k of fresh) r.saved[k] = res.saved[k];
+    if (chosen().length && chosen().every((f) => r.saved[f.key]) && reviewed(r) && r.step !== "approved")
+      Object.assign(r, {step: "approved", approvedAt: new Date()});
+    changed = true;
+  }
+  if (changed) trace(r, "Updated with what was done in the chat.", "local");
+  return changed;
 }
 addEventListener("focus", () => syncSession());
+setInterval(() => { if (document.visibilityState === "visible") syncSession(); }, 4000);   // side by side with the chat
 function applyState(r, res) {           // where the server says the report is (report_state)
   if (res.next === "done") return finishDeid(r, res);
   if (res.next === "review") r.step = "review";
