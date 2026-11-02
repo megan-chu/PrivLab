@@ -20,6 +20,9 @@ ENV_NAMES = {
     "baseten_api_key": "BASETEN_API_KEY",
     "baseten_base_url": "BASETEN_BASE_URL",
     "baseten_model": "BASETEN_MODEL",
+    "decision_api_key": "BASETEN_DECISION_API_KEY",     # Baseten decision model: the second opinion
+    "decision_model": "BASETEN_DECISION_MODEL",
+    "second_opinion": "PRIVLAB_SECOND_OPINION",          # "off" turns the second opinion off
     "seal_key": "PRIVLAB_SEAL_KEY",
     "vault_key": "PRIVLAB_VAULT_KEY",
     "ner_model": "PRIVLAB_NER_MODEL",
@@ -29,6 +32,7 @@ DEFAULTS = {
     "meta_model": "muse-spark-1.3",
     "baseten_base_url": "https://inference.baseten.co/v1",
     "baseten_model": "meta-models/muse-spark-open-1026",
+    "decision_model": "decision-models/baseten-elephant-9b-latest",
     "ner_model": "en_core_web_sm",
 }
 
@@ -45,6 +49,9 @@ class Settings:
     baseten_api_key: str
     baseten_base_url: str
     baseten_model: str
+    decision_api_key: str
+    decision_model: str
+    second_opinion: str
     seal_key: str
     vault_key: str
     ner_model: str

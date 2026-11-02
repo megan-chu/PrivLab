@@ -17,6 +17,7 @@ the status.
   preview(deid_id)                    -> where each field's value sits, from that reply only (no call)
 """
 import hashlib
+import logging
 import threading
 import time
 
@@ -26,6 +27,8 @@ from extract.checks import norm_value, run_checks
 from extract.pack import get_field, load_pack, meaning_key
 from extract.sections import PRIORITY, WEAK
 from extract.types import CandidatesReply
+
+log = logging.getLogger("privlab.extract")
 
 INSTRUCTIONS = (
     "You extract fields from a de-identified pathology report for a cancer registry. Identifiers are "
@@ -138,9 +141,10 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool, log_path
     blind = blind and not field.multi
     if not field.multi:                       # the same report again: the user's own answer, no model call
         from extract.learn import remembered
-        mem = remembered(result.text, field, log_path)
-        if mem is not None:
-            return _remembered(deid_id, field, mem, result.text)
+        mem = remembered(pipeline.fingerprint(deid_id), field, log_path)
+        out = mem and _remembered(deid_id, field, mem, result.text)
+        if out:
+            return out
 
     try:
         reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
@@ -177,19 +181,65 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool, log_path
     if not valid:
         return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms, blind)
     top = valid[0]
-    rivals = [c for c in valid[1:] if norm_value(c["value"]) != norm_value(top["value"])
+    second = None if blind else _second_opinion(result, field, valid)
+    sure = second is not None and second["best"] is not None and second["p"] >= SURE
+    if sure:
+        top = second["best"]                                 # the second opinion picks among the candidates
+    rivals = [c for c in valid if c is not top and norm_value(c["value"]) != norm_value(top["value"])
               and PRIORITY.get(c["section"], 2) == PRIORITY.get(top["section"], 2)]
+    doubt = second is not None and second["of"].get(top["id"], 0) < DOUBT
     if top.get("rule") and not top["trusted"]:          # a rule's first use: the user says if it is right
         reason = f"From your correction: \"{top['raw']}\" means {top['value']}. Right?"
-    elif rivals:
+    elif rivals and not sure:
         reason = f"Two different values in the same section: {top['value']} vs {rivals[0]['value']}. Which one?"
+    elif doubt:
+        reason = f"A second check doubts this value ({second['of'].get(top['id'], 0):.0%} sure)"
     elif top["section"] in WEAK:
         reason = f"From the {top['section']} section only"
     elif top["confidence"] < MIN_CONFIDENCE:
         reason = "Low confidence"
     else:
-        return _result(deid_id, field, "green", top, ranked, None, model_ms, blind)
-    return _result(deid_id, field, "amber", top, ranked, reason, model_ms, blind)
+        return _result(deid_id, field, "green", top, ranked, None, model_ms, blind, second=_shown(second, top))
+    return _result(deid_id, field, "amber", top, ranked, reason, model_ms, blind, second=_shown(second, top))
+
+
+SURE, DOUBT = 0.9, 0.5      # the second opinion picks a value at >= 90%; a value it gives < 50% is doubted
+
+
+def _second_opinion(result, field, valid: list) -> dict | None:
+    """Baseten's decision model reads the masked report and says which candidate it states (or none):
+    {"best": candidate or None, "p": its probability, "of": candidate id -> probability}. None if unavailable."""
+    options, seen = {}, set()
+    for c in valid:
+        if norm_value(c["value"]) not in seen and len(options) < 4:
+            seen.add(norm_value(c["value"]))
+            options[chr(97 + len(options))] = c
+    try:
+        answer = spark.decide(result, step="second", report_id=result.report_id,
+                              context=f"Field: {field.name}. {field.definition or field.meaning}",
+                              question={"type": "choice", "instructions": "Which value does this report state for "
+                                        "the field, as the field is defined?",
+                                        "criteria": {**{k: str(c["value"]) for k, c in options.items()},
+                                                     "none": "None of these values"}})
+    except Exception as e:      # down, slow, refused: extraction goes on exactly as without it
+        log.warning("second opinion unavailable (%s)", type(e).__name__)
+        return None
+    if not answer:
+        return None
+    probs = answer.get("probabilities") or {}
+    of = {}
+    for k, c in options.items():            # one probability per value: a repeated value shares it
+        for v in valid:
+            if norm_value(v["value"]) == norm_value(c["value"]):
+                of[v["id"]] = probs.get(k, 0.0)
+    choice = answer.get("choice")
+    return {"best": options.get(choice), "p": probs.get(choice, 0.0), "of": of}
+
+
+def _shown(second: dict | None, top: dict) -> dict | None:
+    """What the field card shows: how sure the second opinion is of the value PrivLab proposes."""
+    return second and {"p": round(second["of"].get(top["id"], 0.0), 3),
+                       "picked": second["best"]["value"] if second["best"] else None}
 
 
 def _apply_rules(field, cands: list) -> None:
@@ -204,12 +254,19 @@ def _apply_rules(field, cands: list) -> None:
             c.update(raw=c["value"], value=rule["to"], rule=rule["from"], trusted=rule.get("uses", 0) > 0)
 
 
-def _remembered(deid_id: str, field, mem: dict, text: str) -> dict:
+def _remembered(deid_id: str, field, mem: dict, text: str) -> dict | None:
+    """The earlier answer, found again in this masking (it can shift as the profile learns); None if it is gone."""
+    from deid.names import locate
+
     c, when = mem.get("confirmed"), mem["ts"][:10]
     top = None
-    if c and c.get("start") is not None:
+    if c and c.get("value") is not None:
+        hits = locate(text, str(c["value"]))
+        if not hits:
+            return None                           # not in this text any more: ask the model as usual
+        start, end = min(hits, key=lambda h: abs(h[0] - (c.get("start") or 0)))
         top = {"id": "c1", "value": c["value"], "unit": field.unit if field.type == "number" else None,
-               "evidence_text": text[c["start"]:c["end"]], "start": c["start"], "end": c["end"], "section": None,
+               "evidence_text": text[start:end], "start": start, "end": end, "section": None,
                "reason": "your earlier answer", "confidence": 1.0, "checks": {}, "fail": None, "rank": 1}
     return _result(deid_id, field, "remembered", top, [top] if top else [], f"Your answer from {when}", 0)
 
@@ -225,10 +282,12 @@ def _items(valid: list) -> list:
 
 
 def _result(deid_id: str, field, status: str, top: dict | None, ranked: list, reason: str | None,
-            model_ms: int | None = None, blind: bool = False, items: list | None = None) -> dict:
+            model_ms: int | None = None, blind: bool = False, items: list | None = None,
+            second: dict | None = None) -> dict:
     from extract.learn import remember_prediction
 
-    result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms, "blind": blind}
+    result = {**_build(deid_id, field, status, top, ranked, reason), "model_ms": model_ms, "blind": blind,
+              **({"second": second} if second else {})}
     if field.multi:
         result.update(items=items or [], value=[i["value"] for i in items or []])
     remember_prediction(result)                 # frozen before any feedback ("test then learn")

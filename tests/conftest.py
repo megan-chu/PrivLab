@@ -48,6 +48,7 @@ def local_keys(monkeypatch, tmp_path):
     monkeypatch.setattr(spark, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(spark, "USAGE_LOG", tmp_path / "usage.log")
     monkeypatch.setattr(spark, "USAGE_TOTALS", tmp_path / "usage.json")
+    monkeypatch.setenv("PRIVLAB_SECOND_OPINION", "off")       # never the real decision model; tests turn on a fake
     return tmp_path
 
 

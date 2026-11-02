@@ -7,7 +7,7 @@ from eval.score_fields import score
 from extract.candidates import find_candidates
 from extract.define import define_field
 from extract.export import export_rows
-from extract.learn import confirm_field, more_needed, read_log, show_pack, upper_bound, validation
+from extract.learn import confirm_field, more_needed, read_log, reset_field, show_pack, upper_bound, validation
 from extract.pack import load_pack
 
 DRAFT = {"key": "tumour_size", "meaning_question": "Largest tumour dimension?", "type": "number",
@@ -167,6 +167,10 @@ def test_the_same_report_again_gets_your_answer_back_without_a_model_call(paths)
     f = load_pack(paths["pack"])["fields"][0]
     assert validation(f, read_log(paths["log"]))["checked"] == 1                        # replayed, not scored
     assert "text_hash" in read_log(paths["log"])[0] and REPORT not in paths["log"].read_text(encoding="utf-8")
+    reset_field(r["deid_id"], "tumour_size", pack_path=paths["pack"], log_path=paths["log"])   # reset: ask again
+    r3 = pipeline.deidentify_report(text=REPORT, profile=new_profile()[0])
+    pipeline.confirm_deid(r3["deid_id"], use_spark=False)
+    assert find_candidates(r3["deid_id"], "tumour_size", pack_path=paths["pack"], log_path=paths["log"])["status"] != "remembered"
 
 
 def test_a_correction_becomes_a_rule_asked_once_then_applied_and_dropped_if_contradicted(fake_spark, local_keys):
@@ -198,6 +202,26 @@ def test_a_correction_becomes_a_rule_asked_once_then_applied_and_dropped_if_cont
     answer(second, value="breast", evidence_text="lobular carcinoma mammae sinistrae")                 # contradicted
     rules = load_pack(pack)["fields"][0].examples["rules"]
     assert [(r["from"], r["to"], r["uses"]) for r in rules] == [("mammae sinistrae", "breast", 0)]     # replaced
+
+
+def test_second_opinion_picks_between_rivals_and_doubts_a_value(paths, monkeypatch):
+    import common.spark as spark
+    sent, probs = [], {}
+    monkeypatch.setenv("PRIVLAB_SECOND_OPINION", "on")
+    monkeypatch.setenv("BASETEN_DECISION_API_KEY", "test-key")
+    monkeypatch.setattr(spark, "_check_online", lambda *a: None)
+    monkeypatch.setattr(spark, "_decide_request", lambda settings, body: sent.append(body) or {
+        "answers": {"q": {"choice": max(probs, key=probs.get), "probabilities": dict(probs)}},
+        "usage": {"input_tokens": 100, "output_tokens": 1}})
+    two = "DIAGNOSIS: tumour 2.1 cm. DIAGNOSIS: nodule 1.4 cm."
+    probs.update(a=0.02, b=0.97, none=0.01)                 # rivals: it is sure of the second one
+    res = run(paths, two, ("2.1", "tumour 2.1 cm"), ("1.4", "nodule 1.4 cm"))
+    assert res["status"] == "green" and res["value"] == 1.4 and res["second"]["p"] == 0.97
+    assert "tumour 2.1 cm" in sent[0]["state"] and "Field: tumour size" in sent[0]["state"]   # masked report + field
+    probs.clear(); probs.update(a=0.2, none=0.8)            # one value, which it doubts
+    res = run(paths, REPORT + " Ref A.", ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    assert res["status"] == "amber" and "second check doubts" in res["reason"]
+    assert "decision" in (paths["log"].parent / "usage.log").read_text(encoding="utf-8")   # logged, own column
 
 
 def test_new_meaning_is_a_new_version(paths):
