@@ -3,3 +3,4 @@
 * text=auto eol=lf
 data/** -text
 *.pdf binary
+*.cmd text eol=crlf
