@@ -47,9 +47,11 @@ Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie develo
   in code that it really appears there.
 - 📈 **It learns from you.** A name you hide once is caught on your device the next time. Values you confirm or
   correct guide the next reports.
-- ✅ **Accuracy you can trust.** A field is marked *Ready* only when your own checks show, with 95% confidence,
-  that at most 5% of its values are wrong. About 1 in 10 values is a blind check, where PrivLab hides its answer
-  until you give yours.
+- ✅ **Accuracy you can trust.** A field is marked *Proven accurate* only when your own checks show, with 95%
+  confidence, that at most 5% of the values PrivLab verifies are wrong. One reviewed report checks every field, so
+  the proof is pooled across your fields (each still needs 10 checks of its own); a re-check of a report PrivLab
+  already learned from never counts. About 1 in 10 values is a blind check, where PrivLab hides its answer until
+  you give yours.
 - 📦 **One report or a whole batch.** Review each report yourself, or extract a batch in one go and only check
   what needs you.
 
@@ -152,8 +154,8 @@ nothing to sign in to (so it is not a "custom connector" with an HTTPS URL), and
    ```
    **Claude Desktop:** Settings → Developer → **Edit Config**, then add the same block under `"mcpServers"`.
 3. **Restart the assistant.** In Muse Code: `/exit`, then start it again from the PrivLab folder (`cd PrivLab`, `muse`).
-4. **Check it is connected.** Ask: *"What PrivLab tools do you have?"* You should see 5 tools: `privlab_deidentify`,
-   `privlab_review`, `privlab_fields`, `privlab_extract` and `privlab_export`.
+4. **Check it is connected.** Ask: *"What PrivLab tools do you have?"* You should see 6 tools: `privlab_deidentify`,
+   `privlab_review`, `privlab_fields`, `privlab_extract`, `privlab_wait` and `privlab_export`.
 5. **Give it a report.** Say: *"Fill my fields for C:/reports/case1.txt with PrivLab."* PrivLab finds the personal
    details on your computer and **opens the report in your browser by itself**, highlighted. The chat shows only tags.
 6. **Answer its questions.** For example *"Hide them all"*. Only then is the masked text sent, once, for the safety check.
@@ -164,12 +166,13 @@ nothing to sign in to (so it is not a "custom connector" with an HTTPS URL), and
 **A whole folder (bulk):** teach your fields on 1–3 reports first (in the browser is easiest). Then say *"Process every
 report in C:/reports/batch1"* (or pick the prompt **Process a folder of reports**). PrivLab reads every report and
 hides its personal details on your computer; you approve the hiding once; it offers to let you check the masked text in
-your browser; values it **verified** are saved by themselves (never counted as your check), and only the uncertain
-ones come back to you; finally it asks where to save, suggesting a `PrivLab output` folder next to your reports (created
+your browser; values it **verified** need only your OK while a field is learning, and are saved by themselves once the field is
+Proven accurate (never counted as your check); the uncertain ones come back to you; finally it asks where to save, suggesting a `PrivLab output` folder next to your reports (created
 automatically). The browser lists every report of the batch, so you can look at any of them at any time.
 
-**Under the hood:** five tools, one per step, plus four ready-made prompts ("Fill my fields", "De-identify a batch",
-"Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice: outcome-based tools, flat
+**Under the hood:** six tools (one per step, plus `privlab_wait`, which lets the chat carry on by itself once
+you finish reports in the browser) and five ready-made prompts ("Fill my fields", "De-identify a batch",
+"Process a folder of reports", "Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice: outcome-based tools, flat
 arguments, "Use when…" instructions, service-prefixed names and paged results. The assistant is told never to open
 the viewer link itself, and only ever receives tags and masked text.
 

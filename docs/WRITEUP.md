@@ -23,8 +23,9 @@ assistants people already use.
 5. **Export.** A CSV with one row per report, the masked text, or both, built on the device.
 
 It learns from the user: an identifier hidden once is caught on the device next time, and confirmed or corrected
-values become examples for the next reports. A field is marked Ready only when, with 95% confidence, at most 5% of
-its verified values are wrong.
+values become examples for the next reports. A field is marked Proven accurate only when, with 95% confidence, at most 5% of
+its verified values are wrong, pooled across the user's fields (10 checks per field at least; only a report's first
+check counts).
 
 ## How we use Meta's models
 - **Muse Spark Open (open weights, on Baseten):** the de-identification safety check. Because the weights are open, a
