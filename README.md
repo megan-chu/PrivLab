@@ -30,8 +30,8 @@ Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie develo
 - [How it works](#how-it-works)
 - [Getting started](#getting-started)
 - [Choose how to use PrivLab](#choose-how-to-use-privlab)
-- [Using PrivLab, step by step](#using-privlab-step-by-step)
-- [Use it from an AI assistant (MCP)](#use-it-from-an-ai-assistant-mcp)
+- [Use it in your browser, step by step](#use-it-in-your-browser-step-by-step)
+- [Use it from your AI assistant (MCP), step by step](#use-it-from-your-ai-assistant-mcp-step-by-step)
 - [Privacy at a glance](#privacy-at-a-glance)
 - [Results](#results)
 - [Running the tests](#running-the-tests)
@@ -109,42 +109,65 @@ From a terminal, the same: `.venv\Scripts\python -m viewer.server --open`.
 Same reports, same fields, same learning either way, and the same rule: originals stay on your computer, nothing is
 sent until you confirm, and any AI only sees masked text.
 
-## Using PrivLab, step by step
+## Use it in your browser, step by step
 
-Steps 1–2 get a report in; steps 3–7 are the five steps of the workflow above.
+1. **Start PrivLab.** Double-click `PrivLab.cmd` in the PrivLab folder. It opens in your browser
+   (http://127.0.0.1:8765). Keep its window open while you work; close it to stop PrivLab.
+2. **Add a report.** Drop a `.txt` or text PDF on the page, choose **+ Add → Choose files…**, paste text with Ctrl+V,
+   or click a sample (**Breast**, **Lung**, **Colon**, or **All 3** for a batch).
+3. **Choose your task** at the top: *De-identify only*, or *De-identify + extract*.
+4. **Review identifiers.** Every personal detail found on your computer is highlighted. Words marked *possible name*
+   are ticked to be safe. Click a highlight to keep it visible, or select any missed text to hide it. Then click
+   **Confirm N identifiers for masking**. Nothing has been sent before this click.
+5. **De-identify.** The details become tags such as `[PERSON-1]`, and the masked text gets one AI safety check. Read it,
+   then click **Confirm and choose fields** (or download the masked text and stop here).
+6. **Choose fields.** Tick the fields you want. To add one, click **+ Add a field**, describe it in your own words, give
+   an example value, and approve the definition PrivLab drafts.
+7. **Extract.** Each value is highlighted in the report with its quote. Confirm it, select the right text to correct it,
+   or mark it *not stated*. Then click **Finish and export this report**.
+8. **Export.** Choose **Extracted data (.csv)**, **Masked reports (.zip)** or **Everything (.zip)**. Before each
+   download, PrivLab tells you what the file holds and what was left out.
 
-1. **Add a report.** Drop a `.txt` or text PDF on the page, paste text with Ctrl+V, or click a sample
-   (Breast, Colon, Kidney, Lung, Prostate).
-2. **Choose your task** at the top: *De-identify only*, or *De-identify + extract*.
-3. **Review identifiers.** Check the highlights. Click a highlight to keep that word visible; select any text to hide
-   it. Then click **Confirm N identifiers for masking**.
-4. **De-identify.** Read the masked text, then **Confirm and choose fields** (or download the masked text and stop here).
-5. **Choose fields.** Tick the fields you want. To add one, click **+ Add a field**, describe it, give an example value,
-   and approve the definition PrivLab drafts.
-6. **Extract.** Each value appears in the report in its own colour, with its quote. Confirm it, select the right text
-   to correct it, or mark it *not stated*. Then **Finish and export this report**.
-7. **Export.** Choose **Extracted data (.csv)**, **Masked reports (.zip)**, or **Everything (.zip)**, which adds a data
-   dictionary. Before each download, PrivLab tells you what is in the file and what was left out.
+**A batch?** Add all your reports, review each one's identifiers, choose the fields once, then click **Extract all**.
+Values PrivLab verified are saved for you; anything that needs a person is listed for you to check.
+**Going back:** every screen has a **← Back** link at the top of the right panel; the PrivLab logo takes you home.
+**See what it learned:** **Fields → Learned** lists everything PrivLab learned from you; remove anything you like.
 
-**Working on a batch?** Add all your reports, review each one's identifiers, choose the fields once, then click
-**Extract all**. Values PrivLab verified are saved for you; anything that needs a human is listed for you to check.
+## Use it from your AI assistant (MCP), step by step
 
-**See what it learned:** **Fields → Learned** lists everything PrivLab has learned from you, and you can remove any of it.
+PrivLab is a **local MCP server**: your assistant starts it on your own computer. There is no web address to add and
+nothing to sign in to (so it is not a "custom connector" with an HTTPS URL), and your reports never leave your computer.
 
-## Use it from an AI assistant (MCP)
+1. **Install PrivLab** (see [Getting started](#getting-started)).
+2. **Tell your assistant how to start PrivLab.** Use your own paths to the PrivLab folder.
 
-PrivLab is also an MCP server, so Muse Code or any MCP-compatible assistant can use it. Add a stdio server:
+   **Muse Code:** open `C:\Users\<you>\.config\muse\settings.json` and add (keep what is already there):
+   ```json
+   "mcp_servers": {
+     "privlab": {
+       "command": "C:/path/to/PrivLab/.venv/Scripts/python.exe",
+       "args": ["C:/path/to/PrivLab/mcp_server/server.py"]
+     }
+   }
+   ```
+   **Claude Desktop:** Settings → Developer → **Edit Config**, then add the same block under `"mcpServers"`.
+3. **Restart the assistant.** In Muse Code: `/exit`, then start it again from the PrivLab folder (`cd PrivLab`, `muse`).
+4. **Check it is connected.** Ask: *"What PrivLab tools do you have?"* You should see 5 tools: `privlab_deidentify`,
+   `privlab_review`, `privlab_fields`, `privlab_extract` and `privlab_export`.
+5. **Give it a report.** Say: *"Fill my fields for C:/reports/case1.txt with PrivLab."* PrivLab finds the personal
+   details on your computer and **opens the report in your browser by itself**, highlighted. The chat shows only tags.
+6. **Answer its questions.** For example *"Hide them all"*. Only then is the masked text sent, once, for the safety check.
+7. **Extract and confirm.** Say *"Extract the values"*: each comes with its quote. Then *"All correct"*, or correct one
+   (*"…except the margin: it is 6 mm"*). All your answers are saved in one go.
+8. **Export.** Say *"Export the CSV to my Desktop."*
 
-- **Command:** the full path to `.venv\Scripts\python.exe`
-- **Argument:** the full path to `mcp_server\server.py`
+**A batch:** *"Fill my fields for every report in C:/reports"*. The browser lists every report you added in the chat:
+switch to it any time to see the real text or fix something. Same reports, same fields, same learning.
 
-Then ask, for example: *"Fill my fields for C:/reports/report_1.txt with PrivLab."* The assistant only ever sees
-tags and masked text. It gives you a link to open the same report in the PrivLab page to review the real text.
-
-PrivLab gives the assistant **five tools, one per step**: `privlab_deidentify`, `privlab_review`, `privlab_fields`,
-`privlab_extract` (all your answers in one call) and `privlab_export`, plus four ready-made prompts ("Fill my fields",
-"De-identify a batch", "Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice:
-outcome-based tools, flat arguments, "Use when…" instructions, service-prefixed names and paged results.
+**Under the hood:** five tools, one per step, plus four ready-made prompts ("Fill my fields", "De-identify a batch",
+"Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice: outcome-based tools, flat
+arguments, "Use when…" instructions, service-prefixed names and paged results. The assistant is told never to open
+the viewer link itself, and only ever receives tags and masked text.
 
 ## Privacy at a glance
 
