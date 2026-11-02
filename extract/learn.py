@@ -14,12 +14,12 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
      answer hidden from the user) are counted separately, to show whether confirmations are anchored.
      Only a report's first check counts: checked again later, PrivLab has already learned from that report.
      "data" is the export's view: values a person confirmed (right by definition) and values saved by bulk.
-  5. Answer memory: each entry keeps a fingerprint of the de-identified text (SHA-256, never the text). The same
-     text again gets the person's earlier answer back (phase "remembered"): no model call, never scored or taught.
+  5. Answer memory: each entry keeps a fingerprint of the report (SHA-256 of the file's text, never the text). The
+     same report again gets the person's earlier answer back (phase "remembered"): no model call, never scored or
+     taught. A reset clears it.
 
 The log stores values, report ids and evidence positions only, never report text.
 """
-import hashlib
 import json
 import time
 from math import comb
@@ -87,7 +87,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     # 1. Score first, with the prediction exactly as it was.
     entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id,
              "report_id": result.report_id, "split": _split(result.report_id), "phase": phase,
-             "text_hash": text_hash(result.text),                           # the fingerprint, never the text
+             "text_hash": pipeline.fingerprint(deid_id),                    # the fingerprint, never the text
              "field": field.key, "field_version": field.version, "blind": bool(predicted.get("blind")),
              "pack_version": pack["version"],
              "predicted": {k: predicted[k] for k in ("value", "status", "start", "end", "reason")},
@@ -162,6 +162,7 @@ def reset_field(deid_id: str, field_key: str, *, pack_path=None, log_path=None) 
         return {"status": "error", "reason": "nothing confirmed to reset for this report and field"}
     entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id, "report_id": result.report_id,
              "split": _split(result.report_id), "phase": "reset", "field": field.key, "field_version": field.version,
+             "text_hash": pipeline.fingerprint(deid_id),
              "blind": False, "predicted": {"value": None, "status": "reset", "start": None, "end": None, "reason": None},
              "confirmed": None, "outcome": "reset"}
     path.parent.mkdir(exist_ok=True)
@@ -375,14 +376,12 @@ def validation(field, entries: list[dict], pool=None) -> dict:
             "blind": len(blind), "blind_correct": right(blind), "ready": bound <= TARGET}
 
 
-def text_hash(text: str) -> str:
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()
-
-
-def remembered(text: str, field, log_path=None) -> dict | None:
-    """The person's latest answer for this field on exactly this de-identified text (same definition version),
-    unless they reset it since. A value Extract all saved alone is not an answer."""
-    h, mem = text_hash(text), None
+def remembered(fingerprint: str | None, field, log_path=None) -> dict | None:
+    """The person's latest answer for this field on exactly this report (its fingerprint; same definition
+    version), unless they reset it since. A value Extract all saved alone is not an answer."""
+    h, mem = fingerprint, None
+    if not h:
+        return None
     for e in read_log(log_path):
         if e.get("text_hash") != h or e["field"] != field.key or e.get("field_version", 1) != field.version:
             continue
