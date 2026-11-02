@@ -344,7 +344,14 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .droptitle { font: 600 17px/24px var(--f-display); margin-bottom: 2px; }
 /* samples: one compact row of chips after a label */
 .samples { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s2); margin-top: var(--s6); }
-.samples[hidden] { display: none; }
+.samples[hidden], .ways[hidden] { display: none; }
+.ways { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); margin-top: var(--s6); }
+.way { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s3) var(--s4); background: var(--surface-raised);
+  display: grid; gap: 4px; font-size: 13px; line-height: 18px; color: var(--ink-muted); text-align: left; }
+.way b { color: var(--ink); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.way b svg { width: 16px; height: 16px; color: var(--hema); }
+.way .how { color: var(--ink); }
+@media (max-width: 760px) { .ways { grid-template-columns: 1fr; } }
 .samples .label { margin-right: var(--s1); }
 .sample { min-height: 32px; padding: 0 var(--s3); border-radius: 999px; border: 1px solid var(--line); background: var(--surface-raised); font-size: 13px; }
 .sample:hover { border-color: var(--hema); color: var(--hema); }
@@ -945,8 +952,14 @@ function viewEmpty() {
     <div class="samples"><span class="label">Or test with sample data:</span>${SAMPLES.map(([id, label, short]) =>
       `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}
       <button class="sample" data-sample-all title="Add all ${SAMPLES.length} sample reports, to try a batch">All ${SAMPLES.length}</button></div>
-    <p class="sm muted" style="text-align:center;margin-top:var(--s4)" title="PrivLab is also an MCP server: an AI assistant such as Muse Code can use it while seeing only masked text. Reports you add there appear here too.">
-      Prefer to talk? Use PrivLab from your AI assistant (e.g. Muse Code); its reports show up here too.</p>
+    <div class="ways" aria-label="Two ways to use PrivLab">
+      <div class="way"><b>${icon("upload")} Here in the browser</b>
+        <span>Best for checking a few reports by eye.</span>
+        <span class="how">Drop or choose files above, then follow the steps on the right.</span></div>
+      <div class="way"><b>${icon("spark")} In your AI assistant</b>
+        <span>Best for many reports, or mixing with other work. The assistant sees only tags, never names.</span>
+        <span class="how">In Muse Code, say: <i>"Fill my fields for C:/reports/case1.txt with PrivLab"</i>. Its reports appear here too.</span></div>
+    </div>
   </div>`;
   // The right panel: the same steps as the step bar. The panel badge carries the universal guarantee (local
   // processing); each step says what you do, shows a one-line demo, states what leaves the device, and what
@@ -994,11 +1007,11 @@ function viewEmpty() {
   $("browse").onclick = () => $("fileInput").click();
   // Paste is its own mode: only the text box and its button; Cancel goes back to choosing files
   const title = document.querySelector("#drop .droptitle");
-  const samples = document.querySelector(".samples");          // only the text box while pasting
+  const extras = [...document.querySelectorAll(".samples, .ways")];   // only the text box while pasting
   $("pasteBtn").onclick = () => { $("drop").classList.add("pasting"); title.textContent = "Paste your report";
-    if (samples) samples.hidden = true; $("paste").focus(); };
+    extras.forEach((x) => x.hidden = true); $("paste").focus(); };
   $("pasteCancel").onclick = () => { $("paste").value = ""; $("drop").classList.remove("pasting");
-    title.textContent = "Drop reports here"; if (samples) samples.hidden = false; };
+    title.textContent = "Drop reports here"; extras.forEach((x) => x.hidden = false); };
   $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t, "Pasted") : toast("Not added yet — the box is empty. Paste your report text first, then click again."); };
   document.querySelectorAll("[data-sample]").forEach((b) => b.onclick = () => addSample(b.dataset.sample));
   if (document.querySelector("[data-sample-all]")) document.querySelector("[data-sample-all]").onclick = addAllSamples;
