@@ -549,21 +549,22 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 <input type="file" id="fileInput" accept=".txt,text/plain,.pdf,application/pdf" multiple hidden>
 <div class="toast" id="toast" role="status"></div>
 <dialog class="sheet" id="learnDlg" aria-labelledby="learnDlgT">
-  <div class="sh"><b id="learnDlgT">How PrivLab learns</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
+  <div class="sh"><b id="learnDlgT">How I learn from you</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
   <div class="sb" style="font-size:14px;line-height:21px">
-    <p><b>No AI model is retrained.</b> PrivLab keeps two small memories on this device and uses them on the next report.</p>
-    <p><b>De-identification:</b> names and IDs you hide, and second-check finds you keep hidden, go on an <i>always hide</i> list
-      (encrypted). Next time they are caught on this device, before anything is sent. Highlights you keep visible go on a
-      <i>not identifiers</i> list and are not asked about again. Single words are used in their own report only: they could be
-      ordinary words ("tan-coloured").</p>
-    <p><b>Extraction:</b> each field keeps your latest 3 confirmed answers and 3 corrections, with a few words of the masked
-      text around them. They travel with the next reports, so Muse Spark is steered by your answers.</p>
-    <p><b>Only from you:</b> values saved by <i>Extract all</i>, and values you reset, never teach it. An example that still
-      contains an identifier is never kept.</p>
-    <p><b>It proves itself before it is trusted:</b> every answer is scored before PrivLab learns from it. A field shows
-      <i>Ready</i> only when at most 5% of its verified values can be wrong, with 95% confidence (for example 59 verified
-      values with no error). About 1 in 10 values is a blind check: PrivLab's answer is hidden until you give yours.</p>
-    <p><b>You stay in control:</b> see and remove everything in <i>Fields → Learned</i>.</p>
+    <p>I don't retrain any AI. I simply remember the choices you make, here on your device, and use them on your next
+      report. Think of it as a colleague taking notes.</p>
+    <p><b>When you hide something,</b> I remember it. Next time it's hidden for you automatically, before anything is sent.
+      This list stays on your device, locked (encrypted).</p>
+    <p><b>When you keep something visible,</b> I won't ask about it again. A single word only counts for that report,
+      because it might be an ordinary word (like "tan").</p>
+    <p><b>When you confirm or correct a value,</b> I keep a few of your latest answers as examples for that field, so the AI
+      reads the next reports the way you do. Examples only contain masked text. If one still holds a name or an ID, I don't
+      keep it.</p>
+    <p><b>I only learn from you.</b> Values saved by <i>Extract all</i>, or ones you reset, never teach me.</p>
+    <p><b>I earn your trust.</b> I check every answer before I learn from it. A field gets the <i>Ready</i> badge only after
+      many checks with almost no mistakes (for example, 59 in a row with none). Now and then (about 1 in 10) I hide my
+      answer until you give yours, so you're never just agreeing with me.</p>
+    <p><b>You're in charge.</b> See everything I've learned, and delete anything, in <i>Fields → Learned</i>.</p>
   </div>
 </dialog>
 <dialog class="sheet" id="keysDlg" aria-labelledby="keysDlgT">
@@ -967,9 +968,7 @@ function viewEmpty() {
         <div class="tipbox" role="tooltip" id="howtip${k}">${extra}</div></div>
       <div class="sm muted">${short}</div>${demo ? `<div class="mdemo" aria-hidden="true">${demo}</div>` : ""}<div class="sm stepout">→ ${out}</div></div></li>`).join("")}</ol>
     <p class="sm" style="margin:var(--s3) 0 var(--s2)"><b>Your original documents never leave your device.</b> Only masked text is used for the AI's checks and extraction.
-      <button class="link" data-learn style="font-size:13px;min-height:0">How learning works</button></p></div>
-    ${S.fields.length || !extracting() ? "" : banner("info", "No fields yet", 'You can set them up now: <button class="link" id="emptyNew">Add a field</button>, for example tumour size.')}`);
-  if ($("emptyNew")) $("emptyNew").onclick = () => chatOpen();
+      <button class="link" data-learn style="font-size:13px;min-height:0">How learning works</button></p></div>`);
   const drop = $("drop");
   ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
