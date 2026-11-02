@@ -1852,8 +1852,8 @@ function addFieldRow(open = S.adding) {           // collapsed to "+ Add field" 
   return open ? `<div class="frow addrow addcard" role="listitem">
       ${re ? `<p class="addtitle">Redefine ${esc(re.name)}</p><p class="sm muted" style="margin:0">Edit any of these. A new definition, or switching between one value and a list, starts definition v${re.version + 1}: its accuracy score starts again.</p>`
         : `<p class="addtitle">Add a field</p><p class="sm muted" style="margin:0">All four are needed: they make the definition precise.</p>`}
-      ${input("newName", "Field name", "e.g. Tumour size, Biomarker", d.name)}
-      ${input("newWords", "Description", "In your words, what exactly should be extracted?", d.words)}
+      ${input("newName", "Field name", multi ? "e.g. Biomarker results" : "e.g. Tumour size", d.name)}
+      ${input("newWords", "Description", multi ? "e.g. Every gene result the report lists" : "e.g. The largest size of the tumour, in cm", d.words)}
       ${re ? `<div class="fgrp"><label class="flabel" for="newDef">Definition ${req}</label>
         <textarea autocomplete="off" class="in${err.newDef ? " invalid" : ""}" id="newDef" rows="5" aria-required="true" aria-describedby="newDefErr"${err.newDef ? ' aria-invalid="true"' : ""}>${esc(d.definition || "")}</textarea>
         <div class="ferr" id="newDefErr" role="alert"${err.newDef ? "" : " hidden"}>${err.newDef || ""}</div></div>` : ""}
@@ -1862,7 +1862,7 @@ function addFieldRow(open = S.adding) {           // collapsed to "+ Add field" 
         <span class="sm muted">${multi === true ? "Every one the report states, one row each in the export (e.g. biomarker results)"
           : multi === false ? "One value per report, one column in the export (e.g. tumour size)" : "Choose one: a single value, or a list such as biomarker results."}</span>
         <div class="ferr" id="newMultiErr" role="alert"${err.newMulti ? "" : " hidden"}>${err.newMulti || ""}</div></div>
-      ${input("newExample", "Example value", multi ? "e.g. TP53: R248Q (one item as written)" : "e.g. pT2a or 2.1 cm", d.example)}
+      ${input("newExample", "Example value", multi ? "e.g. TP53: R248Q (one item as written)" : "e.g. 2.1 cm", d.example)}
       ${S.pendingUse ? `<div class="sm">Value to save: <span class="fquote">“${esc(S.pendingUse.slice(0, 80))}”</span></div>` : ""}
       ${re ? `<div class="factions"><button class="btn primary inline" id="newSave">Save changes</button><button class="link" id="newRedraft">Redraft with Muse Spark</button><button class="link quiet" id="newCancel">Cancel</button></div>
       <div class="callout"><span class="hint-i" aria-hidden="true">i</span><span>Save changes keeps your edits as they are; nothing is sent. Redraft sends only the name, description and example to Muse Spark for a new definition to check.</span></div></div>`
