@@ -639,7 +639,9 @@ const extracting = () => S.mode === "both";
 // finish a report) and the choice is kept for the next report.
 S.skip = (() => { try { return new Set(JSON.parse(store.get("skip") || "[]")); } catch { return new Set(); } })();
 const chosen = () => S.fields.filter((f) => !S.skip.has(f.key));
-function setPicked(change) { change(S.skip); store.set("skip", JSON.stringify([...S.skip])); renderMain(); }
+function setPicked(change) {     // on the server too, so the chat extracts the same fields
+  change(S.skip); store.set("skip", JSON.stringify([...S.skip])); api("/api/skip", {skip: [...S.skip]}); renderMain();
+}
 S.side = null; S.chat = null;           // side panel: null | "fields" | "chat"
 let seq = 0;
 
@@ -726,13 +728,15 @@ const RSTATE = {
   need: ["Needs you", "review", "", "Waiting for your answer."],
   bad: ["Error", "refused", "", "Something went wrong. Open it to retry or remove it."],
   refused: ["Refused", "refused", "", "An identifier pattern is still in the text, so it is withheld from every export."]};
+// A value read but not verified (needs review, a blind check, nothing found) and not answered yet
+const waiting = (r) => chosen().some((f) => r.results[f.key] && !r.saved[f.key] && status(r.results[f.key])[0] !== "verified");
 // What Extract all left for you on a report, minus the fields you have answered since
 const needsOf = (r) => (r.needs || []).filter((n) => !n.key || !r.saved[n.key]).map((n) => n.text);
 function railState(r) {
   if (r.step === "failed") return RSTATE.bad;
   if (r.step === "blocked") return RSTATE.refused;
   if (r.step === "approved" || r.step === "safe" && (!extracting() || r.exported)) return RSTATE.done;
-  if (["hold", "flags"].includes(r.step) || r.step === "fields" && needsOf(r).length) return RSTATE.need;
+  if (["hold", "flags"].includes(r.step) || r.step === "fields" && (needsOf(r).length || waiting(r))) return RSTATE.need;
   return ["loading", "review"].includes(r.step) ? RSTATE.new : RSTATE.prog;
 }
 function renderTop() {
@@ -1460,8 +1464,8 @@ function viewChoose(r) {
       ${S.adding ? "" : addFieldRow()}
       <p class="sm muted" style="margin:var(--s2) 0 0">${extractSummary()}</p>
       ${ni < 0 && toExtract > TEACH_N && nf && newFields() && !quicker(toExtract) ? `<div class="teachcard"><b>Your fields are new. Teach PrivLab first.</b>
-        Confirm the values on ${TEACH_N} reports and PrivLab learns how you answer. Then it extracts the other
-        ${toExtract - TEACH_N} by itself, and you only check the ones it is unsure of (and a few blind checks).
+        Confirm the values on ${TEACH_N} reports and PrivLab learns how you answer. Then it reads the other
+        ${toExtract - TEACH_N}: values it verifies need one click from you until the field is Proven accurate.
         <span class="muted">The more reports you review, the more accurate it gets.</span></div>`
       : ni < 0 && nf && newFields() && quicker(toExtract) ? `<div class="teachcard"><b>Only ${toExtract} reports: reviewing them all is quicker than proving PrivLab.</b>
         Proving your fields takes about ${toProve()} reviewed reports, so check each one yourself.
@@ -1470,9 +1474,9 @@ function viewChoose(r) {
     ${traceBlock(r)}`,
     S.fields.length ? `${ni >= 0 ? `<button class="btn primary two" id="next" data-next="${ni}">${nextAction(ni)}</button>` : ""}
       ${ni < 0 && toExtract > TEACH_N && nf && newFields() && !quicker(toExtract) ? `<button class="btn primary" id="teach3" title="Confirm the values on ${TEACH_N} reports yourself; then PrivLab extracts the rest and shows you only what needs you">Teach on ${TEACH_N}, then extract the rest</button>
-        <button class="btn secondary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} now</button>
+        <button class="btn secondary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Reads every report. Verified values of Proven accurate fields are saved by themselves; the rest wait for you">Extract all ${toExtract} now</button>
         <button class="link quiet" style="align-self:center" id="each" title="Confirm every value of every report yourself: the most accurate, and it teaches PrivLab the most">Review every report</button>`
-      : ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} reports</button>
+      : ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Reads every report. Verified values of Proven accurate fields are saved by themselves; the rest wait for you">Extract all ${toExtract} reports</button>
         <button class="btn secondary" id="each" title="Open Extract on each report in turn and confirm its values yourself">Extract one by one</button>`
       : `<button class="btn ${ni >= 0 ? "secondary" : "primary"}" id="go"${nf ? "" : " disabled"}>${!nf ? "Select at least one field"
         : ni >= 0 ? "Extract this report now" : `Extract ${pl(nf, "field")}`}</button>`}
@@ -1531,18 +1535,19 @@ async function bulkExtract() {
       const res = await api("/api/find", {deid_id: r.deid, field: f.key, blind_ok: true});
       if (res.error || res.status === "error") { r.error = {title: "Fields could not be extracted", text: res.error || res.reason}; break; }
       r.results[f.key] = res;
+      if (res.status === "remembered") await saveRemembered(r, f, res);
     }
     const need = r.error ? [{text: "could not be read"}] : [];
     for (const f of fields) {
       const res = r.results[f.key];
       if (r.saved[f.key] || !res) continue;
       const [k] = status(res);
-      if (k === "verified") {
+      if (k === "verified" && f.readiness === "ready") {          // saved alone only once the field is proven
         const out = await api("/api/confirm_field", {deid_id: r.deid, field: f.key, auto: true, ...(f.multi
           ? {items: (res.items || []).map((it) => ({value: it.value, evidence_text: it.evidence_text}))} : {candidate_id: res.candidate_id})});
         if (!out.error && out.status === "saved") { r.saved[f.key] = {...out, auto: true}; continue; }
       }
-      need.push({key: f.key, text: `${f.name}: ${NEED_LABEL[k] || k}`});
+      need.push({key: f.key, text: `${f.name}: ${k === "verified" ? "verified, your OK" : NEED_LABEL[k] || k}`});
     }
     r.needs = need;
     if (!need.length && fields.every((f) => r.saved[f.key])) {
@@ -1559,19 +1564,24 @@ async function bulkExtract() {
   select(first >= 0 ? first : S.reports.indexOf(todo[todo.length - 1]));
 }
 // What Extract all left for you, at the top of the panel, until every report is done
+// What a report at Extract still waits for: from Extract all, or (read in the chat, or opened) each field not answered
+const waitText = (r) => needsOf(r).length ? needsOf(r) : chosen().filter((f) => r.results[f.key] && !r.saved[f.key])
+  .map((f) => `${f.name}: ${({verified: "verified, your OK"})[status(r.results[f.key])[0]] || NEED_LABEL[status(r.results[f.key])[0]] || "needs review"}`);
 function bulkBanner() {
-  if (!S.bulk) return "";
-  if (S.bulk.running) return `<div class="banner info" role="status"><span class="spin" style="margin-top:4px"></span><div><b>Reading all reports · ${S.bulk.done} of ${S.bulk.total} done</b>
+  if (S.bulk && S.bulk.running) return `<div class="banner info" role="status"><span class="spin" style="margin-top:4px"></span><div><b>Reading all reports · ${S.bulk.done} of ${S.bulk.total} done</b>
     <span>Answers I'm sure about are saved on their own; the ones I need your help with will be listed here when I finish.</span></div></div>`;
-  const left = S.reports.map((x, i) => [x, i]).filter(([x]) => needsOf(x).length && x.step !== "approved");
-  if (!left.length) return "";
+  const left = S.reports.map((x, i) => [x, i]).filter(([x]) => x.step === "fields" && waitText(x).length);
+  if (!left.length || left.length === 1 && !S.bulk) return "";        // one report: its own screen says it
+  const nv = left.reduce((n, [x]) => n + verifiedWaiting(x).length, 0);
   return `<div class="banner review" role="alert"><span class="gl">!</span><div><b>${left.length} report${left.length === 1 ? " needs" : "s need"} your review</b>
-    <span>Everything else is done and saved.</span>
+    <span>${S.bulk ? "Everything else is done and saved." : "Each is listed with what it waits for."}</span>
+    ${nv ? `<div style="margin-top:var(--s2)"><button class="btn primary inline" id="okAll" title="Saves every value PrivLab verified in these reports. Blind checks and values that need review stay for you">OK all ${nv} verified value${nv === 1 ? "" : "s"}</button></div>` : ""}
     <ul class="list" style="margin-top:var(--s1)">${left.map(([x, i]) => `<li class="item" style="padding:var(--s1) 0"><div class="grow">
       <button class="link" data-goto="${i}" style="min-height:24px">${shortName(x)}</button>${i === S.cur ? ' <span class="sm muted">(open)</span>' : ""}
-      <div class="sm muted">${needsOf(x).map(esc).join(" · ")}</div></div></li>`).join("")}</ul></div></div>`;
+      <div class="sm muted">${waitText(x).map(esc).join(" · ")}</div></div></li>`).join("")}</ul></div></div>`;
 }
 document.addEventListener("click", (e) => { const g = e.target.closest("[data-goto]"); if (g) goTo(+g.dataset.goto); });
+document.addEventListener("click", (e) => { const b = e.target.closest("#okAll"); if (b) { b.disabled = true; okAllVerified(); } });
 // The batch order: review every report's identifiers first, then extract report after report. The fields are
 // chosen once for the batch, so a report waiting for extraction opens straight on Extract, not Choose fields.
 function nextNeed() {
@@ -1627,6 +1637,7 @@ async function openFields(r) {
     const res = await api("/api/find", {deid_id: r.deid, field: f.key, blind_ok: true});
     if (res.error || res.status === "error") { r.error = {title: "Fields could not be extracted", text: res.error || res.reason}; r.reading = null; break; }
     r.results[f.key] = res;
+    if (res.status === "remembered") await saveRemembered(r, f, res);
     const top = (res.candidates || []).find((c) => c.id === res.candidate_id);
     trace(r, `${f.name}: ${res.value != null ? res.value : status(res)[1]}` + (top ? ` (${Object.entries(top.checks).filter(([, k]) => !k).map(([k]) => "failed: " + CHECK[k]).join(", ") || "all checks passed"})` : ""),
       res.model_ms ? "cloud" : "local", res.status === "green");
@@ -1637,6 +1648,7 @@ async function openFields(r) {
 }
 function status(res) {
   if (res.status === "blind") return ["blind", "Blind check"];
+  if (res.status === "remembered") return ["verified", "Your earlier answer"];
   if (res.status === "green") return ["verified", "Verified"];
   if (res.status === "missing") return ["not-found", "Not found"];
   return (res.candidates || []).some((c) => !c.fail) ? ["review", "Needs review"] : ["refused", "Refused"];
@@ -1818,6 +1830,7 @@ function fieldParts(r, f) {       // {pill, value, body} for one field
   if (saved) {
     const corrected = !["correct", "true_empty"].includes(saved.outcome);
     const note = saved.blind ? `Blind check: ${saved.predicted != null ? `PrivLab had ${val(saved.predicted)}` : "PrivLab found nothing"}. ${corrected ? "Counted as an error; PrivLab learned from it." : "You agreed."}`
+      : saved.remembered ? `${saved.remembered}, reused: this report was checked before. Not counted in accuracy.`
       : saved.auto ? "Saved by Extract all: verified by the checks, not reviewed by you. Not counted in accuracy."
       : corrected ? "Edited by you. PrivLab learned from it." : "Confirmed.";
     const q = (saved.start != null ? `<div class="fquote">“${esc(r.dtext.slice(saved.start, saved.end).slice(0, 160))}”</div>` : "")
@@ -2114,6 +2127,29 @@ async function confirmAll(r) {
   try { await confirmEach(r, (k) => n += k); } finally { S.confirmingAll = false; }
   if (n && r === cur() && r.step === "fields") toast(`Saved ${n} answer${n === 1 ? "" : "s"}. I'll use them as examples, so the next reports go faster.`);
 }
+// The same report again: your earlier answer is saved at once (never scored, never taught)
+async function saveRemembered(r, f, res) {
+  const out = await api("/api/confirm_field", {deid_id: r.deid, field: f.key, remembered: true,
+    ...(res.candidate_id ? {candidate_id: res.candidate_id} : {missing: true})});
+  if (!out.error && out.status === "saved") { r.saved[f.key] = {...out, remembered: res.reason}; trace(r, `${f.name}: ${res.reason}, reused.`, "local"); }
+}
+// Verified values not yet saved (never a blind check: those always get a real look)
+const verifiedWaiting = (r) => chosen().filter((f) => r.results[f.key] && !r.saved[f.key] && status(r.results[f.key])[0] === "verified");
+// The batch banner's one click: every verified value of every report that waits for you; a report with nothing
+// else left is finished. They count as your checks (you approved them); blind checks keep measuring anchoring.
+async function okAllVerified() {
+  const todo = S.reports.filter((x) => x.step === "fields" && verifiedWaiting(x).length);
+  let n = 0, done = 0;
+  S.confirmingAll = true;
+  try {
+    for (const r of todo) {
+      await confirmEach(r, (k) => n += k);
+      if (chosen().every((f) => r.saved[f.key])) { Object.assign(r, {step: "approved", approvedAt: new Date()}); done++; }
+    }
+  } finally { S.confirmingAll = false; }
+  render();
+  toast(`Saved ${n} verified value${n === 1 ? "" : "s"}${done ? `; ${done} report${done === 1 ? " is" : "s are"} done` : ""}.`, "center");
+}
 async function confirmEach(r, count) {
   for (const f of chosen()) {
     const res = r.results[f.key];
@@ -2144,7 +2180,7 @@ function teachDone() {
     <div class="factions" style="margin-top:var(--s2)"><button class="btn primary inline" id="keepTeach">Keep reviewing</button>
     <button class="link" id="restBulk">Extract the other ${rest}</button></div></div>`;
   return `<div class="teachcard"><b>PrivLab has learned from your ${done} reports.</b> Extract the other ${rest} now: values it
-    verifies are saved by themselves, and you only check the ones it is unsure of and a few blind checks.
+    verifies need one click from you until the field is Proven accurate, then they are saved by themselves.
     <span class="muted">Or keep reviewing: every report you check makes it more accurate.</span>
     <div class="factions" style="margin-top:var(--s2)"><button class="btn primary inline" id="restBulk">Extract the other ${rest}</button>
     <button class="link" id="keepTeach">Keep reviewing</button></div></div>`;
@@ -2394,12 +2430,15 @@ function learnedHtml() {
         `“…${esc(x.context.slice(0, 90))}…” · from ${esc(x.from)}`, `data-forget="good" data-field="${f.key}" data-i="${i}"`)).join("")}
       ${f.bad.map((x, i) => row(`<span style="color:var(--refused)">✗</span> not this: “…${esc(x.context.slice(0, 70))}…”`,
         `${esc(x.reason)} · from ${esc(x.from)}`, `data-forget="bad" data-field="${f.key}" data-i="${i}"`)).join("")}
-      ${f.good.length || f.bad.length ? "" : none("No examples yet: confirm or correct a value to teach it.")}</ul>`).join("");
+      ${(f.rules || []).map((x, i) => row(`<span style="color:var(--hema)">→</span> “${esc(x.from)}” means <b>${esc(x.to)}</b>`,
+        `from your correction on ${esc(x.report)} · ${x.trusted ? "you confirmed it: applied without asking" : "asks you the first time"}`,
+        `data-forget="rules" data-field="${f.key}" data-i="${i}"`)).join("")}
+      ${f.good.length || f.bad.length || (f.rules || []).length ? "" : none("No examples yet: confirm or correct a value to teach it.")}</ul>`).join("");
   return `<h2 class="h1">What PrivLab has learned</h2>
     <p class="lede">Kept on this device. Remove anything you don't want it to use. <button class="link" data-learn>How learning works</button></p>
     <p class="label">De-identification · always hide (${L.hide.length})</p><ul class="list">${hide}</ul>
     <p class="label" style="margin-top:var(--s4)">De-identification · not identifiers (${L.keep.length})</p><ul class="list">${keep}</ul>
-    <p class="label" style="margin-top:var(--s4)">Extraction · examples it learns from (latest 3 right + 3 wrong per field)</p>${fields || '<p class="sm muted">No fields yet.</p>'}`;
+    <p class="label" style="margin-top:var(--s4)">Extraction · examples it learns from (latest 3 right + 3 wrong per field) and your corrections as rules</p>${fields || '<p class="sm muted">No fields yet.</p>'}`;
 }
 document.addEventListener("click", async (e) => {
   const b = e.target.closest("[data-forget]");
@@ -2435,7 +2474,7 @@ function chatFooter(c) {
     teach: `<div class="pstatus info" role="status"><span class="gl" aria-hidden="true">i</span><span>${teachText()}</span></div>
       <button class="btn secondary" id="tBack">Back</button>`,
     missing: `<button class="btn primary" id="mYes">Correct, it is not stated</button><button class="btn secondary" id="mNo">It is stated</button>`,
-    done: `<button class="btn primary" id="dMore">${icon("plus")}Add another field</button><button class="btn secondary" id="dBack">Back to the report</button>`,
+    done: `<button class="btn primary" id="dMore">${icon("plus")}Add another field</button><button class="btn secondary" id="dBack">Back to ${cur() ? STEPS[stepOf(cur())] : "your reports"}</button>`,   // the screen you came from
   }[c.stage];
 }
 function wireChat(r) {
@@ -2723,6 +2762,8 @@ $("resetBtn").onclick = async () => {
     $("view").innerHTML = `<div class="empty">${banner("refused", "Field pack did not load", "The server did not answer. Reload this page; your fields are kept in the pack file on this device.")}</div>`;
     return;
   }
+  const sk = await api("/api/skip");                   // the ticks, as last set here or in the chat
+  if (!sk.error && sk.skip) { S.skip = new Set(sk.skip); store.set("skip", JSON.stringify(sk.skip)); }
   setMode(S.mode);
   await syncSession();
   openFromLink();
@@ -2762,9 +2803,18 @@ async function syncSession() {
     const known = new Map(S.reports.map((x) => [x.deid, x]));
     let added = 0, updated = 0;
     for (const x of s.reports || []) {
-      const r = known.get(x.deid_id);
-      if (!r) { if (await addFromServer(x.deid_id, x.report_id)) added++; }
-      else if (behind(r, x)) { if (await updateFromServer(r)) updated++; r.synced = x.saved; }   // asked once per change
+      let r = known.get(x.deid_id);
+      if (!r) {
+        if (!await addFromServer(x.deid_id, x.report_id)) continue;
+        added++; r = S.reports[S.reports.length - 1]; r.seenRead = 0;     // fields already read in the chat: Extract
+      } else if (behind(r, x)) { if (await updateFromServer(r)) updated++; r.synced = x.saved; }   // asked once per change
+      // fields read in the chat since this page last looked: show the report where the chat is, at Extract
+      if (x.read > (r.seenRead || 0) && ["safe", "choose"].includes(r.step) && !r.leftover && chosen().length) {
+        trace(r, "Fields were read in the chat; shown here.", "local");
+        if (known.has(x.deid_id)) updated++;
+        openFields(r);                                   // the chat's reply, already read: no new model call
+      }
+      r.seenRead = Math.max(r.seenRead || 0, x.read);
     }
     if (added || updated) {
       updated || (S.cur < 0 && !location.hash) ? render() : renderRail();     // an added report does not move you

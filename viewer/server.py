@@ -53,7 +53,7 @@ from extract import learn
 from extract.candidates import find_candidates, prefetch, preview
 from extract.define import define_field
 from extract.export import export_items, export_rows
-from extract.pack import load_pack, remove_field, save_pack
+from extract.pack import PACK_PATH, load_pack, remove_field, save_pack
 
 PAGE = Path(__file__).with_name("index.html")
 DEMO_DIR = ROOT / "runs" / "demo"
@@ -81,7 +81,11 @@ def api_reports(_):
 def api_session(_):
     """Every report of this PrivLab session, oldest first, whether added on the page or in the chat (MCP server,
     same process): the page lists them all, even after a reload. Ids and names only; the text comes from api_open.
-    step and saved (fields with a confirmed value) let the page notice what was done in the chat."""
+    step, read (fields extracted, waiting for an answer) and saved (fields with a confirmed value) let the page
+    notice what was done in the chat."""
+    read = {}
+    for d, _ in list(learn._PREDICTIONS):
+        read[d] = read.get(d, 0) + 1
     latest = {}
     for e in learn.read_log(STATE["log"]):
         latest[(e["deid_id"], e["field"])] = e.get("phase")
@@ -89,7 +93,8 @@ def api_session(_):
     for (d, _), phase in latest.items():
         if phase != "reset":
             saved[d] = saved.get(d, 0) + 1
-    return {"reports": [{"deid_id": d, "report_id": r["report_id"], "step": r["step"], "saved": saved.get(d, 0)}
+    return {"reports": [{"deid_id": d, "report_id": r["report_id"], "step": r["step"], "saved": saved.get(d, 0),
+                         "read": read.get(d, 0)}
                         for d, r in pipeline._RUNS.items()]}
 
 
@@ -100,6 +105,32 @@ def api_remove(b):
     for d in ids:
         pipeline._RUNS.pop(d, None)
     return {"removed": len(ids)}
+
+
+def _skip_path() -> Path:
+    return Path(STATE["pack"] or PACK_PATH).with_name("skipped_fields.json")
+
+
+def skipped() -> set[str]:
+    """Fields unticked on Choose fields: kept next to the pack, so the browser and the chat extract the same ones."""
+    try:
+        return set(json.loads(_skip_path().read_text(encoding="utf-8")))
+    except (OSError, ValueError):
+        return set()
+
+
+def set_skipped(keys) -> set[str]:
+    with _WRITE:
+        _skip_path().write_text(json.dumps(sorted({str(k) for k in keys})), encoding="utf-8")
+    return skipped()
+
+
+def api_skip(_):
+    return {"skip": sorted(skipped())}
+
+
+def api_set_skip(b):
+    return {"skip": sorted(set_skipped(b.get("skip") or []))}
 
 
 def api_open(b):
@@ -240,7 +271,8 @@ def api_remove_field(b):
 
 
 def api_find(b):
-    return find_candidates(b["deid_id"], b["field"], pack_path=STATE["pack"], blind_checks=bool(b.get("blind_ok")))
+    return find_candidates(b["deid_id"], b["field"], pack_path=STATE["pack"], blind_checks=bool(b.get("blind_ok")),
+                           log_path=STATE["log"])
 
 
 def api_confirm_field(b):
@@ -249,7 +281,7 @@ def api_confirm_field(b):
                                    value=b.get("value"), evidence_text=b.get("evidence_text"),
                                    missing=bool(b.get("missing")), note=b.get("note"), items=b.get("items"),
                                    at=b["at"] if isinstance(b.get("at"), int) else None,
-                                   phase="bulk" if b.get("auto") else "teach",
+                                   phase="remembered" if b.get("remembered") else "bulk" if b.get("auto") else "teach",
                                    pack_path=STATE["pack"], log_path=STATE["log"])
 
 
@@ -266,7 +298,9 @@ def api_learned(_):
     return {"hide": p.always_remove if p else [], "keep": p.allow_list if p else [],
             "fields": [{"key": f.key, "name": f.name, "version": f.version,
                         "good": [{"value": x.get("value"), "context": x["context"], "from": src(x)} for x in f.examples.get("good", [])],
-                        "bad": [{"context": x["context"], "reason": x.get("reason", ""), "from": src(x)} for x in f.examples.get("bad", [])]}
+                        "bad": [{"context": x["context"], "reason": x.get("reason", ""), "from": src(x)} for x in f.examples.get("bad", [])],
+                        "rules": [{"from": x["from"], "to": x["to"], "trusted": x.get("uses", 0) > 0, "report": src(x)}
+                                  for x in f.examples.get("rules", [])]}
                        for f in load_pack(STATE["pack"])["fields"]]}
 
 
@@ -280,7 +314,7 @@ def api_forget(b):
             if p is not None and prof.forget(p, allow=b.get("text") if kind == "keep" else None,
                                              remove={"text": str(b.get("text", "")), "type": str(b.get("type", ""))} if kind == "hide" else None):
                 prof.save_profile(p); ok = True
-        elif kind in ("good", "bad"):
+        elif kind in ("good", "bad", "rules"):
             pack = load_pack(STATE["pack"]); f = get_field(pack, str(b.get("field", ""))); i = int(b.get("index", -1))
             if f is not None and 0 <= i < len(f.examples.get(kind, [])):
                 f.examples[kind].pop(i); put_field(pack, f); save_pack(pack, STATE["pack"]); ok = True
@@ -474,11 +508,12 @@ def _keys(url) -> list[str] | None:
 
 
 GET = {"/api/reports": api_reports, "/api/session": api_session, "/api/profile": api_profile, "/api/pack": api_pack, "/api/open": api_open,
-       "/api/export_summary": api_export_summary, "/api/learned": api_learned}
+       "/api/export_summary": api_export_summary, "/api/learned": api_learned, "/api/skip": api_skip}
 POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm, "/api/hold": api_hold,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/preview": api_preview, "/api/define": api_define, "/api/find": api_find,
         "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget, "/api/remove": api_remove,
-        "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset}
+        "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset,
+        "/api/skip": api_set_skip}
 
 
 # --------------------------------------------------------------------------
