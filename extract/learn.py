@@ -293,6 +293,22 @@ def _split(report_id: str | None) -> str | None:
 # --------------------------------------------------------------------------
 # Field history (show_pack)
 # --------------------------------------------------------------------------
+def saved_for(deid_id: str, log_path=None) -> dict:
+    """A report's confirmed values, latest per field (a reset field is left out): to reopen the report as it was."""
+    latest = {}
+    for e in read_log(log_path):
+        if e["deid_id"] == deid_id:
+            latest[e["field"]] = e
+    out = {}
+    for key, e in latest.items():
+        if e.get("phase") == "reset":
+            continue
+        c = e.get("confirmed") or {}
+        out[key] = {"status": "saved", "outcome": e["outcome"], "value": c.get("value"), "start": c.get("start"),
+                    "end": c.get("end"), **({"items": c["items"]} if "items" in c else {})}
+    return out
+
+
 def read_log(log_path=None) -> list[dict]:
     path = log_path or LOG_PATH
     if not path.exists():

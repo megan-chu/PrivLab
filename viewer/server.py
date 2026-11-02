@@ -86,7 +86,10 @@ def api_session(_):
 
 def api_open(b):
     """A report started in the chat (MCP server, same process): where it is up to, with its text (local only)."""
-    return pipeline.report_state(str(b.get("deid_id", "")), show_text=True)
+    out = pipeline.report_state(str(b.get("deid_id", "")), show_text=True)
+    if out.get("next") == "done":                  # its confirmed values too, so it reopens where it was
+        out["saved"] = learn.saved_for(out["deid_id"], STATE["log"])
+    return out
 
 
 def api_profile(_):

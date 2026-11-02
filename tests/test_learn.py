@@ -431,3 +431,15 @@ def test_a_list_item_without_a_quote_is_found_as_written():
     text = "Diagnosis: ductal. carcinoma, grade 2."
     out = _confirmed_items(text, None, [{"value": "ductal. carcinoma"}], False)
     assert out["value"] == ["ductal carcinoma"] and out["start"] == text.index("ductal.")
+
+
+def test_saved_for_gives_a_reports_latest_values_without_reset_ones(tmp_path):
+    import json as _json
+    from extract.learn import saved_for
+    log = tmp_path / "log.jsonl"
+    rows = [{"deid_id": "d_1", "field": "size", "outcome": "correct", "phase": "teach", "confirmed": {"value": 2.1, "start": 5, "end": 9}},
+            {"deid_id": "d_1", "field": "grade", "outcome": "correct", "phase": "teach", "confirmed": {"value": "G2", "start": 1, "end": 3}},
+            {"deid_id": "d_1", "field": "grade", "outcome": "reset", "phase": "reset", "confirmed": None},
+            {"deid_id": "d_2", "field": "size", "outcome": "correct", "phase": "teach", "confirmed": {"value": 9, "start": 0, "end": 1}}]
+    log.write_text("".join(_json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    assert saved_for("d_1", log) == {"size": {"status": "saved", "outcome": "correct", "value": 2.1, "start": 5, "end": 9}}

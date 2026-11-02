@@ -2661,6 +2661,10 @@ async function addFromServer(id, name) {
   S.reports.push(r);
   trace(r, "Started in the chat or before a reload; opened here.", "local");
   applyState(r, res);
+  if (res.saved && Object.keys(res.saved).length) {     // values confirmed before: back where it was
+    r.saved = res.saved;
+    if (chosen().length && chosen().every((f) => r.saved[f.key])) Object.assign(r, {step: "approved", approvedAt: new Date()});
+  }
   return true;
 }
 // Every report of the session: on load, and when you come back to this tab (the chat may have added some)
