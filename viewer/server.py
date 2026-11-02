@@ -29,6 +29,7 @@ import csv
 import io
 import json
 import logging
+import os
 import re
 import shutil
 import socket
@@ -579,6 +580,14 @@ def make_server(port: int) -> ThreadingHTTPServer:
     return ExclusiveServer(("127.0.0.1", port), Handler)
 
 
+def _open_browser(url: str) -> None:
+    """The default browser: Windows' own "open this address" first (reliable from a double-clicked .cmd)."""
+    try:
+        os.startfile(url)              # Windows only
+    except (AttributeError, OSError):
+        webbrowser.open(url)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="PrivLab local viewer.")
     ap.add_argument("--port", type=int, default=8765)
@@ -596,8 +605,8 @@ def main() -> int:
     try:
         server = make_server(args.port)
     except OSError:
-        if args.open:                  # PrivLab is already running: just show it
-            webbrowser.open(url)
+        if args.open:                  # PrivLab is already running (e.g. started by an assistant): just show it
+            _open_browser(url)
             print(f"PrivLab is already running: opened {url}", file=sys.stderr)
             return 0
         print(f"Port {args.port} is already in use: another PrivLab viewer is probably running. Close it "
@@ -605,7 +614,7 @@ def main() -> int:
         return 1
     print(f"PrivLab viewer: {url}{'  (demo mode)' if args.demo else ''}", file=sys.stderr)
     if args.open:
-        threading.Timer(0.5, webbrowser.open, [url]).start()
+        threading.Timer(0.5, _open_browser, [url]).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
