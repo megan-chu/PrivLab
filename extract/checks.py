@@ -32,6 +32,11 @@ def parse_number(value_text: str, unit_text: str | None, field_unit: str | None)
 STRAY_STOP = re.compile(r"(?<=[a-z]{3})(?<!approx)(?<!incl)(?<!etc)\.[ \t]+(?=[a-z])")   # "ductal. carcinoma", not "approx. 2"
 
 
+def norm_value(value) -> str:
+    """A text value compared by its words: "BREAST, LEFT" and "breast left" are the same."""
+    return " ".join(re.sub(r"[^\w\s]", " ", str(value).lower()).split())
+
+
 def tidy_text(value: str) -> str:
     """A text value as written, minus slips: whitespace collapsed, and a full stop between two lower-case words
     dropped (a real sentence end is followed by a capital). The quote in the report is not changed."""

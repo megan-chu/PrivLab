@@ -22,7 +22,7 @@ import time
 
 from common import spark
 from deid import pipeline
-from extract.checks import run_checks
+from extract.checks import norm_value, run_checks
 from extract.pack import get_field, load_pack, meaning_key
 from extract.sections import PRIORITY, WEAK
 from extract.types import CandidatesReply
@@ -116,17 +116,18 @@ def preview(deid_id: str, *, pack_path=None) -> dict:
 
 
 def find_candidates(deid_id: str, field_key: str, *, pack_path=None, effort: str | None = None,
-                    blind_checks: bool = False) -> dict:
-    """blind_checks: sometimes hide the answer, so the user's label is not anchored on it."""
+                    blind_checks: bool = False, log_path=None) -> dict:
+    """blind_checks: sometimes hide the answer, so the user's label is not anchored on it.
+    log_path: the score log, to find the user's earlier answer on the same text (answer memory)."""
     blind = blind_checks and _is_blind(deid_id, field_key)
-    return _find(deid_id, field_key, pack_path, effort, blind)         # a list field is never blind (see _find)
+    return _find(deid_id, field_key, pack_path, effort, blind, log_path)   # a list field is never blind (see _find)
 
 
 def _is_blind(deid_id: str, field_key: str) -> bool:
     return int(hashlib.sha256(f"{deid_id}:{field_key}".encode()).hexdigest(), 16) % BLIND_EVERY == 0
 
 
-def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
+def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool, log_path=None) -> dict:
     result = pipeline.result_for(deid_id)
     if result is None:
         return {"deid_id": deid_id, "status": "error", "reason": "de-identify and confirm this report first"}
@@ -135,6 +136,11 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     if field is None:
         return {"deid_id": deid_id, "status": "error", "reason": f"no field '{field_key}' in the pack; define it first"}
     blind = blind and not field.multi
+    if not field.multi:                       # the same report again: the user's own answer, no model call
+        from extract.learn import remembered
+        mem = remembered(result.text, field, log_path)
+        if mem is not None:
+            return _remembered(deid_id, field, mem, result.text)
 
     try:
         reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
@@ -152,6 +158,7 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
                       "section": checked["section"], "reason": c.reason, "confidence": round(c.confidence, 2),
                       "checks": checked["checks"], "fail": checked["fail"]})
 
+    _apply_rules(field, cands)
     valid = [c for c in cands if c["fail"] is None]
     valid.sort(key=lambda c: (PRIORITY.get(c["section"], 2), c["confidence"]), reverse=True)
     ranked = valid + [c for c in cands if c["fail"] is not None]
@@ -170,9 +177,11 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     if not valid:
         return _result(deid_id, field, "amber", None, ranked, f"No candidate passed the checks ({ranked[0]['fail']})", model_ms, blind)
     top = valid[0]
-    rivals = [c for c in valid[1:] if c["value"] != top["value"]
+    rivals = [c for c in valid[1:] if norm_value(c["value"]) != norm_value(top["value"])
               and PRIORITY.get(c["section"], 2) == PRIORITY.get(top["section"], 2)]
-    if rivals:
+    if top.get("rule") and not top["trusted"]:          # a rule's first use: the user says if it is right
+        reason = f"From your correction: \"{top['raw']}\" means {top['value']}. Right?"
+    elif rivals:
         reason = f"Two different values in the same section: {top['value']} vs {rivals[0]['value']}. Which one?"
     elif top["section"] in WEAK:
         reason = f"From the {top['section']} section only"
@@ -181,6 +190,28 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool) -> dict:
     else:
         return _result(deid_id, field, "green", top, ranked, None, model_ms, blind)
     return _result(deid_id, field, "amber", top, ranked, reason, model_ms, blind)
+
+
+def _apply_rules(field, cands: list) -> None:
+    """The user's corrections, learned as rules ("mammae sinistrae" -> left breast): code rewrites the model's
+    value. The checks already ran on the words in the report, so the quote still proves where it came from."""
+    if field.type != "text" or field.multi:
+        return
+    rules = {r["from"]: r for r in field.examples.get("rules", [])}
+    for c in cands:
+        rule = c["value"] is not None and rules.get(norm_value(c["value"]))
+        if rule and norm_value(rule["to"]) != norm_value(c["value"]):
+            c.update(raw=c["value"], value=rule["to"], rule=rule["from"], trusted=rule.get("uses", 0) > 0)
+
+
+def _remembered(deid_id: str, field, mem: dict, text: str) -> dict:
+    c, when = mem.get("confirmed"), mem["ts"][:10]
+    top = None
+    if c and c.get("start") is not None:
+        top = {"id": "c1", "value": c["value"], "unit": field.unit if field.type == "number" else None,
+               "evidence_text": text[c["start"]:c["end"]], "start": c["start"], "end": c["end"], "section": None,
+               "reason": "your earlier answer", "confidence": 1.0, "checks": {}, "fail": None, "rank": 1}
+    return _result(deid_id, field, "remembered", top, [top] if top else [], f"Your answer from {when}", 0)
 
 
 def _items(valid: list) -> list:

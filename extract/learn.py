@@ -14,9 +14,12 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
      answer hidden from the user) are counted separately, to show whether confirmations are anchored.
      Only a report's first check counts: checked again later, PrivLab has already learned from that report.
      "data" is the export's view: values a person confirmed (right by definition) and values saved by bulk.
+  5. Answer memory: each entry keeps a fingerprint of the de-identified text (SHA-256, never the text). The same
+     text again gets the person's earlier answer back (phase "remembered"): no model call, never scored or taught.
 
 The log stores values, report ids and evidence positions only, never report text.
 """
+import hashlib
 import json
 import time
 from math import comb
@@ -28,13 +31,14 @@ from common.timing import record
 from deid import pipeline
 from deid.names import locate
 from deid.patterns import leftover_identifiers
-from extract.checks import parse_number, tidy_text
+from extract.checks import norm_value, parse_number, tidy_text
 from extract.pack import get_field, load_pack, put_field, save_pack
 from extract.sections import section_at
 
 LOG_PATH = ROOT / "runs" / "score_log.jsonl"
 SGT = timezone(timedelta(hours=8))
 KEEP_EXAMPLES = 3
+KEEP_RULES = 50           # learned corrections per field ("mammae sinistrae" -> left breast)
 CONTEXT = 60                          # characters of de-identified text around an example
 _PREDICTIONS: dict[tuple[str, str], dict] = {}
 _SHOWN_AT: dict[tuple[str, str], float] = {}     # when the result was shown to the user
@@ -55,7 +59,8 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     A list field takes items=[{"value", "evidence_text"}, ...] instead: the whole list, as confirmed.
 
     phase="bulk": a verified value accepted by "Extract all", not by a person. It is saved for the export but
-    is no evidence of accuracy, so it never scores (validation, score_fields) and never teaches the pack."""
+    is no evidence of accuracy, so it never scores (validation, score_fields) and never teaches the pack.
+    phase="remembered": the person's earlier answer on the same text, replayed: saved, never scored or taught."""
     predicted = _PREDICTIONS.get((deid_id, field_key))
     result = pipeline.result_for(deid_id)
     pack = load_pack(pack_path)
@@ -66,6 +71,11 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
         return {"status": "error", "reason": "blind check: give value with evidence_text, or missing=True"}
     if phase == "bulk" and (predicted["status"] != "green" or predicted.get("blind")):
         return {"status": "error", "reason": "only a verified value can be accepted without review"}
+    if (phase == "remembered") != (predicted["status"] == "remembered"):
+        return {"status": "error", "reason": "only a remembered answer is saved as remembered"}
+    if phase == "bulk" and not proven(field, pack["fields"], log_path):
+        return {"status": "error", "reason": "this field is still learning: a person confirms its values until it is "
+                                             "Proven accurate"}
 
     confirmed = (_confirmed_items(result.text, field, items, missing) if field.multi
                  else _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing, at))
@@ -77,6 +87,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     # 1. Score first, with the prediction exactly as it was.
     entry = {"ts": datetime.now(SGT).isoformat(timespec="seconds"), "deid_id": deid_id,
              "report_id": result.report_id, "split": _split(result.report_id), "phase": phase,
+             "text_hash": text_hash(result.text),                           # the fingerprint, never the text
              "field": field.key, "field_version": field.version, "blind": bool(predicted.get("blind")),
              "pack_version": pack["version"],
              "predicted": {k: predicted[k] for k in ("value", "status", "start", "end", "reason")},
@@ -85,7 +96,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
 
     # 2. Then learn.
     t0 = time.perf_counter()
-    if phase != "bulk":
+    if phase not in ("bulk", "remembered"):
         _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
     path = log_path or LOG_PATH
     log = read_log(path) + [entry]
@@ -239,7 +250,28 @@ def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=(), 
         bad = {"report": predicted["deid_id"], "context": ctx, "reason": reason}
         field.examples["bad"] = (field.examples["bad"] + [bad])[-KEEP_EXAMPLES:]
 
+    _learn_rule(field, predicted, top, confirmed, outcome)
     field.recent = (field.recent + ["accepted" if outcome in ("correct", "true_empty") else "corrected"])[-5:]
+
+
+def _learn_rule(field, predicted, top, confirmed, outcome: str) -> None:
+    """A correction of a text value becomes a rule: next time the model says the same words, code gives the user's
+    value. A rule's first use asks the user; accepted once, it applies quietly; contradicted, it is dropped."""
+    if field.type != "text" or field.multi or not top or top.get("value") is None:
+        return
+    rules = field.examples.setdefault("rules", [])
+    raw = norm_value(top.get("raw", top["value"]))
+    rule = next((r for r in rules if r["from"] == raw), None)
+    if top.get("rule") and rule and outcome == "correct":
+        rule["uses"] = rule.get("uses", 0) + 1                   # the user agreed with the rewrite
+        return
+    if outcome not in ("wrong", "extra"):
+        return
+    if rule:
+        rules.remove(rule)                                     # contradicted: drop it
+    if confirmed and confirmed.get("value") is not None and norm_value(confirmed["value"]) != raw:
+        rules.append({"from": raw, "to": confirmed["value"], "report": predicted["deid_id"], "uses": 0})
+        field.examples["rules"] = rules[-KEEP_RULES:]
 
 
 # --------------------------------------------------------------------------
@@ -286,7 +318,7 @@ def _checks(field, entries: list[dict]) -> list[dict]:
     seen, out = set(), []
     for e in entries:
         if (e["field"] == field.key and e.get("field_version", 1) == field.version
-                and e.get("phase") not in ("bulk", "reset") and _report(e) not in seen):   # bulk or undone: not a check
+                and e.get("phase") not in ("bulk", "reset", "remembered") and _report(e) not in seen):   # not a check
             seen.add(_report(e))
             out.append(e)
     return out
@@ -341,6 +373,29 @@ def validation(field, entries: list[dict], pool=None) -> dict:
             "more_needed": need if bound > TARGET else 0,
             "review_rate": round(1 - green / len(rows), 2) if rows else None,
             "blind": len(blind), "blind_correct": right(blind), "ready": bound <= TARGET}
+
+
+def text_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def remembered(text: str, field, log_path=None) -> dict | None:
+    """The person's latest answer for this field on exactly this de-identified text (same definition version),
+    unless they reset it since. A value Extract all saved alone is not an answer."""
+    h, mem = text_hash(text), None
+    for e in read_log(log_path):
+        if e.get("text_hash") != h or e["field"] != field.key or e.get("field_version", 1) != field.version:
+            continue
+        if e.get("phase") == "reset":
+            mem = None
+        elif e.get("phase") != "bulk":
+            mem = e
+    return mem
+
+
+def proven(field, fields, log_path=None) -> bool:
+    """Proven accurate (pooled bound): only then may a verified value be saved without a person."""
+    return validation(field, read_log(log_path), fields)["ready"]
 
 
 def readiness(v: dict) -> str:

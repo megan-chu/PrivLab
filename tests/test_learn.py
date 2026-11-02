@@ -153,6 +153,53 @@ def test_typed_value_is_saved_where_the_user_selected_it(paths):
     assert confirm(paths, res, candidate_id=res["candidate_id"])["counted"] is False
 
 
+def test_the_same_report_again_gets_your_answer_back_without_a_model_call(paths):
+    res = run(paths, REPORT, ("9", "specimen 9 x 6 x 3 cm"))
+    confirm(paths, res, value="2.1", evidence_text="tumour 2.1 cm")                    # you corrected it
+    calls = len(paths["spark"]["sent"])
+    r = pipeline.deidentify_report(text=REPORT, profile=new_profile()[0])               # uploaded again
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    again = find_candidates(r["deid_id"], "tumour_size", pack_path=paths["pack"], log_path=paths["log"])
+    assert again["status"] == "remembered" and again["value"] == 2.1 and len(paths["spark"]["sent"]) == calls
+    out = confirm_field(r["deid_id"], "tumour_size", candidate_id=again["candidate_id"], phase="remembered",
+                        pack_path=paths["pack"], log_path=paths["log"])
+    assert out["status"] == "saved" and out["value"] == 2.1
+    f = load_pack(paths["pack"])["fields"][0]
+    assert validation(f, read_log(paths["log"]))["checked"] == 1                        # replayed, not scored
+    assert "text_hash" in read_log(paths["log"])[0] and REPORT not in paths["log"].read_text(encoding="utf-8")
+
+
+def test_a_correction_becomes_a_rule_asked_once_then_applied_and_dropped_if_contradicted(fake_spark, local_keys):
+    pack, log = local_keys / "pack.yaml", local_keys / "log.jsonl"
+    site = {"key": "primary_site", "meaning_question": "Primary site?", "definition": "The organ, e.g. breast.",
+            "type": "text", "unit": None, "range_min": None, "range_max": None, "choices": []}
+    fake_spark["state"]["reply"] = site
+    define_field("primary site", None, accept=site, pack_path=pack)
+
+    def read(text, value, quote):
+        r = pipeline.deidentify_report(text=text, profile=new_profile()[0])
+        pipeline.confirm_deid(r["deid_id"], use_spark=False)
+        fake_spark["state"]["reply"] = {"fields": [{"key": "primary_site", "candidates": [
+            {"value_text": value, "unit_text": None, "evidence_text": quote, "reason": "t", "confidence": 0.9}]}]}
+        return find_candidates(r["deid_id"], "primary_site", pack_path=pack, log_path=log)
+
+    def answer(res, **kw):
+        return confirm_field(res["deid_id"], "primary_site", pack_path=pack, log_path=log, **kw)
+
+    a = "DIAGNOSIS: carcinoma mammae sinistrae. Material: left breast."
+    answer(read(a, "mammae sinistrae", "carcinoma mammae sinistrae"), value="left breast", evidence_text="left breast")
+    b = "DIAGNOSIS: ductal carcinoma mammae sinistrae, 2 cm."
+    first = read(b, "mammae sinistrae", "ductal carcinoma mammae sinistrae")
+    assert first["value"] == "left breast" and first["status"] == "amber" and "Right?" in first["reason"]   # asked once
+    answer(first, candidate_id=first["candidate_id"])
+    c = "FINAL: lobular carcinoma mammae sinistrae."
+    second = read(c, "mammae sinistrae", "lobular carcinoma mammae sinistrae")
+    assert second["value"] == "left breast" and second["status"] == "green"                           # then applied
+    answer(second, value="breast", evidence_text="lobular carcinoma mammae sinistrae")                 # contradicted
+    rules = load_pack(pack)["fields"][0].examples["rules"]
+    assert [(r["from"], r["to"], r["uses"]) for r in rules] == [("mammae sinistrae", "breast", 0)]     # replaced
+
+
 def test_new_meaning_is_a_new_version(paths):
     res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
     confirm(paths, res, candidate_id=res["candidate_id"])
@@ -319,13 +366,20 @@ def test_reset_clears_the_export_but_keeps_the_check(paths):
 
 
 def test_bulk_accepted_values_are_exported_but_never_score_or_teach(paths):
-    """Extract all: a verified value saved without a person is in the export, but is no evidence of accuracy."""
+    """Extract all: a verified value saved without a person is in the export, but is no evidence of accuracy.
+    Only once the field is Proven accurate; while it is learning a person confirms every value."""
+    import json
     res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
+    assert "still learning" in confirm(paths, res, candidate_id=res["candidate_id"], phase="bulk")["reason"]
+    proof = [{"ts": "2026-11-01T10:00:00+08:00", "field": "tumour_size", "field_version": 1, "deid_id": f"p{i}", "report_id": f"p{i}", "phase": "teach",
+              "predicted": {"status": "green", "value": 2.1}, "confirmed": {"value": 2.1}, "outcome": "correct"}
+             for i in range(59)]                                              # 59 clean checks: proven
+    paths["log"].write_text("".join(json.dumps(e) + "\n" for e in proof), encoding="utf-8")
     out = confirm(paths, res, candidate_id=res["candidate_id"], phase="bulk")
     assert out["status"] == "saved"
     f = load_pack(paths["pack"])["fields"][0]
-    assert f.examples["good"] == [] and f.readiness == "draft"               # nothing learned, nothing checked
-    assert validation(f, read_log(paths["log"]))["checked"] == 0
+    assert f.examples["good"] == []                                         # nothing learned
+    assert validation(f, read_log(paths["log"]))["checked"] == 59           # the bulk value is not a check
     assert export_rows(pack_path=paths["pack"], log_path=paths["log"])[1][0]["tumour size (cm)"] == 2.1
     unsure = run(paths, REPORT + " Margin clear.", ("3.5", "a quote that is not in the report"))   # new text: no cache hit
     assert unsure["status"] != "green"
