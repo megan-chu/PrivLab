@@ -25,6 +25,7 @@ def mcp(fake_spark, local_keys, monkeypatch):
     monkeypatch.setitem(viewer.STATE, "log", local_keys / "log.jsonl")
     monkeypatch.setattr(candidates, "_is_blind", lambda *a: False)
     monkeypatch.setattr(server, "spark_state", fake_spark["state"], raising=False)
+    monkeypatch.setitem(server.LAST_OUT, "folder", None)                 # no folder remembered from another test
     return server
 
 
@@ -126,6 +127,30 @@ def test_a_big_folder_names_what_was_not_processed_and_continues(mcp, local_keys
     second = mcp.privlab_deidentify(str(local_keys))                     # again: the next ones, the first kept
     assert sum(not r.get("already_started") for r in second["reports"]) == 2 and second["not_processed"] == ["PP0005.txt"]
     assert mcp._names(["b.txt", "a7.txt", "x.pdf", "y.txt"]) == "b, a7, x and 1 more"
+
+
+def test_replies_say_what_was_sent_where_values_come_from_and_allow_undo(mcp, local_keys):
+    first = mcp.privlab_deidentify(report_file(local_keys))
+    kept = mcp.privlab_review(first["deid_id"], keep_ids=[first["items"][0]["id"]])       # kept one visible
+    assert kept["next"] == "done" and "start_over=True" in kept["say"] and "privlab_extract)" in kept["say"]
+    again = mcp.privlab_review(first["deid_id"], start_over=True)                        # changed their mind
+    assert again["next"] == "review" and again["deid_id"] != first["deid_id"]
+    assert first["deid_id"] not in mcp.pipeline._RUNS                                    # never exported twice
+    done = mcp.privlab_review(again["deid_id"])
+    mcp.spark_state["reply"] = DRAFT
+    d = mcp.privlab_fields("draft", name="tumour size", description="largest tumour size", example="2.1 cm")
+    assert "Only the field's name" in d["say"]
+    mcp.privlab_fields("save", name="tumour size", meaning=d["draft"]["meaning_question"], type="number", unit="cm",
+                       definition=d["draft"]["definition"], range_min=0.1, range_max=30)
+    mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
+         "reason": "diagnosis line", "confidence": 0.9}]}]}
+    got = mcp.privlab_extract(done["deid_id"])
+    assert "Only the masked text was sent" in got["say"] and "Muse Spark 1.3" in got["fields"][0]["source"]
+    second = mcp.privlab_deidentify(report_file(local_keys, REPORT + "More.", name="two.txt"))  # not finished
+    out = mcp.privlab_export("data", str(local_keys / "out" / "d.csv"))
+    assert "still being reviewed" in out["say"] and "two" in out["say"]                  # named, not silently left out
+    assert str(local_keys / "out") in mcp.privlab_export("masked")["suggested_path"]    # the folder used last
 
 
 def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):

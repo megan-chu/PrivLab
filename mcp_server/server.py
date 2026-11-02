@@ -225,6 +225,14 @@ def _read(path: str) -> tuple[str | None, str, list[str]]:
     return text, p.stem, warnings
 
 
+# What left this computer, said each time something does (the user judges the risk in seconds)
+SENT_CHECK = ("Only the masked text (tags, no originals) was sent once, to Muse Spark Open on Baseten, for the second "
+              "check. ")
+SENT_EXTRACT = ("Only the masked text was sent, to Meta's Muse Spark 1.3 (values) and Baseten's elephant decision "
+                "model (second opinion). ")
+SENT_DEFINE = "Only the field's name, the user's words and the example were sent, to Meta's Muse Spark 1.3. "
+
+
 def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
     """A pipeline response, shaped for the chat: paginated items, next, say, viewer link."""
     did, nxt = out.get("deid_id", ""), out.get("next")
@@ -237,10 +245,15 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
             return {**base, "next": "blocked", "say": "A possible identifier is still in the output, so the text is "
                     "withheld and nothing more is sent for this report. Open the viewer and de-identify it again."}
         s = out["summary"]
+        sent = out.get("layer2") in ("clean", "flagged")
         return {**base, "text": out["text"], "summary": s, "second_check": out.get("layer2"),
                 "review_priority": out.get("review_priority"),
-                "say": f"De-identified on this laptop: {s['total']} identifiers replaced with tags. Next: "
-                       "privlab_extract, or privlab_export(kind='masked')."}
+                "say": f"De-identified on this laptop: {s['total']} identifiers replaced with tags. "
+                       + (SENT_CHECK if sent else "Nothing was sent: the second check did not run, so ask the user to "
+                          "read the masked text once. ")
+                       + "If the user kept something visible by mistake, privlab_review(deid_id, start_over=True) "
+                         "lets them review it again. Next: fill in their fields (privlab_extract), or save the "
+                         "masked text (privlab_export, kind='masked')."}
     items = out.get("items") or out.get("detections") or out.get("hold") or out.get("flags") or []
     items = [{**i, "context": scrub(i.get("context", ""))} for i in items]
     page = _page(items, offset, limit)
@@ -249,8 +262,8 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
                      "privlab_review." + _see(did, "check them highlighted on your own screen"),
            "hold": "These words still look like names. They will all be hidden unless the user says some are not "
                    "names (keep_ids). Ask, then call privlab_review. Nothing has been sent yet.",
-           "flags": "The second check (on masked text only) found more. Ticked items will be hidden; ask the user "
-                    "which are false alarms (keep_ids) and which unticked ones to hide (hide_ids)."}.get(nxt, "")
+           "flags": SENT_CHECK + "It found more possible personal details. Ticked ones will be hidden; ask the "
+                    "user which are false alarms (keep_ids) and which unticked ones to hide (hide_ids)."}.get(nxt, "")
     return {**base, "counts": out.get("counts"), **page, "say": say}
 
 
@@ -308,6 +321,7 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
 
 MAX_FOLDER = 100
 SOURCES: dict[str, Path] = {}             # deid_id -> the file it came from (for a default output folder)
+LAST_OUT: dict = {"folder": None}         # where the user saved last: suggested next time
 STARTED: dict[tuple, str] = {}            # (file, text) -> deid_id: the same file again continues, not a copy
 
 
@@ -371,16 +385,20 @@ def _folder(folder: Path) -> dict:
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
 @_safe
 def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] = [],
-                   hide_text: list[str] = [], hide_type: HideType = "NAME") -> dict:
+                   hide_text: list[str] = [], hide_type: HideType = "NAME", start_over: bool = False) -> dict:
     """Use when the user has answered the current question for a report (review, possible names, safety check).
     Arguments: keep_ids = ids to leave visible (not personal); hide_ids = unticked safety-check ids to hide;
     hide_text = missed text to hide, at the first review only (it puts the text in the chat: for names, send the
     user to the viewer instead); hide_type = its type. Ask the user first; never answer for them.
+    start_over=True: the user changed their mind (e.g. something kept visible should be hidden): back to the
+    highlights, or, after the second check, the report read again from its file.
     Returns: the next question, or the de-identified text. After the first answer, the masked text (only) is sent
     once for a safety check."""
     run = pipeline._RUNS.get(deid_id)
     if run is None:
         return {"next": "error", "error": "Unknown deid_id.", "say": "Unknown report: de-identify it first."}
+    if start_over:
+        return _start_over(deid_id, run)
     with viewer._report_lock(deid_id):
         step = run["step"]                      # read under the lock: the viewer may have moved the report on
         if step in ("hold", "flags") and [t for t in hide_text if t.strip()]:
@@ -400,8 +418,31 @@ def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] =
             out = pipeline.confirm_deid_flags(deid_id, keep=keep_ids, hide=hide_ids)
         else:
             return {"deid_id": deid_id, "next": "done", "viewer_url": _url(deid_id),
-                    "say": "This report is already de-identified. Next: privlab_extract or privlab_export."}
+                    "say": "This report is already de-identified. Next: fill in the user's fields (privlab_extract), "
+                           "or save the masked text (privlab_export). To review it again: start_over=True."}
     return _step(out)
+
+
+def _start_over(deid_id: str, run: dict) -> dict:
+    """Undo the review: before anything was sent, a true undo; after the second check, the file read again (the
+    earlier run leaves the session, so it is never exported)."""
+    with viewer._report_lock(deid_id):
+        if run["step"] == "hold":
+            pipeline.back_to_review(deid_id)
+            out = _step(pipeline.report_state(deid_id))
+            return {**out, "say": "Back to the highlights; nothing was sent. " + out["say"]}
+    src = SOURCES.get(deid_id)
+    if src is None or not src.exists():
+        return {"deid_id": deid_id, "next": "error", "viewer_url": _url(deid_id),
+                "say": "This report did not come from a file in this chat. Open it in the viewer and use "
+                       "'Back to Review identifiers' there." + _see(deid_id, "review it again")}
+    sent = run.get("layer2") in ("clean", "flagged")
+    pipeline._RUNS.pop(deid_id, None)                       # the earlier run leaves the session
+    STARTED.pop(next((k for k, v in STARTED.items() if v == deid_id), None), None)
+    out = privlab_deidentify(str(src))
+    return {**out, "say": "Read again from the file, nothing kept from before. "
+            + ("Note: the earlier masked text, with the item kept visible, was already sent once for the second "
+               "check. " if sent else "") + out.get("say", "")}
 
 
 # --- 3. Choose fields --------------------------------------------------------------------------------------------
@@ -456,10 +497,11 @@ def privlab_fields(action: Literal["list", "draft", "save", "remove", "use", "sk
         d = define_field(name, f"{description.strip()}. Example value: {example.strip()}",   # as the viewer sends it
                          pack_path=viewer.STATE["pack"])["draft"]
         return {"next": "confirm", "draft": d,
-                "say": f"Did you mean: {d['meaning_question']} {d.get('definition', '')} Ask the user; then call "
+                "say": SENT_DEFINE + f"Did you mean: {d['meaning_question']} {d.get('definition', '')} Ask the user; then call "
                        "again with action='save' and these details (changed if the user wants)."}
     if not meaning or type is None:
-        msg = "To save, give meaning and type (from the draft: action='draft' first)."
+        msg = ("To save a field I need its meaning and type, which come from a draft: ask the user what it means "
+               "and for an example, then draft it (privlab_fields, action='draft').")
         return {"next": "error", "error": msg, "say": msg}
     accept = {"key": name, "meaning_question": meaning, "definition": definition, "type": type,
               "unit": unit or None, "range_min": range_min, "range_max": range_max, "multi": multi}
@@ -485,9 +527,11 @@ def _preview(key: str, name: str) -> dict:
         return {"preview": {"report": report, "value": None},
                 "say": f"Saved '{name}'. On {report} PrivLab found no value. Ask the user if that is right; if not, "
                        "draft again with a clearer description or example."}
-    return {"preview": {"report": report, "value": value, "quote": r.get("evidence_text"), "status": r.get("status")},
+    return {"preview": {"report": report, "value": value, "quote": r.get("evidence_text"), "status": r.get("status"),
+                        "source": _source(r), "second_opinion": _second(r)},
             "viewer_url": _url(deid_id),
-            "say": f"Saved '{name}'. Preview on {report}: {value}, from \"{r.get('evidence_text')}\". Ask the user if "
+            "say": SENT_EXTRACT + f"Saved '{name}'. Preview on {report}: {value}, from \"{r.get('evidence_text')}\" "
+                   f"({_source(r)}{'; ' + _second(r) if _second(r) else ''}). Ask the user if "
                    "that is the value they want; if not, draft again with their correction."}
 
 
@@ -530,7 +574,7 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
         blind = [r for r in ok if "blind_check_prediction" in r]
         say = f"Saved {len(ok)} of {len(saved)} answer(s)." + (
             f" Blind check(s): PrivLab had " + ", ".join(f"{r['field']} = {r['blind_check_prediction']}" for r in blind)
-            + "." if blind else "") + (" Next: privlab_export." if len(ok) == len(saved) else " Fix the others and send them again.")
+            + "." if blind else "") + (" Next: save the data (privlab_export)." if len(ok) == len(saved) else " Fix the others and send them again.")
         return {"deid_id": deid_id, "next": "done" if len(ok) == len(saved) else "confirm", "saved": saved,
                 "viewer_url": _url(deid_id), "say": say}
     off = viewer.skipped()
@@ -548,6 +592,7 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
             again.append({"field": f.key, "value": r.get("value"), "from": r.get("reason")})
             continue
         results.append({"field": f.key, "name": f.name, "status": r.get("status"), "value": r.get("value"),
+                        "source": _source(r), "second_opinion": _second(r),
                         "unit": r.get("unit"), "quote": r.get("evidence_text"), "section": r.get("section"),
                         "reason": r.get("reason"), "candidate_id": r.get("candidate_id"),
                         "candidates": [{"id": c["id"], "value": c["value"], "quote": c["evidence_text"],
@@ -556,14 +601,29 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
     if not results:
         return {"deid_id": deid_id, "next": "done", "remembered": again, "viewer_url": _url(deid_id),
                 "say": f"This report was checked before: the user's {len(again)} earlier answer(s) were reused, "
-                       "nothing to review. Next: privlab_export."}
+                       "nothing to review. Next: save the data (privlab_export)."}
     opened = any(r["status"] != "green" for r in results) and _show_review(deid_id)
     return {"deid_id": deid_id, "next": "confirm", "fields": results, "remembered": again, "viewer_url": _url(deid_id),
-            "say": (f"{len(again)} answer(s) reused from the user's earlier check of this report. " if again else "")
+            "say": SENT_EXTRACT + (f"{len(again)} answer(s) reused from the user's earlier check of this report. " if again else "")
                    + ("Some values need the user, so PrivLab opened this report in their browser at Extract: tell them. "
                     if opened else "") + "Show each value with its quote. Ask the user to confirm, correct or mark it not stated, then send "
                    "all the answers in one privlab_extract call." + _see(deid_id, "see every value highlighted in the report")
                    + (f" {blind} blind check(s): ask the user for the value without showing PrivLab's." if blind else "")}
+
+
+def _source(r: dict) -> str:
+    """Where a proposed value came from, for the user to weigh it: the model, a rule they taught, their answer."""
+    if r.get("status") == "remembered":
+        return r.get("reason") or "your earlier answer"
+    top = next((c for c in r.get("candidates", []) if c.get("id") == r.get("candidate_id")), {})
+    if top.get("rule"):
+        return f'Muse Spark 1.3, rewritten by your rule: "{top["raw"]}" means {top["value"]}'
+    return "Muse Spark 1.3 (Meta), checked against the report"
+
+
+def _second(r: dict) -> str | None:
+    s = r.get("second")
+    return s and f"Baseten's elephant model is {s['p']:.0%} sure of this value"
 
 
 def _save_remembered(deid_id: str, key: str, r: dict) -> bool:
@@ -661,8 +721,8 @@ def privlab_export(kind: Literal["data", "masked"], out_path: str = "") -> dict:
     output", created if missing); ask the user, then call again with their choice or the suggestion.
     Returns: the suggestion, or the file path and how much it holds (never the contents)."""
     if not out_path:
-        base = next(reversed(SOURCES.values()), None)             # next to the latest report or folder
-        folder = (base.parent if base else Path.home() / "Documents") / "PrivLab output"
+        base = next(reversed(SOURCES.values()), None)             # the folder used last, else next to the reports
+        folder = LAST_OUT["folder"] or (base.parent if base else Path.home() / "Documents") / "PrivLab output"
         name = f"privlab_extracted_data_{viewer._stamp()}.csv" if kind == "data" else f"privlab_masked_{viewer._stamp()}.zip"
         suggestion = str(folder / name)
         return {"next": "ask", "suggested_path": suggestion,
@@ -671,19 +731,23 @@ def privlab_export(kind: Literal["data", "masked"], out_path: str = "") -> dict:
     if ROOT / "data" in p.parents:
         return {"next": "error", "error": "Not inside data/.", "say": "Choose a folder outside PrivLab's data/ folder."}
     p.parent.mkdir(parents=True, exist_ok=True)
+    LAST_OUT["folder"] = p.parent
     session = list(pipeline._RUNS)
+    waiting = [r["report_id"] for r in pipeline._RUNS.values() if r["step"] != "done"]
+    left = (f" Not included, still being reviewed: {', '.join(waiting)}." if waiting else "")
     if kind == "data":
         body = viewer.export_csv(session)
         p.write_bytes(body)
         rows = max(0, len(list(csv.reader(io.StringIO(body.decode("utf-8-sig"))))) - 1)   # a quoted value may hold a line break
         return {"next": "done", "path": str(p), "rows": rows,
-                "say": f"Wrote {rows} report row(s), one column per field, to {p}."}
+                "say": f"Wrote {rows} of {len(session)} report row(s), one column per field, to {p}.{left}"}
     out = viewer.deid_download(None, session)
     if out is None:
         return {"next": "error", "error": "Nothing finished.", "say": "No de-identified reports to export yet."}
     p.write_bytes(out[0])
     n = len(viewer._finished(None, session))
-    return {"next": "done", "path": str(p), "reports": n, "say": f"Wrote {n} masked report(s) to {p}."}
+    return {"next": "done", "path": str(p), "reports": n, "not_included": waiting,
+            "say": f"Wrote {n} of {len(session)} masked report(s) to {p}.{left}"}
 
 
 # --------------------------------------------------------------------------
