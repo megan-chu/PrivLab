@@ -1289,7 +1289,7 @@ function viewQuestion(r) {
     <div class="factions"><button class="link" id="qAll">Tick all</button><button class="link" id="qNone">Untick all</button>
       <span class="sm muted">Shift-click to tick or untick a range</span></div>
     <ul class="list">${q.items.map((x) => `<li class="item"><input type="checkbox" class="toggle" data-q="${x.id}" ${q.picked.has(x.id) ? "checked" : ""} aria-label="Hide ${esc(x.text)}">
-      <div class="grow">${esc(x.text)} <span class="sm muted">${x.source === "suspect" ? "undecided" : esc(TL[x.type] || x.type)}</span>
+      <div class="grow">${esc(x.text)} <span class="sm muted">${x.source === "suspect" ? "undecided" : x.source === "decision" ? "likely a name (second model)" : esc(TL[x.type] || x.type)}</span>
       <div class="ctx">${esc(x.context)}</div></div><button class="link" data-go="${x.id}">Show</button></li>`).join("")}</ul>${traceBlock(r)}`,
     `<button class="btn primary" id="go">${hold ? (q.picked.size ? `Confirm ${q.picked.size} more for masking` : "Confirm, nothing more to mask")
       : q.picked.size ? `Mask ${q.picked.size} more and finish` : "Nothing more to mask: finish"}</button>`,
@@ -1822,7 +1822,10 @@ const defLine = (f) => `<div class="fmeta"><span class="fdefline" title="${esc(f
   ${accLine(f)}</div>`;
 function fieldParts(r, f) {       // {pill, value, body} for one field
   const res = r.results[f.key], saved = r.saved[f.key], editor = r.editing === f.key ? editorHtml(r, f) : "";
-  const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}</div>` : "";
+  // the second opinion (Baseten decision model, masked text only): how sure it is of the value PrivLab proposes
+  const second = (c) => res && res.second && c && c.id === res.candidate_id
+    ? ` · <span title="A second model read the masked report and gave this value ${Math.round(res.second.p * 100)}%">Second check ${Math.round(res.second.p * 100)}% sure</span>` : "";
+  const quote = (c) => c ? `<div class="fquote">“${esc(c.evidence_text.slice(0, 160))}” · ${esc(sectionName(c.section))}${second(c)}</div>` : "";
   const btn = (a, label, cid) => `<button class="link" data-act="${a}" data-key="${f.key}"${cid ? ` data-cid="${cid}"` : ""}>${label}</button>`;
   const acts = (...b) => `<div class="factions">${b.join("")}</div>${editor}`;
   const val = (v) => `${esc(v)}${unit(f, v)}`;
