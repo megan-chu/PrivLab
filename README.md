@@ -160,6 +160,11 @@ Measured on synthetic data, with personal details caught **on the device, before
 | Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **98.5%** | 0 |
 | Uncued names benchmark (frozen, never tuned on) | 56 | **94.6%** | 0 |
 
+**With the AI safety check** (Muse Spark Open reads the masked text once, after you confirm), the full system catches
+**100% of the uncued names** (56 of 56; 3 reached the check unmasked and it caught them) and **98.5% of the hard
+cases**. The two left are a vague contact ("line 3") and a road described by landmarks. The check also suggested 2
+extra words in the hard-case negatives; you see its suggestions ticked on the De-identify step and can keep them.
+
 The hard cases helped shape the rules, so they are a development score. The uncued benchmark was frozen before any
 rule was tuned, so it is an honest one. Final scores on 50 held-out test reports will be added after the final run.
 
