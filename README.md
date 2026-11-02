@@ -91,13 +91,11 @@ copy .env.example .env
 Open `.env` and add your Meta Model API key and Baseten key. The file explains how to create the two local
 security keys (one command each).
 
-Start PrivLab:
+Start PrivLab: **double-click `PrivLab.cmd`** in the PrivLab folder. It opens PrivLab in your browser
+(http://127.0.0.1:8765); close its window to stop. Using PrivLab from an AI assistant instead? You don't need this:
+PrivLab starts its page by itself when the assistant connects, and the assistant gives you the link.
 
-```powershell
-.venv\Scripts\python -m viewer.server
-```
-
-Then open **http://127.0.0.1:8765** in your browser.
+From a terminal, the same: `.venv\Scripts\python -m viewer.server --open`.
 
 ## Using PrivLab, step by step
 

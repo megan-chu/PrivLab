@@ -35,6 +35,7 @@ import socket
 import sys
 import threading
 import traceback
+import webbrowser
 import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -580,7 +581,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="PrivLab local viewer.")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--demo", action="store_true", help="separate profile/pack/log in runs/demo/ + Reset demo")
+    ap.add_argument("--open", action="store_true", help="open the page in the browser (PrivLab.cmd uses this)")
     args = ap.parse_args()
+    url = f"http://127.0.0.1:{args.port}"
     (ROOT / "runs").mkdir(exist_ok=True)
     logging.basicConfig(filename=ROOT / "runs" / "viewer.log", level=logging.INFO,
                         format="%(asctime)s %(name)s %(message)s")
@@ -591,10 +594,16 @@ def main() -> int:
     try:
         server = make_server(args.port)
     except OSError:
+        if args.open:                  # PrivLab is already running: just show it
+            webbrowser.open(url)
+            print(f"PrivLab is already running: opened {url}", file=sys.stderr)
+            return 0
         print(f"Port {args.port} is already in use: another PrivLab viewer is probably running. Close it "
               f"(Ctrl+C in its window), or start this one with --port {args.port + 1}.", file=sys.stderr)
         return 1
-    print(f"PrivLab viewer: http://127.0.0.1:{args.port}{'  (demo mode)' if args.demo else ''}", file=sys.stderr)
+    print(f"PrivLab viewer: {url}{'  (demo mode)' if args.demo else ''}", file=sys.stderr)
+    if args.open:
+        threading.Timer(0.5, webbrowser.open, [url]).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
