@@ -164,8 +164,10 @@ def _client(settings, provider: str):
         api_key = {"meta": settings.meta_api_key, "baseten": settings.baseten_api_key}[provider]
         # max_retries=1: at most one retry on a network error (CLAUDE.md cost rules); connecting may
         # take 5 s at most, so a dead network fails fast instead of hanging the screen
-        _clients[provider] = openai.OpenAI(base_url=base_url, api_key=api_key, max_retries=1,
-                                           timeout=httpx.Timeout(60.0, connect=5.0))
+        # keep the connection open between clicks (httpx closes idle ones after 5 s): no new TLS handshake per call
+        http = httpx.Client(timeout=httpx.Timeout(60.0, connect=5.0),
+                            limits=httpx.Limits(max_keepalive_connections=4, keepalive_expiry=120.0))
+        _clients[provider] = openai.OpenAI(base_url=base_url, api_key=api_key, max_retries=1, http_client=http)
     return _clients[provider]
 
 
@@ -228,6 +230,7 @@ def _request(settings, provider: str, prompt: str, schema: type[BaseModel],
         except openai.BadRequestError as e:   # format not supported: try the next one
             last_error = e
             continue
+        _REACH[provider] = (time.monotonic(), True)      # it answered: no separate online check for a while
         usage = getattr(resp, "usage", None)
         tokens = (getattr(usage, "prompt_tokens", 0) or 0, getattr(usage, "completion_tokens", 0) or 0)
         return resp.choices[0].message.content or "", tokens, mode

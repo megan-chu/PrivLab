@@ -31,7 +31,8 @@ INSTRUCTIONS = (
     "You extract fields from a de-identified pathology report for a cancer registry. Identifiers are "
     "tags like [PATIENT-1]. For each field below, list every place the report states a value, best first. "
     "value_text and unit_text: exactly as written in the report. evidence_text: the shortest exact phrase "
-    "that states the value (ideally under 15 words), copied character for character. confidence: 0 to 1. If a field is not stated, return an "
+    "that states the value (ideally under 15 words), copied character for character. reason: at most 10 words. "
+    "confidence: 0 to 1. If a field is not stated, return an "
     "empty candidates list. Do not infer, calculate or give medical advice."
 )
 MIN_CONFIDENCE = 0.6
