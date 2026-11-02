@@ -938,7 +938,7 @@ function viewEmpty() {
       <div class="hint">.txt, or PDF with selectable text · one report per file · scans and images aren't read</div>
       <div class="acts"><button class="btn primary inline" id="browse">${icon("upload")}Choose files</button>
         <button class="btn secondary inline" id="pasteBtn" data-kbd="Ctrl+V" aria-keyshortcuts="Control+V" title="Ctrl+V anywhere on this page works too">Paste a report</button></div>
-      <textarea class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
+      <textarea autocomplete="off" class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
       <div class="pasteacts"><button class="btn primary inline" id="pasteAdd">Find identifiers</button>
         <button class="link quiet" id="pasteCancel">Cancel</button></div>
     </div>
@@ -1846,7 +1846,7 @@ function addFieldRow(open = S.adding) {           // collapsed to "+ Add field" 
   const d = S.draftField, err = S.draftErr || {}, multi = d.multi;
   const req = `<span class="req" aria-hidden="true">*</span>`;
   const input = (id, label, ph, value) => `<div class="fgrp"><label class="flabel" for="${id}">${label} ${req}</label>
-        <input class="in${err[id] ? " invalid" : ""}" id="${id}" placeholder="${ph}" aria-required="true" aria-describedby="${id}Err"${err[id] ? ' aria-invalid="true"' : ""} value="${esc(value || "")}">
+        <input autocomplete="off" class="in${err[id] ? " invalid" : ""}" id="${id}" placeholder="${ph}" aria-required="true" aria-describedby="${id}Err"${err[id] ? ' aria-invalid="true"' : ""} value="${esc(value || "")}">
         <div class="ferr" id="${id}Err" role="alert"${err[id] ? "" : " hidden"}>${err[id] || ""}</div></div>`;
   const re = S.redefine && S.side === "new" ? S.fields.find((f) => f.key === S.redefine) : null;
   return open ? `<div class="frow addrow addcard" role="listitem">
@@ -1855,7 +1855,7 @@ function addFieldRow(open = S.adding) {           // collapsed to "+ Add field" 
       ${input("newName", "Field name", "e.g. Tumour size, Biomarker", d.name)}
       ${input("newWords", "Description", "In your words, what exactly should be extracted?", d.words)}
       ${re ? `<div class="fgrp"><label class="flabel" for="newDef">Definition ${req}</label>
-        <textarea class="in${err.newDef ? " invalid" : ""}" id="newDef" rows="5" aria-required="true" aria-describedby="newDefErr"${err.newDef ? ' aria-invalid="true"' : ""}>${esc(d.definition || "")}</textarea>
+        <textarea autocomplete="off" class="in${err.newDef ? " invalid" : ""}" id="newDef" rows="5" aria-required="true" aria-describedby="newDefErr"${err.newDef ? ' aria-invalid="true"' : ""}>${esc(d.definition || "")}</textarea>
         <div class="ferr" id="newDefErr" role="alert"${err.newDef ? "" : " hidden"}>${err.newDef || ""}</div></div>` : ""}
       <div class="fgrp"><span class="flabel" id="newMultiL">Values per report ${req}</span>
         <div class="seg" role="group" aria-labelledby="newMultiL" aria-describedby="newMultiErr"><button type="button" data-multi="0" aria-pressed="${multi === false}">One value</button><button type="button" data-multi="1" aria-pressed="${multi === true}">Several (a list)</button></div>
@@ -1949,9 +1949,9 @@ function focusField(r, key) {
 function editorHtml(r, f) {
   const ed = r.edit || {};
   const num = f.type === "number";
-  const input = `<input class="in" id="edVal"${num ? ' inputmode="decimal"' : ""} aria-label="Value" placeholder="${num ? `Value${f.unit ? " in " + esc(f.unit) : ""}` : "As written in the report"}" value="${esc(ed.value || "")}">`;
+  const input = `<input autocomplete="off" class="in" id="edVal"${num ? ' inputmode="decimal"' : ""} aria-label="Value" placeholder="${num ? `Value${f.unit ? " in " + esc(f.unit) : ""}` : "As written in the report"}" value="${esc(ed.value || "")}">`;
   return `<div class="editor" data-stop><span class="label">${num ? `Value${f.unit ? ` in ${esc(f.unit)}` : ""}` : "Value, as written in the report"}</span>${input}<div class="sm ${ed.evidence ? "" : "muted"}">${ed.evidence ? `Quote: <span class="fquote">“${esc(ed.evidence.slice(0, 100))}”</span>` : "Select the quote for this value in the report."}</div>
-    ${r.results[f.key] && r.results[f.key].candidate_id ? `<input class="in" id="edNote" placeholder="Optional: why was PrivLab's pick wrong?" aria-label="Why the suggestion was wrong" value="${esc(ed.note || "")}">` : ""}
+    ${r.results[f.key] && r.results[f.key].candidate_id ? `<input autocomplete="off" class="in" id="edNote" placeholder="Optional: why was PrivLab's pick wrong?" aria-label="Why the suggestion was wrong" value="${esc(ed.note || "")}">` : ""}
     <div class="factions"><button class="btn secondary inline" id="edSave">Save value</button><button class="link" id="edCancel">Cancel</button></div></div>`;
 }
 function wireRows(r) {
@@ -2416,11 +2416,11 @@ function draftDetails() {          // the editable details live inside the last 
   if (!c.editDetails || c.stage !== "confirm") return;
   const d = c.draft, last = [...document.querySelectorAll(".msg.spark")].pop();
   last.insertAdjacentHTML("beforeend", `<div class="details">
-    <label class="label" for="dQ">Question</label><textarea class="in" id="dQ" rows="2">${esc(d.meaning_question)}</textarea>
-    <label class="label" for="dDef">Definition</label><textarea class="in" id="dDef" rows="4">${esc(d.definition || "")}</textarea>
+    <label class="label" for="dQ">Question</label><textarea autocomplete="off" class="in" id="dQ" rows="2">${esc(d.meaning_question)}</textarea>
+    <label class="label" for="dDef">Definition</label><textarea autocomplete="off" class="in" id="dDef" rows="4">${esc(d.definition || "")}</textarea>
     <label class="label" for="dType">Answer</label>
     <select class="in" id="dType"><option value="text" ${d.type !== "number" ? "selected" : ""}>Text, as written</option><option value="number" ${d.type === "number" ? "selected" : ""}>A number</option></select>
-    ${d.type === "number" ? `<label class="label" for="dUnit">Unit</label><input class="in" id="dUnit" placeholder="For example cm" value="${esc(d.unit || "")}">`
+    ${d.type === "number" ? `<label class="label" for="dUnit">Unit</label><input autocomplete="off" class="in" id="dUnit" placeholder="For example cm" value="${esc(d.unit || "")}">`
       : `<span class="sm muted">Recorded exactly as the report writes it. Every field also has its own Not stated button.</span>`}
     <label class="sm" style="display:flex;gap:var(--s2);align-items:center"><input type="checkbox" class="toggle" id="dMulti" ${d.multi ? "checked" : ""}>
       A list: several per report (e.g. biomarker results), exported one row per item</label></div>`);
