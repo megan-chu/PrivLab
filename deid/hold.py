@@ -19,7 +19,7 @@ from functools import lru_cache
 
 from common.data import DATA, manifest
 
-NAME_LISTS = (DATA / "names" / "surnames.txt", DATA / "names" / "first_names.txt")
+NAME_LISTS = (DATA / "names" / "surnames.txt", DATA / "names" / "first_names.txt", DATA / "names" / "common_names.txt")
 USE_NAME_LIST = True     # eval/qualify_model.py turns this off to measure the model alone
 
 EPONYMS = {"gleason", "nottingham", "fuhrman", "bloom", "richardson", "elston", "ellis", "hodgkin",
