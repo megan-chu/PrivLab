@@ -16,6 +16,11 @@ def profile():
     return new_profile()[0]
 
 
+def possible(r):
+    """The words the hold rule shows on the review screen as possible names (show_text=True)."""
+    return [d for d in r["detections"] if d["source"] == "hold"]
+
+
 def confirm(deid_id, **kw):
     """confirm_deid, answering a hold (if any) with "hide all", like a user pressing Confirm."""
     r = pipeline.confirm_deid(deid_id, **kw)
@@ -26,11 +31,10 @@ def confirm(deid_id, **kw):
 
 @pytest.mark.usefixtures("no_names_model")
 def test_no_api_call_before_confirm_or_while_on_hold(fake_spark):
-    r = pipeline.deidentify_report(text=HARD, profile=profile())
+    r = pipeline.deidentify_report(text=HARD, profile=profile(), show_text=True)
     assert r["next"] == "review" and fake_spark["sent"] == []
-    held = pipeline.confirm_deid(r["deid_id"])
-    assert held["next"] == "hold" and fake_spark["sent"] == []          # "Rajesh Kumar" held locally
-    pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []})
+    assert any(d["text"] == "Rajesh Kumar" for d in possible(r))          # shown for review, ticked, locally
+    pipeline.confirm_deid(r["deid_id"])                                   # one confirm: possible names hidden
     assert len(fake_spark["sent"]) == 1
     assert "Rajesh Kumar" not in fake_spark["sent"][0]
 
@@ -74,14 +78,14 @@ def test_lowercase_particle_name_is_caught_locally_not_sent(fake_spark):
 
 
 def test_bare_surname_english_word_is_held(fake_spark):
-    r = pipeline.deidentify_report(text="On review, Tan has received treatment at another centre.", profile=profile())
-    held = pipeline.confirm_deid(r["deid_id"])
-    assert held["next"] == "hold" and fake_spark["sent"] == []       # "Tan" collides with a vocab word
+    r = pipeline.deidentify_report(text="On review, Tan has received treatment at another centre.",
+                                   profile=profile(), show_text=True)
+    assert [d["text"] for d in possible(r)] == ["Tan"] and fake_spark["sent"] == []   # "Tan" is also a word
 
 
 def test_surname_word_at_sentence_start_not_held(fake_spark):
     r = pipeline.deidentify_report(text="Margins clear. Tan, firm cut surface.", profile=profile())
-    assert pipeline.confirm_deid(r["deid_id"])["next"] != "hold"     # lone sentence-initial word stays exempt
+    assert possible(r) == [] and pipeline.confirm_deid(r["deid_id"])["next"] != "hold"   # sentence start exempt
 
 
 def test_keep_goes_to_allow_list(fake_spark):
@@ -94,18 +98,22 @@ def test_keep_goes_to_allow_list(fake_spark):
 
 
 @pytest.mark.usefixtures("no_names_model")
-def test_back_to_review_unlearns_the_first_pass(fake_spark):
-    """Keep "Tan Ah Wing" visible, reach the hold question, go back, hide it after all: the profile must not
-    carry the kept name as a false alarm, or every later report would leave it unmasked."""
+def test_back_to_review_unlearns_the_first_pass(fake_spark, monkeypatch):
+    """Keep "Tan Ah Wing" visible, reach the hold question (your change uncovered a name), go back, hide it after
+    all: the profile must not carry the kept name as a false alarm, or every later report would leave it unmasked."""
     p = profile()
     r = pipeline.deidentify_report(text=HARD, profile=p, show_text=True)
     name = next(d["id"] for d in r["detections"] if d["text"] == "Tan Ah Wing")
+    real = pipeline._hold_spans
+    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed: [   # a word your change uncovered
+        PhiSpan(id="h1", type="NAME", start=text.index("Wing"), end=text.index("Wing") + 4, text="Wing", source="hold")])
     assert pipeline.confirm_deid(r["deid_id"], unmark=[name])["next"] == "hold"
+    monkeypatch.setattr(pipeline, "_hold_spans", real)
     assert pipeline.back_to_review(r["deid_id"])["next"] == "review"
     assert p.allow_list == [] and p.always_remove == []                     # nothing learned yet
     done = confirm(r["deid_id"], use_spark=False)                            # second pass: hide everything
     assert done["next"] == "done" and "Tan Ah Wing" not in done["text"]
-    assert "Tan Ah Wing" not in p.allow_list and "Tan Ah Wing" not in done["text"]
+    assert "Tan Ah Wing" not in p.allow_list
     assert any(x["text"] == "Rajesh Kumar" for x in p.always_remove)        # the final answers are learned
 
 
@@ -194,15 +202,14 @@ def test_single_word_false_alarm_not_reused_across_reports(fake_spark):
 
 def test_look_alike_tag_is_held_not_skipped(fake_spark):
     r = pipeline.deidentify_report(text="Results discussed with [ONGKOKWAH-1] today.", profile=profile())
-    held = pipeline.confirm_deid(r["deid_id"])
-    assert held["next"] == "hold" and fake_spark["sent"] == []
+    assert possible(r) and fake_spark["sent"] == []
 
 
 @pytest.mark.usefixtures("no_names_model")
 def test_name_after_colon_or_initial_is_held(fake_spark):
     for text in ("Consultant: Kumar reviewed the slides.", "Reviewed by L. Kumar today."):
         r = pipeline.deidentify_report(text=text, profile=profile())
-        assert pipeline.confirm_deid(r["deid_id"])["next"] == "hold", text
+        assert possible(r) or r["counts"].get("NAME") or r["counts"].get("DOCTOR"), text
 
 
 def test_report_cannot_close_the_prompt_data_block(fake_spark):
@@ -248,8 +255,7 @@ def test_listed_name_is_held_locally(fake_spark):
     for text in ("Kumar consented to the procedure.", "Report handed to ming wei at the desk.",
                  "Darryl consented to the procedure."):                       # surnames; first name
         r = pipeline.deidentify_report(text=text, profile=profile())
-        held = pipeline.confirm_deid(r["deid_id"])
-        assert held["next"] == "hold" and fake_spark["sent"] == []          # public name lists, no model
+        assert possible(r) and fake_spark["sent"] == [], text                # public name lists, no model
 
 
 @pytest.mark.usefixtures("no_names_model")
@@ -261,9 +267,8 @@ def test_review_priority(fake_spark, monkeypatch):
     r = pipeline.deidentify_report(text=HARD, profile=profile())
     assert confirm(r["deid_id"])["review_priority"] == {"level": "low", "reasons": []}
     r = pipeline.deidentify_report(text=HARD, profile=profile())
-    held = pipeline.confirm_deid(r["deid_id"])
-    done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": [held["hold"][0]["id"]]})
-    assert done["review_priority"]["level"] == "medium"                        # a name-like word left visible
+    done = confirm(r["deid_id"], unmark=[possible(r)[0]["id"]])               # a possible name kept visible
+    assert done["review_priority"]["level"] == "medium"
     import deid.qualify as qualify
     monkeypatch.setattr(qualify, "is_qualified", lambda provider: False)
     r = pipeline.deidentify_report(text=HARD, profile=profile())
@@ -325,22 +330,26 @@ def test_kept_by_choice_and_remembered_phrases_are_not_asked(fake_spark):
     assert hold_flags(text) and not hold_flags(text, allowed=["Riverside General Hospital"])
 
 
-def test_back_from_the_hold_question_only_before_anything_is_sent(fake_spark, no_names_model):
+def test_back_from_the_hold_question_only_before_anything_is_sent(fake_spark, no_names_model, monkeypatch):
     r = pipeline.deidentify_report(text="Report handed to ming wei at the desk.", profile=new_profile()[0])
-    held = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    ids = [d["id"] for d in possible(r)]
+    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed: [   # your change uncovered a name
+        PhiSpan(id="h1", type="NAME", start=text.index("ming"), end=text.index("ming") + 8, text="ming wei", source="hold")])
+    held = pipeline.confirm_deid(r["deid_id"], unmark=ids, use_spark=False)
     assert held["next"] == "hold"
     assert pipeline.back_to_review(r["deid_id"])["next"] == "review"
     assert pipeline.back_to_review(r["deid_id"])["next"] == "error"         # already back
-    again = pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    again = pipeline.confirm_deid(r["deid_id"], unmark=ids, use_spark=False)
     assert again["next"] == "hold" and fake_spark["sent"] == []              # nothing was ever sent
 
 
 def test_a_held_hospital_is_labelled_hospital(fake_spark, no_names_model):
     from deid.profile import checklist
     choices = {c["key"]: c["default"] for c in checklist()}
-    r = pipeline.deidentify_report(text="Seen at Kampong Glam Community Clinic last week.", profile=new_profile(choices)[0])
-    held = pipeline.confirm_deid(r["deid_id"], use_spark=False, show_text=True)
-    assert held["next"] == "hold" and held["hold"][0]["type"] == "HOSPITAL" and "[HOSPITAL-" in held["hold"][0]["context"]
+    r = pipeline.deidentify_report(text="Seen at Kampong Glam Community Clinic last week.",
+                                   profile=new_profile(choices)[0], show_text=True)
+    held = possible(r)
+    assert held and held[0]["type"] == "HOSPITAL" and "[HOSPITAL-" in held[0]["context"]
 
 
 def test_two_reports_finishing_keep_both_learned_names(local_keys, monkeypatch):

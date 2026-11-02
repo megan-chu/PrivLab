@@ -6,6 +6,7 @@ with newline="" (no translation) and rejected if they contain CR.
 """
 import csv
 import json
+import re
 
 from common.config import ROOT
 
@@ -37,3 +38,12 @@ def load_report(report_id: str) -> str:
 
 def load_phi_truth(report_id: str) -> dict:
     return json.loads((PHI_TRUTH / f"{report_id}.json").read_text(encoding="utf-8"))
+
+
+ABBR = r"(?i:\b(?:e\.g|i\.e|vs|no|dr|mr|mrs|ms|st))\. [a-z]"   # real abbreviations, left alone
+
+
+def clean_for_display(text: str) -> str:
+    """Sample text for the viewer: join words a stray full stop split ("ductal. carcinoma")."""
+    return re.sub(ABBR + r"|([A-Za-z])\. ([a-z])",
+                  lambda m: m.group(0) if m.group(1) is None else f"{m.group(1)} {m.group(2)}", text)

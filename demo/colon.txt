@@ -1,0 +1,41 @@
+Merlion Medical Centre
+Department of Pathology
+
+Patient: Chua Li Hua
+NRIC: T0318274B
+DOB: 8 August 1962
+MRN: MRN031827
+Accession: SP26-00912
+
+CLINICAL HISTORY:
+63-year-old woman with iron deficiency anaemia. Colonoscopy showed an
+ulcerated mass in the sigmoid colon. Her husband, Lim Wei Jie, is the
+main contact (mobile 9876 5410).
+
+GROSS DESCRIPTION:
+Received a sigmoid colectomy measuring 24.0 cm in length. There is an
+ulcerated tumour measuring 4.2 x 3.6 cm, located 8.0 cm from the distal
+margin and 12.5 cm from the proximal margin. The tumour invades through
+the muscle wall into the pericolic fat. Twenty-two lymph nodes are found.
+
+MICROSCOPIC:
+Sections show adenocarcinoma, moderately differentiated, invading through
+the muscularis propria into the pericolorectal tissue. Lymphovascular
+invasion is present. No perineural invasion is seen. Three of twenty-two
+lymph nodes contain metastatic carcinoma (3/22). All margins are clear;
+the closest (radial) margin is 6 mm.
+
+Mismatch repair immunohistochemistry:
+MLH1: Retained
+PMS2: Retained
+MSH2: Retained
+MSH6: Retained
+Interpretation: Mismatch repair proficient (pMMR)
+
+DIAGNOSIS:
+Sigmoid colon, colectomy: adenocarcinoma, moderately differentiated.
+Margins clear. Metastatic carcinoma in 3 of 22 lymph nodes.
+Pathologic stage (AJCC 8th): pT3 pN1b
+
+Reported by:
+Dr Arjun K. Menon, Pathologist

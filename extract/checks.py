@@ -29,6 +29,15 @@ def parse_number(value_text: str, unit_text: str | None, field_unit: str | None)
     return round(value, 3)
 
 
+STRAY_STOP = re.compile(r"(?<=[a-z]{3})(?<!approx)(?<!incl)(?<!etc)\.[ \t]+(?=[a-z])")   # "ductal. carcinoma", not "approx. 2"
+
+
+def tidy_text(value: str) -> str:
+    """A text value as written, minus slips: whitespace collapsed, and a full stop between two lower-case words
+    dropped (a real sentence end is followed by a capital). The quote in the report is not changed."""
+    return STRAY_STOP.sub(" ", " ".join(str(value).split()))
+
+
 def _in_evidence(word: str, evidence: str) -> bool:
     """Long words as substrings; short codes not glued to a digit ("N0" in "pT3N0Mx", not "2" in "12")."""
     if len(word) > 2:
@@ -55,7 +64,7 @@ def run_checks(field, cand, text: str, kept_types=()) -> dict:
         out["checks"]["value_in_evidence"] = bool(number) and re.search(
             rf"(?<![\d.]){re.escape(number.group())}(?![\d])", evidence.replace(",", ".")) is not None
     else:
-        value = " ".join(cand.value_text.split()) or None              # as written; no list, no normalising
+        value = tidy_text(cand.value_text) or None                      # as written, minus slips ("ductal. carcinoma")
         out["checks"]["type_ok"] = value is not None
         tokens = re.findall(r"[a-z0-9]+", cand.value_text.lower())
         words = [w for w in tokens if len(w) > 2] or tokens          # "T3", "N0", "2": short codes

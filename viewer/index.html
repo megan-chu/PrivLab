@@ -93,12 +93,17 @@ svg { width: 16px; height: 16px; flex: none; }
 .rmv { position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--r-sm); font-size: 16px; line-height: 1; color: var(--ink-muted); opacity: 0; }
 .rrow:hover .rmv, .rmv:focus-visible { opacity: 1; }
 .rmv:hover { background: var(--surface-sunken); color: var(--ink); }
+.ropen { position: absolute; right: 36px; bottom: 8px; font-size: 12px; line-height: 20px; color: var(--hema); font-weight: 600;
+  text-decoration: none; padding: 0 4px; border-radius: var(--r-sm); }
+.ropen:hover { background: var(--surface-sunken); text-decoration: underline; }
 .rconfirm { margin: 2px var(--s1) var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r-md); background: var(--refused-bg); font-size: 13px; line-height: 18px; }
 .rconfirm .factions { margin-top: var(--s1); gap: var(--s2); }
 .rconfirm .danger { min-height: 30px; padding: 0 var(--s3); border-radius: 6px; background: var(--refused); color: #fff; font-weight: 600; }
 .rbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s3); padding: 0 var(--s3) var(--s2); font-size: 13px; }
 .row.sel { grid-template-columns: auto 1fr auto; cursor: pointer; }
 .row.sel .sub { grid-column: 2 / -1; }
+.src { font: 600 10px/16px var(--f-sans); letter-spacing: .04em; padding: 0 5px; border-radius: var(--r-sm); background: var(--surface-sunken);
+  color: var(--ink-muted); border: 1px solid var(--line); }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .dot.high { background: var(--refused); } .dot.medium { background: var(--review); } .dot.low { background: var(--verified); }
 
@@ -170,6 +175,8 @@ body.resizing { cursor: col-resize; user-select: none; }
 .kbd { font: 500 11px var(--f-mono); padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--r-sm); color: var(--ink-muted); }
 .hint { text-align: center; color: var(--ink-muted); font-size: 13px; line-height: 18px; }
 /* A shortcut badge: always shown on a small button; on the main button it sits at the right edge, on hover or focus only */
+.btn.two { flex-direction: column; gap: 0; line-height: 18px; padding-top: 6px; padding-bottom: 6px; }
+.btn .bsub { font-size: 12px; font-weight: 500; opacity: .8; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn[data-kbd]::after { content: attr(data-kbd); margin-left: 8px; padding: 0 5px; font: 500 11px/16px var(--f-mono); border: 1px solid currentColor;
   border-radius: var(--r-sm); opacity: .6; }
 .btn.primary[data-kbd] { position: relative; }
@@ -510,7 +517,8 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
   <aside class="rail" aria-label="Reports">
     <div class="rail-head"><span class="label">Reports</span><span><button class="tbtn" id="selBtn" style="display:none">Select</button><details class="menu left" id="addMenu"><summary class="tbtn" id="addBtn"><svg aria-hidden="true"><use href="#i-plus"/></svg>Add</summary>
       <div class="pop"><button id="addFiles">Choose files…<span>.txt, or PDF with selectable text</span></button>
-      <button id="addPaste" data-kbd="Ctrl+V">Paste a report<span>Text you copied, as one report</span></button></div></details></span></div>
+      <button id="addPaste" data-kbd="Ctrl+V">Paste a report<span>Text you copied, as one report</span></button>
+      <button id="addSamples">Sample reports<span>Five invented reports to try, one by one or all at once</span></button></div></details></span></div>
     <div class="rail-list" id="rail"></div>
     <div class="rail-foot"><button class="link quiet" id="resetBtn" style="display:none" title="Demo only: erases the reports, profile, fields and everything learned">Reset demo…</button></div>
   </aside>
@@ -720,11 +728,12 @@ function renderRail() {
     const [label, cls, ic, why] = railState(r);
     const pill = `<span class="pill ${cls}" title="${why}">${ic ? icon(ic) : ""}${label}</span>`;
     const pr = r.done && r.done.review_priority ? r.done.review_priority.level : null;
-    const sub = `<span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${esc(r.cancer || (r.sample ? "Sample" : "Your file"))}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span>`;
+    const sub = `<span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${r.source === "PDF" ? `<span class="src">PDF</span>` : ""}${esc(r.sample ? r.cancer || "Sample" : r.source === "PDF" ? "" : r.source || "Your file")}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span>`;
     if (sel) return `<label class="row sel ${sel.has(r.key) ? "on" : ""}"><input type="checkbox" class="toggle" data-tick="${r.key}" ${sel.has(r.key) ? "checked" : ""} aria-label="Select ${esc(r.name)}">
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</label>`;
     return `<div class="rrow"><button class="row ${i === S.cur ? "on" : ""}" data-i="${i}" aria-current="${i === S.cur}">
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</button>
+      ${r.original ? `<a class="ropen" href="${r.original}" target="_blank" rel="noopener" title="Open the file you added, to compare with the text read from it. It stays in this browser.">Original ↗</a>` : ""}
       ${S.confirmRm === r.key ? "" : `<button class="rmv" data-rm="${r.key}" aria-label="Remove ${esc(r.name)} from the list" title="Remove from the list">×</button>`}</div>
       ${S.confirmRm === r.key ? `<div class="rconfirm" role="alertdialog" aria-label="Confirm removal"><b>Remove from the list?</b>
         <div class="muted">It leaves this session's exports.</div>
@@ -811,7 +820,7 @@ function goStep(r, key, test) {
   return !!go;
 }
 function reviewAgain(r) {        // a fresh local run with the same choices; nothing is sent until confirmed again
-  const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer, add: r.add, carry: keptKeys(r)});
+  const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer, source: r.source, original: r.original, add: r.add, carry: keptKeys(r)});
   copy.req = r.req; S.reports.splice(S.cur, 1, copy); layer1(copy);
 }
 // What you kept visible, carried into a re-run by text and position: ids are positional and renumber
@@ -896,7 +905,8 @@ function viewEmpty() {
       <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">Find identifiers</button>
     </div>
     <div class="samples"><span class="label">Or test with sample data:</span>${SAMPLES.map(([id, label, short]) =>
-      `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}</div>
+      `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}
+      <button class="sample" data-sample-all title="Add all ${SAMPLES.length} sample reports, to try a batch">All ${SAMPLES.length}</button></div>
   </div>`;
   // The right panel: the same steps as the step bar. The panel badge carries the universal guarantee (local
   // processing); each step says what you do, shows a one-line demo, states what leaves the device, and what
@@ -945,19 +955,25 @@ function viewEmpty() {
   drop.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
   $("browse").onclick = () => $("fileInput").click();
   $("pasteBtn").onclick = () => { $("paste").classList.add("show"); $("pasteAdd").style.display = ""; $("paste").focus(); };
-  $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t) : toast("Not added yet — the box is empty. Paste your report text first, then click again."); };
+  $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t, "Pasted") : toast("Not added yet — the box is empty. Paste your report text first, then click again."); };
   document.querySelectorAll("[data-sample]").forEach((b) => b.onclick = () => addSample(b.dataset.sample));
+  if (document.querySelector("[data-sample-all]")) document.querySelector("[data-sample-all]").onclick = async () => {
+    const first = S.reports.length;                       // a batch: add them all, then start at the first
+    for (const [id] of SAMPLES) await addSample(id);
+    select(first);
+  };
 }
 // Ctrl+V on the add-reports screen (outside a text box) adds the clipboard text as a report
 document.addEventListener("paste", (e) => {
   if (S.cur >= 0 || e.target.closest("input, textarea, [contenteditable]")) return;
   const t = (e.clipboardData || window.clipboardData).getData("text");
   if (!t || !t.trim()) return toast("Nothing added — your clipboard has no text. Copy the report first, then try again.", "center");
-  e.preventDefault(); addText("Pasted report " + (++seq), t);
+  e.preventDefault(); addText("Pasted report " + (++seq), t, "Pasted");
 });
 $("fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
 // Add: straight to the file picker, or to the paste box on the start screen; the report you are on stays as it is
 $("addFiles").onclick = () => { $("addMenu").open = false; $("fileInput").click(); };
+$("addSamples").onclick = () => { $("addMenu").open = false; S.cur = -1; render(); };
 $("addPaste").onclick = () => { $("addMenu").open = false; S.cur = -1; render(); $("pasteBtn").click(); };
 document.addEventListener("click", (e) => { if (!e.target.closest("#addMenu")) $("addMenu").open = false; });
 // On the start screen, points at the two ways in (for 8 s, or until one is used); dropping files works too
@@ -992,15 +1008,18 @@ async function addPdf(f) {             // read on the server on this device; a s
   const bytes = new Uint8Array(await f.arrayBuffer());
   let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   const name = f.name.replace(/\.pdf$/i, "");
-  return start(newReport(name, {}), "/api/add", {name, pdf: btoa(bin)});
+  // the browser keeps its own copy of the original to open beside the text: never uploaded, gone on reload
+  return start(newReport(name, {source: "PDF", original: URL.createObjectURL(f)}), "/api/add", {name, pdf: btoa(bin)});
 }
 const newReport = (name, extra) => ({key: ++seq, name, step: "loading", unmark: new Set(), add: [], dets: null, results: {}, saved: {}, toggled: {}, lists: {},
   typed: 0, trace: [], prefetch: "none", openedAt: performance.now(), ...extra});
-function addText(name, text) { return start(newReport(name.replace(/\.txt$/i, ""), {preview: text}), "/api/add", {name, text}); }
-// The demo samples: one per cancer type, named by the procedure in each report (extra split).
-const SAMPLES = [["PP0002", "Breast cancer surgery report", "Breast report"], ["PP0042", "Colon resection report", "Colon report"],
-  ["PP0081", "Kidney removal (nephrectomy) report", "Kidney report"], ["PP0122", "Lung lobectomy report", "Lung report"],
-  ["PP0161", "Prostate removal (prostatectomy) report", "Prostate report"]];      // id, report name, chip label
+function addText(name, text, source = "Text file") {
+  const original = URL.createObjectURL(new Blob([text], {type: "text/plain;charset=utf-8"}));   // this browser only
+  return start(newReport(name.replace(/\.txt$/i, ""), {preview: text, source, original}), "/api/add", {name, text});
+}
+// The demo samples: three invented reports in demo/ (breast, lung, colon), named by the procedure.
+const SAMPLES = [["demo_breast", "Breast surgery report", "Breast"], ["demo_lung", "Lung resection report", "Lung"],
+  ["demo_colon", "Colon resection report", "Colon"]];      // id, report name, chip label
 function addSample(id) {
   const label = (SAMPLES.find(([x]) => x === id) || [id, id])[1];
   return start(newReport(label, {sample: true, cancer: "Sample"}), "/api/deid", {report_id: id});
@@ -1100,8 +1119,10 @@ function viewReview(r) {
     <h2 class="h1">Review identifiers</h2>
     ${S.editProfile ? profileEditor() : `<p class="sm" style="margin:0 0 var(--s3)"><span class="muted">${hidingSummary()}</span> · <button class="link" id="changeProfile">Change</button></p>`}
     <div class="big"><b>${n}</b><span class="muted">identifiers found on this device</span></div>
+    ${r.dets.some((d) => d.source === "hold") ? `<p class="sm muted" style="margin:0 0 var(--s2)">${r.dets.filter((d) => d.source === "hold").length} marked <b>possible name</b>: ticked to be safe. Untick any ordinary word.</p>` : ""}
     <ul class="list">${r.dets.map((d) => `<li class="item"><input type="checkbox" class="toggle" data-det="${d.id}" ${r.unmark.has(d.id) ? "" : "checked"} aria-label="Hide ${esc(d.text)}">
-      <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}${d.learned
+      <div class="grow"><span class="chip t-${d.type}">${TL[d.type] || d.type}</span> ${esc(d.text)}${d.source === "hold"
+        ? ` <span class="sm muted" title="It looks like a name or place, so it is ticked to hide. Untick it if it is an ordinary word; PrivLab learns either way.">possible name · check</span>` : ""}${d.learned
         ? ` <span class="learnt" title="You hid this on an earlier report; PrivLab now catches it on this device, before anything is sent">Learned${d.learned_from ? ` from ${esc(d.learned_from)}` : ""}</span>` : ""}</div><button class="link" data-go="${d.id}">Show</button></li>`).join("")}
       ${r.add.map((a, i) => `<li class="item"><input type="checkbox" class="toggle" checked data-add="${i}" aria-label="Stop hiding ${esc(a.text)}">
       <div class="grow"><span class="chip t-${a.type}">${TL[a.type] || a.type}</span> ${esc(a.text)} <span class="sm muted">added by you</span></div></li>`).join("")}</ul>
@@ -1273,8 +1294,8 @@ function viewSafe(r) {
     ${traceBlock(r)}`,
     !extracting() ? `<a class="btn primary" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")}Download de-identified text</a>
         ${nextButton("secondary")}`
-    : `${ni >= 0 ? `<button class="btn primary" id="next" data-next="${ni}">Next: review ${shortName(S.reports[ni])}</button>
-        <button class="btn secondary" id="toChoose" title="Choose fields for the reports reviewed so far">Choose fields now</button>`
+    : `${ni >= 0 ? `<button class="btn primary two" id="next" data-next="${ni}">${nextAction(ni)}</button>
+        <button class="btn secondary" id="toChoose" title="Choose fields for the reports reviewed so far; review the rest later">Skip ahead: choose fields</button>`
       : `<button class="btn primary" id="toChoose">Confirm and choose fields</button>`}
       <a class="link quiet" style="align-self:center" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}" id="dl">${icon("down")} Export masked .txt</a>`, status);
   if ($("toChoose")) $("toChoose").onclick = () => { r.step = "choose"; trace(r, "You confirmed the de-identified text.", "local"); render(); };
@@ -1344,7 +1365,7 @@ function viewChoose(r) {
       <p class="sm muted" style="margin:var(--s2) 0 0">${extractSummary()}</p>`
     : `<h2 class="h1">Choose fields</h2><p class="lede">No fields yet. Add one in your own words, or select an example value in the document and choose <b>+</b>.</p>${addFieldRow()}`}
     ${traceBlock(r)}`,
-    S.fields.length ? `${ni >= 0 ? `<button class="btn primary" id="next" data-next="${ni}">Next: review ${shortName(S.reports[ni])}</button>` : ""}
+    S.fields.length ? `${ni >= 0 ? `<button class="btn primary two" id="next" data-next="${ni}">${nextAction(ni)}</button>` : ""}
       ${ni < 0 && toExtract > 1 && nf ? `<button class="btn primary" id="bulk"${S.bulk && S.bulk.running ? " disabled" : ""} title="Saves every verified value by itself; a report with anything to check waits for you">Extract all ${toExtract} reports</button>
         <button class="btn secondary" id="each" title="Open Extract on each report in turn and confirm its values yourself">Extract one by one</button>`
       : `<button class="btn ${ni >= 0 ? "secondary" : "primary"}" id="go"${nf ? "" : " disabled"}>${!nf ? "Select at least one field"
@@ -1379,6 +1400,9 @@ function nextButton(kind) {
 const needOf = (r) => r.step === "approved" ? null
   : ["safe", "choose", "fields"].includes(r.step) ? "extract"
   : ["failed", "blocked"].includes(r.step) ? "fix" : "review";
+// A button that moves on to another report says what you will do there; the report's name sits underneath
+const nextAction = (i, lead = "Next report") => `<span>${lead}: ${needOf(S.reports[i]) === "review" ? "review identifiers" : "extract values"}</span>
+  <span class="bsub">${shortName(S.reports[i])}</span>`;
 const shortName = (r) => esc(r.name.length > 28 ? r.name.slice(0, 28) + "…" : r.name);
 const pl = (n, word, plural) => `${n} ${n === 1 ? word : plural || `${word}s`}`;          // 1 field, 3 fields
 const PLURAL = {NAME: "Names", DOCTOR: "Clinicians", ID: "ID numbers", DOB: "Dates of birth", DATE: "Dates", MRN: "MRNs",
@@ -1614,7 +1638,7 @@ function viewFields(r) {
   else if (open.length) foot = `<button class="btn primary" disabled>Review ${open.length} field${open.length > 1 ? "s" : ""} above</button>`;
   else {
     const ni = nextNeed();
-    foot = `<button class="btn primary" id="approve" data-next="${ni}">${ni >= 0 ? `Finish report · next: ${needOf(S.reports[ni])} ${shortName(S.reports[ni])}` : "Finish and export this report"} ${icon("arrow")}</button>`;
+    foot = `<button class="btn primary${ni >= 0 ? " two" : ""}" id="approve" data-next="${ni}">${ni >= 0 ? nextAction(ni, "Finish · next report") : `Finish and export this report ${icon("arrow")}`}</button>`;
   }
   // Can you go on? Said right above the button; a field that needs you is a link to it
   const links = (fs) => fs.map((f) => `<button class="link" data-focusfield="${f.key}">${esc(f.name)}</button>`).join(", ");
@@ -1993,7 +2017,7 @@ function viewApproved(r) {
   const unstated = Object.values(r.saved).filter((o) => o.value == null).length;
   const next = nextNeed();                    // review first, then extraction; a failed report keeps its own retry
   const need = next >= 0 ? needOf(S.reports[next]) : null;
-  const nextLabel = next < 0 ? `${icon("plus")}Add more reports` : `Next: ${need} ${shortName(S.reports[next])} ${icon("arrow")}`;
+  const nextLabel = next < 0 ? `${icon("plus")}Add more reports` : nextAction(next);
   const approved = S.reports.filter((x) => x.step === "approved").length, waiting = S.reports.length - approved;
   const all = next < 0 && S.reports.length > 1 && !waiting;
   const statusLine = ["ok", all ? `All ${approved} reports done. Download the batch above.`
@@ -2012,7 +2036,7 @@ function viewApproved(r) {
     </div>
     <p class="sm" style="margin:var(--s2) 0 0"><a class="link quiet" href="/api/deid_export?deid_id=${encodeURIComponent(r.deid)}">Only this report's masked text (.txt)</a></p>
     ${traceBlock(r)}`,
-    `<button class="btn primary" id="go">${nextLabel}</button>`, statusLine);
+    `<button class="btn primary${next < 0 ? "" : " two"}" id="go">${nextLabel}</button>`, statusLine);
   $("go").onclick = () => next >= 0 ? goTo(next) : (S.cur = -1, render(), glowAdd());
   $("pBack").onclick = () => openFields(r);
   document.querySelectorAll("[data-pick]").forEach((b) => {

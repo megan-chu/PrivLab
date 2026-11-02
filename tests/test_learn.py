@@ -417,3 +417,10 @@ def test_text_values_are_kept_as_written(paths):
         {"value_text": "pT2a", "unit_text": None, "evidence_text": "Stage: pT2a N0", "reason": "t", "confidence": 0.9}]}]}
     res = find_candidates(r["deid_id"], "stage", pack_path=paths["pack"])
     assert res["status"] == "green" and res["value"] == "pT2a"            # as written, no list to match
+
+
+def test_a_stray_full_stop_inside_a_text_value_is_dropped():
+    from extract.checks import tidy_text
+    assert tidy_text("poorly differentiated invasive ductal. carcinoma") == "poorly differentiated invasive ductal carcinoma"
+    assert tidy_text("Margins clear. Tumour 2 cm") == "Margins clear. Tumour 2 cm"     # a real sentence end stays
+    assert tidy_text("approx. two thirds") == "approx. two thirds"                       # an abbreviation stays

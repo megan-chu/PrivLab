@@ -42,7 +42,7 @@ from urllib.parse import parse_qs, quote, urlparse
 
 from common import spark
 from common.config import ROOT
-from common.data import load_report, manifest
+from common.data import clean_for_display, load_report, manifest
 from common.pdf import pdf_text
 from common.timing import timed
 from deid import pipeline
@@ -105,12 +105,18 @@ def _start(text: str, name: str, choices) -> dict:
     return {**out, "name": name, "text": text}
 
 
+DEMO_SAMPLES = {"demo_breast": "report_1.txt", "demo_lung": "lung.txt", "demo_colon": "colon.txt"}   # in demo/
+
+
 def api_deid(b):
-    """A sample report from dev or extra."""
+    """A sample report: one of the three invented demo reports, or a dev or extra report."""
     rid = b["report_id"]
+    if rid in DEMO_SAMPLES:
+        text = (ROOT / "demo" / DEMO_SAMPLES[rid]).read_text(encoding="utf-8").replace("\r\n", "\n")
+        return {**_start(text, rid, b.get("choices")), "sample": True}
     if not any(r["report_id"] == rid and r["split"] in ("dev", "extra") for r in manifest()):
         return {"error": "unknown sample (only dev and extra are available here)"}
-    return {**_start(load_report(rid), rid, b.get("choices")), "sample": True}
+    return {**_start(clean_for_display(load_report(rid)), rid, b.get("choices")), "sample": True}
 
 
 def api_add(b):

@@ -26,6 +26,7 @@ by immunostain.
 DIAGNOSIS:
 Invasive lobular carcinoma, Nottingham grade 2. Margins clear.
 No nodal metastasis.
+Pathologic stage (AJCC 8th): pT1c pN0(sn)
 
 Reported by:
 Dr Siti Aminah, Pathologist

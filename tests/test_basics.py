@@ -64,3 +64,14 @@ def test_lab_split_parses_a_lab_reports_file(tmp_path, monkeypatch):
     cases = load_cases("lab")
     assert [c["id"] for c in cases] == ["L01"]
     assert cases[0]["phi"] == [{"type": "NAME", "text": "Toung Chu", "start": 7, "end": 16}]
+
+
+def test_clean_for_display_joins_stray_stops():
+    import re
+
+    from common.data import clean_for_display, load_report
+    assert clean_for_display("invasive ductal. carcinoma") == "invasive ductal carcinoma"
+    assert clean_for_display("spread. Focal. angioinvasion") == "spread. Focal angioinvasion"
+    assert clean_for_display("e.g. this stays") == "e.g. this stays"
+    assert not re.search(r"[A-Za-z]\. [a-z]", clean_for_display(load_report("PP0002")))
+    assert "ductal. carcinoma" in load_report("PP0002")   # the corpus itself is untouched

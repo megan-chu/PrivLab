@@ -84,6 +84,8 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
         found = find_pattern_phi(text, report_id, learned=profile.always_remove)
         spans = [s for s in found if s.type in removed and s.text.lower() not in allow]
         kept_by_choice = [s.text for s in found if s.type not in removed]    # e.g. hospital names you keep
+        # Words that still look like a person or place: shown with the rest, ticked, for one confirm (on device)
+        spans += [h for h in _hold_spans(text, spans, list(reusable) + kept_by_choice) if h.type in removed]
     deid_id = "d_" + secrets.token_hex(4)
     run = {"deid_id": deid_id, "report_id": report_id, "text": text, "profile": profile, "persist": persist,
            "step": "review", "spans": spans, "allowed": list(reusable) + kept_by_choice, "layer2": "not run",
@@ -91,7 +93,9 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
            "kept_names": 0, "unqualified": False, "priority": None,
            "learn": {"allow": [], "remove": []},       # staged; the profile learns only when the run finishes
            "allowed_n": len(reusable) + len(kept_by_choice)}     # how much of "allowed" came from the profile
-    _trace(run, "layer1", f"Presidio found {len(spans)} identifiers on the laptop. Nothing sent.")
+    possible = sum(s.source == "hold" for s in spans)
+    _trace(run, "layer1", f"Found {len(spans)} identifiers on this device" + (f", {possible} of them possible names "
+           "for you to check" if possible else "") + ". Nothing sent.")
     _RUNS[deid_id] = run
     _save(run)
     return {"deid_id": deid_id, "next": "review", "counts": dict(Counter(s.type for s in spans)),
@@ -129,21 +133,17 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
                 spans.append(PhiSpan(id=f"u{len(spans) + 1}", type=a["type"], start=start, end=end,
                                      text=text[start:end], source="user"))
         spans = merge_spans(spans)
-        _stage(run, allow=[s.text for s in kept],      # a model-found name you kept hidden is
+        _stage(run, allow=[s.text for s in kept],      # a model-found or possible name you kept hidden is
                remove=[{"text": a["text"], "type": a["type"]} for a in add]   # learned like a held one
-               + [{"text": s.text, "type": s.type} for s in spans if s.source == "ner:spacy"])
+               + [{"text": s.text, "type": s.type} for s in spans if s.source in ("ner:spacy", "hold")])
         run["allowed"] += [s.text for s in kept]
+        run["kept_names"] += sum(s.source == "hold" for s in kept)
         run["confirmed"] = spans
         _trace(run, "review", f"You confirmed {len(spans)} identifiers ({len(kept)} unmarked, {len(add)} added).")
 
-        # Hold rule: before any API call, pause on words that still look like names.
-        tagged, tags = apply_tags(text, spans)
-        holds = []
-        for start, end in hold_flags(tagged, run["allowed"], tags):
-            o_start, o_end = to_original(tags, start, end)
-            kind = "HOSPITAL" if INSTITUTION.search(text[o_start:o_end]) else "NAME"
-            holds.append(PhiSpan(id=f"h{len(holds) + 1}", type=kind, start=o_start, end=o_end,
-                                 text=text[o_start:o_end], source="hold"))
+        # The hold rule already ran on the review screen; it runs again only if you changed what is hidden,
+        # so a word your change uncovered is still asked about before any API call.
+        holds = _hold_spans(text, spans, run["allowed"]) if unmark or add else []
         if holds:
             run.update(step="hold", holds=holds, shown_at=time.monotonic())
             _trace(run, "hold", f"Paused before any API call: {len(holds)} words look like names.", ok=False)
@@ -403,6 +403,18 @@ def _stage(run: dict, allow=(), remove=()) -> None:
     """What this run will teach the profile; committed in _finish, discarded by back_to_review."""
     run["learn"]["allow"] += list(allow)
     run["learn"]["remove"] += list(remove)
+
+
+def _hold_spans(text: str, spans: list[PhiSpan], allowed) -> list[PhiSpan]:
+    """The hold rule on the text with these spans masked: words that still look like a person or place."""
+    tagged, tags = apply_tags(text, spans)
+    holds = []
+    for start, end in hold_flags(tagged, allowed, tags):
+        o_start, o_end = to_original(tags, start, end)
+        kind = "HOSPITAL" if INSTITUTION.search(text[o_start:o_end]) else "NAME"
+        holds.append(PhiSpan(id=f"h{len(holds) + 1}", type=kind, start=o_start, end=o_end,
+                             text=text[o_start:o_end], source="hold"))
+    return holds
 
 
 def _error(deid_id: str, message: str) -> dict:

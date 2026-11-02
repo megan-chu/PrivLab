@@ -37,11 +37,11 @@ def _model():
 
 
 def _looks_like_name(span: str, vocab) -> bool:
-    from deid.hold import _plain
+    from deid.hold import _plain, medical_word
 
     words = re.findall(r"[A-Za-z][A-Za-z'’]*", span)                  # "Ziehl-Neelsen": both parts checked
-    if not words or span.isupper() or re.search(r"\d", span):
-        return False
+    if not words or span.isupper() or re.search(r"\d", span) or any(medical_word(w) for w in words):
+        return False                                                  # "Lymph Nodes Macrometastases"
     return any(len(w) > 1 and _plain(w) not in vocab for w in words if w[0].isupper())
 
 

@@ -137,7 +137,21 @@ def _not_a_name(word: str, text: str, start: int, end: int) -> bool:
         return True
     if re.fullmatch(r"[A-Z][a-z]{4,}[A-Z][a-z]+", word):
         return True
-    return _plain(word) in NOT_NAMES
+    return _plain(word) in NOT_NAMES or medical_word(word)
+
+
+# Medical word parts no name has: "Macrometastases", "Lymphadenopathy", "Mastectomy", "Carcinomatosis".
+MEDICAL = re.compile(r"(?:macro|micro|lymph|adeno|carcin|sarco|neuro|angio|hyper|hypo|osteo|haemat|hemat|cyto|histo|"
+                     r"immuno|onco|patho|meta)\w*|\w*(?:metasta\w*|omas?|omata|itis|osis|oses|ectomy|ectomies|otomy|"
+                     r"oscopy|plasia|plastic|pathy|aemia|emia|algia|cytes?|blasts?|ology|ologist|genesis|trophy)",
+                     re.IGNORECASE)
+
+
+@lru_cache(maxsize=8192)                  # called on every word of a report: words repeat, so answer each once
+def medical_word(word: str) -> bool:
+    """A listed name always stays a name: "Ganapathy", "Tripathy" end like "neuropathy"."""
+    w = _plain(word)
+    return len(w) >= 7 and bool(MEDICAL.fullmatch(w)) and w not in name_list()
 
 
 def _defined_term(words, text: str, end: int) -> bool:

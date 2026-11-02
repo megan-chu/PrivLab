@@ -1,0 +1,43 @@
+HARBOURVIEW GENERAL HOSPITAL
+DEPARTMENT OF ANATOMICAL PATHOLOGY
+SURGICAL PATHOLOGY REPORT - LUNG RESECTION
+* S P 2 6 - 0 0 7 8 9 * S 9 1 0 4 5 6 2 A *
+
+PATIENT DETAILS
+Patient Name: Rahman, Daniel Arif
+NRIC: S9104562A
+DOB / Age: 21/03/1951 (Age 75)
+Sex: Male
+MRN: MRN910456
+Address: 27 Example Grove Walk,
+#11-06, Singapore 999101
+Contact: +65 9123 4508
+
+REQUEST
+Requesting surgeon: Dr. Helen W. Tan
+Procedure: Right upper lobectomy with mediastinal lymph node dissection
+Accession No: SP26-00789    Collected: 12/10/2026    Reported: 15/10/2026
+
+CLINICAL HISTORY
+Right upper lobe mass found on screening CT. Former smoker, 40 pack-years.
+
+SYNOPTIC REPORT
+Specimen: Right upper lobe
+Histologic type: Invasive adenocarcinoma, acinar predominant
+Tumour size: 3.4 cm in greatest dimension
+Histologic grade: Moderately differentiated (G2)
+Visceral pleural invasion: Not identified
+Lymphovascular invasion: Present
+Bronchial margin: Negative (clear by 2.5 cm)
+Lymph nodes: 2 of 14 positive (stations 10R and 11R)
+Pathologic stage (AJCC 8th): pT2a pN1
+
+BIOMARKERS
+EGFR: Exon 19 deletion detected
+ALK: Negative
+PD-L1 (22C3): Tumour proportion score 40%
+
+COMMENT
+Results discussed with the patient's son, Imran Rahman, by phone on 15/10/2026.
+
+Electronically signed by Dr. Grace L. Ong, Consultant Pathologist, on 15/10/2026

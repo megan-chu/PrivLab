@@ -268,3 +268,11 @@ def test_download_names_survive_any_characters():
     h = _attachment('病理报告 – "Tan".txt')
     h.encode("latin-1")                                                  # http.server sends latin-1 headers
     assert "filename*=UTF-8''" in h and '"' not in h.split('filename="')[1].split('"')[0]
+
+
+def test_the_three_demo_samples_load_and_hide_their_identifiers(viewer):
+    for rid in ("demo_breast", "demo_lung", "demo_colon"):
+        out = viewer.api_deid({"report_id": rid, "choices": {}})
+        assert out["next"] == "review" and out["sample"], rid
+        found = {d["text"] for d in out["detections"]}
+        assert {"demo_breast": "Goh Mei Ling", "demo_lung": "Rahman, Daniel Arif", "demo_colon": "Chua Li Hua"}[rid] in found

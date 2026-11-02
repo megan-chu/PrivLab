@@ -24,7 +24,7 @@ from common.timing import record
 from deid import pipeline
 from deid.names import locate
 from deid.patterns import leftover_identifiers
-from extract.checks import parse_number
+from extract.checks import parse_number, tidy_text
 from extract.pack import get_field, load_pack, put_field, save_pack
 from extract.sections import section_at
 
@@ -126,7 +126,7 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
         if value is None:
             return f"'{typed}' is not a number; for a number field type e.g. 2.1"
     else:
-        value = " ".join(str(value).split())                          # text: as written
+        value = tidy_text(value)                                      # text: as written, minus slips
     return {"value": value, "start": hits[0][0], "end": hits[0][1]}
 
 
@@ -159,7 +159,7 @@ def _confirmed_items(text, field, items, missing):
         return "give items=[{value, evidence_text}, ...], or missing=True"
     out = []
     for it in items:
-        value = " ".join(str(it.get("value") or "").split())
+        value = tidy_text(it.get("value") or "")
         hits = locate(text, it.get("evidence_text") or value)
         if not value or not hits:
             return f"item '{value or '?'}' not found in the de-identified report"

@@ -27,6 +27,7 @@ ER positive, PR positive, HER2 negative by immunostain.
 DIAGNOSIS:
 Invasive ductal carcinoma, Nottingham grade 3. Margins clear.
 No nodal metastasis.
+Pathologic stage (AJCC 8th): pT2 pN0(sn)
 
 Reported by:
 Dr Tan Kok Wee, Pathologist

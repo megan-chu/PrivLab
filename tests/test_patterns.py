@@ -406,3 +406,32 @@ def test_pager_cue_and_phone_extension_tail():
     assert ("PHONE", "6321-4311 loc 204") in found("reachable via hospital trunk line 6321-4311 loc 204.")
     assert all(t != "PHONE" for t, _ in found("BP 120/80 noted."))
     assert ("PHONE", "1.888.988.3639") in found("Call 1.888.988.3639 now.")
+
+
+def test_report_header_dob_with_age_reversed_name_and_spaced_barcode():
+    text = ("* P A 3 0 - 1 2 3 4 5 * S 1 2 3 4 5 6 7 D *\nPatient Name: Sample, Jane Ann\n"
+            "DOB / Age: 01/02/1960 (Age 66)\n")
+    got = found(text)
+    for item in [("ID", "S 1 2 3 4 5 6 7 D"), ("ID", "P A 3 0 - 1 2 3 4 5"), ("NAME", "Sample, Jane Ann"),
+                 ("DOB", "01/02/1960")]:
+        assert item in got
+    assert found("Margins: A B C D E clear; levels 1 2 3 4 5 examined.") == []          # spaced letters, few digits
+
+
+def test_medical_words_are_not_names_but_listed_names_stay_names():
+    for text in ["Lymph Nodes Macrometastases: 2 of 15", "Number of Lymph Nodes with Macrometastases (> 2 mm): 2"]:
+        assert not [t for t, _ in found(text) if t in ("NAME", "DOCTOR")], text
+    assert ("NAME", "Ramesh Sabapathy") in found("Discussed with Ramesh Sabapathy at the clinic.")   # "-pathy" surname
+
+
+def test_name_stops_before_next_line_label():
+    got = found("Patient: John Smith\nGender: Male")
+    assert ("NAME", "John Smith") in got
+    assert not [s for t, s in got if t == "NAME" and "Gender" in s]   # the label is not part of the name
+    assert ("NAME", "John\nSmith") in found("Patient: John\nSmith")   # a wrapped name still joins
+
+
+def test_middle_initials_stay_inside_the_name():
+    assert ("DOCTOR", "Dr. Jane K. Example") in found("Surgeon: Dr. Jane K. Example")
+    assert ("DOCTOR", "Dr Jane K Example") in found("Reported by Dr Jane K Example, consultant.")
+    assert ("DOCTOR", "Dr Tan") in found("Dr Tan A Grade 2 tumour")              # "A" is a word, not an initial

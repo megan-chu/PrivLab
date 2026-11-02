@@ -35,10 +35,12 @@ NOT_NAME = (r"(?!(?:In|The|This|That|Of|And|For|To|On|At|By|With|Surgical|Pathol
 # OCR tolerant: "0ng" (O read as 0), "L1m" (i read as 1) still count as name words.
 WORD = rf"{NOT_NAME}(?:[A-Z]|0(?=[a-z]))(?:[a-z]|[01](?=[01]?[a-z])|'[A-Z])(?:[A-Za-z'\-]|[01](?=[a-z]))*"   # "B00n"
 PARTICLE = r"(?:binte|binti|bin|bte|s/o|d/o|a/l|a/p|van|von|de|da)\b"   # longest first
-SEP = r"(?:[ \t]+|[ \t]*\n[ \t]*)"                       # spaces, or one line break
+CONT = (rf"(?:[ \t]+(?:[A-Z]\.|(?![AI][ \t])[A-Z])(?=[ \t]+[A-Z][a-z])"   # middle initial: "Jane K. Zhao" (not "A", "I")
+        rf"|[ \t]+(?:{PARTICLE}|{WORD})"                  # same line: any word
+        rf"|[ \t]*\n[ \t]*(?!{WORD}[ \t]*:)(?:{PARTICLE}|{WORD}))")   # next line: not a "Label:"
 INITIALS = r"(?:[A-Z]\.[ \t]*)*"                          # "A. ", "L. M. "
-NAME = rf"{WORD}(?:{SEP}(?:{PARTICLE}|{WORD}))+"         # two or more words
-ONE_OR_MORE = rf"{INITIALS}{WORD}(?:{SEP}(?:{PARTICLE}|{WORD}))*"
+NAME = rf"{WORD}(?:{CONT})+"                              # two or more words
+ONE_OR_MORE = rf"{INITIALS}{WORD}(?:{CONT})*"
 AFTER_TITLE = r"[ \t]*\n?[ \t]*"                           # "Dr Koh", "Dr\nKoh"
 DR_NAME = rf"Dr\.?{AFTER_TITLE}{ONE_OR_MORE}"             # "Dr" + one or more words
 NOT_CAPS = (r"(?!(?:GROSS|DESCRIPTION|FINAL|DIAGNOSIS|MICROSCOPIC|CLINICAL|HISTORY|SPECIMEN|COMMENT|"
@@ -310,7 +312,8 @@ class LabelledRecognizer(EntityRecognizer):
         ("NAME", "request_of", rf"\bat the request of (?P<v>{NAME})"),
         ("NAME", "next_of_kin", rf"\b(?:Next of kin|NOK|Emergency contact)\b:?[ \t]*(?:{RELATIONS},?[ \t]+)?"
                                 rf"(?P<v>{ONE_OR_MORE}|{CAPS_NAME})"),
-        ("NAME", "name_label", rf"(?:^|\|)[ \t]*(?i:name|patient name)[ \t]*[:|][ \t]*(?P<v>{NAME}|{CAPS_NAME})"),
+        ("NAME", "name_label", rf"(?:^|\|)[ \t]*(?i:name|patient name)[ \t]*[:|][ \t]*"
+                               rf"(?P<v>{WORD},[ \t]+{ONE_OR_MORE}|{NAME}|{CAPS_NAME})"),   # also "Surname, Given Names"
         ("NAME", "relation_before", rf"\b{RELATIONS}(?:-in-law)?,?[ \t]+(?P<v>{ONE_OR_MORE})"),
         ("NAME", "relation_after", rf"(?P<v>{NAME})[ \t]*\({RELATIONS}(?:-in-law)?\)"),
         ("NAME", "footer", rf"^Page \d+ of \d+ *\| *(?P<v>{NAME}) *\|"),
@@ -323,6 +326,9 @@ class LabelledRecognizer(EntityRecognizer):
         ("NAME", "title_caps", rf"\b(?i:mr|mrs|ms|mdm|madam|miss)\.?[ \t]+(?P<v>{CAPS_NAME})\b"),
         ("ADDRESS", "address", r"^(?:Address|Addr\.?|ADDR\.?):[ \t]*(?P<v>[^\n]*[^\s])"),
         ("HOSPITAL", "hospital", rf"\b(?P<v>{HOSPITAL})\b"),
+        # a letterhead in capitals: "HARBOURVIEW GENERAL HOSPITAL", "ST ANNE'S MEDICAL CENTRE"
+        ("HOSPITAL", "hospital_caps", r"\b(?P<v>(?:ST\.? )?(?:[A-Z][A-Z'\-]+ ){1,4}(?:GENERAL HOSPITAL|HOSPITAL|"
+                                      r"CANCER (?:INSTITUTE|CENT(?:ER|RE))|MEDICAL CENT(?:ER|RE)|INFIRMARY))\b"),
         # "Facility: Metropolitan Health" + "Cancer Ctr" on the next line: one name, wrapped
         ("HOSPITAL", "facility", r"^[ \t]*(?i:facility|institution|hospital|clinic|referring (?:facility|hospital))[ \t]*:"
                                  rf"[ \t]*(?P<v>[^\n:]*[^\s:](?:\n[ \t]*(?:[A-Z][A-Za-z&'\-]*[ \t]+){{0,4}}{INST_WORD}\.?(?=[ \t]*$))?)"),
@@ -331,7 +337,7 @@ class LabelledRecognizer(EntityRecognizer):
         ("BANK", "bank", rf"\b(?P<v>{BANK_NAME})"),
         ("ID", "clia", r"\bCLIA(?:[ \t]*(?i:no\.?|number|#))?[ \t]*[:#.]?\s*(?P<v>\d{2}[D\d]\d{7})(?![\dA-Za-z])"),
         # DOB in any format: dates are kept by default, so an unlabelled DOB would stay in the text.
-        ("DOB", "dob", rf"\b(?i:DOB|D\.O\.B\.?|Date of birth|Birth ?date|Born|b\.){LSEP}(?:on[ \t]+)?"
+        ("DOB", "dob", rf"\b(?i:DOB|D\.O\.B\.?|Date of birth|Birth ?date|Born|b\.)(?:[ \t]*/[ \t]*(?i:age))?{LSEP}(?:on[ \t]+)?"
                        rf"(?P<v>{DATE_ANY})"),
         ("ID", "nric_label", r"\b(?i:NRIC|FIN|UIN|IC(?: no\.?)?|Patient ID)(?:[ \t]*[:.])?[ \t]*"
                              r"(?P<v>[STFGMstfgm5][ .\-]{0,2}[\dOoIlS]{3,4}[ .\-]?[\dOoIlS]{3,4}[ .\-]{0,2}[A-Za-z0-9])"
@@ -429,6 +435,8 @@ RECOGNISERS = [
     ParticleNameRecognizer(),
     # S P A C E D  letters: "T A N  K O H  W A H" (single capitals, one space inside a word, two between words)
     simple("spaced_name", "NAME", 0.6, r"(?<![A-Za-z])[A-Z](?: [A-Z]){2,}(?:  [A-Z](?: [A-Z])+)+(?![A-Za-z])"),
+    # a barcode line prints IDs letter-spaced: "* S 1 2 3 4 5 6 7 D *", "P A 3 0 - 1 2 3 4 5" (5+ digits)
+    simple("spaced_id", "ID", 0.6, r"(?<![\w-])(?=(?:[A-Z\-] )*(?:\d[ \-]+){4}\d)[A-Z0-9](?: [A-Z0-9\-]){6,}(?![\w-])"),
     simple("phone_ext", "PHONE", 0.6, r"\b(?:ext|extn)\.?[ \t]?\d{3,5}\b|(?<![\w-])x\d{4,5}\b"),
     simple("station", "ADDRESS", 0.6, r"\b(?:[A-Z][a-z]+[ \t]){1,3}(?:MRT|LRT)(?:[ \t]Station)?\b"),
     simple("dotted_name", "NAME", 0.6, r"\b(?!(?:Mr|Mrs|Ms|Mdm|Dr|Prof|St)\.)[A-Za-z]{2,}\.[A-Z][a-z]+"),   # not "Mr.Tan"

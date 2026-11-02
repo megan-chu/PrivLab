@@ -71,7 +71,8 @@ def predict(case: dict, mode: str, profile) -> dict:
     use_spark = mode == "spark"
     r = pipeline.deidentify_report(text=case["text"], report_id=case["id"], profile=profile)
     done = pipeline.confirm_deid(r["deid_id"], use_spark=use_spark)
-    holds = len(done.get("hold", []))
+    # possible names shown on the review screen (hold rule), plus any asked after confirm
+    holds = sum(d["source"] == "hold" for d in r["detections"]) + len(done.get("hold", []))
     if done["next"] == "hold":                                     # simulated user: hide all
         done = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []}, use_spark=use_spark)
     if done["next"] == "flags":
