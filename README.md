@@ -21,7 +21,7 @@ Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie develo
 |---|---|
 | 🌍 **Impact** | Cancer registrars, clinical researchers, claims and finance teams retype values from sensitive reports by hand, because privacy rules stop them using AI. PrivLab lets them: personal details never leave the device, and every value comes with its source for a quick check. |
 | 🦙 **Use of Meta AI** | Each Meta model has its own job. Open-weights **Muse Spark Open** double-checks the masking and can be hosted in-house (Muse Spark 1.3 is its qualified backup). **Muse Spark 1.3** turns a field described in plain words into a precise definition, then extracts every field in one checked JSON call, steered by examples learned from your corrections. A model is used only after passing a privacy qualification test. As an **MCP server**, PrivLab gives assistants such as Muse Code private access to reports. |
-| 🛠️ **Technical depth** | On-device detection of personal details (patterns, checksums, a local name model, address parsing), a privacy guard built into the code, values verified against their quotes, learning on device, and a field marked Ready only by an exact 95% confidence bound on its error rate. 258 automated tests. |
+| 🛠️ **Technical depth** | On-device detection of personal details (patterns, checksums, a local name model, address parsing), a privacy guard built into the code, values verified against their quotes, learning on device, and a field marked Ready only by an exact 95% confidence bound on its error rate. 260 automated tests. |
 | 🎬 **Demo** | Add a report, then five steps from review to export, end to end on built-in samples; plus the MCP server. 100% of 1,876 personal details caught on device in the development reports, 0 false alarms; held-out test scores follow the final run (see [Results](#results)). |
 
 ## Contents
@@ -151,14 +151,22 @@ All data in this repository is synthetic: real public pathology text (TCGA) with
 
 ## Results
 
-Measured on synthetic data, with personal details caught **on the device, before any AI call**:
+Measured on synthetic data, on the device, **before any AI call**. Scored the way clinical de-identification benchmarks
+are: each personal detail is fully hidden, partly hidden (part still shows) or missed, and every word is checked
+(precision: hidden words that really were personal; recall: personal words that were hidden).
 
-| Test set | Personal details | Caught on device | False alarms |
-|---|---|---|---|
-| Pathology reports (dev + extra) | 1,876 | **100%** | 0 |
-| Tricky formats (red-team) | 30 | **100%** | 0 |
-| Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **98.5%** | 0 |
-| Uncued names benchmark (frozen, never tuned on) | 56 | **94.6%** | 0 |
+| Test set | Personal details | Fully hidden | Partly / missed | Precision | Recall | F1 |
+|---|---|---|---|---|---|---|
+| Pathology reports (dev) | 253 | **100%** | 0 / 0 | 100% | 100% | **1.00** |
+| Pathology reports (extra) | 1,623 | **100%** | 0 / 0 | 100% | 100% | **1.00** |
+| Tricky formats (red-team) | 30 | **100%** | 0 / 0 | 98.8% | 100% | **0.99** |
+| Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **98.5%** | 1 / 1 | 98.2% | 97.6% | **0.98** |
+| Uncued names benchmark (frozen, never tuned on) | 56 | **94.6%** | 0 / 3 | 96.3% | 95.1% | **0.96** |
+
+For context, a John Snow Labs benchmark found that two open-source AI-only tools (GLiNER PII and OpenPipe PII-Redact)
+missed more than half of the personal details in clinical text ([article](https://medium.com/john-snow-labs/how-good-are-open-source-llm-based-de-identification-tools-in-a-medical-context-6600ddac6a0f)).
+That is why PrivLab does not rely on an AI alone: rules, checksums and name lists on the device do most of the work,
+and the AI is only a second check. Different data, so the numbers are not directly comparable.
 
 **With the AI safety check** (Muse Spark Open reads the masked text once, after you confirm), the full system catches
 **100% of the uncued names** (56 of 56; 3 reached the check unmasked and it caught them) and **98.5% of the hard
@@ -168,15 +176,23 @@ extra words in the hard-case negatives; you see its suggestions ticked on the De
 The hard cases helped shape the rules, so they are a development score. The uncued benchmark was frozen before any
 rule was tuned, so it is an honest one. Final scores on 50 held-out test reports will be added after the final run.
 
+**What PrivLab keeps by default.** Clinical dates (collected, reported) and ages stay visible; only the date of birth is
+hidden. They are often needed for analysis, but under the strictest US rule (HIPAA Safe Harbor) every date tied to a
+person except the year, and any age over 89, counts as an identifier, and these scores do not count them. You can tick
+"Other dates" in the privacy choices to hide all dates. Date shifting and "90+" ages are on the roadmap.
+
 ## Running the tests
 
 ```powershell
-.venv\Scripts\python -m pytest -q                        # 258 tests, no AI calls (a fake model is used)
+.venv\Scripts\python -m pytest -q                        # 260 tests, no AI calls (a fake model is used)
 .venv\Scripts\python -m eval.score_deid --split hard     # de-identification score on the hard cases
 ```
 
 ## What's next
 
 - Run the safety check fully in-house, so nothing leaves the organisation during de-identification.
+- Date shifting (all of a patient's dates moved by the same number of days) and "90+" ages, for HIPAA Safe Harbor.
+- Realistic stand-in names instead of tags, so a missed name hides among invented ones.
+- A score on a public clinical benchmark (e.g. the n2c2 2014 de-identification set).
 - Read scanned documents (OCR) on the device.
 - More languages and name forms, including Chinese, Japanese and Korean characters.

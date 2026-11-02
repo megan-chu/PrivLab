@@ -24,6 +24,7 @@ import argparse
 import json
 import subprocess
 import sys
+import re
 import time
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
@@ -43,6 +44,40 @@ RUNS = ROOT / "runs"
 def covered(span: dict, preds, text: str, same_type: bool = False) -> bool:
     chars = {i for p in preds if not same_type or p.type == span["type"] for i in range(p.start, p.end)}
     return all(i in chars for i in range(span["start"], span["end"]) if not text[i].isspace())
+
+
+def match_kind(span: dict, preds, text: str) -> str:
+    """Entity level, as in clinical de-id benchmarks: "full" (every character hidden), "partial" (some: part of the
+    identifier still shows, e.g. "John" hidden but not "Doe"), or "missed"."""
+    chars = {i for p in preds for i in range(p.start, p.end)}
+    need = [i for i in range(span["start"], span["end"]) if not text[i].isspace()]
+    hit = sum(i in chars for i in need)
+    return "full" if hit == len(need) else "partial" if hit else "missed"
+
+
+TOKEN = re.compile(r"\w+")
+
+
+def token_counts(text: str, truth: list[dict], kept: list[dict], preds) -> Counter:
+    """Token level, personal detail or not: each word is a true positive, false positive or false negative.
+    Words of a type you keep by choice (clinical dates, ages) are left out, as they are not scored."""
+    inside = lambda m, spans: any(m.start() < s_end and s_start < m.end() for s_start, s_end in spans)
+    t_spans = [(x["start"], x["end"]) for x in truth]
+    k_spans = [(x["start"], x["end"]) for x in kept]
+    p_spans = [(x.start, x.end) for x in preds]
+    c = Counter()
+    for m in TOKEN.finditer(text):
+        if inside(m, k_spans) and not inside(m, t_spans):
+            continue
+        t, pr = inside(m, t_spans), inside(m, p_spans)
+        c["tp" if t and pr else "fn" if t else "fp" if pr else "tn"] += 1
+    return c
+
+
+def prf(c: Counter) -> dict:
+    p = c["tp"] / (c["tp"] + c["fp"]) if c["tp"] + c["fp"] else 1.0
+    r = c["tp"] / (c["tp"] + c["fn"]) if c["tp"] + c["fn"] else 1.0
+    return {"precision": round(p, 4), "recall": round(r, 4), "f1": round(2 * p * r / (p + r), 4) if p + r else 0.0}
 
 
 def context(text: str, start: int, end: int, width: int = 40) -> str:
@@ -88,6 +123,7 @@ def score(cases: list[dict], mode: str) -> dict:
     by_category = defaultdict(Counter)
     fp_by_source, kept_by_choice, layer2 = Counter(), Counter(), Counter()
     repeat_misses, misses, false_pos, slowest, hold_total = 0, [], [], 0.0, 0
+    matches, tokens = Counter(), Counter()
 
     for case in cases:
         text = case["text"]
@@ -100,9 +136,13 @@ def score(cases: list[dict], mode: str) -> dict:
         truth = [s for s in case["phi"] if s["type"] in removed]
         kept_by_choice.update(s["type"] for s in case["phi"] if s["type"] not in removed)
 
+        tokens += token_counts(text, truth, [s for s in case["phi"] if s["type"] not in removed], out["final"])
         for s in truth:
             st, cat = stats[s["type"]], by_category[case["category"]]
             st["truth"] += 1
+            kind = match_kind(s, out["final"], text)
+            matches[kind] += 1
+            st[kind] += 1
             cat["truth"] += 1
             if covered(s, out["final"], text):
                 st["leak"] += 1
@@ -129,8 +169,11 @@ def score(cases: list[dict], mode: str) -> dict:
                     "remaining": round(1 - pct("leak"), 4) if total["truth"] else None,
                     "false_alarms": len(false_pos), "repeat_misses": repeat_misses,
                     "hold_flags_per_case": round(hold_total / len(cases), 2) if cases else 0},
+        "entity_level": {k: matches[k] for k in ("full", "partial", "missed")},
+        "token_level": {**prf(tokens), **{k: tokens[k] for k in ("tp", "fp", "fn")}},
         "by_type": {t: {"truth": st["truth"], "leak_recall": round(st["leak"] / st["truth"], 4),
-                        "reached_api": st["reached_api"], "missed": st["truth"] - st["leak"]}
+                        "reached_api": st["reached_api"], "missed": st["truth"] - st["leak"],
+                        "partial": st["partial"]}
                     for t in PHI_TYPES if (st := stats.get(t))},
         "by_category": {c: dict(v) for c, v in by_category.items()},
         "kept_by_choice": dict(kept_by_choice), "layer2": dict(layer2),
@@ -147,6 +190,10 @@ def print_report(r: dict, split: str) -> None:
     for t, s in r["by_type"].items():
         print(f"{t:10} {s['truth']:>5} {s['leak_recall']:>7.1%} {s['reached_api']:>12} {s['missed']:>6}")
     print(f"{'ALL':10} {o['truth']:>5} {o['leak_recall']:>7.1%}")
+    e, t = r["entity_level"], r["token_level"]
+    print(f"\nentity level: {e['full']} full, {e['partial']} partial (part still shows), {e['missed']} missed")
+    print(f"token level (personal detail or not): precision {t['precision']:.1%}  recall {t['recall']:.1%}  "
+          f"F1 {t['f1']:.3f}   ({t['tp']} hidden right, {t['fp']} hidden but not personal, {t['fn']} left showing)")
     print(f"\nreached the API (Layer 1 misses): {o['reached_api']:.1%}   remaining after all layers: {o['remaining']:.1%}")
     print(f"false alarms: {o['false_alarms']}   repeat misses: {o['repeat_misses']}   "
           f"hold flags/case: {o['hold_flags_per_case']}   "

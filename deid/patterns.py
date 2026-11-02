@@ -144,9 +144,10 @@ class ParticleNameRecognizer(EntityRecognizer):
     "Kavitha d/o Rajendran". Words before the particle that are ordinary report words ("the sample from")
     are trimmed. Lower-case "bin" is also an English word ("sharps bin"), so a name needs a word next to it
     that is not a report word; "van"/"von" stay Title-case only."""
-    RX = re.compile(r"(?<![A-Za-z'])((?:[A-Za-z][A-Za-z'\-]*[ \t]+){0,3})"
-                    r"(binte|binti|bte|bin|s/o|d/o|a/l|a/p|van der|van|von)[ \t]+"
-                    r"([A-Za-z][A-Za-z'\-]+(?:[ \t]+[A-Za-z][A-Za-z'\-]+)?)(?![A-Za-z'])", re.IGNORECASE)
+    # one space between the words of a name: a wider gap is a column ("... binte Rashid    NRIC: ...")
+    RX = re.compile(r"(?<![A-Za-z'])((?:[A-Za-z][A-Za-z'\-]* ){0,3})"
+                    r"(binte|binti|bte|bin|s/o|d/o|a/l|a/p|van der|van|von) "
+                    r"([A-Za-z][A-Za-z'\-]+(?: [A-Za-z][A-Za-z'\-]+)?)(?![A-Za-z'])", re.IGNORECASE)
 
     def __init__(self):
         super().__init__(supported_entities=["NAME"], name="particle_name")
@@ -174,8 +175,12 @@ class ParticleNameRecognizer(EntityRecognizer):
                 continue                                              # "sharps bin by the door"
             if ordinary(after[0]):
                 continue
-            if len(after) == 2 and ordinary(after[1]):
-                after = after[:1]                                     # "... bin Harun arrived": stop at the name
+            # a second word after the particle only if it looks like a name too: capitalised in a Title-case
+            # name ("binte Abdul Rahman"), or a listed name in a lower-case one; never "asked", "arrived"
+            titled = after[0][0].isupper()
+            if len(after) == 2 and (ordinary(after[1]) or (not after[1][0].isupper() if titled else after[1].lower() not in names)
+                                    or after[1].isupper()):
+                after = after[:1]
             start = text.rfind(before[0], m.start(), m.start(2)) if before else m.start(2)
             end = text.find(after[-1], m.start(3)) + len(after[-1])
             out.append(RecognizerResult("NAME", start, end, 0.65, recognition_metadata={"rule": "particle_name"}))

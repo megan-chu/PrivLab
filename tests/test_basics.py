@@ -64,3 +64,14 @@ def test_lab_split_parses_a_lab_reports_file(tmp_path, monkeypatch):
     cases = load_cases("lab")
     assert [c["id"] for c in cases] == ["L01"]
     assert cases[0]["phi"] == [{"type": "NAME", "text": "Toung Chu", "start": 7, "end": 16}]
+
+
+def test_scorer_reports_partial_matches_and_token_scores():
+    from deid.types import PhiSpan
+    from eval.score_deid import match_kind, prf, token_counts
+    text = "Patient John Doe seen."
+    truth = [{"start": 8, "end": 16, "type": "NAME"}]
+    half = [PhiSpan(id="p1", type="NAME", start=8, end=12, text="John", source="t")]
+    assert match_kind(truth[0], half, text) == "partial" and match_kind(truth[0], [], text) == "missed"
+    c = token_counts(text, truth, [], half)
+    assert (c["tp"], c["fn"], c["fp"]) == (1, 1, 0) and prf(c)["recall"] == 0.5

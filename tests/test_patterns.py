@@ -447,3 +447,9 @@ def test_surnames_that_look_medical_are_not_dismissed():
     from deid.hold import medical_word
     assert not any(medical_word(w) for w in ("Pasupathy", "Angiolini", "Metaxas"))
     assert ("NAME", "Elena Angiolini") in found("Seen by Elena Angiolini today.")
+
+
+def test_a_particle_name_stops_at_the_name():
+    assert ("NAME", "Nurul Ain binte Sulaiman") in found("Nurul Ain binte Sulaiman asked that the results be sent.")
+    assert ("NAME", "Jane binte Sample") in found("Patient: Jane binte Sample    NRIC: S1234567D")    # not across a column
+    assert ("NAME", "Siti binte Abdul Rahman") in found("Consent: Siti binte Abdul Rahman signed.")
