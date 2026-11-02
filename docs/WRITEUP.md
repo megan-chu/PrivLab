@@ -34,7 +34,7 @@ its verified values are wrong.
 
 ## Results (synthetic data)
 - De-identification on the device, before any API call: dev and extra reports 100% of 1,876 identifiers; hand-written
-  hard cases 97.7% of 130; frozen uncued-names benchmark 91.1% of 56; 0 false alarms on every set.
+  hard cases 98.5% of 130; frozen uncued-names benchmark 94.6% of 56; 0 false alarms on every set.
 - Held-out test reports: de-identification PLACEHOLDER; field accuracy (F1) PLACEHOLDER against the user's confirmations.
 - Indicative comparison: LLM-AIx reports 87–90% on similar fields without learning (different reports).
 

@@ -21,7 +21,7 @@ Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie develo
 |---|---|
 | 🌍 **Impact** | Cancer registrars, clinical researchers, claims and finance teams retype values from sensitive reports by hand, because privacy rules stop them using AI. PrivLab lets them: personal details never leave the device, and every value comes with its source for a quick check. |
 | 🦙 **Use of Meta AI** | Each Meta model has its own job. Open-weights **Muse Spark Open** double-checks the masking and can be hosted in-house (Muse Spark 1.3 is its qualified backup). **Muse Spark 1.3** turns a field described in plain words into a precise definition, then extracts every field in one checked JSON call, steered by examples learned from your corrections. A model is used only after passing a privacy qualification test. As an **MCP server**, PrivLab gives assistants such as Muse Code private access to reports. |
-| 🛠️ **Technical depth** | On-device detection of personal details (patterns, checksums, a local name model, address parsing), a privacy guard built into the code, values verified against their quotes, learning on device, and a field marked Ready only by an exact 95% confidence bound on its error rate. 251 automated tests. |
+| 🛠️ **Technical depth** | On-device detection of personal details (patterns, checksums, a local name model, address parsing), a privacy guard built into the code, values verified against their quotes, learning on device, and a field marked Ready only by an exact 95% confidence bound on its error rate. 258 automated tests. |
 | 🎬 **Demo** | Add a report, then five steps from review to export, end to end on built-in samples; plus the MCP server. 100% of 1,876 personal details caught on device in the development reports, 0 false alarms; held-out test scores follow the final run (see [Results](#results)). |
 
 ## Contents
@@ -157,8 +157,8 @@ Measured on synthetic data, with personal details caught **on the device, before
 |---|---|---|---|
 | Pathology reports (dev + extra) | 1,876 | **100%** | 0 |
 | Tricky formats (red-team) | 30 | **100%** | 0 |
-| Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **97.7%** | 0 |
-| Uncued names benchmark (frozen, never tuned on) | 56 | **91.1%** | 0 |
+| Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **98.5%** | 0 |
+| Uncued names benchmark (frozen, never tuned on) | 56 | **94.6%** | 0 |
 
 The hard cases helped shape the rules, so they are a development score. The uncued benchmark was frozen before any
 rule was tuned, so it is an honest one. Final scores on 50 held-out test reports will be added after the final run.
@@ -166,7 +166,7 @@ rule was tuned, so it is an honest one. Final scores on 50 held-out test reports
 ## Running the tests
 
 ```powershell
-.venv\Scripts\python -m pytest -q                        # 251 tests, no AI calls (a fake model is used)
+.venv\Scripts\python -m pytest -q                        # 258 tests, no AI calls (a fake model is used)
 .venv\Scripts\python -m eval.score_deid --split hard     # de-identification score on the hard cases
 ```
 
