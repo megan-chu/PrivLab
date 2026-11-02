@@ -10,7 +10,7 @@ Every response says what to do next ("next", "say"); errors are plain sentences,
 stdout is the MCP protocol: nothing else is ever printed there; logs go to runs/mcp.log.
 
 Settings (environment): PRIVLAB_VIEWER_PORT (default 8765; the next free port is used if taken),
-PRIVLAB_MCP_VIEWER=off to not start the viewer.
+PRIVLAB_MCP_VIEWER=off to not start the viewer, PRIVLAB_MCP_OPEN=off to not open the browser on each new report.
 
 Usage:
   python -m mcp_server.server                                  # from the repo root
@@ -26,6 +26,7 @@ import re
 import sys
 import threading
 import traceback
+import webbrowser
 from pathlib import Path
 from typing import Literal
 
@@ -84,8 +85,9 @@ PRIVACY RULES (always)
   them to the viewer.
 
 VIEWER
-PrivLab has a visual page running on this computer. The first time you de-identify a report, show its
-viewer_url as a clickable link and say what it is: "the same report on your own screen, with every personal
+PrivLab has a visual page running on this computer. When you de-identify a report, PrivLab opens it in the
+user's browser by itself: tell the user it has opened, give its viewer_url as a link in case it did not, and say
+what it is: "the same report on your own screen, with every personal
 detail highlighted; you can check and correct it there, and the real text never comes into this chat." Offer
 it again for extracted values. privlab_deidentify (no arguments) gives the link any time.
 Never open, fetch or read the viewer link yourself: it is for the user's eyes only, because it shows the real
@@ -122,6 +124,14 @@ def _page(items: list, offset: int, limit: int) -> dict:
 
 def _url(deid_id: str = "") -> str | None:
     return VIEWER["url"] and VIEWER["url"] + (f"#{deid_id}" if deid_id else "")
+
+
+def _show(deid_id: str) -> None:
+    """Open the user's browser on this report, once per report, from this computer: the user sees the highlights
+    without clicking a link, and the assistant never touches the page. PRIVLAB_MCP_OPEN=off turns it off."""
+    url = _url(deid_id)
+    if url and deid_id and os.environ.get("PRIVLAB_MCP_OPEN", "").lower() != "off":
+        threading.Timer(0.3, webbrowser.open, [url]).start()
 
 
 def _see(deid_id: str, what: str) -> str:
@@ -238,6 +248,7 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
         with viewer._WRITE:                     # first use creates the default privacy profile
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         out["warnings"] = out.get("warnings", []) + warnings
+        _show(out.get("deid_id", ""))
         return _step(out, 0, limit)
     if deid_id:
         return _step(pipeline.report_state(deid_id), offset, limit)

@@ -123,3 +123,13 @@ def test_hide_text_after_the_review_step_is_refused_not_dropped(mcp, local_keys)
     pipeline_run["holds"] = []
     res = mcp.privlab_review(out["deid_id"], hide_text=["Dr Wong"])
     assert res["next"] == "hold" and "first review" in res["error"] and pipeline_run["step"] == "hold"
+
+
+def test_a_new_report_opens_in_the_browser_once(mcp, local_keys, monkeypatch):
+    opened = []
+    monkeypatch.setitem(mcp.VIEWER, "url", "http://127.0.0.1:8765/")
+    monkeypatch.setattr(mcp.threading, "Timer", lambda delay, fn, args: type("T", (), {"start": lambda s: opened.append(args[0])})())
+    out = mcp.privlab_deidentify(report_file(local_keys))
+    assert opened == [f"http://127.0.0.1:8765/#{out['deid_id']}"]
+    mcp.privlab_deidentify(deid_id=out["deid_id"])                          # asking where it is up to: no new tab
+    assert len(opened) == 1
