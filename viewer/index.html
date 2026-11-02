@@ -409,6 +409,7 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .menu .pop button { display: block; width: 100%; text-align: left; padding: var(--s2) var(--s3); border-radius: 6px; color: var(--ink); font-weight: 600; }
 .menu .pop button:hover { background: var(--surface); }
 .menu .pop button[data-kbd]::after { content: attr(data-kbd); float: right; padding: 0 5px; font: 500 11px/16px var(--f-mono); border: 1px solid var(--line); border-radius: var(--r-sm); color: var(--ink-muted); }
+.lh { font: 600 13px/18px var(--f-sans); letter-spacing: .02em; color: var(--hema); margin: var(--s4) 0 var(--s1); }
 .msamples { padding: var(--s2) var(--s3); border-top: 1px solid var(--line); margin-top: var(--s1); }
 .msamples > span { display: block; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
 .mchips { display: flex; flex-wrap: nowrap; gap: 4px; margin-top: var(--s2); }
@@ -481,6 +482,16 @@ dialog.sheet { border: 0; border-radius: var(--r-md); padding: 0; width: 520px; 
 dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 .sheet .sh { padding: var(--s4) var(--s6); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
 .sheet .sb { padding: var(--s4) var(--s6); max-height: 60vh; overflow: auto; }
+dialog.sheet.wide { width: 860px; }
+.learnsb { max-height: none; font-size: 13.5px; line-height: 20px; }
+.learnsb p { margin: 0 0 var(--s2); }
+.lintro { color: var(--ink-muted); }
+.lcols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s5, 20px); }
+.lcols .lh { margin-top: var(--s2); }
+.ll { margin: 0; padding-left: 18px; }
+.ll li { margin: 0 0 var(--s2); }
+.lfoot { margin: var(--s2) 0 0 !important; padding-top: var(--s2); border-top: 1px solid var(--line); }
+@media (max-width: 700px) { .lcols { grid-template-columns: 1fr; } .learnsb { max-height: 70vh; overflow: auto; } }
 .sheet .sf { padding: var(--s4) var(--s6); border-top: 1px solid var(--line); display: flex; gap: var(--s2); justify-content: flex-end; }
 .sheet .sf .btn { width: auto; }
 .toast { position: fixed; left: 50%; bottom: var(--s6); transform: translateX(-50%) translateY(16px); opacity: 0; background: var(--ink); color: var(--surface-raised); padding: var(--s3) var(--s4); border-radius: var(--r-md); box-shadow: var(--shadow-raised); transition: all .18s var(--ease); z-index: 30; pointer-events: none; font-size: 14px; }
@@ -548,23 +559,28 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 <div class="floatbar" id="floatbar" role="toolbar" aria-label="Selection"></div>
 <input type="file" id="fileInput" accept=".txt,text/plain,.pdf,application/pdf" multiple hidden>
 <div class="toast" id="toast" role="status"></div>
-<dialog class="sheet" id="learnDlg" aria-labelledby="learnDlgT">
-  <div class="sh"><b id="learnDlgT">How I learn from you</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
-  <div class="sb" style="font-size:14px;line-height:21px">
-    <p>I don't retrain any AI. I simply remember the choices you make, here on your device, and use them on your next
-      report. Think of it as a colleague taking notes.</p>
-    <p><b>When you hide something,</b> I remember it. Next time it's hidden for you automatically, before anything is sent.
-      This list stays on your device, locked (encrypted).</p>
-    <p><b>When you keep something visible,</b> I won't ask about it again. A single word only counts for that report,
-      because it might be an ordinary word (like "tan").</p>
-    <p><b>When you confirm or correct a value,</b> I keep a few of your latest answers as examples for that field, so the AI
-      reads the next reports the way you do. Examples only contain masked text. If one still holds a name or an ID, I don't
-      keep it.</p>
-    <p><b>I only learn from you.</b> Values saved by <i>Extract all</i>, or ones you reset, never teach me.</p>
-    <p><b>I earn your trust.</b> I check every answer before I learn from it. A field gets the <i>Ready</i> badge only after
-      many checks with almost no mistakes (for example, 59 in a row with none). Now and then (about 1 in 10) I hide my
-      answer until you give yours, so you're never just agreeing with me.</p>
-    <p><b>You're in charge.</b> See everything I've learned, and delete anything, in <i>Fields → Learned</i>.</p>
+<dialog class="sheet wide" id="learnDlg" aria-labelledby="learnDlgT">
+  <div class="sh"><b id="learnDlgT">How PrivLab gets smarter</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
+  <div class="sb learnsb">
+    <p class="lintro">Here's the simple version: PrivLab doesn't change any AI. It just remembers what you show it, right
+      here on your computer, and uses it on your next report.</p>
+    <div class="lcols">
+      <section><h3 class="lh">When you hide personal details</h3>
+        <p><b>Hide it once.</b> Say you hide a name. From then on, PrivLab hides it for you in every new report, before
+          anything goes anywhere.</p>
+        <p><b>Not personal? Keep it.</b> If you leave a highlighted word visible, say "Bloom" in "Bloom-Richardson grade",
+          PrivLab won't ask about it next time.</p>
+        <p><b>One exception.</b> A single word like "Tan" could be a name or a colour, so PrivLab only skips it in the
+          report you're on and checks again next time.</p>
+        <p><b>It stays with you.</b> All of this is kept on your computer, encrypted.</p></section>
+      <section><h3 class="lh">When you fill in your fields</h3>
+        <p><b>Your answers become examples.</b> Every time you confirm or fix a value, PrivLab keeps it as an example. Next
+          time, the AI sees your examples (never names or ID numbers), so it picks values the way you would.</p>
+        <p><b>Only your checks count.</b> Values saved by <i>Extract all</i>, or ones you reset, don't teach it.</p>
+        <p><b>It earns your trust.</b> A field only gets the <i>Ready</i> badge after about 60 checks with no mistakes.
+          Now and then PrivLab hides its answer and asks you first, so you're never just nodding along.</p></section>
+    </div>
+    <p class="lfoot">Changed your mind about something? You can see and undo all of it in <i>Fields → Learned</i>.</p>
   </div>
 </dialog>
 <dialog class="sheet" id="keysDlg" aria-labelledby="keysDlgT">
