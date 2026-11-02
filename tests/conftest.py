@@ -1,8 +1,11 @@
 """Shared fixtures: throwaway local keys and temp folders, so tests never touch real vault/profile files."""
 import secrets
+from pathlib import Path
 
 import pytest
 from cryptography.fernet import Fernet
+
+Path("runs").mkdir(exist_ok=True)      # pytest.ini puts temp folders in runs/pytest; a fresh clone has no runs/ yet
 
 
 @pytest.fixture
