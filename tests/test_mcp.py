@@ -34,12 +34,12 @@ def report_file(tmp: Path, text: str = REPORT, name: str = "mine.txt") -> str:
     return str(p)
 
 
-def test_five_tools_one_per_step_and_four_prompts(mcp):
+def test_five_tools_one_per_step_and_five_prompts(mcp):
     tools = asyncio.run(mcp.mcp.list_tools())
     assert [t.name for t in tools] == ["privlab_deidentify", "privlab_review", "privlab_fields", "privlab_extract",
                                        "privlab_export"]
     assert next(t for t in tools if t.name == "privlab_fields").annotations.destructive_hint   # it can remove a field
-    assert len(asyncio.run(mcp.mcp.list_prompts())) == 4
+    assert len(asyncio.run(mcp.mcp.list_prompts())) == 5
 
 
 def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
@@ -140,3 +140,33 @@ def test_status_of_a_finished_report_never_carries_the_original(mcp, local_keys)
     mcp.privlab_review(out["deid_id"])
     status = mcp.privlab_deidentify(deid_id=out["deid_id"])                  # the assistant re-checking
     assert status["next"] == "done" and "original" not in status and "Mary Tan" not in json.dumps(status)
+
+
+def test_a_folder_in_bulk_verified_values_alone_and_a_suggested_save_folder(mcp, local_keys):
+    folder = local_keys / "batch"
+    folder.mkdir()
+    report_file(folder, REPORT, "a.txt")
+    report_file(folder, "Patient: John Lim  NRIC: S1234567D\nDIAGNOSIS: carcinoma, 3.0 cm.\n", "b.txt")
+    (folder / "photo.png").write_bytes(b"x")                                 # not a report: left out
+    batch = mcp.privlab_deidentify(str(folder))
+    assert batch["next"] == "review_batch" and [r["report"] for r in batch["reports"]] == ["a", "b"]
+    assert "Mary Tan" not in json.dumps(batch) and "John Lim" not in json.dumps(batch)
+    for r in batch["reports"]:
+        assert mcp.privlab_review(r["deid_id"])["next"] == "done"
+
+    mcp.spark_state["reply"] = DRAFT
+    d = mcp.privlab_fields("draft", name="tumour size")["draft"]
+    mcp.privlab_fields("save", name="tumour size", meaning=d["meaning_question"], type="number", unit="cm",
+                       definition=d["definition"], range_min=0.1, range_max=30)
+    mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
+         "reason": "diagnosis line", "confidence": 0.9}]}]}
+    first = mcp.privlab_extract(batch["reports"][0]["deid_id"], auto_accept_verified=True)
+    assert first["next"] == "done" and first["auto_saved"] == [{"field": "tumour_size", "value": 2.1}]
+    log = [__import__("json").loads(x) for x in Path(mcp.viewer.STATE["log"]).read_text().splitlines()]
+    assert log[-1]["phase"] == "bulk"                                        # never counted as the user's check
+
+    ask = mcp.privlab_export("data")
+    assert ask["next"] == "ask" and "PrivLab output" in ask["suggested_path"] and str(folder) in ask["suggested_path"]
+    out = mcp.privlab_export("data", ask["suggested_path"])
+    assert out["next"] == "done" and Path(out["path"]).parent.name == "PrivLab output"

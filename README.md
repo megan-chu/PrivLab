@@ -161,8 +161,12 @@ nothing to sign in to (so it is not a "custom connector" with an HTTPS URL), and
    (*"…except the margin: it is 6 mm"*). All your answers are saved in one go.
 8. **Export.** Say *"Export the CSV to my Desktop."*
 
-**A batch:** *"Fill my fields for every report in C:/reports"*. The browser lists every report you added in the chat:
-switch to it any time to see the real text or fix something. Same reports, same fields, same learning.
+**A whole folder (bulk):** teach your fields on 1–3 reports first (in the browser is easiest). Then say *"Process every
+report in C:/reports/batch1"* (or pick the prompt **Process a folder of reports**). PrivLab reads every report and
+hides its personal details on your computer; you approve the hiding once; it offers to let you check the masked text in
+your browser; values it **verified** are saved by themselves (never counted as your check), and only the uncertain
+ones come back to you; finally it asks where to save, suggesting a `PrivLab output` folder next to your reports (created
+automatically). The browser lists every report of the batch, so you can look at any of them at any time.
 
 **Under the hood:** five tools, one per step, plus four ready-made prompts ("Fill my fields", "De-identify a batch",
 "Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice: outcome-based tools, flat

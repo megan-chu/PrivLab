@@ -81,6 +81,16 @@ is up to now, and continue from there.
    for the value without showing PrivLab's.
 5. Export: privlab_export(kind="data") for the CSV, or kind="masked" for the masked text.
 
+A FOLDER OF REPORTS (bulk)
+1. If the fields are new, teach them first on 1-3 reports (in the browser, or one report at a time here).
+2. privlab_deidentify(folder): every report is read and its personal details hidden on this computer. Show the
+   summary; ask whether to review any (all are listed in the browser) or to hide them all; privlab_review each.
+3. Ask: "Do you want to check the masked text in your browser before I extract?"
+4. privlab_extract(deid_id, auto_accept_verified=True) for each report: verified values are saved by themselves;
+   show the user only the ones that need them, then send their answers.
+5. privlab_export(kind="data") without out_path, ask where to save (suggest the default), then export; offer the
+   masked text (kind="masked") too.
+
 PRIVACY RULES (always)
 - Pass file paths; never paste or quote report text into the chat.
 - Always ask the user before privlab_review; never answer a review question for them.
@@ -239,11 +249,15 @@ class Answer(BaseModel):
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
 def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit: int = LIMIT) -> dict:
-    """Use when the user wants a report made safe, wants to know where a report is up to, or wants the viewer.
-    Arguments: path = a .txt file or a PDF with selectable text (never paste report text): finds its personal
-    details on this computer, nothing is sent. Or deid_id = a report already started: where it is up to, and the
-    next page of its items (offset, limit). Neither: the viewer link and how to start.
-    Returns: deid_id, next, items (id, type, masked context), counts, viewer_url. Next: ask the user, then privlab_review."""
+    """Use when the user wants a report (or a folder of reports) made safe, wants to know where a report is up to,
+    or wants the viewer.
+    Arguments: path = a .txt file or a PDF with selectable text, or a folder of them (never paste report text):
+    finds the personal details on this computer, nothing is sent. Or deid_id = a report already started: where it
+    is up to, and the next page of its items (offset, limit). Neither: the viewer link and how to start.
+    Returns: deid_id, next, items (id, type, masked context), counts, viewer_url; for a folder, one line per report.
+    Next: ask the user, then privlab_review."""
+    if path and Path(path).expanduser().is_dir():
+        return _folder(Path(path).expanduser())
     if path:
         text, rid, warnings = _read(path)
         if text is None:
@@ -251,12 +265,44 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
         with viewer._WRITE:                     # first use creates the default privacy profile
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         out["warnings"] = out.get("warnings", []) + warnings
+        SOURCES[out.get("deid_id", "")] = Path(path).expanduser().resolve()
         _show(out.get("deid_id", ""))
         return _step(out, 0, limit)
     if deid_id:
         return _step(pipeline.report_state(deid_id), offset, limit)
     return {"next": "start", "viewer_url": _url(),
             "say": "Give me the path of a report (.txt or PDF) to start." + _see("", "also add and review reports")}
+
+
+MAX_FOLDER = 100
+SOURCES: dict[str, Path] = {}             # deid_id -> the file it came from (for a default output folder)
+
+
+def _folder(folder: Path) -> dict:
+    """Every .txt and .pdf in a folder (not its subfolders), de-identified on this computer; nothing is sent."""
+    files = sorted(f for f in folder.iterdir() if f.is_file() and f.suffix.lower() in (".txt", ".pdf"))
+    if not files:
+        return {"next": "error", "error": "No .txt or .pdf files.", "say": f"There are no .txt or .pdf reports in {folder}."}
+    reports, skipped = [], []
+    for f in files[:MAX_FOLDER]:
+        text, rid, warnings = _read(str(f))
+        if text is None:
+            skipped.append({"file": f.name, "reason": rid})
+            continue
+        with viewer._WRITE:
+            out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
+        SOURCES[out["deid_id"]] = f.resolve()
+        reports.append({"deid_id": out["deid_id"], "report": rid, "found": sum((out.get("counts") or {}).values()),
+                        "counts": out.get("counts"), "possible_names": sum(d["source"] == "hold" for d in out["detections"])})
+    if reports:
+        _show(reports[0]["deid_id"])               # one tab: the browser lists every report of the batch
+    total = sum(r["found"] for r in reports)
+    say = (f"{len(reports)} report(s) read on this computer; {total} personal details found and hidden, nothing sent yet."
+           + (f" {len(skipped)} file(s) skipped." if skipped else "")
+           + (f" Only the first {MAX_FOLDER} files were read." if len(files) > MAX_FOLDER else "")
+           + " Ask the user whether to review any (they are all listed in the browser) or to hide them all; then call"
+             " privlab_review for each report." + _see(reports[0]["deid_id"] if reports else "", "check every report"))
+    return {"next": "review_batch", "reports": reports, "skipped": skipped, "viewer_url": _url(), "say": say}
 
 
 # --- 2. De-identify --------------------------------------------------------------------------------------------
@@ -359,12 +405,15 @@ def _confirm(deid_id: str, a: Answer) -> dict:
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
 @_safe
-def privlab_extract(deid_id: str, answers: list[Answer] = []) -> dict:
+def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verified: bool = False) -> dict:
     """Use when a report is de-identified and the user wants their fields filled, and again with their answers.
     Without answers: reads the masked text (one model call for all fields, cached) and returns per field: status
     (green = verified, amber = needs review, missing, blind = ask the user first), value, quote, reason, candidates.
     With answers (one per field the user answered: accept a candidate_id, a corrected value + evidence_text,
     not_stated, or items for a list field): saves them all; each is scored first, then PrivLab learns from it.
+    auto_accept_verified=True (bulk, after the user has taught the fields on a few reports): values PrivLab verified
+    are saved by themselves, never used for teaching and never counted as the user's check; only the others come
+    back for the user.
     Returns: the values to show, or what was saved (and, for a blind check, PrivLab's own answer)."""
     run = pipeline._RUNS.get(deid_id)
     if run is None or run["step"] != "done":
@@ -384,6 +433,8 @@ def privlab_extract(deid_id: str, answers: list[Answer] = []) -> dict:
     fields = load_pack(viewer.STATE["pack"])["fields"]
     if not fields:
         return {"next": "define", "say": "No fields defined yet: use privlab_fields(action='draft')."}
+    if auto_accept_verified:
+        return _bulk(deid_id, fields)
     results = []
     for f in fields:
         r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True)
@@ -399,14 +450,49 @@ def privlab_extract(deid_id: str, answers: list[Answer] = []) -> dict:
                    + (f" {blind} blind check(s): ask the user for the value without showing PrivLab's." if blind else "")}
 
 
+def _bulk(deid_id: str, fields) -> dict:
+    """Like the viewer's Extract all: a verified value is saved by itself (phase "bulk": never taught, never scored as
+    a person's check); a blind check, a missing value or one that needs review comes back for the user."""
+    auto, need = [], []
+    for f in fields:
+        r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True)
+        if r.get("status") == "green":
+            with viewer._WRITE:
+                out = learn.confirm_field(deid_id, f.key, candidate_id=r.get("candidate_id") if not f.multi else None,
+                                          items=[{"value": it["value"], "evidence_text": it["evidence_text"]}
+                                                 for it in r.get("items", [])] if f.multi else None,
+                                          phase="bulk", pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
+            if out.get("status") == "saved":
+                auto.append({"field": f.key, "value": out["value"]})
+                continue
+        need.append({"field": f.key, "name": f.name, "status": r.get("status"), "value": r.get("value"),
+                     "quote": r.get("evidence_text"), "reason": r.get("reason"), "candidate_id": r.get("candidate_id"),
+                     "candidates": [{"id": c["id"], "value": c["value"], "quote": c["evidence_text"]}
+                                    for c in r.get("candidates", [])]})
+    say = (f"{len(auto)} verified value(s) saved by themselves." + (f" {len(need)} need the user: show each with its "
+           "quote (for a blind check, ask without showing PrivLab's value), then send the answers with privlab_extract."
+           if need else " Nothing needs the user on this report."))
+    return {"deid_id": deid_id, "next": "confirm" if need else "done", "auto_saved": auto, "fields": need,
+            "viewer_url": _url(deid_id), "say": say}
+
+
 # --- 5. Export ---------------------------------------------------------------------------------------------------
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
-def privlab_export(kind: Literal["data", "masked"], out_path: str) -> dict:
+def privlab_export(kind: Literal["data", "masked"], out_path: str = "") -> dict:
     """Use when the user wants a file, for the reports of this session, written on this computer.
     kind="data": a CSV, one row per report and one column per field (values as written, no report text).
     kind="masked": every finished report's de-identified text, as a .zip.
-    Returns: the file path and how much it holds (never the contents)."""
+    out_path: where to write it. Leave it empty first: PrivLab suggests a folder next to the reports ("PrivLab
+    output", created if missing); ask the user, then call again with their choice or the suggestion.
+    Returns: the suggestion, or the file path and how much it holds (never the contents)."""
+    if not out_path:
+        base = next(reversed(SOURCES.values()), None)             # next to the latest report or folder
+        folder = (base.parent if base else Path.home() / "Documents") / "PrivLab output"
+        name = f"privlab_extracted_data_{viewer._stamp()}.csv" if kind == "data" else f"privlab_masked_{viewer._stamp()}.zip"
+        suggestion = str(folder / name)
+        return {"next": "ask", "suggested_path": suggestion,
+                "say": f"Ask the user where to save it. Suggest: {suggestion} (the folder is created if missing)."}
     p = Path(out_path).expanduser().resolve()
     if ROOT / "data" in p.parents:
         return {"next": "error", "error": "Not inside data/.", "say": "Choose a folder outside PrivLab's data/ folder."}
@@ -450,6 +536,14 @@ def set_up_fields(fields: str) -> str:
     return (f"Help me define these fields in PrivLab: {fields}. For each: privlab_fields(action='draft'), show me the "
             "'Did you mean' question, definition and type; change anything I ask; then action='save'. "
             "Finish with privlab_fields(action='list').")
+
+
+@mcp.prompt(title="Process a folder of reports")
+def process_folder(folder: str) -> str:
+    return (f"Process every report in {folder} with PrivLab, following the bulk steps: de-identify the folder, show "
+            "me the summary and ask whether to review any or hide them all; ask if I want to check the masked text in "
+            "my browser; extract with auto_accept_verified=True and show me only what needs me; then ask me where to "
+            "save (suggest the default) and export the CSV, and offer the masked text.")
 
 
 @mcp.prompt(title="Open the PrivLab viewer")
