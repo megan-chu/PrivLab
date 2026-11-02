@@ -36,7 +36,8 @@ its verified values are wrong.
 - De-identification on the device, before any API call: dev and extra reports 100% of 1,876 identifiers; hand-written
   hard cases 98.5% of 130; frozen uncued-names benchmark 94.6% of 56; 0 false alarms on every set. With the Muse Spark
   Open safety check added: uncued 100% (56 of 56), hard cases 98.5%.
-- Held-out test reports: de-identification PLACEHOLDER; field accuracy (F1) PLACEHOLDER against the user's confirmations.
+- Held-out test reports (scored once, after the freeze): de-identification 100% of 604 personal details on the device,
+  none reached the AI, precision 95.7%; field accuracy (F1) PLACEHOLDER against the user's confirmations.
 - Indicative comparison: LLM-AIx reports 87–90% on similar fields without learning (different reports).
 
 ## Privacy by design

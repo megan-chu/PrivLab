@@ -165,6 +165,7 @@ are: each personal detail is fully hidden, partly hidden (part still shows) or m
 | Tricky formats (red-team) | 30 | **100%** | 0 / 0 | 98.8% | 100% | **0.99** |
 | Hand-written hard cases: no cues, statements, bank details, addresses | 130 | **98.5%** | 1 / 1 | 98.2% | 97.6% | **0.98** |
 | Uncued names benchmark (frozen, never tuned on) | 56 | **94.6%** | 0 / 3 | 96.3% | 95.1% | **0.96** |
+| **Held-out test reports (scored once, after the freeze)** | 604 | **100%** | 0 / 0 | 95.7% | 100% | **0.98** |
 
 For context, a John Snow Labs benchmark found that two open-source AI-only tools (GLiNER PII and OpenPipe PII-Redact)
 missed more than half of the personal details in clinical text ([article](https://medium.com/john-snow-labs/how-good-are-open-source-llm-based-de-identification-tools-in-a-medical-context-6600ddac6a0f)).
@@ -177,7 +178,9 @@ cases**. The two left are a vague contact ("line 3") and a road described by lan
 extra words in the hard-case negatives; you see its suggestions ticked on the De-identify step and can keep them.
 
 The hard cases helped shape the rules, so they are a development score. The uncued benchmark was frozen before any
-rule was tuned, so it is an honest one. Final scores on 50 held-out test reports will be added after the final run.
+rule was tuned, so it is an honest one. The 50 held-out test reports were scored once, after the rules were frozen:
+every one of the 604 personal details was hidden on the device and none reached the AI; 43 words were hidden that
+were not personal (25 of them shown as "possible name" for you to check and untick), so precision there is 95.7%.
 
 **What PrivLab keeps by default.** Clinical dates (collected, reported) and ages stay visible; only the date of birth is
 hidden. They are often needed for analysis, but under the strictest US rule (HIPAA Safe Harbor) every date tied to a
