@@ -29,6 +29,7 @@ import csv
 import io
 import json
 import logging
+import re
 import shutil
 import socket
 import sys
@@ -37,7 +38,7 @@ import traceback
 import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 from common import spark
 from common.config import ROOT
@@ -141,12 +142,12 @@ def _locked_step(deid_id: str, fn):
 
 def api_confirm(b):
     return _locked_step(b["deid_id"], lambda: pipeline.confirm_deid(
-        b["deid_id"], unmark=b.get("unmark", []), add=b.get("add", []), show_text=True))
+        b["deid_id"], unmark=b.get("unmark", []), add=b.get("add", []), show_text=True, expect="review"))
 
 
 def api_hold(b):
     return _locked_step(b["deid_id"], lambda: pipeline.confirm_deid(
-        b["deid_id"], hold_answers={"keep": b.get("keep", [])}, show_text=True))
+        b["deid_id"], hold_answers={"keep": b.get("keep", [])}, show_text=True, expect="hold"))
 
 
 def api_flags(b):
@@ -447,8 +448,26 @@ POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm,
 # --------------------------------------------------------------------------
 # HTTP
 # --------------------------------------------------------------------------
+LOCAL_HOSTS = ("127.0.0.1", "localhost", "[::1]")
+
+
+def _local(host: str | None, origin: str | None) -> bool:
+    """Only this page may use the API: the Host must be this machine (a rebinding domain is refused), and a
+    browser request from another site (its Origin) is refused, so a web page cannot read or spend anything."""
+    name = lambda h: (urlparse(h).hostname if "://" in h else h.rsplit(":", 1)[0].lower()) if h else ""
+    return name(host) in LOCAL_HOSTS and (not origin or urlparse(origin).hostname in ("127.0.0.1", "localhost", "::1"))
+
+
+def _attachment(fname: str) -> str:
+    """Content-Disposition for any file name: a plain ASCII fallback plus the exact name, encoded (RFC 6266)."""
+    plain = re.sub(r'[^A-Za-z0-9._-]+', "_", fname).strip("_") or "privlab_download"
+    return f"attachment; filename=\"{plain}\"; filename*=UTF-8''{quote(fname)}"
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        if not _local(self.headers.get("Host"), self.headers.get("Origin")):
+            return self._json(403, {"error": "PrivLab only answers its own page on this computer."})
         url = urlparse(self.path)
         if url.path in ("/", "/index.html"):
             return self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
@@ -480,13 +499,15 @@ class Handler(BaseHTTPRequestHandler):
             if out is None:
                 return self._json(404, {"error": "No de-identified reports to export yet."})
             body, ctype, fname = out
-            return self._send(200, body, ctype, {"Content-Disposition": f'attachment; filename="{fname}"'})
+            return self._send(200, body, ctype, {"Content-Disposition": _attachment(fname)})
         fn = GET.get(url.path)
         if fn is None:
             return self._json(404, {"error": "not found"})
         self._run(fn, {k: v[0] for k, v in parse_qs(url.query).items()})
 
     def do_POST(self):
+        if not _local(self.headers.get("Host"), self.headers.get("Origin")):
+            return self._json(403, {"error": "PrivLab only answers its own page on this computer."})
         fn = POST.get(urlparse(self.path).path)
         if fn is None:
             return self._json(404, {"error": "not found"})

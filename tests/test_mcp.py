@@ -115,3 +115,12 @@ def test_chat_context_shows_only_tags_and_report_words(mcp, local_keys):
     seen = json.dumps(out, ensure_ascii=False)
     assert all(x not in seen for x in ("Oyelaran", "7654", "陈小明", "Mary", "Lee"))  # red-team round 2, M01-M06
     assert "[PATIENT-1]" in seen
+
+
+def test_hide_text_after_the_review_step_is_refused_not_dropped(mcp, local_keys):
+    out = mcp.privlab_deidentify_report(report_file(local_keys, "Report handed to Lum Wai at the counter.\n"))
+    pipeline_run = __import__("deid.pipeline", fromlist=["_RUNS"])._RUNS[out["deid_id"]]
+    pipeline_run["step"] = "hold"                                        # as if the hold question were open
+    pipeline_run["holds"] = []
+    res = mcp.privlab_confirm_review(out["deid_id"], hide_text=["Dr Wong"])
+    assert res["next"] == "hold" and "review step" in res["error"] and pipeline_run["step"] == "hold"

@@ -16,7 +16,9 @@ Usage:
   C:/Users/User/GitHub/PrivLab/.venv/Scripts/python.exe C:/Users/User/GitHub/PrivLab/mcp_server/server.py
 """
 import contextlib
+import csv
 import functools
+import io
 import logging
 import os
 import re
@@ -209,13 +211,21 @@ def privlab_confirm_review(deid_id: str, keep_ids: list[str] = [], hide_ids: lis
     run = pipeline._RUNS.get(deid_id)
     if run is None:
         return {"next": "error", "error": "Unknown deid_id.", "say": "Unknown report: de-identify it first."}
-    step = run["step"]
     with viewer._report_lock(deid_id):
+        step = run["step"]                      # read under the lock: the viewer may have moved the report on
+        if step in ("hold", "flags") and [t for t in hide_text if t.strip()]:
+            msg = ("Missed text can only be added at the review step. Nothing was changed. To hide more, open the "
+                   "report in the viewer (privlab_open_viewer) and select the text there.")
+            return {"deid_id": deid_id, "next": step, "error": msg, "say": msg}
         if step == "review":
-            out = pipeline.confirm_deid(deid_id, unmark=keep_ids,
+            out = pipeline.confirm_deid(deid_id, unmark=keep_ids, expect="review",
                                         add=[{"text": t, "type": hide_type} for t in hide_text if t.strip()])
         elif step == "hold":
-            out = pipeline.confirm_deid(deid_id, hold_answers={"keep": keep_ids})
+            if hide_ids:
+                msg = ("At the hold question every word is hidden unless you keep it: send keep_ids only. "
+                       "Nothing was changed.")
+                return {"deid_id": deid_id, "next": "hold", "error": msg, "say": msg}
+            out = pipeline.confirm_deid(deid_id, hold_answers={"keep": keep_ids}, expect="hold")
         elif step == "flags":
             out = pipeline.confirm_deid_flags(deid_id, keep=keep_ids, hide=hide_ids)
         else:
@@ -348,7 +358,7 @@ def privlab_export_file(kind: Literal["data", "masked"], out_path: str) -> dict:
     if kind == "data":
         body = viewer.export_csv(session)
         p.write_bytes(body)
-        rows = body.decode("utf-8-sig").count("\n") - 1
+        rows = max(0, len(list(csv.reader(io.StringIO(body.decode("utf-8-sig"))))) - 1)   # a quoted value may hold a line break
         return {"next": "done", "path": str(p), "rows": rows,
                 "say": f"Wrote {rows} report row(s), one column per field, to {p}."}
     out = viewer.deid_download(None, session)

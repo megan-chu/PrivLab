@@ -18,6 +18,7 @@ or unqualified; medium = name check not run, or name-like words the user kept vi
 import gc
 import re
 import secrets
+import threading
 import time
 from collections import Counter
 from pathlib import Path
@@ -38,6 +39,7 @@ from deid.vault import encrypt_json, save_vault
 STATE_DIR = ROOT / "runs" / "state"
 INSTITUTION = re.compile(r"\b(?:Hospital|Cent(?:er|re)|Clinic|Institute|Infirmary)$")   # a held hospital, not a person
 _RUNS: dict[str, dict] = {}
+_PROFILE_LOCK = threading.Lock()          # one finish at a time reads, merges and saves the privacy profile
 
 
 def warm_up() -> None:
@@ -61,6 +63,11 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
             text = f.read()
         report_id = report_id or Path(path).stem
     persist, warnings = profile is None, []
+    if report_id and find_pattern_phi(re.sub(r"[_.\-]+", " ", report_id)):
+        # the report's name goes into every export (report_id column, masked file names): never personal details
+        report_id = f"report_{secrets.token_hex(3)}"
+        warnings.append(f"The file name looked like it held personal details, so this report is called "
+                        f"\"{report_id}\" in every export.")
     if profile is None:
         profile = prof.load_profile()
         if profile is None:
@@ -93,18 +100,25 @@ def deidentify_report(path: str | None = None, *, text: str | None = None, repor
 
 
 def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spark: bool = True,
-                 show_text: bool = False) -> dict:
+                 show_text: bool = False, expect: str | None = None) -> dict:
     """Call 1: unmark (false-alarm ids), add ([{"text", "type"}] missed text).
     Call 2, only if the reply was next="hold": hold_answers={"keep": [ids of words that are not names]}.
+    expect: the step the caller answered ("review" or "hold"); a run that has moved on refuses the answer,
+    so a late or repeated review answer is never applied to the hold question.
     """
     run = _RUNS.get(deid_id)
     if run is None or run["step"] not in ("review", "hold"):
         return _error(deid_id, "nothing to confirm for this deid_id")
+    if expect and run["step"] != expect:
+        return {**_error(deid_id, f"this report is now at the {run['step']} step; reload it and answer that"),
+                "step": run["step"]}
     _review_time(run)
     text = run["text"]
 
     if run["step"] == "review":
         unmark = set(unmark)
+        given = {(a["text"], a["type"]) for a in add}        # text you added before Back counts again
+        add = list(add) + [{"text": t, "type": ty} for t, ty in run.get("added", []) if (t, ty) not in given]
         kept = [s for s in run["spans"] if s.id in unmark]
         spans = [s for s in run["spans"] if s.id not in unmark]
         for a in add:
@@ -195,7 +209,9 @@ def back_to_review(deid_id: str) -> dict:
     run = _RUNS.get(deid_id)
     if run is None or run["step"] != "hold":
         return _error(deid_id, "can only go back from the hold question")
-    # A true undo: nothing from the first pass is learned or allowed any more.
+    # A true undo: nothing from the first pass is learned or allowed any more. Text you added stays hidden
+    # (the viewer of a report started in chat does not know it), so going back never un-hides it.
+    run["added"] = sorted({(s.text, s.type) for s in run.get("confirmed", []) if s.source == "user"} | set(run.get("added", [])))
     run.update(step="review", shown_at=time.monotonic(), learn={"allow": [], "remove": []},
                allowed=run["allowed"][:run["allowed_n"]])
     run.pop("holds", None)
@@ -249,12 +265,18 @@ def _finish(run: dict, spans: list[PhiSpan]) -> dict:
     run.update(step="done", final_spans=spans, result=result, priority=review_priority(run, len(leftovers)),
                leftovers=leftovers)
     # commit what this run staged (idempotent on a re-finish); each learned identifier keeps the report it came from
-    new = prof.learn(profile, allow=run["learn"]["allow"],
-                     remove=[{**x, "from": run["report_id"]} for x in run["learn"]["remove"]])
+    # Merged into the profile as it is on disk now, not this run's copy from when it started: other reports may
+    # have learned, and the user may have changed choices or removed an entry since.
+    with _PROFILE_LOCK:
+        if run["persist"]:
+            profile = prof.load_profile() or profile
+        new = prof.learn(profile, allow=run["learn"]["allow"],
+                         remove=[{**x, "from": run["report_id"]} for x in run["learn"]["remove"]])
+        if run["persist"]:
+            prof.save_profile(profile)
+    run["profile"] = profile
     run["learned"] = {"allow": run.get("learned", {}).get("allow", []) + new["allow"],
                       "remove": run.get("learned", {}).get("remove", []) + new["remove"]}
-    if run["persist"]:
-        prof.save_profile(profile)
     _trace(run, "apply", f"{len(tags)} identifiers replaced with tags; encrypted vault saved.", ok=not leftovers)
     _save(run)
     return {"deid_id": deid_id, "next": "done", "text": tagged, "summary": summary, "layer2": run["layer2"],

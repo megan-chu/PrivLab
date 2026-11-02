@@ -254,3 +254,17 @@ def test_other_server_errors_still_print(capsys):
     except ValueError:
         srv.handle_error(None, ("127.0.0.1", 0))
     assert "Traceback" in capsys.readouterr().err
+
+
+def test_only_this_page_on_this_computer_may_call_the_api():
+    from viewer.server import _local
+    assert _local("127.0.0.1:8765", None) and _local("localhost:8765", "http://localhost:8765")
+    assert not _local("127.0.0.1:8765", "https://evil.example")          # another site's page
+    assert not _local("rebind.example:8765", None)                      # DNS rebinding
+
+
+def test_download_names_survive_any_characters():
+    from viewer.server import _attachment
+    h = _attachment('病理报告 – "Tan".txt')
+    h.encode("latin-1")                                                  # http.server sends latin-1 headers
+    assert "filename*=UTF-8''" in h and '"' not in h.split('filename="')[1].split('"')[0]

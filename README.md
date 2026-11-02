@@ -2,7 +2,7 @@
 
 **Reports in. Structured data out. Personal details stay on your device.**
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![Runs locally](https://img.shields.io/badge/de--identification-on%20device-2e7d32) ![MCP](https://img.shields.io/badge/MCP-server-6a4fb3) ![Meta Muse Spark](https://img.shields.io/badge/Meta-Muse%20Spark-0866ff)
+![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![Runs locally](https://img.shields.io/badge/de--identification-on%20device-2e7d32) ![MCP](https://img.shields.io/badge/MCP-server-6a4fb3) ![Muse Spark 1.3](https://img.shields.io/badge/Meta-Muse%20Spark%201.3-0866ff) ![Muse Spark Open](https://img.shields.io/badge/Meta-Muse%20Spark%20Open%20%28open%20weights%29-0866ff)
 
 People who work with reports (pathology, lab results, claims, statements) spend hours reading them and retyping
 the same values into spreadsheets. The reports are full of personal details, so they can't simply be shared, or
@@ -12,9 +12,20 @@ PrivLab fixes that. It removes the personal details **on your own device**, then
 with every value traced back to the words it came from. It runs as a simple web page on your computer, or as an
 MCP server inside the AI assistant you already use.
 
-Built solo for the Meta Global AI Developer Hackathon.
+Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie developer), with two Meta models:
+**Muse Spark 1.3** through the Meta Model API, and open-weights **Muse Spark Open**.
+
+## At a glance
+
+| | |
+|---|---|
+| 🌍 **Impact** | Cancer registrars, clinical researchers, claims and finance teams retype values from sensitive reports by hand, because privacy rules stop them using AI. PrivLab lets them: personal details never leave the device, and every value comes with its source for a quick check. |
+| 🦙 **Use of Meta AI** | Each Meta model has its own job. Open-weights **Muse Spark Open** double-checks the masking and can be hosted in-house (Muse Spark 1.3 is its qualified backup). **Muse Spark 1.3** turns a field described in plain words into a precise definition, then extracts every field in one checked JSON call, steered by examples learned from your corrections. A model is used only after passing a privacy qualification test. As an **MCP server**, PrivLab gives assistants such as Muse Code private access to reports. |
+| 🛠️ **Technical depth** | On-device detection of personal details (patterns, checksums, a local name model, address parsing), a privacy guard built into the code, values verified against their quotes, learning on device, and a field marked Ready only by an exact 95% confidence bound on its error rate. 247 automated tests. |
+| 🎬 **Demo** | Add a report, then five steps from review to export, end to end on built-in samples; plus the MCP server. 100% of 1,876 personal details caught on device in the development reports, 0 false alarms; held-out test scores follow the final run (see [Results](#results)). |
 
 ## Contents
+- [At a glance](#at-a-glance)
 - [What makes it different](#what-makes-it-different)
 - [How it works](#how-it-works)
 - [Getting started](#getting-started)
@@ -90,6 +101,8 @@ Then open **http://127.0.0.1:8765** in your browser.
 
 ## Using PrivLab, step by step
 
+Steps 1–2 get a report in; steps 3–7 are the five steps of the workflow above.
+
 1. **Add a report.** Drop a `.txt` or text PDF on the page, paste text with Ctrl+V, or click a sample
    (Breast, Colon, Kidney, Lung, Prostate).
 2. **Choose your task** at the top: *De-identify only*, or *De-identify + extract*.
@@ -129,6 +142,11 @@ tags and masked text. It gives you a link to open the same report in the PrivLab
 - **Ready for in-house hosting:** the safety check uses open-weights Muse Spark Open, so an organisation can run it
   on its own servers by changing two settings.
 
+| Meta model | Where | Job in PrivLab | Why this model |
+|---|---|---|---|
+| **Muse Spark Open** | open weights, hosted on Baseten | Second check: finds names the on-device rules missed, in already-masked text | Open weights: if an organisation hosts it itself, nothing leaves during de-identification |
+| **Muse Spark 1.3** | Meta Model API | Drafts a precise definition from your words; extracts every field in one call per report; backup for the second check | Strong reading of long reports; strict JSON output that code can check |
+
 All data in this repository is synthetic: real public pathology text (TCGA) with invented personal details.
 
 ## Results
@@ -148,7 +166,7 @@ rule was tuned, so it is an honest one. Final scores on 50 held-out test reports
 ## Running the tests
 
 ```powershell
-.venv\Scripts\python -m pytest -q                        # 240 tests, no AI calls (a fake model is used)
+.venv\Scripts\python -m pytest -q                        # 247 tests, no AI calls (a fake model is used)
 .venv\Scripts\python -m eval.score_deid --split hard     # de-identification score on the hard cases
 ```
 

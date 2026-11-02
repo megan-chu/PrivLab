@@ -1124,13 +1124,14 @@ async function confirmReview(r) {
   handleNext(r, res, "review");
 }
 async function handleNext(r, res, back) {
-  if (res.timeout && r.deid) {           // the server may have finished meanwhile: ask where the report is now
+  if ((res.timeout || res.error || res.next === "error") && r.deid) {   // the server may have moved on: ask where it is now
     const st = await api(`/api/open?deid_id=${r.deid}`);
     if (!st.error && st.next !== "error" && st.next !== back) { r.question = null; r.error = null; applyState(r, st); return refresh(r); }
   }
   if (res.error || res.next === "error") {
     r.step = back;
-    r.error = {title: "The second check did not run", text: `${res.error || "This step is no longer available."} Your report is unchanged and nothing was sent. Try again.`};
+    r.error = {title: "This step did not finish", text: `${res.error || "This step is no longer available."} Your answers are kept${
+      back === "review" ? " and nothing was sent" : ""}. Try again.`};
     return refresh(r);
   }
   if (res.next === "hold") { r.step = "hold"; r.question = {kind: "hold", items: res.hold}; trace(r, `Paused before any API call: ${res.hold.length} words look like names.`, "local", false); }
@@ -2557,7 +2558,8 @@ async function openFromLink() {
   const res = await api(`/api/open?deid_id=${id}`);
   if (res.error || res.next === "error") return toast("That report is not open in this PrivLab session. Start it again from the chat.");
   const r = newReport(res.report_id || "Report from chat", {fromChat: true});
-  Object.assign(r, {deid: id, text: res.text, dets: res.confirmed || res.items || []});
+  // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
+  Object.assign(r, {deid: id, text: res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
   S.reports.push(r); S.cur = S.reports.length - 1;
   trace(r, "Started in the chat; opened here.", "local");
   applyState(r, res);
