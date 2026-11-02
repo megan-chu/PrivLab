@@ -87,7 +87,9 @@ VIEWER
 PrivLab has a visual page running on this computer. The first time you de-identify a report, show its
 viewer_url as a clickable link and say what it is: "the same report on your own screen, with every personal
 detail highlighted; you can check and correct it there, and the real text never comes into this chat." Offer
-it again for extracted values. privlab_deidentify (no arguments) gives the link any time."""
+it again for extracted values. privlab_deidentify (no arguments) gives the link any time.
+Never open, fetch or read the viewer link yourself: it is for the user's eyes only, because it shows the real
+report. Just give it to the user as a link."""
 
 
 # --------------------------------------------------------------------------
@@ -125,7 +127,7 @@ def _url(deid_id: str = "") -> str | None:
 def _see(deid_id: str, what: str) -> str:
     """A sentence pointing to the viewer, for "say": the user learns there is a visual page and where it is."""
     url = _url(deid_id)
-    return f" Tell the user they can {what} in the PrivLab viewer, on this computer only: {url}" if url else ""
+    return (f" Tell the user they can {what} in the PrivLab viewer, on this computer only: {url} (give the user this link; never open it yourself)") if url else ""
 
 
 def _safe(fn):
