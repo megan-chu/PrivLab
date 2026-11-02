@@ -29,6 +29,7 @@ Built solo for the **Meta Global AI Developer Hackathon** (Track 1, Indie develo
 - [What makes it different](#what-makes-it-different)
 - [How it works](#how-it-works)
 - [Getting started](#getting-started)
+- [Choose how to use PrivLab](#choose-how-to-use-privlab)
 - [Using PrivLab, step by step](#using-privlab-step-by-step)
 - [Use it from an AI assistant (MCP)](#use-it-from-an-ai-assistant-mcp)
 - [Privacy at a glance](#privacy-at-a-glance)
@@ -96,6 +97,17 @@ Start PrivLab: **double-click `PrivLab.cmd`** in the PrivLab folder. It opens Pr
 PrivLab starts its page by itself when the assistant connects, and the assistant gives you the link.
 
 From a terminal, the same: `.venv\Scripts\python -m viewer.server --open`.
+
+## Choose how to use PrivLab
+
+| You want to… | Use | How |
+|---|---|---|
+| Check a few reports carefully, by eye | **The browser** | Double-click `PrivLab.cmd`, add reports, follow the five steps |
+| Process many reports, or combine with other work | **Your AI assistant** (e.g. Muse Code) | Say *"Fill my fields for C:/reports/case12.txt with PrivLab"* |
+| Both: talk for speed, look when it matters | **Both together** | Start in the assistant; each report opens in the browser by itself, and the browser lists every report you added in the chat |
+
+Same reports, same fields, same learning either way, and the same rule: originals stay on your computer, nothing is
+sent until you confirm, and any AI only sees masked text.
 
 ## Using PrivLab, step by step
 

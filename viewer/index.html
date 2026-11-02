@@ -945,6 +945,8 @@ function viewEmpty() {
     <div class="samples"><span class="label">Or test with sample data:</span>${SAMPLES.map(([id, label, short]) =>
       `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}
       <button class="sample" data-sample-all title="Add all ${SAMPLES.length} sample reports, to try a batch">All ${SAMPLES.length}</button></div>
+    <p class="sm muted" style="text-align:center;margin-top:var(--s4)" title="PrivLab is also an MCP server: an AI assistant such as Muse Code can use it while seeing only masked text. Reports you add there appear here too.">
+      Prefer to talk? Use PrivLab from your AI assistant (e.g. Muse Code); its reports show up here too.</p>
   </div>`;
   // The right panel: the same steps as the step bar. The panel badge carries the universal guarantee (local
   // processing); each step says what you do, shows a one-line demo, states what leaves the device, and what
@@ -2639,7 +2641,7 @@ async function openFromLink() {
 async function addFromServer(id, name) {
   const res = await api(`/api/open?deid_id=${id}`);
   if (res.error || res.next === "error") return false;
-  const r = newReport(name || res.report_id || "Report from chat", {fromChat: true});
+  const r = newReport(name || res.report_id || "Report from chat", {fromChat: true, source: "From chat"});
   // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
   Object.assign(r, {deid: id, text: res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
   S.reports.push(r);
