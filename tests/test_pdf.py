@@ -67,3 +67,8 @@ def test_scans_images_other_formats_and_locked_pdfs_are_refused():
     buf = io.BytesIO(); w.write(buf)
     assert "password-protected" in pdf_text(buf.getvalue())["error"]
 
+
+
+def test_ligatures_become_letters():
+    from common.pdf import _clean
+    assert _clean("reﬂex targeted, suﬃcient, ﬁnal") == "reflex targeted, sufficient, final"

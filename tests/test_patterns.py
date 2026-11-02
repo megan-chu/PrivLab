@@ -453,3 +453,11 @@ def test_a_particle_name_stops_at_the_name():
     assert ("NAME", "Nurul Ain binte Sulaiman") in found("Nurul Ain binte Sulaiman asked that the results be sent.")
     assert ("NAME", "Jane binte Sample") in found("Patient: Jane binte Sample    NRIC: S1234567D")    # not across a column
     assert ("NAME", "Siti binte Abdul Rahman") in found("Consent: Siti binte Abdul Rahman signed.")
+
+
+def test_clinical_phrases_are_not_names_but_names_still_are():
+    from deid.patterns import find_pattern_phi
+    text = "Lymph Nodes Stations: 4R, 7 and 10L sampled.\nStations 4R and 7: no tumour.\n"
+    assert find_pattern_phi(text) == []                                # "lymph" is a report word, not a name
+    found = [s.text for s in find_pattern_phi("Specimen received from Ramesh Pasupathy for review.\n")]
+    assert any("Ramesh" in t for t in found)

@@ -23,8 +23,14 @@ TABLE_ROWS = 5
 logging.getLogger("pypdf").setLevel(logging.ERROR)     # malformed-PDF chatter; never to stdout
 
 
+# Typeset ligatures as their letters ("reﬂex" -> "reflex"): otherwise the word is unknown to the word list, and two
+# such words in a row look like a lower-case name to the de-identification rules.
+LIGATURES = str.maketrans({"ﬀ": "ff", "ﬁ": "fi", "ﬂ": "fl", "ﬃ": "ffi", "ﬄ": "ffl",
+                           "ﬅ": "st", "ﬆ": "st"})
+
+
 def _clean(text: str) -> str:
-    text = (text or "").replace("\r\n", "\n").replace("\r", "\n")
+    text = (text or "").replace("\r\n", "\n").replace("\r", "\n").translate(LIGATURES)
     text = VERTICAL.sub(lambda m: "".join(m.group().split()), text)   # margin text, one character per line
     text = textwrap.dedent("\n".join(line.rstrip() for line in text.split("\n")))   # no page-margin indent
     return re.sub(r"\n{3,}", "\n\n", text)

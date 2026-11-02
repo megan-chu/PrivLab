@@ -44,7 +44,12 @@ def _looks_like_name(span: str, vocab) -> bool:
         return False
     # a name needs one capitalised word that is neither report vocabulary nor a medical word
     # ("Lymph Nodes Macrometastases" has none; "Ramesh Pasupathy" has "Ramesh")
-    return any(len(w) > 1 and _plain(w) not in vocab and not medical_word(w) for w in words if w[0].isupper())
+    if not any(len(w) > 1 and _plain(w) not in vocab and not medical_word(w) for w in words if w[0].isupper()):
+        return False
+    # nor a phrase with an ordinary report word that is no listed name: "Lymph Nodes Stations" ("lymph"),
+    # "Tumour Regression Grade"; a listed name stays a name ("Mark", "Grace" are both)
+    from deid.hold import name_list
+    return not any(len(w) > 3 and _plain(w) in vocab and _plain(w) not in name_list() for w in words)
 
 
 def find_names(text: str) -> list[tuple[int, int]]:

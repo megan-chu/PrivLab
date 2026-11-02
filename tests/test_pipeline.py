@@ -408,3 +408,28 @@ def test_the_recheck_keeps_your_type_choices_and_its_own_ids(fake_spark, monkeyp
                 text="Kampong Glam Community Clinic", source="hold")])
     done = pipeline.confirm_deid(r["deid_id"], unmark=ids[:1], use_spark=False)
     assert calls == ["r"] and done["next"] == "done"                               # a kept type is never asked about
+
+
+def test_a_decision_model_settles_undecided_words(fake_spark, local_keys, monkeypatch):
+    """A word the second check leaves undecided: surely not a name is not asked; surely a name is ticked."""
+    import common.spark as spark
+    from deid.profile import new_profile
+    monkeypatch.setenv("PRIVLAB_SECOND_OPINION", "on")
+    monkeypatch.setenv("BASETEN_DECISION_API_KEY", "test-key")
+    monkeypatch.setattr(spark, "_check_online", lambda *a: None)
+    sure = {}
+    monkeypatch.setattr(spark, "_decide_request", lambda settings, body: {
+        "answers": {"q": {"noul": next(p for w, p in sure.items() if w in body["questions"]["q"]["instructions"])}},
+        "usage": {"input_tokens": 50, "output_tokens": 1}})
+    text = "NOTE: Tumour cellularity is sufficient for reflex targeted sequencing.\nSeen with wei ming koh today.\n"
+    fake_spark["state"]["reply"] = {"findings": []}                 # the second check decides nothing
+    sure.update({"reflex targeted": 0.01, "wei ming koh": 0.99})
+    r = pipeline.deidentify_report(text=text, profile=new_profile()[0])
+    out = pipeline.confirm_deid(r["deid_id"])
+    if out["next"] == "hold":                                         # the hold rule may ask first: hide them
+        out = pipeline.confirm_deid(r["deid_id"], hold_answers={"keep": []})
+    run = pipeline._RUNS[r["deid_id"]]
+    flags = {s.text: s for s in run.get("flags", [])}
+    assert not any("reflex" in t for t in flags)                       # not asked
+    assert all(s.source == "decision" for t, s in flags.items() if "koh" in t)   # ticked to hide
+    assert any("not a name" in str(t) for t in run["trace"])

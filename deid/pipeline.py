@@ -194,6 +194,7 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
 
     new = [s for s in found if not _covered(s, spans)]
     unresolved = [q for q in unresolved if not _covered(q, spans) and not _covered(q, new)]
+    unresolved = _settle(run, masked, unresolved)
     if not new and not unresolved:
         run["layer2"] = "clean"
         _trace(run, "layer2", "Muse Spark double-checked the masked text: nothing new found.")
@@ -208,6 +209,32 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
             "flags": [{**_detection(text, every, s, show_text), "ticked": s.source != "suspect"} for s in new + unresolved],
             "note": ("Model finds are ticked to hide; send their ids as keep if they are false alarms. "
                      "Words the model did not rule on are unticked; send their ids as hide if they are identifiers.")}
+
+
+NOT_A_NAME, A_NAME = 0.15, 0.85      # the decision model settles an undecided word only when it is this sure
+
+
+def _settle(run: dict, masked, unresolved: list[PhiSpan]) -> list[PhiSpan]:
+    """Words the second check could not decide: a Baseten decision model reads the same masked text (these words
+    already went in it) and says how likely each is a person's name. Surely not: dropped, never asked. Surely a
+    name: ticked to hide (the user can untick). Otherwise asked as before. Unavailable: asked as before."""
+    out = []
+    for q in unresolved:
+        try:
+            a = spark.decide(masked, step="name_decide", report_id=run["report_id"], context="",
+                             question={"type": "noul", "instructions": f'In this report, is "{q.text}" the name of a '
+                                       "person (a patient, relative or staff member)?"})
+        except Exception as e:
+            log.warning("name decision unavailable (%s)", type(e).__name__)
+            a = None
+        p = a.get("noul") if a else None
+        if p is not None and p < NOT_A_NAME:
+            _trace(run, "layer2", f"A decision model judged one undecided word not a name ({p:.0%}): not asked.")
+            continue
+        if p is not None and p > A_NAME:
+            q = PhiSpan(id=q.id, type=q.type, start=q.start, end=q.end, text=q.text, source="decision")
+        out.append(q)
+    return out
 
 
 def back_to_review(deid_id: str) -> dict:
@@ -367,6 +394,14 @@ def report_state(deid_id: str, show_text: bool = False) -> dict:
     if show_text:
         out.update(text=text, confirmed=[_detection(text, done, s, True) for s in done])
     return out
+
+
+def fingerprint(deid_id: str) -> str | None:
+    """SHA-256 of the report as it came in (never the text itself): the same file is recognised again, however
+    its masking changes as the profile learns."""
+    import hashlib
+    run = _RUNS.get(deid_id)
+    return hashlib.sha256(run["text"].encode("utf-8")).hexdigest() if run else None
 
 
 def result_for(deid_id: str) -> DeidResult | None:
