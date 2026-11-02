@@ -8,8 +8,12 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
      bad one (last 3 + 3 kept).
   4. validation(): per field and definition version. The error that matters is a silent one: a green
      value that was wrong. Ready = with 95% confidence at most 5% of green values are wrong (exact
-     binomial bound: 59 green values with no error, 93 with one, 124 with two). Blind checks (the
+     binomial bound: 59 green values with no error, 93 with one, 124 with two). The bound is pooled over
+     the pack's fields (one reviewed report checks them all), and a field with no silent error also needs
+     MIN_FIELD green checks of its own, so a bad field cannot hide behind good ones. Blind checks (the
      answer hidden from the user) are counted separately, to show whether confirmations are anchored.
+     Only a report's first check counts: checked again later, PrivLab has already learned from that report.
+     "data" is the export's view: values a person confirmed (right by definition) and values saved by bulk.
 
 The log stores values, report ids and evidence positions only, never report text.
 """
@@ -44,8 +48,10 @@ def remember_prediction(result: dict) -> None:
 
 def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None, value=None,
                   evidence_text: str | None = None, missing: bool = False, note: str | None = None, *,
-                  items: list[dict] | None = None, phase: str = "teach", pack_path=None, log_path=None) -> dict:
+                  items: list[dict] | None = None, at: int | None = None, phase: str = "teach", pack_path=None,
+                  log_path=None) -> dict:
     """The user's answer: pick a candidate, or give value + evidence, or say it is not in the report.
+    at: where the user selected the evidence (character offset), so a quote that occurs twice lands on theirs.
     A list field takes items=[{"value", "evidence_text"}, ...] instead: the whole list, as confirmed.
 
     phase="bulk": a verified value accepted by "Extract all", not by a person. It is saved for the export but
@@ -62,7 +68,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
         return {"status": "error", "reason": "only a verified value can be accepted without review"}
 
     confirmed = (_confirmed_items(result.text, field, items, missing) if field.multi
-                 else _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing))
+                 else _confirmed(predicted, result.text, field, candidate_id, value, evidence_text, missing, at))
     if isinstance(confirmed, str):
         return {"status": "error", "reason": confirmed}
     outcome = _outcome(predicted["value"], confirmed["value"] if confirmed else None, field.type)
@@ -82,7 +88,9 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     if phase != "bulk":
         _learn(field, predicted, confirmed, result.text, outcome, result.kept_types, note)
     path = log_path or LOG_PATH
-    field.readiness = readiness(validation(field, read_log(path) + [entry]))
+    log = read_log(path) + [entry]
+    field.readiness = readiness(validation(field, log, pack["fields"]))
+    counted = any(e is entry for e in _checks(field, log))       # a report checked before: it teaches, not scores
     put_field(pack, field)
     save_pack(pack, pack_path)
     entry["learn_ms"] = round((time.perf_counter() - t0) * 1000, 1)
@@ -98,7 +106,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     record("field_learn", entry["learn_ms"], report_id=result.report_id, field=field.key)
     out = {"status": "saved", "outcome": outcome, "value": confirmed["value"] if confirmed else None,
            "start": confirmed["start"] if confirmed else None, "end": confirmed["end"] if confirmed else None,
-           "readiness": field.readiness}              # start/end: the confirmed quote, in the de-identified text
+           "readiness": field.readiness, "counted": counted}   # start/end: the confirmed quote, in the de-identified text
     if field.multi:
         out["items"] = confirmed["items"] if confirmed else []
     if entry["blind"]:                                 # revealed only after the user answered
@@ -106,7 +114,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     return out
 
 
-def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missing):
+def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missing, at=None):
     if missing:
         return None
     if candidate_id:
@@ -127,7 +135,8 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
             return f"'{typed}' is not a number; for a number field type e.g. 2.1"
     else:
         value = tidy_text(value)                                      # text: as written, minus slips
-    return {"value": value, "start": hits[0][0], "end": hits[0][1]}
+    start, end = min(hits, key=lambda h: abs(h[0] - at)) if isinstance(at, int) else hits[0]   # the one selected
+    return {"value": value, "start": start, "end": end}
 
 
 def reset_field(deid_id: str, field_key: str, *, pack_path=None, log_path=None) -> dict:
@@ -238,6 +247,8 @@ def _learn(field, predicted, confirmed, text: str, outcome: str, kept_types=(), 
 # --------------------------------------------------------------------------
 TARGET = 0.05             # at most 5% of green values wrong ...
 CONFIDENCE = 0.95         # ... with 95% confidence
+MIN_FIELD = 10            # green checks a field needs of its own before the pooled bound can make it Ready
+RECENT = 10               # first guesses on the latest reports, to show whether teaching is working
 
 
 def upper_bound(errors: int, n: int) -> float:
@@ -266,19 +277,69 @@ def more_needed(errors: int, n: int) -> int:
     return hi
 
 
-def validation(field, entries: list[dict]) -> dict:
-    """Scores for the field's current definition version only."""
-    rows = [e for e in entries if e["field"] == field.key and e.get("field_version", 1) == field.version
-            and e.get("phase") not in ("bulk", "reset")]         # accepted without a person, or undone: not a check
+def _report(e: dict) -> str:
+    return e.get("report_id") or e["deid_id"]
+
+
+def _checks(field, entries: list[dict]) -> list[dict]:
+    """A person's first check of each report, on the field's current definition version."""
+    seen, out = set(), []
+    for e in entries:
+        if (e["field"] == field.key and e.get("field_version", 1) == field.version
+                and e.get("phase") not in ("bulk", "reset") and _report(e) not in seen):   # bulk or undone: not a check
+            seen.add(_report(e))
+            out.append(e)
+    return out
+
+
+def _data(field, entries: list[dict]) -> dict:
+    """The field's values as they stand in the export: confirmed by you (since any reset), or saved by bulk only."""
+    by, first = {}, {}
+    for e in entries:
+        if e["field"] != field.key:
+            continue
+        r = _report(e)
+        if e.get("phase") == "reset":
+            by.pop(r, None)
+            continue
+        if e.get("phase") != "bulk":
+            first.setdefault(r, e["outcome"])                  # its first check: did you have to correct it?
+        if e.get("phase") != "bulk":
+            by[r] = "yours"
+        else:
+            by.setdefault(r, "auto")                           # bulk never takes over a value you confirmed
+    yours = [r for r, w in by.items() if w == "yours"]
+    return {"yours": len(yours), "corrected": sum(first.get(r) not in ("correct", "true_empty") for r in yours),
+            "auto": len(by) - len(yours)}
+
+
+def _silent(rows: list[dict]) -> tuple[int, int]:
     green = [e for e in rows if e["predicted"]["status"] == "green"]
-    silent = sum(e["outcome"] in ("wrong", "extra") for e in green)
+    return sum(e["outcome"] in ("wrong", "extra") for e in green), len(green)
+
+
+def validation(field, entries: list[dict], pool=None) -> dict:
+    """Scores for the field's current definition version only. pool: the pack's fields, for the pooled bound."""
+    rows = _checks(field, entries)
+    silent, green = _silent(rows)
     blind = [e for e in rows if e.get("blind")]
     right = lambda es: sum(e["outcome"] in ("correct", "true_empty") for e in es)
-    bound = upper_bound(silent, len(green))
+    bound, need = upper_bound(silent, green), more_needed(silent, green)
+    pool = [f for f in (pool or []) if f.key != field.key]
+    if pool and silent == 0:                          # pooled: every field's checks count towards one bound
+        p_silent, p_green = map(sum, zip((silent, green), *(_silent(_checks(f, entries)) for f in pool)))
+        bound = min(bound, upper_bound(p_silent, p_green) if green >= MIN_FIELD else 1.0)
+        per_report = -(-more_needed(p_silent, p_green) // (len(pool) + 1))     # each report checks every field
+        need = min(need, max(MIN_FIELD - green, per_report, 0))
+    count = lambda *o: sum(e["outcome"] in o for e in rows)
+    recent = rows[-RECENT:]
     return {"version": field.version, "checked": len(rows), "correct": right(rows),
-            "green": len(green), "silent_errors": silent, "silent_bound": round(bound, 4),
-            "more_needed": more_needed(silent, len(green)),
-            "review_rate": round(1 - len(green) / len(rows), 2) if rows else None,
+            "outcomes": {"right": right(rows), "corrected": count("wrong"), "missed": count("missed"),
+                         "extra": count("extra")},
+            "recent": len(recent), "recent_correct": right(recent), "data": _data(field, entries),
+            "green": green, "silent_errors": silent, "silent_bound": round(bound, 4),
+            "more_needed": need if bound > TARGET else 0,
+            "review_rate": round(1 - green / len(rows), 2) if rows else None,
             "blind": len(blind), "blind_correct": right(blind), "ready": bound <= TARGET}
 
 
@@ -322,7 +383,7 @@ def show_pack(field_key: str | None = None, *, pack_path=None, log_path=None) ->
     log = read_log(log_path)
     fields = [{"key": f.key, "name": f.name, "type": f.type, "unit": f.unit,
                "readiness": f.readiness, "recent": f.recent, "version": f.version,
-               "validation": validation(f, log)} for f in pack["fields"]]
+               "validation": validation(f, log, pack["fields"])} for f in pack["fields"]]
     if field_key is None:
         return {"version": pack["version"], "fields": fields}
     field = get_field(pack, field_key)

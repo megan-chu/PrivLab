@@ -40,7 +40,7 @@ def test_correct_is_logged_then_learned(paths):
     res = run(paths, REPORT, ("2.1", "Invasive ductal carcinoma, 2.1 cm"))
     out = confirm(paths, res, candidate_id=res["candidate_id"])
     start, end = out.pop("start"), out.pop("end")
-    assert out == {"status": "saved", "outcome": "correct", "value": 2.1, "readiness": "learning"}
+    assert out == {"status": "saved", "outcome": "correct", "value": 2.1, "readiness": "learning", "counted": True}
     assert REPORT[start:end] == "Invasive ductal carcinoma, 2.1 cm"            # where the confirmed value is
     entry = read_log(paths["log"])[0]
     assert entry["predicted"]["value"] == 2.1 and entry["confirmed"]["value"] == 2.1
@@ -106,13 +106,51 @@ def test_ready_needs_the_95_percent_bound():
     assert more_needed(0, 0) == 59 and more_needed(1, 60) == 33 and more_needed(0, 59) == 0
     from extract.types import Field
     f = Field(key="t", name="t", description="", meaning="m", type="number")
-    row = lambda status, outcome, **kw: {"field": "t", "predicted": {"status": status}, "outcome": outcome, **kw}
-    clean = [row("green", "correct") for _ in range(59)]
+    row = lambda status, outcome, **kw: {"field": "t", "predicted": {"status": status}, "outcome": outcome,
+                                         "deid_id": kw.pop("rid", "last"), **kw}       # one check per report
+    clean = [row("green", "correct", rid=str(i)) for i in range(59)]
     assert validation(f, clean)["ready"]
     assert not validation(f, clean[1:] + [row("green", "wrong")])["ready"]          # one silent error
     v = validation(f, clean[1:] + [row("amber", "wrong")])                           # caught by review, not silent
     assert (v["silent_errors"], v["green"], v["ready"]) == (0, 58, False)
     assert validation(f, [{**r, "field_version": 2} for r in clean])["checked"] == 0  # other version
+
+
+def test_pooled_bound_over_fields():
+    # 5 fields x 12 reports = 60 clean green checks: Ready together; a field needs 10 of its own, and an error stays its own
+    from extract.types import Field
+    fs = [Field(key=k, name=k, description="", meaning="m", type="text") for k in "abcde"]
+    row = lambda k, outcome="correct", i=99: {"field": k, "predicted": {"status": "green"}, "outcome": outcome,
+                                              "deid_id": str(i)}
+    log = [row(k, i=i) for k in "abcde" for i in range(12)]
+    assert all(validation(f, log, fs)["ready"] for f in fs) and not validation(fs[0], log)["ready"]
+    v = validation(fs[0], log[:9] + log[12:], fs)                                     # 9 of its own
+    assert (v["ready"], v["more_needed"]) == (False, 1)
+    v = validation(fs[0], log[:11] + [row("a", "wrong")] + log[12:], fs)              # its own silent error
+    assert (v["ready"], v["more_needed"]) == (False, more_needed(1, 12))
+
+
+def test_first_check_per_report_counts_and_your_data_keeps_corrections():
+    from extract.types import Field
+    f = Field(key="t", name="t", description="", meaning="m", type="text")
+    row = lambda rid, outcome, phase="teach": {"field": "t", "report_id": rid, "deid_id": rid, "phase": phase,
+                                               "predicted": {"status": "amber"}, "outcome": outcome}
+    log = [row("A", "wrong"), row("A", "correct"),                     # A checked again after teaching on it
+           row("B", "correct"), row("C", "correct", "bulk"), row("A", "correct", "bulk")]
+    v = validation(f, log)
+    assert (v["checked"], v["correct"], v["recent"], v["recent_correct"]) == (2, 1, 2, 1)
+    assert v["data"] == {"yours": 2, "corrected": 1, "auto": 1}        # A stays yours after a bulk save
+    assert validation(f, log + [row("A", "true_empty", "reset")])["data"] == {"yours": 1, "corrected": 0, "auto": 1}
+
+
+def test_typed_value_is_saved_where_the_user_selected_it(paths):
+    text = "SUMMARY: tumour 2.1 cm. DIAGNOSIS: Invasive ductal carcinoma, tumour 2.1 cm."
+    res = run(paths, text, ("2.1", "tumour 2.1 cm"))
+    second = text.rindex("tumour 2.1 cm")
+    out = confirm(paths, res, value="2.1", evidence_text="tumour 2.1 cm", at=second)
+    assert out["start"] == second                                         # not the first "tumour 2.1 cm"
+    res = find_candidates(res["deid_id"], "tumour_size", pack_path=paths["pack"])          # the same report again
+    assert confirm(paths, res, candidate_id=res["candidate_id"])["counted"] is False
 
 
 def test_new_meaning_is_a_new_version(paths):
