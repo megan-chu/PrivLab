@@ -16,6 +16,7 @@ Usage:
   python -m mcp_server.server                                  # from the repo root
   C:/Users/User/GitHub/PrivLab/.venv/Scripts/python.exe C:/Users/User/GitHub/PrivLab/mcp_server/server.py
 """
+import asyncio
 import contextlib
 import csv
 import functools
@@ -25,6 +26,7 @@ import os
 import re
 import sys
 import threading
+import time
 import traceback
 import webbrowser
 from pathlib import Path
@@ -88,7 +90,8 @@ A FOLDER OF REPORTS (bulk)
 2. privlab_deidentify(folder): every report is read and its personal details hidden on this computer. Show the
    summary; ask whether to review any (all are listed in the browser) or to hide them all; privlab_review each.
 3. Ask: "Do you want to check the masked text in your browser before I extract?"
-4. privlab_extract(deid_id, auto_accept_verified=True) for each report: verified values are saved by themselves;
+4. privlab_extract(deid_id, auto_accept_verified=True) for each report: verified values of Proven accurate fields
+   are saved by themselves (on a field still learning they wait for the user's OK);
    show the user only the ones that need them, then send their answers.
 5. privlab_export(kind="data") without out_path, ask where to save (suggest the default), then export; offer the
    masked text (kind="masked") too.
@@ -101,12 +104,18 @@ PRIVACY RULES (always)
 
 VIEWER
 PrivLab has a visual page running on this computer. When you de-identify a report, PrivLab opens it in the
-user's browser by itself: tell the user it has opened, give its viewer_url as a link in case it did not, and say
+user's browser by itself: tell the user it has opened, give its viewer_url in case it did not (always the full
+address as plain text, e.g. http://127.0.0.1:8765/#d_1a2b3c4d, never a Markdown link: in a terminal only the
+link's words show and it cannot be clicked), and say
 what it is: "the same report on your own screen, with every personal
 detail highlighted; you can check and correct it there, and the real text never comes into this chat." Offer
 it again for extracted values. privlab_deidentify (no arguments) gives the link any time.
+When the user wants to do a step in the browser (e.g. teach the fields on a few reports), call
+privlab_wait(deid_ids) and wait: it returns when those reports are finished there, with what the user did, so you
+can go on (e.g. extract the rest) without the user coming back to tell you. If it says "waiting", ask the user
+whether to keep waiting, then call it again.
 Never open, fetch or read the viewer link yourself: it is for the user's eyes only, because it shows the real
-report. Just give it to the user as a link."""
+report. Just write the address out for the user."""
 
 
 # --------------------------------------------------------------------------
@@ -149,10 +158,25 @@ def _show(deid_id: str) -> None:
         threading.Timer(0.3, webbrowser.open, [url]).start()
 
 
+_REVIEW_OPENED = {"at": 0.0}
+
+
+def _show_review(deid_id: str) -> bool:
+    """A value needs the user: open the browser on that report, so the review is in front of them. At most once
+    every 60 s, so extracting a batch opens one tab (the page lists every report that needs you), not one each."""
+    if time.monotonic() - _REVIEW_OPENED["at"] < 60:
+        return False
+    _REVIEW_OPENED["at"] = time.monotonic()
+    _show(deid_id)
+    return True
+
+
 def _see(deid_id: str, what: str) -> str:
     """A sentence pointing to the viewer, for "say": the user learns there is a visual page and where it is."""
     url = _url(deid_id)
-    return (f" Tell the user they can {what} in the PrivLab viewer, on this computer only: {url} (give the user this link; never open it yourself)") if url else ""
+    return (f" Tell the user they can {what} in the PrivLab viewer, on this computer only: {url} (write this address"
+            " out in full as plain text, not as a Markdown link: a terminal shows only a link's words, so it could not"
+            " be clicked; never open it yourself)") if url else ""
 
 
 def _safe(fn):
@@ -383,12 +407,14 @@ def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] =
 # --- 3. Choose fields --------------------------------------------------------------------------------------------
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=True))
 @_safe
-def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", name: str = "",
+def privlab_fields(action: Literal["list", "draft", "save", "remove", "use", "skip"] = "list", name: str = "",
                    description: str = "", example: str = "", meaning: str = "", definition: str = "",
                    type: Literal["number", "text"] | None = None, unit: str = "", range_min: float | None = None,
                    range_max: float | None = None, multi: bool = False, offset: int = 0, limit: int = LIMIT) -> dict:
     """Use for the user's fields (what PrivLab fills in, e.g. "tumour size").
-    action="list": every field with its definition, version, readiness and accuracy.
+    action="list": every field with its definition, version, readiness, accuracy and whether it is chosen.
+    action="use" / "skip": tick or untick the field called name for extraction (the browser's Choose fields shows
+    the same ticks).
     action="draft": name + description (what it means, in the user's words) + example (one value as a report
     writes it, e.g. "2.1 cm"); ask the user for any that is missing. Only these are sent -> a precise definition
     to confirm ("Did you mean ...?"). action="save": save it with the draft's details or the user's changes
@@ -398,12 +424,22 @@ def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", 
     Returns: the fields, the draft, or the saved field and its preview. Next: privlab_extract."""
     if action == "list":
         keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "version", "readiness", "validation")
-        fields = [{k: f[k] for k in keep} for f in viewer.api_pack(None)["fields"]]
+        off = viewer.skipped()
+        fields = [{**{k: f[k] for k in keep}, "chosen": f["key"] not in off} for f in viewer.api_pack(None)["fields"]]
+        n = sum(f["chosen"] for f in fields)
         return {"next": "done", **_page(fields, offset, limit),
-                "say": f"{len(fields)} field(s) defined." if fields else "No fields yet: draft one (action='draft')."}
+                "say": f"{len(fields)} field(s) defined, {n} chosen for extraction." if fields
+                else "No fields yet: draft one (action='draft')."}
     if not name:
         msg = "Give the field's name."
         return {"next": "error", "error": msg, "say": msg}
+    if action in ("use", "skip"):
+        f = next((f for f in load_pack(viewer.STATE["pack"])["fields"] if name in (f.key, f.name)), None)
+        if f is None:
+            return {"next": "error", "error": "No such field.", "say": "That field is not in the list."}
+        off = viewer.skipped()
+        viewer.set_skipped(off - {f.key} if action == "use" else off | {f.key})
+        return {"next": "done", "say": f"'{f.name}' will {'be' if action == 'use' else 'not be'} extracted."}
     if action == "remove":
         with viewer._WRITE:
             pack = load_pack(viewer.STATE["pack"])
@@ -438,7 +474,7 @@ def _preview(key: str, name: str) -> dict:
     deid_id = next((d for d, r in reversed(pipeline._RUNS.items()) if r["step"] == "done"), None)
     if deid_id is None:
         return {"say": f"Saved '{name}'. De-identify a report to see it filled in."}
-    r = find_candidates(deid_id, key, pack_path=viewer.STATE["pack"])
+    r = find_candidates(deid_id, key, pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
     report = pipeline._RUNS[deid_id]["report_id"]
     if r.get("status") == "error":
         return {"say": f"Saved '{name}'. The preview could not run: {r.get('reason')}."}
@@ -479,7 +515,7 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
     With answers (one per field the user answered: accept a candidate_id, a corrected value + evidence_text,
     not_stated, or items for a list field): saves them all; each is scored first, then PrivLab learns from it.
     auto_accept_verified=True (bulk, after the user has taught the fields on a few reports): values PrivLab verified
-    are saved by themselves, never used for teaching and never counted as the user's check; only the others come
+    on a Proven accurate field are saved by themselves (on a field still learning they come back for one OK), never used for teaching and never counted as the user's check; only the others come
     back for the user.
     Returns: the values to show, or what was saved (and, for a blind check, PrivLab's own answer)."""
     run = pipeline._RUNS.get(deid_id)
@@ -497,33 +533,59 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
             + "." if blind else "") + (" Next: privlab_export." if len(ok) == len(saved) else " Fix the others and send them again.")
         return {"deid_id": deid_id, "next": "done" if len(ok) == len(saved) else "confirm", "saved": saved,
                 "viewer_url": _url(deid_id), "say": say}
-    fields = load_pack(viewer.STATE["pack"])["fields"]
+    off = viewer.skipped()
+    fields = [f for f in load_pack(viewer.STATE["pack"])["fields"] if f.key not in off]   # the ticked ones only
     if not fields:
-        return {"next": "define", "say": "No fields defined yet: use privlab_fields(action='draft')."}
+        return {"next": "define", "say": "No fields chosen: define one (privlab_fields(action='draft')) or tick one "
+                                         "(action='use')."}
     if auto_accept_verified:
         return _bulk(deid_id, fields)
-    results = []
+    results, again = [], []
     for f in fields:
-        r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True)
+        r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True,
+                            log_path=viewer.STATE["log"])
+        if r.get("status") == "remembered" and _save_remembered(deid_id, f.key, r):
+            again.append({"field": f.key, "value": r.get("value"), "from": r.get("reason")})
+            continue
         results.append({"field": f.key, "name": f.name, "status": r.get("status"), "value": r.get("value"),
                         "unit": r.get("unit"), "quote": r.get("evidence_text"), "section": r.get("section"),
                         "reason": r.get("reason"), "candidate_id": r.get("candidate_id"),
                         "candidates": [{"id": c["id"], "value": c["value"], "quote": c["evidence_text"],
                                         "failed_check": c["fail"]} for c in r.get("candidates", [])]})
     blind = sum(r["status"] == "blind" for r in results)
-    return {"deid_id": deid_id, "next": "confirm", "fields": results, "viewer_url": _url(deid_id),
-            "say": "Show each value with its quote. Ask the user to confirm, correct or mark it not stated, then send "
+    if not results:
+        return {"deid_id": deid_id, "next": "done", "remembered": again, "viewer_url": _url(deid_id),
+                "say": f"This report was checked before: the user's {len(again)} earlier answer(s) were reused, "
+                       "nothing to review. Next: privlab_export."}
+    opened = any(r["status"] != "green" for r in results) and _show_review(deid_id)
+    return {"deid_id": deid_id, "next": "confirm", "fields": results, "remembered": again, "viewer_url": _url(deid_id),
+            "say": (f"{len(again)} answer(s) reused from the user's earlier check of this report. " if again else "")
+                   + ("Some values need the user, so PrivLab opened this report in their browser at Extract: tell them. "
+                    if opened else "") + "Show each value with its quote. Ask the user to confirm, correct or mark it not stated, then send "
                    "all the answers in one privlab_extract call." + _see(deid_id, "see every value highlighted in the report")
                    + (f" {blind} blind check(s): ask the user for the value without showing PrivLab's." if blind else "")}
 
 
+def _save_remembered(deid_id: str, key: str, r: dict) -> bool:
+    """The same report again: the user's earlier answer, saved at once (never scored, never taught)."""
+    with viewer._WRITE:
+        out = learn.confirm_field(deid_id, key, candidate_id=r.get("candidate_id"), missing=r.get("candidate_id") is None,
+                                  phase="remembered", pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
+    return out.get("status") == "saved"
+
+
 def _bulk(deid_id: str, fields) -> dict:
-    """Like the viewer's Extract all: a verified value is saved by itself (phase "bulk": never taught, never scored as
-    a person's check); a blind check, a missing value or one that needs review comes back for the user."""
-    auto, need = [], []
+    """Like the viewer's Extract all: on a Proven accurate field a verified value is saved by itself (phase "bulk":
+    never taught, never scored as a person's check). Everything else comes back for the user: a verified value on a
+    field still learning (one OK), a blind check, a missing value, or one that needs review."""
+    auto, need, every = [], [], load_pack(viewer.STATE["pack"])["fields"]     # proof is pooled over all fields
     for f in fields:
-        r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True)
-        if r.get("status") == "green":
+        r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True,
+                            log_path=viewer.STATE["log"])
+        if r.get("status") == "remembered" and _save_remembered(deid_id, f.key, r):
+            auto.append({"field": f.key, "value": r.get("value"), "from": r.get("reason")})
+            continue
+        if r.get("status") == "green" and learn.proven(f, every, viewer.STATE["log"]):
             with viewer._WRITE:
                 out = learn.confirm_field(deid_id, f.key, candidate_id=r.get("candidate_id") if not f.multi else None,
                                           items=[{"value": it["value"], "evidence_text": it["evidence_text"]}
@@ -536,14 +598,59 @@ def _bulk(deid_id: str, fields) -> dict:
                      "quote": r.get("evidence_text"), "reason": r.get("reason"), "candidate_id": r.get("candidate_id"),
                      "candidates": [{"id": c["id"], "value": c["value"], "quote": c["evidence_text"]}
                                     for c in r.get("candidates", [])]})
-    say = (f"{len(auto)} verified value(s) saved by themselves." + (f" {len(need)} need the user: show each with its "
-           "quote (for a blind check, ask without showing PrivLab's value), then send the answers with privlab_extract."
+    opened = bool(need) and _show_review(deid_id)
+    say = (("PrivLab opened the reports that need the user in their browser: tell them. " if opened else "")
+           + f"{len(auto)} verified value(s) saved by themselves." + (f" {len(need)} need the user: show each with its "
+           "quote (a green one is verified but its field is still learning: the user only says OK; for a blind check, "
+           "ask without showing PrivLab's value), then send the answers with privlab_extract."
            if need else " Nothing needs the user on this report."))
     return {"deid_id": deid_id, "next": "confirm" if need else "done", "auto_saved": auto, "fields": need,
             "viewer_url": _url(deid_id), "say": say}
 
 
 # --- 5. Export ---------------------------------------------------------------------------------------------------
+def _finished(deid_id: str, keys: list[str]) -> dict | None:
+    """A report the user finished in the browser: de-identified, and (if fields are chosen) every one saved."""
+    run = pipeline._RUNS.get(deid_id)
+    if run is None:
+        return {"deid_id": deid_id, "removed": True}
+    if run["step"] != "done":
+        return None
+    saved = learn.saved_for(deid_id, viewer.STATE["log"])
+    if any(k not in saved for k in keys):
+        return None
+    return {"deid_id": deid_id, "report": run["report_id"], "saved": {k: saved[k]["value"] for k in keys},
+            "corrected": [k for k in keys if saved[k]["outcome"] not in ("correct", "true_empty")]}
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False))
+async def privlab_wait(deid_ids: list[str], seconds: int = 120) -> dict:
+    """Use after sending the user to the browser for some reports (e.g. to teach the fields on 3 of them).
+    Waits until every one is finished there (de-identified, and each chosen field saved), at most `seconds`
+    (up to 600). Returns what the user did per report (values, which they corrected), or next="waiting" if they
+    are not done yet: then ask the user whether to keep waiting. Reads nothing new and sends nothing."""
+    try:
+        keys = [f.key for f in load_pack(viewer.STATE["pack"])["fields"] if f.key not in viewer.skipped()]
+        deadline = time.monotonic() + max(1, min(int(seconds), 600))
+        while True:
+            done = [_finished(d, keys) for d in deid_ids]
+            if all(done) or time.monotonic() >= deadline:
+                break
+            await asyncio.sleep(2)
+    except Exception:
+        log.error("privlab_wait failed: %s", traceback.format_exc())
+        return {"next": "error", "say": "Could not read the browser's progress. Ask the user where they are up to."}
+    finished = [x for x in done if x]
+    if len(finished) < len(deid_ids):
+        return {"next": "waiting", "finished": finished, "viewer_url": _url(),
+                "say": f"{len(finished)} of {len(deid_ids)} report(s) finished in the browser so far."}
+    fixed = sum(len(x.get("corrected", [])) for x in finished)
+    return {"next": "done", "finished": finished,
+            "say": f"The user finished {len(finished)} report(s) in the browser"
+                   + (f" and corrected {fixed} value(s), which PrivLab learned from." if fixed else ".")
+                   + " Go on with the next step (e.g. extract the rest)."}
+
+
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
 def privlab_export(kind: Literal["data", "masked"], out_path: str = "") -> dict:

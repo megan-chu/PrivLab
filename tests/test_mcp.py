@@ -34,10 +34,10 @@ def report_file(tmp: Path, text: str = REPORT, name: str = "mine.txt") -> str:
     return str(p)
 
 
-def test_five_tools_one_per_step_and_five_prompts(mcp):
+def test_six_tools_and_five_prompts(mcp):
     tools = asyncio.run(mcp.mcp.list_tools())
     assert [t.name for t in tools] == ["privlab_deidentify", "privlab_review", "privlab_fields", "privlab_extract",
-                                       "privlab_export"]
+                                       "privlab_wait", "privlab_export"]
     assert next(t for t in tools if t.name == "privlab_fields").annotations.destructive_hint   # it can remove a field
     assert len(asyncio.run(mcp.mcp.list_prompts())) == 5
 
@@ -64,6 +64,7 @@ def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
     assert saved["preview"]["value"] == 2.1 and "Invasive ductal carcinoma" in saved["say"]   # shown on a report
     seen += json.dumps(saved)
     got = mcp.privlab_extract(did)
+    assert next(r for r in mcp.viewer.api_session(None)["reports"] if r["deid_id"] == did)["read"] == 1   # the page sees it
     field = got["fields"][0]
     assert field["status"] == "green" and field["value"] == 2.1
     done = mcp.privlab_extract(did, [mcp.Answer(field="tumour_size", candidate_id=field["candidate_id"])])
@@ -108,6 +109,8 @@ def test_same_file_again_continues_and_removed_reports_leave_the_session(mcp, lo
     mcp.privlab_review(first["deid_id"])
     row = next(r for r in viewer.api_session(None)["reports"] if r["deid_id"] == first["deid_id"])
     assert row["step"] == "done"                                         # done in the chat: the page catches up
+    waited = asyncio.run(mcp.privlab_wait([first["deid_id"]], seconds=1))    # no fields: done once de-identified
+    assert waited["next"] == "done" and waited["finished"][0]["deid_id"] == first["deid_id"]
     viewer.api_remove({"deid_ids": [first["deid_id"]]})
     assert first["deid_id"] not in [r["deid_id"] for r in viewer.api_session(None)["reports"]]
     assert mcp.privlab_deidentify(report_file(local_keys))["deid_id"] != first["deid_id"]   # removed: starts afresh
@@ -136,7 +139,7 @@ def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):
     async def names():
         async with Client(params) as client:
             return [t.name for t in (await client.list_tools()).tools]
-    assert len(asyncio.run(names())) == 5
+    assert len(asyncio.run(names())) == 6
 
 
 def test_chat_context_shows_only_tags_and_report_words(mcp, local_keys):
@@ -173,7 +176,7 @@ def test_status_of_a_finished_report_never_carries_the_original(mcp, local_keys)
     assert status["next"] == "done" and "original" not in status and "Mary Tan" not in json.dumps(status)
 
 
-def test_a_folder_in_bulk_verified_values_alone_and_a_suggested_save_folder(mcp, local_keys):
+def test_a_folder_in_bulk_verified_values_alone_and_a_suggested_save_folder(mcp, local_keys, monkeypatch):
     folder = local_keys / "batch"
     folder.mkdir()
     report_file(folder, REPORT, "a.txt")
@@ -192,10 +195,19 @@ def test_a_folder_in_bulk_verified_values_alone_and_a_suggested_save_folder(mcp,
     mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
         {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
          "reason": "diagnosis line", "confidence": 0.9}]}]}
+    opened = []
+    monkeypatch.setattr(mcp, "_show", opened.append)
+    monkeypatch.setitem(mcp._REVIEW_OPENED, "at", 0.0)
     first = mcp.privlab_extract(batch["reports"][0]["deid_id"], auto_accept_verified=True)
-    assert first["next"] == "done" and first["auto_saved"] == [{"field": "tumour_size", "value": 2.1}]
-    log = [__import__("json").loads(x) for x in Path(mcp.viewer.STATE["log"]).read_text().splitlines()]
-    assert log[-1]["phase"] == "bulk"                                        # never counted as the user's check
+    mcp.privlab_extract(batch["reports"][1]["deid_id"], auto_accept_verified=True)
+    assert opened == [batch["reports"][0]["deid_id"]] and "opened" in first["say"]   # one tab for the batch
+    assert first["auto_saved"] == [] and first["fields"][0]["status"] == "green"   # still learning: the user's OK
+    assert first["next"] == "confirm" and not Path(mcp.viewer.STATE["log"]).exists()
+    assert mcp.privlab_fields("skip", name="tumour size")["next"] == "done"         # unticked, as in the browser
+    assert mcp.viewer.api_skip(None)["skip"] == ["tumour_size"]
+    assert mcp.privlab_extract(batch["reports"][1]["deid_id"])["next"] == "define"   # nothing chosen to extract
+    assert not mcp.privlab_fields("list")["items"][0]["chosen"]
+    mcp.privlab_fields("use", name="tumour size")
 
     ask = mcp.privlab_export("data")
     assert ask["next"] == "ask" and "PrivLab output" in ask["suggested_path"] and str(folder) in ask["suggested_path"]
