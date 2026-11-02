@@ -42,7 +42,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from common import spark
-from common.config import ROOT
+from common.config import ROOT, ConfigError
 from common.data import load_report, manifest
 from common.pdf import pdf_text
 from common.timing import timed
@@ -531,6 +531,8 @@ class Handler(BaseHTTPRequestHandler):
         except spark.OfflineError:
             out = {"error": f"{spark.OFFLINE}. De-identification still works on this device; the second check "
                             "and fields need Muse Spark. Try again when online.", "offline": True}
+        except ConfigError as e:            # e.g. an API key missing in .env: say exactly what to fix
+            out = {"error": f"{e} Save the .env file in the PrivLab folder, then restart PrivLab."}
         except spark.PhiLeakError:          # the outgoing scan refused: say so plainly; nothing was sent
             out = {"error": "Not sent: what you typed looks like it contains a name or an ID number. "
                             "Rephrase it without personal details and try again."}
