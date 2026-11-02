@@ -133,3 +133,10 @@ def test_a_new_report_opens_in_the_browser_once(mcp, local_keys, monkeypatch):
     assert opened == [f"http://127.0.0.1:8765/#{out['deid_id']}"]
     mcp.privlab_deidentify(deid_id=out["deid_id"])                          # asking where it is up to: no new tab
     assert len(opened) == 1
+
+
+def test_status_of_a_finished_report_never_carries_the_original(mcp, local_keys):
+    out = mcp.privlab_deidentify(report_file(local_keys))
+    mcp.privlab_review(out["deid_id"])
+    status = mcp.privlab_deidentify(deid_id=out["deid_id"])                  # the assistant re-checking
+    assert status["next"] == "done" and "original" not in status and "Mary Tan" not in json.dumps(status)

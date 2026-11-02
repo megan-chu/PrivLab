@@ -2657,7 +2657,7 @@ async function addFromServer(id, name) {
   if (res.error || res.next === "error") return false;
   const r = newReport(name || res.report_id || "Report from chat", {fromChat: true, source: "From chat"});
   // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
-  Object.assign(r, {deid: id, text: res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
+  Object.assign(r, {deid: id, text: res.original || res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
   S.reports.push(r);
   trace(r, "Started in the chat or before a reload; opened here.", "local");
   applyState(r, res);

@@ -343,8 +343,12 @@ def report_state(deid_id: str, show_text: bool = False) -> dict:
     base = {"deid_id": deid_id, "report_id": run["report_id"], "next": step, "warnings": run["warnings"]}
     if step == "done":
         r = run["result"]
-        return {**base, "text": r.text, "summary": r.summary, "layer2": run["layer2"], "trace": run["trace"],
-                "review_priority": run["priority"]}
+        out = {**base, "text": r.text, "summary": r.summary, "layer2": run["layer2"], "trace": run["trace"],
+               "review_priority": run["priority"]}
+        if show_text:                   # local viewer only: the original and what was hidden in it
+            spans = run.get("final_spans", [])
+            out.update(original=text, confirmed=[_detection(text, spans, s, True) for s in spans])
+        return out
     if step == "review":
         done, items = [], [_detection(text, run["spans"], s, show_text) for s in run["spans"]]
     elif step == "hold":

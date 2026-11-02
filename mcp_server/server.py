@@ -66,6 +66,9 @@ HOW TO INTRODUCE IT (when the user asks what PrivLab can do, or starts)
 with every value traced to its quote. I only ever see tags like [PERSON-1], never the real names. Which report?"
 
 THE STEPS (follow "next" in every reply, and relay "say" in your own words)
+The user can also work on the same reports in the viewer, so before you act on a report you have not touched for a
+while, or when the user says they did something in the browser, call privlab_deidentify(deid_id) to see where it
+is up to now, and continue from there.
 1. Review identifiers: privlab_deidentify(path). Tell the user how many personal details were found and
    by type; nothing has been sent yet. Show the viewer link (see VIEWER). Ask which, if any, to keep visible
    and whether anything was missed.
