@@ -51,17 +51,40 @@ VIEWER = {"url": None}
 HideType = Literal["NAME", "DOCTOR", "ID", "DOB", "DATE", "MRN", "ACCESSION", "ACCOUNT", "PHONE", "EMAIL",
                    "ADDRESS", "HOSPITAL", "BANK"]
 
-INSTRUCTIONS = """PrivLab de-identifies clinical reports on this laptop, then extracts the fields the user defines.
-Order: privlab_deidentify_report -> privlab_confirm_review (repeat while next is "hold" or "flags") ->
-privlab_extract_fields -> privlab_confirm_field for each field -> privlab_export_file.
-Privacy rules: never paste or quote report text into the chat; pass file paths. Nothing is sent to any
-model until the user confirms the review, and then only masked text. Always ask the user before
-privlab_confirm_review; never answer a review, hold or second-check question for them. For reviewing
-highlights or hiding a missed name, offer privlab_open_viewer: typing a name into the chat sends it to
-the assistant. Follow "next" and relay "say" in every response.
-PrivLab also has a visual page, the viewer, running on this computer. The first time you de-identify a report,
-show the user its viewer_url as a clickable link and say what it is: the same report on their own screen, with
-every personal detail highlighted, where they can check and correct it; the real text never comes into the chat."""
+INSTRUCTIONS = """PrivLab: private report processing on this computer.
+
+WHAT IT DOES
+PrivLab removes personal details (names, ID numbers, phones, addresses, card and bank details) from a report on
+this computer, then fills in the fields the user chooses (e.g. tumour size), each value with its quote. It only
+de-identifies and structures existing reports: no medical advice, no diagnosis.
+
+HOW TO INTRODUCE IT (when the user asks what PrivLab can do, or starts)
+"PrivLab can take a report file, hide the personal details on your computer, and fill in the fields you want,
+with every value traced to its quote. I only ever see tags like [PERSON-1], never the real names. Which report?"
+
+THE STEPS (follow "next" in every reply, and relay "say" in your own words)
+1. Review identifiers: privlab_deidentify_report(path). Tell the user how many personal details were found and
+   by type; nothing has been sent yet. Show the viewer link (see VIEWER). Ask which, if any, to keep visible
+   and whether anything was missed.
+2. De-identify: privlab_confirm_review with the user's answers. Only now is the masked text sent, once, for a
+   safety check. If "next" is "hold" or "flags", ask the user and call privlab_confirm_review again.
+3. Choose fields: privlab_list_fields. If the user wants a new one, privlab_define_field (draft first, then
+   save=True after the user agrees with the definition).
+4. Extract: privlab_extract_fields. Show each value with its quote. Ask the user to confirm, correct or mark it
+   "not stated"; then privlab_confirm_field. A blind check: ask for the value without showing PrivLab's.
+5. Export: privlab_export_file(kind="data") for the CSV, or kind="masked" for the masked text.
+
+PRIVACY RULES (always)
+- Pass file paths; never paste or quote report text into the chat.
+- Always ask the user before privlab_confirm_review; never answer a review question for them.
+- Never ask the user to type a name into the chat (it would reach the assistant). To hide a missed name, send
+  them to the viewer.
+
+VIEWER
+PrivLab has a visual page running on this computer. The first time you de-identify a report, show its
+viewer_url as a clickable link and say what it is: "the same report on your own screen, with every personal
+detail highlighted; you can check and correct it there, and the real text never comes into this chat." Offer
+it again for extracted values. privlab_open_viewer gives the link any time."""
 
 
 # --------------------------------------------------------------------------
