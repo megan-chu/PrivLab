@@ -953,13 +953,13 @@ function viewEmpty() {
       `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}
       <button class="sample" data-sample-all title="Add all ${SAMPLES.length} sample reports, to try a batch">All ${SAMPLES.length}</button></div>
     <div class="ways" aria-label="Two ways to use PrivLab">
-      <div class="way"><b>${icon("upload")} Here in the browser</b>
-        <span>The best experience: see every personal detail highlighted, and every value next to its quote.</span>
-        <span class="how">Drop or choose files above, then follow the steps on the right.</span></div>
-      <div class="way"><b>${icon("spark")} In your AI assistant, via MCP</b>
-        <span>PrivLab is an MCP server: connect it to an assistant such as Muse Code, then just ask. Great for many
-          reports. The assistant sees only tags, never names.</span>
-        <span class="how">In Muse Code, say: <i>"Fill my fields for C:/reports/case1.txt with PrivLab"</i>. Its reports appear here too.</span></div>
+      <div class="way"><b>${icon("upload")} See it in your browser</b>
+        <span>See exactly what gets hidden, and where every value came from.</span>
+        <span class="how">Drop a report above. Five guided steps, one click each.</span></div>
+      <div class="way"><b>${icon("spark")} Ask your AI assistant · MCP</b>
+        <span>Just ask. Your assistant does the work and never sees a single name.</span>
+        <span class="how">Connect PrivLab to Muse Code over MCP, then say <i>"Fill my fields for case1.txt."</i>
+          Every report shows up here too.</span></div>
     </div>
   </div>`;
   // The right panel: the same steps as the step bar. The panel badge carries the universal guarantee (local
