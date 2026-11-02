@@ -17,6 +17,7 @@ whether reasoning appears inside the reply text (stripped below if wrapped in <t
 """
 import hashlib
 import json
+import logging
 import os
 import re
 import sys
@@ -27,6 +28,8 @@ from pydantic import BaseModel, ValidationError
 
 from common.config import ROOT, load_config
 from common.timing import timed
+
+log = logging.getLogger("privlab.spark")
 
 CACHE_DIR = ROOT / "runs" / "cache"
 USAGE_LOG = ROOT / "runs" / "spark_usage.log"
@@ -129,9 +132,15 @@ def _call_raw(prompt: str, schema: type[BaseModel], *, step: str, report_id: str
     ).encode("utf-8")).hexdigest()
     cache_path = CACHE_DIR / step / f"{key}.enc"    # replies can contain names: encrypted
 
+    cached = None
     if use_cache and cache_path.exists():
         from deid.vault import decrypt_json
-        cached = decrypt_json(cache_path.read_bytes())
+        try:
+            cached = decrypt_json(cache_path.read_bytes())
+        except Exception as e:      # locked with an older PRIVLAB_VAULT_KEY: a miss; the new reply replaces it
+            log.warning("cache entry for %s/%s unreadable (%s): asking the model again", step, report_id,
+                        type(e).__name__)
+    if cached is not None:
         _log_usage(provider, step, report_id, effort, cached["mode"], 0, 0, cached=True)
         return schema.model_validate(cached["reply"])
 

@@ -92,6 +92,10 @@ def test_request_path_with_fake_client(monkeypatch, tmp_path, local_keys):
     log = (tmp_path / "usage.log").read_text(encoding="utf-8")
     assert "json_object\tlive\tin=50\tout=10" in log and "\tcached\t" in log
     assert "hand-written" not in log
+    for f in (tmp_path / "cache").rglob("*.enc"):
+        f.write_bytes(b"locked with another vault key")                # e.g. after the key was changed
+    third = spark._call_raw("hand-written text", Names, step="t")
+    assert third.names == ["Mary Tan"] and len(calls) == 4             # asked again, not failed
 
 
 def test_proxy_skips_the_probe_and_a_blank_url_is_a_config_error(monkeypatch):
