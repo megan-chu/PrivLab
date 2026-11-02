@@ -58,7 +58,10 @@ Privacy rules: never paste or quote report text into the chat; pass file paths. 
 model until the user confirms the review, and then only masked text. Always ask the user before
 privlab_confirm_review; never answer a review, hold or second-check question for them. For reviewing
 highlights or hiding a missed name, offer privlab_open_viewer: typing a name into the chat sends it to
-the assistant. Follow "next" and relay "say" in every response."""
+the assistant. Follow "next" and relay "say" in every response.
+PrivLab also has a visual page, the viewer, running on this computer. The first time you de-identify a report,
+show the user its viewer_url as a clickable link and say what it is: the same report on their own screen, with
+every personal detail highlighted, where they can check and correct it; the real text never comes into the chat."""
 
 
 # --------------------------------------------------------------------------
@@ -91,6 +94,12 @@ def _page(items: list, offset: int, limit: int) -> dict:
 
 def _url(deid_id: str = "") -> str | None:
     return VIEWER["url"] and VIEWER["url"] + (f"#{deid_id}" if deid_id else "")
+
+
+def _see(deid_id: str, what: str) -> str:
+    """A sentence pointing to the viewer, for "say": the user learns there is a visual page and where it is."""
+    url = _url(deid_id)
+    return f" Tell the user they can {what} in the PrivLab viewer, on this computer only: {url}" if url else ""
 
 
 def _safe(fn):
@@ -160,7 +169,7 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
     page = _page(items, offset, limit)
     say = {"review": f"{page['total_count']} identifiers found on this laptop; nothing has been sent. Ask the user "
                      "which ids to keep visible (false alarms) and whether anything was missed, then call "
-                     "privlab_confirm_review. The viewer shows them highlighted.",
+                     "privlab_confirm_review." + _see(did, "check them highlighted on your own screen"),
            "hold": "These words still look like names. They will all be hidden unless the user says some are not "
                    "names (keep_ids). Ask, then call privlab_confirm_review. Nothing has been sent yet.",
            "flags": "The second check (on masked text only) found more. Ticked items will be hidden; ask the user "
@@ -316,6 +325,7 @@ def privlab_extract_fields(deid_id: str) -> dict:
     blind = sum(r["status"] == "blind" for r in results)
     return {"deid_id": deid_id, "next": "confirm", "fields": results, "viewer_url": _url(deid_id),
             "say": "Show each value with its quote. Confirm, correct or mark not stated with privlab_confirm_field."
+                   + _see(deid_id, "see every value highlighted in the report")
                    + (f" {blind} blind check(s): ask the user for the value without showing PrivLab's." if blind else "")}
 
 
