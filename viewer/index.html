@@ -48,7 +48,9 @@ svg { width: 16px; height: 16px; flex: none; }
 
 /* ---------- top bar ---------- */
 .top { height: 56px; display: flex; align-items: center; gap: var(--s4); padding: 0 var(--s6); background: var(--surface-raised); border-bottom: 1px solid var(--line); }
-.brand { display: flex; align-items: center; gap: var(--s2); font: 700 18px/1 var(--f-display); letter-spacing: -.01em; }
+.brand { display: flex; align-items: center; gap: var(--s2); font: 700 18px/1 var(--f-display); letter-spacing: -.01em; color: var(--ink);
+  padding: 4px 6px; margin-left: -6px; border-radius: var(--r-md); }
+.brand:hover { background: var(--surface-sunken); }
 .brand .logo { width: 24px; height: 26px; flex: none; }
 .brand .logo .ink { fill: #07182a; } .brand .logo .bar { fill: #00dbab; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo .ink { fill: #ecebf5; } }
@@ -342,6 +344,7 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .droptitle { font: 600 17px/24px var(--f-display); margin-bottom: 2px; }
 /* samples: one compact row of chips after a label */
 .samples { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s2); margin-top: var(--s6); }
+.samples[hidden] { display: none; }
 .samples .label { margin-right: var(--s1); }
 .sample { min-height: 32px; padding: 0 var(--s3); border-radius: 999px; border: 1px solid var(--line); background: var(--surface-raised); font-size: 13px; }
 .sample:hover { border-color: var(--hema); color: var(--hema); }
@@ -371,7 +374,10 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 /* a top-bar control with nothing to act on yet */
 .off { opacity: .4; pointer-events: none; }
 .paste { width: 100%; min-height: 160px; margin-top: var(--s4); padding: var(--s3); border: 1px solid var(--line-strong); border-radius: var(--r-sm); font: 13px/20px var(--f-mono); display: none; background: var(--surface-raised); }
-.paste.show { display: block; }
+.pasteacts { display: none; gap: var(--s3); align-items: center; justify-content: center; margin-top: var(--s3); }
+.drop.pasting .paste { display: block; margin-top: 0; }
+.drop.pasting .pasteacts { display: flex; }
+.drop.pasting .dropicon, .drop.pasting .hint, .drop.pasting .acts { display: none; }
 
 /* selection toolbar */
 .floatbar { position: fixed; z-index: 20; display: none; align-items: center; gap: var(--s1); padding: var(--s1); background: var(--ink); color: var(--surface-raised); border-radius: var(--r-md); box-shadow: var(--shadow-raised); font-size: 14px; }
@@ -403,6 +409,11 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .menu .pop button { display: block; width: 100%; text-align: left; padding: var(--s2) var(--s3); border-radius: 6px; color: var(--ink); font-weight: 600; }
 .menu .pop button:hover { background: var(--surface); }
 .menu .pop button[data-kbd]::after { content: attr(data-kbd); float: right; padding: 0 5px; font: 500 11px/16px var(--f-mono); border: 1px solid var(--line); border-radius: var(--r-sm); color: var(--ink-muted); }
+.msamples { padding: var(--s2) var(--s3); border-top: 1px solid var(--line); margin-top: var(--s1); }
+.msamples > span { display: block; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+.mchips { display: flex; flex-wrap: nowrap; gap: 4px; margin-top: var(--s2); }
+.menu .pop .mchips button { width: auto; flex: 1 1 auto; padding: 1px 6px; font-size: 12px; font-weight: 500; color: var(--ink-muted); text-align: center; white-space: nowrap; }
+.menu .pop .mchips button:hover { color: var(--ink); }
 .menu .pop button span, .menu .pop a span { display: block; font-weight: 400; font-size: 13px; line-height: 18px; color: var(--ink-muted); }
 /* step checklist (loading) */
 .checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
@@ -497,8 +508,8 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
 </svg>
 
 <header class="top">
-  <div class="brand"><svg class="logo" viewBox="194 175 362 400" role="img" aria-label="PrivLab logo">
-    <path class="ink" d="M194 175H518V325H457V262H281V575H194Z"/><rect class="bar" x="281" y="325" width="275" height="87"/></svg>PrivLab</div>
+  <button class="brand" id="home" title="Home: add reports and see how it works (your reports stay in the list)"><svg class="logo" viewBox="194 175 362 400" role="img" aria-label="PrivLab logo">
+    <path class="ink" d="M194 175H518V325H457V262H281V575H194Z"/><rect class="bar" x="281" y="325" width="275" height="87"/></svg>PrivLab</button>
   <span id="mode" class="pill review" style="display:none">Demo</span>
   <span class="safety" id="safety" title="Identifiers are detected and masked on this device. Raw text is never sent. After you confirm, only masked text is checked by Muse Spark."></span>
   <div class="value" id="value" aria-live="polite"></div>
@@ -518,7 +529,7 @@ dialog.sheet::backdrop { background: rgba(28,25,48,.36); }
     <div class="rail-head"><span class="label">Reports</span><span><button class="tbtn" id="selBtn" style="display:none">Select</button><details class="menu left" id="addMenu"><summary class="tbtn" id="addBtn"><svg aria-hidden="true"><use href="#i-plus"/></svg>Add</summary>
       <div class="pop"><button id="addFiles">Choose files…<span>.txt, or PDF with selectable text</span></button>
       <button id="addPaste" data-kbd="Ctrl+V">Paste a report<span>Text you copied, as one report</span></button>
-      <button id="addSamples">Sample reports<span>Five invented reports to try, one by one or all at once</span></button></div></details></span></div>
+      <div class="msamples"><span>Or try an invented sample:</span><div class="mchips" id="addSamples"></div></div></div></details></span></div>
     <div class="rail-list" id="rail"></div>
     <div class="rail-foot"><button class="link quiet" id="resetBtn" style="display:none" title="Demo only: erases the reports, profile, fields and everything learned">Reset demo…</button></div>
   </aside>
@@ -902,7 +913,8 @@ function viewEmpty() {
       <div class="acts"><button class="btn primary inline" id="browse">${icon("upload")}Choose files</button>
         <button class="btn secondary inline" id="pasteBtn" data-kbd="Ctrl+V" aria-keyshortcuts="Control+V" title="Ctrl+V anywhere on this page works too">Paste a report</button></div>
       <textarea class="paste" id="paste" aria-label="Report text" placeholder="Paste the report text here"></textarea>
-      <button class="btn primary" id="pasteAdd" style="display:none;margin-top:var(--s3)">Find identifiers</button>
+      <div class="pasteacts"><button class="btn primary inline" id="pasteAdd">Find identifiers</button>
+        <button class="link quiet" id="pasteCancel">Cancel</button></div>
     </div>
     <div class="samples"><span class="label">Or test with sample data:</span>${SAMPLES.map(([id, label, short]) =>
       `<button class="sample" data-sample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")}
@@ -954,14 +966,16 @@ function viewEmpty() {
   ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
   drop.addEventListener("drop", (e) => addFiles(e.dataTransfer.files));
   $("browse").onclick = () => $("fileInput").click();
-  $("pasteBtn").onclick = () => { $("paste").classList.add("show"); $("pasteAdd").style.display = ""; $("paste").focus(); };
+  // Paste is its own mode: only the text box and its button; Cancel goes back to choosing files
+  const title = document.querySelector("#drop .droptitle");
+  const samples = document.querySelector(".samples");          // only the text box while pasting
+  $("pasteBtn").onclick = () => { $("drop").classList.add("pasting"); title.textContent = "Paste your report";
+    if (samples) samples.hidden = true; $("paste").focus(); };
+  $("pasteCancel").onclick = () => { $("paste").value = ""; $("drop").classList.remove("pasting");
+    title.textContent = "Drop reports here"; if (samples) samples.hidden = false; };
   $("pasteAdd").onclick = () => { const t = $("paste").value; t.trim() ? addText("Pasted report " + (++seq), t, "Pasted") : toast("Not added yet — the box is empty. Paste your report text first, then click again."); };
   document.querySelectorAll("[data-sample]").forEach((b) => b.onclick = () => addSample(b.dataset.sample));
-  if (document.querySelector("[data-sample-all]")) document.querySelector("[data-sample-all]").onclick = async () => {
-    const first = S.reports.length;                       // a batch: add them all, then start at the first
-    for (const [id] of SAMPLES) await addSample(id);
-    select(first);
-  };
+  if (document.querySelector("[data-sample-all]")) document.querySelector("[data-sample-all]").onclick = addAllSamples;
 }
 // Ctrl+V on the add-reports screen (outside a text box) adds the clipboard text as a report
 document.addEventListener("paste", (e) => {
@@ -973,7 +987,13 @@ document.addEventListener("paste", (e) => {
 $("fileInput").onchange = (e) => { addFiles(e.target.files); e.target.value = ""; };
 // Add: straight to the file picker, or to the paste box on the start screen; the report you are on stays as it is
 $("addFiles").onclick = () => { $("addMenu").open = false; $("fileInput").click(); };
-$("addSamples").onclick = () => { $("addMenu").open = false; S.cur = -1; render(); };
+$("home").onclick = () => { S.cur = -1; S.side = null; render(); };   // the start screen; every report stays listed
+$("addSamples").onclick = (e) => {
+  const b = e.target.closest("[data-msample]");
+  if (!b) return;
+  $("addMenu").open = false;
+  b.dataset.msample === "all" ? addAllSamples() : addSample(b.dataset.msample);
+};
 $("addPaste").onclick = () => { $("addMenu").open = false; S.cur = -1; render(); $("pasteBtn").click(); };
 document.addEventListener("click", (e) => { if (!e.target.closest("#addMenu")) $("addMenu").open = false; });
 // On the start screen, points at the two ways in (for 8 s, or until one is used); dropping files works too
@@ -1020,6 +1040,11 @@ function addText(name, text, source = "Text file") {
 // The demo samples: three invented reports in demo/ (breast, lung, colon), named by the procedure.
 const SAMPLES = [["demo_breast", "Breast surgery report", "Breast"], ["demo_lung", "Lung resection report", "Lung"],
   ["demo_colon", "Colon resection report", "Colon"]];      // id, report name, chip label
+async function addAllSamples() {          // a batch: add them all, then start at the first
+  const first = S.reports.length;
+  for (const [id] of SAMPLES) await addSample(id);
+  select(first);
+}
 function addSample(id) {
   const label = (SAMPLES.find(([x]) => x === id) || [id, id])[1];
   return start(newReport(label, {sample: true, cancer: "Sample"}), "/api/deid", {report_id: id});
@@ -2558,6 +2583,9 @@ $("resetBtn").onclick = async () => {
 };
 
 (async function init() {
+  // the samples in the + Add menu (SAMPLES is defined further down, so filled here)
+  $("addSamples").innerHTML = SAMPLES.map(([id, label, short]) => `<button class="sample" data-msample="${id}" title="${esc(label)}">${esc(short)}</button>`).join("")
+    + `<button class="sample" data-msample="all" title="Add all ${SAMPLES.length}, to try a batch">All ${SAMPLES.length}</button>`;
   const [reps, prof] = await Promise.all([api("/api/reports"), api("/api/profile")]);
   if (reps.error) {
     $("view").innerHTML = `<div class="empty">${banner("refused", "The PrivLab server is not reachable", "Start it with python -m viewer.server, then reload this page.")}</div>`;
