@@ -7,6 +7,33 @@ from cryptography.fernet import Fernet
 
 Path("runs").mkdir(exist_ok=True)      # pytest.ini puts temp folders in runs/pytest; a fresh clone has no runs/ yet
 
+# ----------------------------------------------------------------------------------------------------------------
+# One progress bar instead of a dot per test (quiet runs only; -v keeps the usual list). A failure still shows as
+# "F", with its details in the summary.
+# ----------------------------------------------------------------------------------------------------------------
+_BAR = {"done": 0, "total": 0, "on": False, "tw": None}
+
+
+def pytest_collection_modifyitems(session, config, items):
+    _BAR.update(total=len(items), on=config.option.verbose < 0,
+                tw=config.pluginmanager.get_plugin("terminalreporter"))
+
+
+def pytest_report_teststatus(report, config):
+    if _BAR["on"] and report.when == "call" and report.passed:
+        return "passed", "", "PASSED"                                   # no dot: the bar shows progress
+
+
+def pytest_runtest_logfinish(nodeid, location):
+    if not _BAR["on"] or not _BAR["total"]:
+        return
+    _BAR["done"] += 1
+    done, total, width = _BAR["done"], _BAR["total"], 30
+    fill = round(width * done / total)
+    _BAR["tw"].write(f"\r{'█' * fill}{'░' * (width - fill)} {done * 100 // total:>3}%  ({done}/{total})", flush=True)
+    if done == total:
+        _BAR["tw"].write("\n")
+
 
 @pytest.fixture
 def local_keys(monkeypatch, tmp_path):
