@@ -131,6 +131,11 @@ PrivLab is also an MCP server, so Muse Code or any MCP-compatible assistant can 
 Then ask, for example: *"Fill my fields for C:/reports/report_1.txt with PrivLab."* The assistant only ever sees
 tags and masked text. It gives you a link to open the same report in the PrivLab page to review the real text.
 
+PrivLab gives the assistant **five tools, one per step**: `privlab_deidentify`, `privlab_review`, `privlab_fields`,
+`privlab_extract` (all your answers in one call) and `privlab_export`, plus four ready-made prompts ("Fill my fields",
+"De-identify a batch", "Set up my fields", "Open the PrivLab viewer"). They follow common MCP design practice:
+outcome-based tools, flat arguments, "Use when…" instructions, service-prefixed names and paged results.
+
 ## Privacy at a glance
 
 - **On your device:** reading the file, finding personal details, masking, the vault that links tags back to

@@ -34,65 +34,64 @@ def report_file(tmp: Path, text: str = REPORT, name: str = "mine.txt") -> str:
     return str(p)
 
 
-def test_ten_tools_and_three_prompts(mcp):
+def test_five_tools_one_per_step_and_four_prompts(mcp):
     tools = asyncio.run(mcp.mcp.list_tools())
-    assert sorted(t.name for t in tools) == sorted([
-        "privlab_deidentify_report", "privlab_get_report", "privlab_confirm_review", "privlab_define_field",
-        "privlab_list_fields", "privlab_remove_field", "privlab_extract_fields", "privlab_confirm_field",
-        "privlab_export_file", "privlab_open_viewer"])
-    assert next(t for t in tools if t.name == "privlab_remove_field").annotations.destructive_hint
-    assert len(asyncio.run(mcp.mcp.list_prompts())) == 3
+    assert [t.name for t in tools] == ["privlab_deidentify", "privlab_review", "privlab_fields", "privlab_extract",
+                                       "privlab_export"]
+    assert next(t for t in tools if t.name == "privlab_fields").annotations.destructive_hint   # it can remove a field
+    assert len(asyncio.run(mcp.mcp.list_prompts())) == 4
 
 
 def test_chat_flow_never_shows_a_raw_identifier(mcp, local_keys):
-    out = mcp.privlab_deidentify_report(report_file(local_keys))
+    out = mcp.privlab_deidentify(report_file(local_keys))
     assert out["next"] == "review" and out["total_count"] == 2 and "say" in out
     seen = json.dumps(out)
-    out = mcp.privlab_confirm_review(out["deid_id"])
+    out = mcp.privlab_review(out["deid_id"])
     assert out["next"] == "done" and "[PATIENT-1]" in out["text"]
     seen += json.dumps(out)
     did = out["deid_id"]
 
     mcp.spark_state["reply"] = DRAFT
-    draft = mcp.privlab_define_field("tumour size")
+    draft = mcp.privlab_fields("draft", name="tumour size")
     assert draft["next"] == "confirm" and "Did you mean" in draft["say"]
-    saved = mcp.privlab_define_field("tumour size", save=True, **{k: draft["draft"][k] for k in (
+    saved = mcp.privlab_fields("save", name="tumour size", **{k: draft["draft"][k] for k in (
         "definition", "type", "unit", "range_min", "range_max")}, meaning=draft["draft"]["meaning_question"])
     assert saved["field"]["version"] == 1
 
     mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
         {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
          "reason": "diagnosis line", "confidence": 0.9}]}]}
-    got = mcp.privlab_extract_fields(did)
+    got = mcp.privlab_extract(did)
     field = got["fields"][0]
     assert field["status"] == "green" and field["value"] == 2.1
-    done = mcp.privlab_confirm_field(did, "tumour_size", candidate_id=field["candidate_id"])
-    assert done["outcome"] == "correct"
-    seen += json.dumps(got) + json.dumps(done) + json.dumps(mcp.privlab_list_fields())
+    done = mcp.privlab_extract(did, [mcp.Answer(field="tumour_size", candidate_id=field["candidate_id"])])
+    assert done["next"] == "done" and done["saved"][0]["outcome"] == "correct"      # all answers in one call
+    seen += json.dumps(got) + json.dumps(done) + json.dumps(mcp.privlab_fields("list"))
     assert "Mary Tan" not in seen and "S1234567D" not in seen                   # nothing raw reached the chat
 
-    csv_out = mcp.privlab_export_file("data", str(local_keys / "out" / "data.csv"))
+    csv_out = mcp.privlab_export("data", str(local_keys / "out" / "data.csv"))
     assert csv_out["rows"] == 1 and "carcinoma" not in Path(csv_out["path"]).read_text(encoding="utf-8")
-    zip_out = mcp.privlab_export_file("masked", str(local_keys / "out" / "masked.zip"))
+    zip_out = mcp.privlab_export("masked", str(local_keys / "out" / "masked.zip"))
     with zipfile.ZipFile(zip_out["path"]) as z:
         assert "Mary Tan" not in z.read(z.namelist()[0]).decode("utf-8")
 
 
 def test_refusals_are_plain_messages(mcp, local_keys):
-    assert "not supported" in mcp.privlab_deidentify_report(report_file(local_keys, name="scan.png"))["say"]
-    assert "No file" in mcp.privlab_deidentify_report(str(local_keys / "missing.txt"))["say"]
-    assert "held-out test" in mcp.privlab_deidentify_report(report_file(local_keys, name="PP0008.txt"))["say"]
-    assert mcp.privlab_extract_fields("d_unknown")["next"] == "error"
-    assert "data/" in mcp.privlab_export_file("data", str(ROOT / "data" / "x.csv"))["say"]
-    assert mcp.privlab_remove_field("nope")["next"] == "error"
+    assert "not supported" in mcp.privlab_deidentify(report_file(local_keys, name="scan.png"))["say"]
+    assert "No file" in mcp.privlab_deidentify(str(local_keys / "missing.txt"))["say"]
+    assert "held-out test" in mcp.privlab_deidentify(report_file(local_keys, name="PP0008.txt"))["say"]
+    assert mcp.privlab_extract("d_unknown")["next"] == "error"
+    assert "data/" in mcp.privlab_export("data", str(ROOT / "data" / "x.csv"))["say"]
+    assert mcp.privlab_fields("remove", name="nope")["next"] == "error"
 
 
-def test_paging_and_resume(mcp, local_keys):
-    out = mcp.privlab_deidentify_report(report_file(local_keys), limit=1)
+def test_paging_resume_and_the_viewer_link(mcp, local_keys):
+    out = mcp.privlab_deidentify(report_file(local_keys), limit=1)
     assert (len(out["items"]), out["has_more"], out["next_offset"]) == (1, True, 1)
-    rest = mcp.privlab_get_report(out["deid_id"], offset=1, limit=1)
+    rest = mcp.privlab_deidentify(deid_id=out["deid_id"], offset=1, limit=1)
     assert rest["next"] == "review" and len(rest["items"]) == 1 and not rest["has_more"]
     assert rest["items"][0]["id"] != out["items"][0]["id"]
+    assert mcp.privlab_deidentify()["next"] == "start"                       # no arguments: how to start, and the link
 
 
 def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):
@@ -106,21 +105,21 @@ def test_stdio_server_starts_cleanly_from_another_folder(tmp_path):
     async def names():
         async with Client(params) as client:
             return [t.name for t in (await client.list_tools()).tools]
-    assert len(asyncio.run(names())) == 10
+    assert len(asyncio.run(names())) == 5
 
 
 def test_chat_context_shows_only_tags_and_report_words(mcp, local_keys):
     text = "Patient: Mary Tan\nSigned out by Oyelaran: agree\nIBAN: GB82 WEST 1234 5698 7654 32\nSeen by 陈小明 and Dr Lee.\n"
-    out = mcp.privlab_deidentify_report(report_file(local_keys, text))
+    out = mcp.privlab_deidentify(report_file(local_keys, text))
     seen = json.dumps(out, ensure_ascii=False)
     assert all(x not in seen for x in ("Oyelaran", "7654", "陈小明", "Mary", "Lee"))  # red-team round 2, M01-M06
     assert "[PATIENT-1]" in seen
 
 
 def test_hide_text_after_the_review_step_is_refused_not_dropped(mcp, local_keys):
-    out = mcp.privlab_deidentify_report(report_file(local_keys, "Report handed to Lum Wai at the counter.\n"))
+    out = mcp.privlab_deidentify(report_file(local_keys, "Report handed to Lum Wai at the counter.\n"))
     pipeline_run = __import__("deid.pipeline", fromlist=["_RUNS"])._RUNS[out["deid_id"]]
     pipeline_run["step"] = "hold"                                        # as if the hold question were open
     pipeline_run["holds"] = []
-    res = mcp.privlab_confirm_review(out["deid_id"], hide_text=["Dr Wong"])
-    assert res["next"] == "hold" and "review step" in res["error"] and pipeline_run["step"] == "hold"
+    res = mcp.privlab_review(out["deid_id"], hide_text=["Dr Wong"])
+    assert res["next"] == "hold" and "first review" in res["error"] and pipeline_run["step"] == "hold"

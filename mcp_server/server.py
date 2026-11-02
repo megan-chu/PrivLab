@@ -1,6 +1,7 @@
 """
-server.py - PrivLab as an MCP server (stdio): 10 privlab_* tools, 3 playbook prompts, and the local
-viewer started alongside in the same process, so chat and viewer share the same reports.
+server.py - PrivLab as an MCP server (stdio): 5 privlab_* tools, one per step of the flow (deidentify,
+review, fields, extract, export), 4 playbook prompts, and the local viewer started alongside in the same
+process, so chat and viewer share the same reports.
 
 A thin wrapper over the functions the viewer calls (deid/pipeline.py, extract/). Tools take a file
 path or a deid_id, never report text. Responses carry ids, types and masked context only: no raw
@@ -31,6 +32,7 @@ from typing import Literal
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))      # works from any working folder
 
 from mcp.server.mcpserver import MCPServer
+from pydantic import BaseModel, Field
 from mcp.types import ToolAnnotations
 
 from common import spark
@@ -63,20 +65,21 @@ HOW TO INTRODUCE IT (when the user asks what PrivLab can do, or starts)
 with every value traced to its quote. I only ever see tags like [PERSON-1], never the real names. Which report?"
 
 THE STEPS (follow "next" in every reply, and relay "say" in your own words)
-1. Review identifiers: privlab_deidentify_report(path). Tell the user how many personal details were found and
+1. Review identifiers: privlab_deidentify(path). Tell the user how many personal details were found and
    by type; nothing has been sent yet. Show the viewer link (see VIEWER). Ask which, if any, to keep visible
    and whether anything was missed.
-2. De-identify: privlab_confirm_review with the user's answers. Only now is the masked text sent, once, for a
-   safety check. If "next" is "hold" or "flags", ask the user and call privlab_confirm_review again.
-3. Choose fields: privlab_list_fields. If the user wants a new one, privlab_define_field (draft first, then
-   save=True after the user agrees with the definition).
-4. Extract: privlab_extract_fields. Show each value with its quote. Ask the user to confirm, correct or mark it
-   "not stated"; then privlab_confirm_field. A blind check: ask for the value without showing PrivLab's.
-5. Export: privlab_export_file(kind="data") for the CSV, or kind="masked" for the masked text.
+2. De-identify: privlab_review with the user's answers. Only now is the masked text sent, once, for a
+   safety check. If "next" is "hold" or "flags", ask the user and call privlab_review again.
+3. Choose fields: privlab_fields(action="list"). For a new one: action="draft" with the user's words, show
+   the "Did you mean" definition, then action="save" once the user agrees.
+4. Extract: privlab_extract(deid_id). Show each value with its quote. Ask the user to confirm, correct or mark
+   it "not stated", then send all the answers in one privlab_extract(deid_id, answers) call. A blind check: ask
+   for the value without showing PrivLab's.
+5. Export: privlab_export(kind="data") for the CSV, or kind="masked" for the masked text.
 
 PRIVACY RULES (always)
 - Pass file paths; never paste or quote report text into the chat.
-- Always ask the user before privlab_confirm_review; never answer a review question for them.
+- Always ask the user before privlab_review; never answer a review question for them.
 - Never ask the user to type a name into the chat (it would reach the assistant). To hide a missed name, send
   them to the viewer.
 
@@ -84,7 +87,7 @@ VIEWER
 PrivLab has a visual page running on this computer. The first time you de-identify a report, show its
 viewer_url as a clickable link and say what it is: "the same report on your own screen, with every personal
 detail highlighted; you can check and correct it there, and the real text never comes into this chat." Offer
-it again for extracted values. privlab_open_viewer gives the link any time."""
+it again for extracted values. privlab_deidentify (no arguments) gives the link any time."""
 
 
 # --------------------------------------------------------------------------
@@ -186,15 +189,15 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
         return {**base, "text": out["text"], "summary": s, "second_check": out.get("layer2"),
                 "review_priority": out.get("review_priority"),
                 "say": f"De-identified on this laptop: {s['total']} identifiers replaced with tags. Next: "
-                       "privlab_extract_fields, or privlab_export_file(kind='masked')."}
+                       "privlab_extract, or privlab_export(kind='masked')."}
     items = out.get("items") or out.get("detections") or out.get("hold") or out.get("flags") or []
     items = [{**i, "context": scrub(i.get("context", ""))} for i in items]
     page = _page(items, offset, limit)
     say = {"review": f"{page['total_count']} identifiers found on this laptop; nothing has been sent. Ask the user "
                      "which ids to keep visible (false alarms) and whether anything was missed, then call "
-                     "privlab_confirm_review." + _see(did, "check them highlighted on your own screen"),
+                     "privlab_review." + _see(did, "check them highlighted on your own screen"),
            "hold": "These words still look like names. They will all be hidden unless the user says some are not "
-                   "names (keep_ids). Ask, then call privlab_confirm_review. Nothing has been sent yet.",
+                   "names (keep_ids). Ask, then call privlab_review. Nothing has been sent yet.",
            "flags": "The second check (on masked text only) found more. Ticked items will be hidden; ask the user "
                     "which are false alarms (keep_ids) and which unticked ones to hide (hide_ids)."}.get(nxt, "")
     return {**base, "counts": out.get("counts"), **page, "say": say}
@@ -206,137 +209,165 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
 mcp = MCPServer("privlab", instructions=INSTRUCTIONS)
 
 
+class Answer(BaseModel):
+    """The user's answer for one field."""
+    field: str = Field(description="the field's key, from privlab_extract")
+    candidate_id: str = Field("", description="accept this candidate as it is")
+    value: str = Field("", description="a corrected value, as written in the masked report")
+    evidence_text: str = Field("", description="the exact words of the masked report that state the corrected value")
+    not_stated: bool = Field(False, description="the report does not state this field")
+    items: list[str] = Field([], description="a list field: every item as written (the whole list)")
+    note: str = Field("", description="optional: why PrivLab's pick was wrong")
+
+
+# --- 1. Review identifiers (and where a report is up to) ------------------------------------------------------
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
-def privlab_deidentify_report(path: str, limit: int = LIMIT) -> dict:
-    """Use when the user wants a report made safe. Finds identifiers on this laptop; nothing is sent.
-    Arguments: path to a .txt file or a PDF with selectable text (never paste report text); limit = page size.
-    Returns: deid_id, detections (id, type, masked context), counts. Next: ask the user, then privlab_confirm_review."""
-    text, rid, warnings = _read(path)
-    if text is None:
-        return {"next": "error", "error": rid, "say": rid}
-    with viewer._WRITE:                     # first use creates the default privacy profile
-        out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
-    out["warnings"] = out.get("warnings", []) + warnings
-    return _step(out, 0, limit)
+def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit: int = LIMIT) -> dict:
+    """Use when the user wants a report made safe, wants to know where a report is up to, or wants the viewer.
+    Arguments: path = a .txt file or a PDF with selectable text (never paste report text): finds its personal
+    details on this computer, nothing is sent. Or deid_id = a report already started: where it is up to, and the
+    next page of its items (offset, limit). Neither: the viewer link and how to start.
+    Returns: deid_id, next, items (id, type, masked context), counts, viewer_url. Next: ask the user, then privlab_review."""
+    if path:
+        text, rid, warnings = _read(path)
+        if text is None:
+            return {"next": "error", "error": rid, "say": rid}
+        with viewer._WRITE:                     # first use creates the default privacy profile
+            out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
+        out["warnings"] = out.get("warnings", []) + warnings
+        return _step(out, 0, limit)
+    if deid_id:
+        return _step(pipeline.report_state(deid_id), offset, limit)
+    return {"next": "start", "viewer_url": _url(),
+            "say": "Give me the path of a report (.txt or PDF) to start." + _see("", "also add and review reports")}
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False))
-@_safe
-def privlab_get_report(deid_id: str, offset: int = 0, limit: int = LIMIT) -> dict:
-    """Use when you need where a report is up to, or the next page of its items, or to resume after a pause.
-    Arguments: deid_id; offset and limit for paging (see next_offset).
-    Returns: next (review, hold, flags, done), the items still to answer, or the de-identified text when done."""
-    return _step(pipeline.report_state(deid_id), offset, limit)
-
-
+# --- 2. De-identify --------------------------------------------------------------------------------------------
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
 @_safe
-def privlab_confirm_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] = [],
-                           hide_text: list[str] = [], hide_type: HideType = "NAME") -> dict:
-    """Use when the user has answered the current question for a report (review, hold or second check).
-    Arguments: keep_ids = ids to leave visible (false alarms); hide_ids = unticked second-check ids to hide;
-    hide_text = missed text to hide at the review step, typed by the user (this puts it in the chat:
-    prefer privlab_open_viewer for names); hide_type = its type. Ask the user first; never answer for them.
-    Returns: the next question, or the de-identified text. The review step then runs the second check on
-    masked text only."""
+def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] = [],
+                   hide_text: list[str] = [], hide_type: HideType = "NAME") -> dict:
+    """Use when the user has answered the current question for a report (review, possible names, safety check).
+    Arguments: keep_ids = ids to leave visible (not personal); hide_ids = unticked safety-check ids to hide;
+    hide_text = missed text to hide, at the first review only (it puts the text in the chat: for names, send the
+    user to the viewer instead); hide_type = its type. Ask the user first; never answer for them.
+    Returns: the next question, or the de-identified text. After the first answer, the masked text (only) is sent
+    once for a safety check."""
     run = pipeline._RUNS.get(deid_id)
     if run is None:
         return {"next": "error", "error": "Unknown deid_id.", "say": "Unknown report: de-identify it first."}
     with viewer._report_lock(deid_id):
         step = run["step"]                      # read under the lock: the viewer may have moved the report on
         if step in ("hold", "flags") and [t for t in hide_text if t.strip()]:
-            msg = ("Missed text can only be added at the review step. Nothing was changed. To hide more, open the "
-                   "report in the viewer (privlab_open_viewer) and select the text there.")
+            msg = ("Missed text can only be added at the first review. Nothing was changed. To hide more, open the "
+                   "report in the viewer (viewer_url) and select the text there.")
             return {"deid_id": deid_id, "next": step, "error": msg, "say": msg}
         if step == "review":
             out = pipeline.confirm_deid(deid_id, unmark=keep_ids, expect="review",
                                         add=[{"text": t, "type": hide_type} for t in hide_text if t.strip()])
         elif step == "hold":
             if hide_ids:
-                msg = ("At the hold question every word is hidden unless you keep it: send keep_ids only. "
+                msg = ("At this question every word is hidden unless you keep it: send keep_ids only. "
                        "Nothing was changed.")
                 return {"deid_id": deid_id, "next": "hold", "error": msg, "say": msg}
             out = pipeline.confirm_deid(deid_id, hold_answers={"keep": keep_ids}, expect="hold")
         elif step == "flags":
             out = pipeline.confirm_deid_flags(deid_id, keep=keep_ids, hide=hide_ids)
         else:
-            return {"deid_id": deid_id, "next": "done", "say": "This report is already de-identified. Next: "
-                    "privlab_extract_fields or privlab_export_file."}
+            return {"deid_id": deid_id, "next": "done", "viewer_url": _url(deid_id),
+                    "say": "This report is already de-identified. Next: privlab_extract or privlab_export."}
     return _step(out)
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
+# --- 3. Choose fields --------------------------------------------------------------------------------------------
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=True))
 @_safe
-def privlab_define_field(name: str, description: str = "", save: bool = False, meaning: str = "",
-                         definition: str = "", type: Literal["number", "text"] | None = None, unit: str = "",
-                         range_min: float | None = None,
-                         range_max: float | None = None, multi: bool = False) -> dict:
-    """Use when the user wants to collect a field (e.g. "tumour size"). Only the name and the user's words are sent.
-    Arguments: save=False returns a draft to confirm ("Did you mean ...?"); save=True saves it, using the
-    draft's details or the user's changes (meaning, definition, type, unit, range). Text values are kept as written.
-    multi=True makes it a list (e.g. biomarker results): every item the report states, exported one row per item.
-    Returns: the draft, or the saved field. Next: privlab_extract_fields."""
-    if not save:
-        out = define_field(name, description or None, pack_path=viewer.STATE["pack"])
-        d = out["draft"]
+def privlab_fields(action: Literal["list", "draft", "save", "remove"] = "list", name: str = "",
+                   description: str = "", meaning: str = "", definition: str = "",
+                   type: Literal["number", "text"] | None = None, unit: str = "", range_min: float | None = None,
+                   range_max: float | None = None, multi: bool = False, offset: int = 0, limit: int = LIMIT) -> dict:
+    """Use for the user's fields (what PrivLab fills in, e.g. "tumour size").
+    action="list": every field with its definition, version, readiness and accuracy.
+    action="draft": name + description (the user's words; only these are sent) -> a precise definition to confirm
+    ("Did you mean ...?"). action="save": save it with the draft's details or the user's changes (meaning,
+    definition, type, unit, range; multi=True for a list such as biomarker results). action="remove": stop
+    collecting the field called name; only when the user asks, after confirming.
+    Returns: the fields, the draft, or the saved field. Next: privlab_extract."""
+    if action == "list":
+        keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "version", "readiness", "validation")
+        fields = [{k: f[k] for k in keep} for f in viewer.api_pack(None)["fields"]]
+        return {"next": "done", **_page(fields, offset, limit),
+                "say": f"{len(fields)} field(s) defined." if fields else "No fields yet: draft one (action='draft')."}
+    if not name:
+        msg = "Give the field's name."
+        return {"next": "error", "error": msg, "say": msg}
+    if action == "remove":
+        with viewer._WRITE:
+            pack = load_pack(viewer.STATE["pack"])
+            if not remove_field(pack, name):
+                return {"next": "error", "error": "No such field.", "say": "That field is not in the list."}
+            save_pack(pack, viewer.STATE["pack"])
+        return {"next": "done", "say": f"Removed '{name}'. Its past confirmations stay in the score log."}
+    if action == "draft":
+        d = define_field(name, description or None, pack_path=viewer.STATE["pack"])["draft"]
         return {"next": "confirm", "draft": d,
-                "say": f"Did you mean: {d['meaning_question']} {d.get('definition', '')} Ask the user; then call again "
-                       "with save=True and these details (changed if the user wants)."}
+                "say": f"Did you mean: {d['meaning_question']} {d.get('definition', '')} Ask the user; then call "
+                       "again with action='save' and these details (changed if the user wants)."}
     if not meaning or type is None:
-        msg = "To save, give meaning and type (from the draft: call with save=False first)."
+        msg = "To save, give meaning and type (from the draft: action='draft' first)."
         return {"next": "error", "error": msg, "say": msg}
     accept = {"key": name, "meaning_question": meaning, "definition": definition, "type": type,
               "unit": unit or None, "range_min": range_min, "range_max": range_max, "multi": multi}
     with viewer._WRITE:
-        out = define_field(name, description or None, accept=accept, pack_path=viewer.STATE["pack"])
-    f = out["field"]
+        f = define_field(name, description or None, accept=accept, pack_path=viewer.STATE["pack"])["field"]
     return {"next": "done", "field": {k: f[k] for k in ("key", "name", "meaning", "definition", "type", "unit",
                                                         "range", "multi", "version")},
             "say": f"Saved '{name}' (definition v{f['version']}). It will be filled on every report."}
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False))
-@_safe
-def privlab_list_fields(offset: int = 0, limit: int = LIMIT) -> dict:
-    """Use when the user asks what PrivLab collects, or how accurate a field is.
-    Returns: each field's definition, version, readiness and accuracy (95% bound on wrong verified values)."""
-    keep = ("key", "name", "meaning", "definition", "type", "unit", "range", "version", "readiness",
-            "validation")
-    fields = [{k: f[k] for k in keep} for f in viewer.api_pack(None)["fields"]]
-    return {"next": "done", **_page(fields, offset, limit),
-            "say": f"{len(fields)} field(s) defined." if fields else "No fields yet: use privlab_define_field."}
-
-
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=False))
-@_safe
-def privlab_remove_field(field: str) -> dict:
-    """Use only when the user asks to stop collecting a field. Confirm with the user first.
-    Arguments: field = its key (from privlab_list_fields). Returns: done, or an error if there is no such field."""
+# --- 4. Extract --------------------------------------------------------------------------------------------------
+def _confirm(deid_id: str, a: Answer) -> dict:
     with viewer._WRITE:
-        pack = load_pack(viewer.STATE["pack"])
-        if not remove_field(pack, field):
-            return {"next": "error", "error": "No such field.", "say": "That field is not in the pack."}
-        save_pack(pack, viewer.STATE["pack"])
-    return {"next": "done", "say": f"Removed '{field}'. Its past confirmations stay in the score log."}
+        out = learn.confirm_field(deid_id, a.field, candidate_id=a.candidate_id or None, value=a.value or None,
+                                  evidence_text=a.evidence_text or None, missing=a.not_stated, note=a.note or None,
+                                  items=[{"value": x, "evidence_text": x} for x in a.items] or None,
+                                  pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
+    if out.get("status") != "saved":
+        return {"field": a.field, "saved": False, "error": out.get("reason")}
+    r = {"field": a.field, "saved": True, **{k: out[k] for k in ("outcome", "value", "readiness")}}
+    if out.get("blind"):
+        r["blind_check_prediction"] = out["predicted"]       # shown only now, after the user's answer
+    return r
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=True))
 @_safe
-def privlab_extract_fields(deid_id: str) -> dict:
-    """Use when a report is de-identified and the user wants their fields filled.
-    Reads the de-identified text only (one model call for all fields, cached).
-    Returns per field: status (green = verified, amber = needs review, missing, blind), value, quote, reason,
-    candidates. Next: show each to the user, then privlab_confirm_field."""
+def privlab_extract(deid_id: str, answers: list[Answer] = []) -> dict:
+    """Use when a report is de-identified and the user wants their fields filled, and again with their answers.
+    Without answers: reads the masked text (one model call for all fields, cached) and returns per field: status
+    (green = verified, amber = needs review, missing, blind = ask the user first), value, quote, reason, candidates.
+    With answers (one per field the user answered: accept a candidate_id, a corrected value + evidence_text,
+    not_stated, or items for a list field): saves them all; each is scored first, then PrivLab learns from it.
+    Returns: the values to show, or what was saved (and, for a blind check, PrivLab's own answer)."""
     run = pipeline._RUNS.get(deid_id)
     if run is None or run["step"] != "done":
         return {"next": "error", "error": "Not de-identified yet.",
-                "say": "Finish de-identifying this report first (privlab_confirm_review)."}
+                "say": "Finish de-identifying this report first (privlab_review)."}
     if any("left in the output" in r for r in (run.get("priority") or {}).get("reasons", [])):
         return {"next": "blocked", "say": "A possible identifier is left in this report, so nothing is extracted."}
+    if answers:
+        saved = [_confirm(deid_id, a) for a in answers]
+        ok = [r for r in saved if r["saved"]]
+        blind = [r for r in ok if "blind_check_prediction" in r]
+        say = f"Saved {len(ok)} of {len(saved)} answer(s)." + (
+            f" Blind check(s): PrivLab had " + ", ".join(f"{r['field']} = {r['blind_check_prediction']}" for r in blind)
+            + "." if blind else "") + (" Next: privlab_export." if len(ok) == len(saved) else " Fix the others and send them again.")
+        return {"deid_id": deid_id, "next": "done" if len(ok) == len(saved) else "confirm", "saved": saved,
+                "viewer_url": _url(deid_id), "say": say}
     fields = load_pack(viewer.STATE["pack"])["fields"]
     if not fields:
-        return {"next": "define", "say": "No fields defined yet: use privlab_define_field."}
+        return {"next": "define", "say": "No fields defined yet: use privlab_fields(action='draft')."}
     results = []
     for f in fields:
         r = find_candidates(deid_id, f.key, pack_path=viewer.STATE["pack"], blind_checks=True)
@@ -347,41 +378,18 @@ def privlab_extract_fields(deid_id: str) -> dict:
                                         "failed_check": c["fail"]} for c in r.get("candidates", [])]})
     blind = sum(r["status"] == "blind" for r in results)
     return {"deid_id": deid_id, "next": "confirm", "fields": results, "viewer_url": _url(deid_id),
-            "say": "Show each value with its quote. Confirm, correct or mark not stated with privlab_confirm_field."
-                   + _see(deid_id, "see every value highlighted in the report")
+            "say": "Show each value with its quote. Ask the user to confirm, correct or mark it not stated, then send "
+                   "all the answers in one privlab_extract call." + _see(deid_id, "see every value highlighted in the report")
                    + (f" {blind} blind check(s): ask the user for the value without showing PrivLab's." if blind else "")}
 
 
+# --- 5. Export ---------------------------------------------------------------------------------------------------
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
 @_safe
-def privlab_confirm_field(deid_id: str, field: str, candidate_id: str = "", value: str = "",
-                          evidence_text: str = "", not_stated: bool = False, note: str = "",
-                          items: list[str] = []) -> dict:
-    """Use when the user confirms or corrects one field's value. Scored first, then PrivLab learns.
-    Arguments: candidate_id to accept a candidate; or value + evidence_text (exact words from the de-identified
-    text) to correct it; or not_stated=True; note = optional reason PrivLab's pick was wrong.
-    For a list field: items = every item as written in the text (the whole list), or not_stated=True.
-    Returns: saved, outcome, readiness. A blind check reveals PrivLab's answer only now."""
-    with viewer._WRITE:
-        out = learn.confirm_field(deid_id, field, candidate_id=candidate_id or None, value=value or None,
-                                  evidence_text=evidence_text or None, missing=not_stated, note=note or None,
-                                  items=[{"value": x, "evidence_text": x} for x in items] or None,
-                                  pack_path=viewer.STATE["pack"], log_path=viewer.STATE["log"])
-    if out.get("status") != "saved":
-        return {"next": "error", "error": out.get("reason"), "say": out.get("reason")}
-    say = f"Saved {field}: {out['value'] if out['value'] is not None else 'not stated'} ({out['outcome']})."
-    if out.get("blind"):
-        say += f" Blind check: PrivLab had {out['predicted'] if out['predicted'] is not None else 'nothing'}."
-    return {"next": "done", **{k: out[k] for k in ("outcome", "value", "readiness")}, "say": say}
-
-
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, openWorldHint=False))
-@_safe
-def privlab_export_file(kind: Literal["data", "masked"], out_path: str) -> dict:
-    """Use when the user wants a file, for the reports of this session. data = a CSV with one row per report and
-    one column per field
-    (values as written, no report text);
-    masked = every finished report's de-identified text as a .zip. Written on this laptop.
+def privlab_export(kind: Literal["data", "masked"], out_path: str) -> dict:
+    """Use when the user wants a file, for the reports of this session, written on this computer.
+    kind="data": a CSV, one row per report and one column per field (values as written, no report text).
+    kind="masked": every finished report's de-identified text, as a .zip.
     Returns: the file path and how much it holds (never the contents)."""
     p = Path(out_path).expanduser().resolve()
     if ROOT / "data" in p.parents:
@@ -402,42 +410,37 @@ def privlab_export_file(kind: Literal["data", "masked"], out_path: str) -> dict:
     return {"next": "done", "path": str(p), "reports": n, "say": f"Wrote {n} masked report(s) to {p}."}
 
 
-@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=False))
-@_safe
-def privlab_open_viewer(deid_id: str = "") -> dict:
-    """Use when the user wants to see highlights, review identifiers, hide a missed name or check values.
-    The viewer runs on this laptop and shows the report itself; nothing in it reaches the chat.
-    Returns: a link to open (to one report if deid_id is given)."""
-    if not VIEWER["url"]:
-        return {"next": "error", "error": "Viewer off.", "say": "The viewer is not running in this session."}
-    return {"next": "open", "viewer_url": _url(deid_id), "say": f"Open {_url(deid_id)} in your browser."}
-
-
 # --------------------------------------------------------------------------
 # Prompts: the playbook
 # --------------------------------------------------------------------------
-@mcp.prompt(title="De-identify a batch of reports")
-def deidentify_batch(folder: str) -> str:
-    return (f"De-identify every .txt or .pdf report in {folder} with PrivLab. For each file: "
-            "privlab_deidentify_report(path); show me the counts and offer the viewer link; ask me which ids to keep "
-            "visible and whether anything was missed; then privlab_confirm_review with my answers; repeat while next "
-            "is hold or flags, asking me each time. Never paste report text into the chat. At the end, "
-            "privlab_export_file(kind='masked') to a path I choose.")
-
-
 @mcp.prompt(title="Fill my fields")
 def fill_fields(path: str) -> str:
-    return (f"Make {path} safe with PrivLab, then fill my fields: privlab_deidentify_report, review with me, "
-            "privlab_confirm_review until done; privlab_extract_fields; for each field show the value with its quote "
-            "and ask me to confirm, correct or mark not stated (privlab_confirm_field; for a blind check, ask me first "
-            "without showing PrivLab's value); then privlab_export_file(kind='data').")
+    return (f"Make {path} safe with PrivLab, then fill my fields: privlab_deidentify(path); show me the counts and the "
+            "viewer link; ask me what to keep visible; privlab_review until done; privlab_extract; show each value "
+            "with its quote and ask me to confirm, correct or mark not stated (for a blind check, ask me first without "
+            "showing PrivLab's value); send all my answers in one privlab_extract call; then privlab_export(kind='data').")
+
+
+@mcp.prompt(title="De-identify a batch of reports")
+def deidentify_batch(folder: str) -> str:
+    return (f"De-identify every .txt or .pdf report in {folder} with PrivLab. For each file: privlab_deidentify(path); "
+            "show me the counts and the viewer link; ask me what to keep visible; then privlab_review with my answers, "
+            "repeating while next is hold or flags and asking me each time. Never paste report text into the chat. "
+            "At the end, privlab_export(kind='masked') to a path I choose.")
 
 
 @mcp.prompt(title="Set up my fields")
 def set_up_fields(fields: str) -> str:
-    return (f"Help me define these fields in PrivLab: {fields}. For each: privlab_define_field(save=False), show me "
-            "the 'Did you mean' question, definition and type; change anything I ask; then save=True. "
-            "Finish with privlab_list_fields.")
+    return (f"Help me define these fields in PrivLab: {fields}. For each: privlab_fields(action='draft'), show me the "
+            "'Did you mean' question, definition and type; change anything I ask; then action='save'. "
+            "Finish with privlab_fields(action='list').")
+
+
+@mcp.prompt(title="Open the PrivLab viewer")
+def open_viewer() -> str:
+    return ("Call privlab_deidentify with no arguments and give me the viewer link as a clickable link. Tell me what it "
+            "is: PrivLab's page on this computer, where I can add reports, see personal details highlighted and check "
+            "values; the real text never comes into this chat.")
 
 
 # --------------------------------------------------------------------------
