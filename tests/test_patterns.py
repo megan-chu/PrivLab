@@ -435,3 +435,15 @@ def test_middle_initials_stay_inside_the_name():
     assert ("DOCTOR", "Dr. Jane K. Example") in found("Surgeon: Dr. Jane K. Example")
     assert ("DOCTOR", "Dr Jane K Example") in found("Reported by Dr Jane K Example, consultant.")
     assert ("DOCTOR", "Dr Tan") in found("Dr Tan A Grade 2 tumour")              # "A" is a word, not an initial
+
+
+def test_a_label_on_the_next_line_is_not_part_of_the_name():
+    assert ("NAME", "Jane Sample") in found("Patient: Jane Sample\nDate Of Birth: 01/02/1960")
+    assert ("NAME", "Jane Doe") in found("Name: Jane Doe\nAge 54")
+    assert ("NAME", "Jane\nSample") in found("Patient: Jane\nSample")                  # a wrapped name still joins
+
+
+def test_surnames_that_look_medical_are_not_dismissed():
+    from deid.hold import medical_word
+    assert not any(medical_word(w) for w in ("Pasupathy", "Angiolini", "Metaxas"))
+    assert ("NAME", "Elena Angiolini") in found("Seen by Elena Angiolini today.")

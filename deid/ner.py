@@ -40,9 +40,11 @@ def _looks_like_name(span: str, vocab) -> bool:
     from deid.hold import _plain, medical_word
 
     words = re.findall(r"[A-Za-z][A-Za-z'’]*", span)                  # "Ziehl-Neelsen": both parts checked
-    if not words or span.isupper() or re.search(r"\d", span) or any(medical_word(w) for w in words):
-        return False                                                  # "Lymph Nodes Macrometastases"
-    return any(len(w) > 1 and _plain(w) not in vocab for w in words if w[0].isupper())
+    if not words or span.isupper() or re.search(r"\d", span):
+        return False
+    # a name needs one capitalised word that is neither report vocabulary nor a medical word
+    # ("Lymph Nodes Macrometastases" has none; "Ramesh Pasupathy" has "Ramesh")
+    return any(len(w) > 1 and _plain(w) not in vocab and not medical_word(w) for w in words if w[0].isupper())
 
 
 def find_names(text: str) -> list[tuple[int, int]]:

@@ -95,7 +95,7 @@ svg { width: 16px; height: 16px; flex: none; }
 .rmv { position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--r-sm); font-size: 16px; line-height: 1; color: var(--ink-muted); opacity: 0; }
 .rrow:hover .rmv, .rmv:focus-visible { opacity: 1; }
 .rmv:hover { background: var(--surface-sunken); color: var(--ink); }
-.ropen { position: absolute; right: 36px; bottom: 8px; font-size: 12px; line-height: 20px; color: var(--hema); font-weight: 600;
+.ropen { background: none; border: 0; cursor: pointer; position: absolute; right: 36px; bottom: 8px; font-size: 12px; line-height: 20px; color: var(--hema); font-weight: 600;
   text-decoration: none; padding: 0 4px; border-radius: var(--r-sm); }
 .ropen:hover { background: var(--surface-sunken); text-decoration: underline; }
 .rconfirm { margin: 2px var(--s1) var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r-md); background: var(--refused-bg); font-size: 13px; line-height: 18px; }
@@ -744,7 +744,7 @@ function renderRail() {
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</label>`;
     return `<div class="rrow"><button class="row ${i === S.cur ? "on" : ""}" data-i="${i}" aria-current="${i === S.cur}">
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</button>
-      ${r.original ? `<a class="ropen" href="${r.original}" target="_blank" rel="noopener" title="Open the file you added, to compare with the text read from it. It stays in this browser.">Original ↗</a>` : ""}
+      ${r.original || r.preview ? `<button class="ropen" data-orig="${i}" title="Open what you added, to compare with the text read from it. It stays in this browser.">Original ↗</button>` : ""}
       ${S.confirmRm === r.key ? "" : `<button class="rmv" data-rm="${r.key}" aria-label="Remove ${esc(r.name)} from the list" title="Remove from the list">×</button>`}</div>
       ${S.confirmRm === r.key ? `<div class="rconfirm" role="alertdialog" aria-label="Confirm removal"><b>Remove from the list?</b>
         <div class="muted">It leaves this session's exports.</div>
@@ -752,6 +752,14 @@ function renderRail() {
   }).join("") : `<div class="railempty"><b style="color:var(--ink)">No reports yet</b><br>Reports you add appear here.</div>`;
 }
 $("rail").addEventListener("click", (e) => {
+  const o = e.target.closest("[data-orig]");
+  if (o) {
+    const r = S.reports[+o.dataset.orig];
+    if (r.original) return void window.open(r.original, "_blank", "noopener");
+    const url = URL.createObjectURL(new Blob([r.preview], {type: "text/plain;charset=utf-8"}));
+    window.open(url, "_blank", "noopener"); setTimeout(() => URL.revokeObjectURL(url), 60000);   // read once, then let go
+    return;
+  }
   const t = e.target;
   if (t.closest("[data-rm]")) { S.confirmRm = +t.closest("[data-rm]").dataset.rm; renderRail(); return document.querySelector("[data-rmyes]")?.focus(); }
   if (t.closest("[data-rmyes]")) return removeReports([+t.closest("[data-rmyes]").dataset.rmyes]);
@@ -774,6 +782,7 @@ $("selBtn").onclick = () => { S.picking = S.picking ? null : new Set(); S.confir
 function removeReports(keys) {
   const gone = new Set(keys), shown = cur();
   const names = S.reports.filter((x) => gone.has(x.key)).map((x) => x.name);
+  S.reports.filter((x) => gone.has(x.key) && x.original).forEach((x) => URL.revokeObjectURL(x.original));   // a PDF's copy
   S.reports = S.reports.filter((x) => !gone.has(x.key));
   S.cur = shown && !gone.has(shown.key) ? S.reports.indexOf(shown) : Math.min(Math.max(S.cur, 0), S.reports.length - 1);
   S.confirmRm = null; if (S.picking) S.picking = S.reports.length > 1 ? new Set() : null;
@@ -1034,8 +1043,7 @@ async function addPdf(f) {             // read on the server on this device; a s
 const newReport = (name, extra) => ({key: ++seq, name, step: "loading", unmark: new Set(), add: [], dets: null, results: {}, saved: {}, toggled: {}, lists: {},
   typed: 0, trace: [], prefetch: "none", openedAt: performance.now(), ...extra});
 function addText(name, text, source = "Text file") {
-  const original = URL.createObjectURL(new Blob([text], {type: "text/plain;charset=utf-8"}));   // this browser only
-  return start(newReport(name.replace(/\.txt$/i, ""), {preview: text, source, original}), "/api/add", {name, text});
+  return start(newReport(name.replace(/\.txt$/i, ""), {preview: text, source}), "/api/add", {name, text});
 }
 // The demo samples: three invented reports in demo/ (breast, lung, colon), named by the procedure.
 const SAMPLES = [["demo_breast", "Breast surgery report", "Breast"], ["demo_lung", "Lung resection report", "Lung"],

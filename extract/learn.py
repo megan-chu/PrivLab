@@ -159,8 +159,9 @@ def _confirmed_items(text, field, items, missing):
         return "give items=[{value, evidence_text}, ...], or missing=True"
     out = []
     for it in items:
-        value = tidy_text(it.get("value") or "")
-        hits = locate(text, it.get("evidence_text") or value)
+        raw = " ".join(str(it.get("value") or "").split())
+        value = tidy_text(raw)                                         # saved tidied; found as written
+        hits = locate(text, it.get("evidence_text") or raw)
         if not value or not hits:
             return f"item '{value or '?'}' not found in the de-identified report"
         out.append({"value": value, "start": hits[0][0], "end": hits[0][1]})

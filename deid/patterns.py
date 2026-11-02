@@ -35,9 +35,13 @@ NOT_NAME = (r"(?!(?:In|The|This|That|Of|And|For|To|On|At|By|With|Surgical|Pathol
 # OCR tolerant: "0ng" (O read as 0), "L1m" (i read as 1) still count as name words.
 WORD = rf"{NOT_NAME}(?:[A-Z]|0(?=[a-z]))(?:[a-z]|[01](?=[01]?[a-z])|'[A-Z])(?:[A-Za-z'\-]|[01](?=[a-z]))*"   # "B00n"
 PARTICLE = r"(?:binte|binti|bin|bte|s/o|d/o|a/l|a/p|van|von|de|da)\b"   # longest first
+# A name goes on to the next line only if that line does not start a label of up to four words ("Date Of Birth:",
+# "Referring Doctor:") or a field without a colon ("Age 54", "Sex M").
+NEXT_LINE_OK = (r"(?![A-Za-z][A-Za-z'\-]*(?:[ \t]+[A-Za-z][A-Za-z'\-]*){0,3}[ \t]*:)"
+                r"(?!(?i:age|sex|gender|dob|date|mrn|nric|phone|tel|address|ward|bed|room|unit)\b)")
 CONT = (rf"(?:[ \t]+(?:[A-Z]\.|(?![AI][ \t])[A-Z])(?=[ \t]+[A-Z][a-z])"   # middle initial: "Jane K. Zhao" (not "A", "I")
         rf"|[ \t]+(?:{PARTICLE}|{WORD})"                  # same line: any word
-        rf"|[ \t]*\n[ \t]*(?!{WORD}[ \t]*:)(?:{PARTICLE}|{WORD}))")   # next line: not a "Label:"
+        rf"|[ \t]*\n[ \t]*{NEXT_LINE_OK}(?:{PARTICLE}|{WORD}))")   # next line: not a "Label:" nor a field
 INITIALS = r"(?:[A-Z]\.[ \t]*)*"                          # "A. ", "L. M. "
 NAME = rf"{WORD}(?:{CONT})+"                              # two or more words
 ONE_OR_MORE = rf"{INITIALS}{WORD}(?:{CONT})*"

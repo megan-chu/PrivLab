@@ -141,9 +141,10 @@ def _not_a_name(word: str, text: str, start: int, end: int) -> bool:
 
 
 # Medical word parts no name has: "Macrometastases", "Lymphadenopathy", "Mastectomy", "Carcinomatosis".
-MEDICAL = re.compile(r"(?:macro|micro|lymph|adeno|carcin|sarco|neuro|angio|hyper|hypo|osteo|haemat|hemat|cyto|histo|"
-                     r"immuno|onco|patho|meta)\w*|\w*(?:metasta\w*|omas?|omata|itis|osis|oses|ectomy|ectomies|otomy|"
-                     r"oscopy|plasia|plastic|pathy|aemia|emia|algia|cytes?|blasts?|ology|ologist|genesis|trophy)",
+# Not "-pathy", "angio-" or "meta-": surnames such as Pasupathy, Angiolini and Metaxas start or end that way.
+MEDICAL = re.compile(r"(?:macro|micro|lymph|adeno|carcin|sarco|neuro|hyper|hypo|osteo|haemat|hemat|cyto|histo|"
+                     r"immuno|onco|patho)\w*|\w*(?:metasta\w*|omas?|omata|itis|osis|oses|ectomy|ectomies|otomy|"
+                     r"oscopy|plasia|plastic|aemia|emia|algia|cytes?|blasts?|ology|ologist|genesis|trophy)",
                      re.IGNORECASE)
 
 

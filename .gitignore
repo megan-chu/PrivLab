@@ -10,8 +10,7 @@ docs/CHECKLIST.md
 docs/COMMANDS.md
 docs/YOUR_STEPS.md
 CLAUDE.md
-VOICEOVER.md
-docs
+docs/VOICEOVER.md
 
 # Python
 __pycache__/
@@ -38,5 +37,3 @@ Thumbs.db
 
 # Stray pytest temp folders (tests now use runs/pytest)
 pytest-of-*/
-docs/VOICEOVER.md
-docs/VOICEOVER.md

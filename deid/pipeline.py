@@ -135,7 +135,8 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
         spans = merge_spans(spans)
         _stage(run, allow=[s.text for s in kept],      # a model-found or possible name you kept hidden is
                remove=[{"text": a["text"], "type": a["type"]} for a in add]   # learned like a held one
-               + [{"text": s.text, "type": s.type} for s in spans if s.source in ("ner:spacy", "hold")])
+               + [{"text": s.text, "type": s.type} for s in spans
+                  if s.source == "ner:spacy" or s.source == "hold" and len(s.text.split()) > 1])   # not "Tan" from one click
         run["allowed"] += [s.text for s in kept]
         run["kept_names"] += sum(s.source == "hold" for s in kept)
         run["confirmed"] = spans
@@ -143,7 +144,8 @@ def confirm_deid(deid_id: str, unmark=(), add=(), hold_answers=None, *, use_spar
 
         # The hold rule already ran on the review screen; it runs again only if you changed what is hidden,
         # so a word your change uncovered is still asked about before any API call.
-        holds = _hold_spans(text, spans, run["allowed"]) if unmark or add else []
+        removed = prof.removed_types(run["profile"])
+        holds = [h for h in _hold_spans(text, spans, run["allowed"], prefix="r") if h.type in removed] if unmark or add else []
         if holds:
             run.update(step="hold", holds=holds, shown_at=time.monotonic())
             _trace(run, "hold", f"Paused before any API call: {len(holds)} words look like names.", ok=False)
@@ -405,14 +407,15 @@ def _stage(run: dict, allow=(), remove=()) -> None:
     run["learn"]["remove"] += list(remove)
 
 
-def _hold_spans(text: str, spans: list[PhiSpan], allowed) -> list[PhiSpan]:
-    """The hold rule on the text with these spans masked: words that still look like a person or place."""
+def _hold_spans(text: str, spans: list[PhiSpan], allowed, prefix: str = "h") -> list[PhiSpan]:
+    """The hold rule on the text with these spans masked: words that still look like a person or place.
+    prefix: "h" on the review screen, "r" for the re-check at confirm, so ids never collide."""
     tagged, tags = apply_tags(text, spans)
     holds = []
     for start, end in hold_flags(tagged, allowed, tags):
         o_start, o_end = to_original(tags, start, end)
         kind = "HOSPITAL" if INSTITUTION.search(text[o_start:o_end]) else "NAME"
-        holds.append(PhiSpan(id=f"h{len(holds) + 1}", type=kind, start=o_start, end=o_end,
+        holds.append(PhiSpan(id=f"{prefix}{len(holds) + 1}", type=kind, start=o_start, end=o_end,
                              text=text[o_start:o_end], source="hold"))
     return holds
 

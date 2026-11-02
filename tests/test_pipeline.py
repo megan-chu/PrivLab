@@ -105,7 +105,7 @@ def test_back_to_review_unlearns_the_first_pass(fake_spark, monkeypatch):
     r = pipeline.deidentify_report(text=HARD, profile=p, show_text=True)
     name = next(d["id"] for d in r["detections"] if d["text"] == "Tan Ah Wing")
     real = pipeline._hold_spans
-    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed: [   # a word your change uncovered
+    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed, prefix="h": [   # a word your change uncovered
         PhiSpan(id="h1", type="NAME", start=text.index("Wing"), end=text.index("Wing") + 4, text="Wing", source="hold")])
     assert pipeline.confirm_deid(r["deid_id"], unmark=[name])["next"] == "hold"
     monkeypatch.setattr(pipeline, "_hold_spans", real)
@@ -333,7 +333,7 @@ def test_kept_by_choice_and_remembered_phrases_are_not_asked(fake_spark):
 def test_back_from_the_hold_question_only_before_anything_is_sent(fake_spark, no_names_model, monkeypatch):
     r = pipeline.deidentify_report(text="Report handed to ming wei at the desk.", profile=new_profile()[0])
     ids = [d["id"] for d in possible(r)]
-    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed: [   # your change uncovered a name
+    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed, prefix="h": [   # your change uncovered a name
         PhiSpan(id="h1", type="NAME", start=text.index("ming"), end=text.index("ming") + 8, text="ming wei", source="hold")])
     held = pipeline.confirm_deid(r["deid_id"], unmark=ids, use_spark=False)
     assert held["next"] == "hold"
@@ -386,3 +386,25 @@ def test_a_file_name_with_personal_details_is_not_the_report_name(local_keys):
     r = pipeline.deidentify_report(text="Seen today.", report_id="JANE_DOE_S1234567D", profile=profile())
     assert pipeline._RUNS[r["deid_id"]]["report_id"].startswith("report_")
     assert any("file name" in w for w in r["warnings"])
+
+
+def test_a_single_possible_word_is_not_learned_from_one_click(fake_spark):
+    p = profile()
+    r = pipeline.deidentify_report(text="On review, Tan has received treatment at another centre.", profile=p)
+    pipeline.confirm_deid(r["deid_id"], use_spark=False)
+    assert not any(x["text"] == "Tan" for x in p.always_remove)
+
+
+def test_the_recheck_keeps_your_type_choices_and_its_own_ids(fake_spark, monkeypatch):
+    from deid.profile import checklist
+    choices = {c["key"]: c["default"] for c in checklist()}
+    choices["hospital"] = False                                                     # you keep hospital names
+    r = pipeline.deidentify_report(text="Patient: Mary Tan. Seen at Kampong Glam Community Clinic.",
+                                   profile=new_profile(choices)[0], show_text=True)
+    ids = [d["id"] for d in r["detections"]]
+    calls = []
+    monkeypatch.setattr(pipeline, "_hold_spans", lambda text, spans, allowed, prefix="h": calls.append(prefix) or [
+        PhiSpan(id=f"{prefix}1", type="HOSPITAL", start=text.index("Kampong"), end=text.index("Clinic") + 6,
+                text="Kampong Glam Community Clinic", source="hold")])
+    done = pipeline.confirm_deid(r["deid_id"], unmark=ids[:1], use_spark=False)
+    assert calls == ["r"] and done["next"] == "done"                               # a kept type is never asked about

@@ -424,3 +424,10 @@ def test_a_stray_full_stop_inside_a_text_value_is_dropped():
     assert tidy_text("poorly differentiated invasive ductal. carcinoma") == "poorly differentiated invasive ductal carcinoma"
     assert tidy_text("Margins clear. Tumour 2 cm") == "Margins clear. Tumour 2 cm"     # a real sentence end stays
     assert tidy_text("approx. two thirds") == "approx. two thirds"                       # an abbreviation stays
+
+
+def test_a_list_item_without_a_quote_is_found_as_written():
+    from extract.learn import _confirmed_items
+    text = "Diagnosis: ductal. carcinoma, grade 2."
+    out = _confirmed_items(text, None, [{"value": "ductal. carcinoma"}], False)
+    assert out["value"] == ["ductal carcinoma"] and out["start"] == text.index("ductal.")
