@@ -81,7 +81,7 @@ svg { width: 16px; height: 16px; flex: none; }
 .fhist ul { margin: var(--s1) 0 var(--s2); padding-left: var(--s4); color: var(--ink-muted); }
 
 /* ---------- layout ---------- */
-.app { display: grid; grid-template-columns: 272px minmax(0, 1fr) var(--panel); height: calc(100vh - 56px); }
+.app { display: grid; grid-template-columns: 280px minmax(0, 1fr) var(--panel); height: calc(100vh - 56px); }
 .rail { background: var(--surface-raised); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
 .rail-head { display: flex; align-items: center; justify-content: space-between; padding: var(--s4) var(--s4) var(--s2); }
 .rail-list { flex: 1; overflow: auto; padding: 0 var(--s2) var(--s4); }
@@ -89,15 +89,22 @@ svg { width: 16px; height: 16px; flex: none; }
 .row { width: 100%; min-height: var(--target); text-align: left; display: grid; grid-template-columns: 1fr auto; gap: 2px var(--s2); padding: var(--s3); border-radius: var(--r-md); }
 .row:hover { background: var(--surface); }
 .row.on { background: var(--surface-sunken); box-shadow: inset 3px 0 0 var(--hema); }
-.row .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .name { font-weight: 600; font-size: 14px; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .row .sub { grid-column: 1 / -1; color: var(--ink-muted); font-size: 13px; line-height: 18px; display: flex; gap: 6px; align-items: center; }
 .rrow { position: relative; }
-.rmv { position: absolute; right: 6px; bottom: 6px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--r-sm); font-size: 16px; line-height: 1; color: var(--ink-muted); opacity: 0; }
+.rmv { position: absolute; right: 6px; top: 8px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: var(--r-sm); font-size: 16px; line-height: 1; color: var(--ink-muted); opacity: 0; }
 .rrow:hover .rmv, .rmv:focus-visible { opacity: 1; }
+.rrow:hover .row .pill, .rrow:focus-within .row .pill { margin-right: 22px; }   /* room for the remove button in the corner */
 .rmv:hover { background: var(--surface-sunken); color: var(--ink); }
-.ropen { background: none; border: 0; cursor: pointer; position: absolute; right: 36px; bottom: 8px; font-size: 12px; line-height: 20px; color: var(--hema); font-weight: 600;
-  text-decoration: none; padding: 0 4px; border-radius: var(--r-sm); }
-.ropen:hover { background: var(--surface-sunken); text-decoration: underline; }
+.ropen { background: none; border: 0; cursor: pointer; position: absolute; right: 10px; bottom: 6px; width: 24px; height: 24px; padding: 4px;
+  color: var(--hema); border-radius: var(--r-sm); display: grid; place-items: center; }
+.ropen svg { width: 16px; height: 16px; }
+.ropen:hover, .ropen:focus-visible { background: var(--surface-sunken); }
+.ropen::after { content: "Original document"; position: absolute; right: 0; bottom: calc(100% + 4px); white-space: nowrap; pointer-events: none;
+  font: 600 12px/18px var(--f-sans); color: var(--on-hema); background: var(--hema); padding: 2px 8px; border-radius: var(--r-sm);
+  opacity: 0; transition: opacity .12s; }
+.ropen:hover::after, .ropen:focus-visible::after { opacity: 1; }
+.row:has(.ropen) .sub { padding-right: 28px; }
 .rconfirm { margin: 2px var(--s1) var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r-md); background: var(--refused-bg); font-size: 13px; line-height: 18px; }
 .rconfirm .factions { margin-top: var(--s1); gap: var(--s2); }
 .rconfirm .danger { min-height: 30px; padding: 0 var(--s3); border-radius: 6px; background: var(--refused); color: #fff; font-weight: 600; }
@@ -399,6 +406,9 @@ textarea.in { padding: var(--s2) var(--s3); resize: vertical; }
 .floatbar select:hover { background: rgba(255,255,255,.2); }
 .floatbar select option { color: #1c1930; font-weight: 400; }
 .floatbar .sep { width: 1px; height: 18px; background: rgba(255,255,255,.25); }
+.apick { display: flex; gap: var(--s2); align-items: flex-start; margin: var(--s3) 0; cursor: pointer; }
+.apick input { margin-top: 4px; accent-color: var(--hema); }
+.apgo { display: flex; justify-content: flex-end; margin-top: var(--s4); }
 /* "“Lung adeno…” Save as [field ▾] [✓ Save] | ＋": what you selected, where it goes, one clear button, new field as an icon */
 .floatbar .fbq { max-width: 20ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 var(--s2); font-style: italic; opacity: .8; }
 .floatbar .fbl { padding: 0 2px 0 var(--s1); opacity: .8; white-space: nowrap; }
@@ -534,6 +544,7 @@ dialog.sheet.wide { width: 860px; }
   <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 13h6M9 17h4"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
 </svg>
 
@@ -602,6 +613,10 @@ dialog.sheet.wide { width: 860px; }
     <p class="lfoot">Changed your mind about something? You can see and undo all of it in <i>Fields → Learned</i>.</p>
   </div>
 </dialog>
+<dialog class="sheet" id="applyDlg" aria-labelledby="applyDlgT">
+  <div class="sh"><b id="applyDlgT">Apply your correction</b><button class="link" onclick="this.closest('dialog').close()">Not now</button></div>
+  <div class="sb" id="applyBody" style="font-size:14px;line-height:21px"></div>
+</dialog>
 <dialog class="sheet" id="keysDlg" aria-labelledby="keysDlgT">
   <div class="sh"><b id="keysDlgT">Keyboard shortcuts</b><button class="link" onclick="this.closest('dialog').close()">Close</button></div>
   <div class="sb" style="font-size:14px;line-height:21px">
@@ -645,7 +660,7 @@ function setPicked(change) {     // on the server too, so the chat extracts the 
 S.side = null; S.chat = null;           // side panel: null | "fields" | "chat"
 let seq = 0;
 
-const API_TIMEOUT_MS = 60_000;          // a model call is ~10 s; the server's own network timeout is 60 s
+const API_TIMEOUT_MS = 140_000;         // longer than the server's worst case: a 60 s model timeout, its one retry, the second opinion
 async function api(path, body) {
   try {
     const r = await fetch(path, {signal: AbortSignal.timeout(API_TIMEOUT_MS),
@@ -783,12 +798,12 @@ function renderRail() {
     const [label, cls, ic, why] = railState(r);
     const pill = `<span class="pill ${cls}" title="${why}">${ic ? icon(ic) : ""}${label}</span>`;
     const pr = r.done && r.done.review_priority ? r.done.review_priority.level : null;
-    const sub = `<span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${r.source === "PDF" ? `<span class="src">PDF</span>` : ""}${esc(r.sample ? r.cancer || "Sample" : r.source === "PDF" ? "" : r.source || "Your file")}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span>`;
+    const sub = `<span class="sub">${pr ? `<span class="dot ${pr}" title="Review priority: ${pr}"></span>` : ""}${r.source === "PDF" || r.fileType === "pdf" ? `<span class="src">PDF</span>` : r.fileType === "txt" ? `<span class="src">TXT</span>` : ""}${esc(r.sample ? r.cancer || "Sample" : r.source === "PDF" ? "" : r.source || "Your file")}${r.dets ? ` · ${r.dets.length} identifiers` : ""}</span>`;
     if (sel) return `<label class="row sel ${sel.has(r.key) ? "on" : ""}"><input type="checkbox" class="toggle" data-tick="${r.key}" ${sel.has(r.key) ? "checked" : ""} aria-label="Select ${esc(r.name)}">
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</label>`;
     return `<div class="rrow"><button class="row ${i === S.cur ? "on" : ""}" data-i="${i}" aria-current="${i === S.cur}">
       <span class="name" title="${esc(r.name)}">${esc(r.name)}</span>${pill}${sub}</button>
-      ${r.original || r.preview ? `<button class="ropen" data-orig="${i}" title="Open what you added, to compare with the text read from it. It stays in this browser.">Original ↗</button>` : ""}
+      ${r.original || r.preview ? `<button class="ropen" data-orig="${i}" aria-label="Open the original document, to compare with the text read from it">${icon("file")}</button>` : ""}
       ${S.confirmRm === r.key ? "" : `<button class="rmv" data-rm="${r.key}" aria-label="Remove ${esc(r.name)} from the list" title="Remove from the list">×</button>`}</div>
       ${S.confirmRm === r.key ? `<div class="rconfirm" role="alertdialog" aria-label="Confirm removal"><b>Remove from the list?</b>
         <div class="muted">It leaves this session's exports.</div>
@@ -886,7 +901,7 @@ function goStep(r, key, test) {
   return !!go;
 }
 function reviewAgain(r) {        // a fresh local run with the same choices; nothing is sent until confirmed again
-  const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer, source: r.source, original: r.original, add: r.add, carry: keptKeys(r)});
+  const copy = newReport(r.name, {sample: r.sample, cancer: r.cancer, source: r.source, fileType: r.fileType, original: r.original, add: r.add, carry: keptKeys(r)});
   copy.req = r.req; S.reports.splice(S.cur, 1, copy); layer1(copy);
 }
 // What you kept visible, carried into a re-run by text and position: ids are positional and renumber
@@ -1528,6 +1543,7 @@ const NEED_LABEL = {blind: "blind check", "not-found": "no value stated", review
 async function bulkExtract() {
   const fields = chosen(), todo = S.reports.filter((x) => needOf(x) === "extract" && !x.leftover);
   S.bulk = {running: true, done: 0, total: todo.length}; render();
+  try {
   for (const r of todo) {
     r.step = "fields"; r.error = null;
     for (const f of fields) {
@@ -1556,7 +1572,7 @@ async function bulkExtract() {
     } else trace(r, `Extract all: stopped for you (${need.map((n) => n.text).join("; ")}).`, "local", false);
     S.bulk.done++; render();
   }
-  S.bulk.running = false;
+  } finally { S.bulk.running = false; }
   const first = S.reports.findIndex((x) => needsOf(x).length && x.step !== "approved");
   const stopped = S.reports.filter((x) => needsOf(x).length && x.step !== "approved").length;
   toast(stopped ? `${todo.length - stopped} of ${todo.length} reports are done. ${stopped} still need${stopped === 1 ? "s" : ""} you — see the list above.`
@@ -1628,7 +1644,10 @@ const ruleName = (s) => "Rule: " + String(s || "").replace(/^pattern:/, "").repl
 // ======================================================================
 async function openFields(r) {
   if (!r || !r.dtext || r.leftover) return;              // only on de-identified, unblocked text
-  r.step = "fields"; r.error = null; render();
+  r.step = "fields"; r.error = null;
+  if (r.extracting) return render();                     // already reading: it picks up new fields as it goes
+  r.extracting = true; render();
+  try {
   const todo = chosen().filter((f) => !r.results[f.key] && !r.saved[f.key]);
   for (const [k, f] of todo.entries()) {
     if (r.results[f.key] || r.saved[f.key]) continue;   // confirmed while an earlier field was read
@@ -1643,7 +1662,10 @@ async function openFields(r) {
       res.model_ms ? "cloud" : "local", res.status === "green");
     if (r === cur() && r.step === "fields") renderMain();
   }
-  r.reading = null;
+  } catch (e) {
+    r.error = {title: "Fields could not be extracted", text: "Something went wrong on this page. Try again."};
+  } finally { r.extracting = false; r.reading = null; }
+  if (chosen().some((f) => !r.results[f.key] && !r.saved[f.key]) && !r.error) return openFields(r);   // added meanwhile
   if (r === cur()) renderMain();
 }
 function status(res) {
@@ -1748,6 +1770,7 @@ function viewFields(r) {
     `<div class="teachbar" role="status"><b>Blind check · ${esc(blind.name)}:</b> select its value in the report, then choose <b>✓ Save</b>.
       Not stated? Use <b>It is not stated</b> on its card. PrivLab's answer appears after you save.</div>`);
   const loading = open.some((f) => !r.results[f.key]) && !r.error;
+  if (loading && !r.extracting && !S.side && !(S.bulk && S.bulk.running)) setTimeout(() => openFields(r), 0);
   const act = r.reading ? S.fields.find((x) => x.key === r.reading.key) : null;
   const actLine = r.reading ? `Reading ${esc(act ? act.name : r.reading.key)} (${r.reading.i} of ${r.reading.n})…` : "Extracting fields";
   const bulkRunning = S.bulk && S.bulk.running;
@@ -2028,6 +2051,8 @@ function focusField(r, key) {
   if (c) showMark(`${key}:${c.id}`);
   document.querySelector(`#pbody [data-frow="${CSS.escape(key)}"]`)?.scrollIntoView({block: "nearest", behavior: "smooth"});
 }
+// A number field and an answer with no number in it ("STAGE IIA"): say why, and how to keep such answers
+const notNumber = (f) => `${f.name} takes a number${f.range ? ` (${f.range[0]}–${f.range[1]})` : ""}, so words like this can't be saved. Type a number, or, to keep answers as written, open Fields › ${f.name} › Edit details and set Answer to "Text, as written".`;
 function editorHtml(r, f) {
   const ed = r.edit || {};
   const num = f.type === "number";
@@ -2079,6 +2104,8 @@ function wireRows(r) {
       e.stopPropagation();
       const v = $("edVal").value.trim();
       if (!v) return toast("Type the answer first, then save.");
+      const f = S.fields.find((x) => x.key === r.editing);
+      if (f && f.type === "number" && !/\d/.test(v)) return toast(notNumber(f));
       if (!r.edit || !r.edit.evidence) return toast("Not saved yet — first highlight the words in the report where you found this answer, then save. That shows me where to look next time.");
       act(r, "typed", r.editing, null, {value: v, evidence_text: r.edit.evidence, at: r.edit.at, note: $("edNote") ? $("edNote").value.trim() || null : null});
     };
@@ -2122,7 +2149,35 @@ async function act(r, kind, key, cid, typed) {   // kind: accept, pick, missing,
   if (taught) trace(r, taught, "local");
   if (taught || again) toast(taught + again);                 // the last confirm stays here: you finish the report yourself
   refresh(r);
+  if (f && !S.confirmingAll && ["wrong", "extra", "missed"].includes(out.outcome)) return applyAsk(r, f, out, taught);
   if ((taught || again) && !S.confirmingAll) toast(taught + again);
+}
+// After a correction: you choose where it applies. Re-check the other reports not yet confirmed for this field
+// (their next read uses what was learned), and keep it for future reports (or forget what it taught).
+function applyAsk(r, f, out, taught) {
+  const others = S.reports.filter((x) => x !== r && x.dtext && !x.leftover && !x.saved[f.key]);
+  const names = others.slice(0, 3).map((x) => esc(x.name)).join(", ") + (others.length > 3 ? `, +${others.length - 3} more` : "");
+  $("applyBody").innerHTML = `<p>You corrected <b>${esc(f.name)}</b> on <b>${esc(r.name)}</b>${out.value != null ? ` to <b>${esc(out.value)}${unit(f, out.value)}</b>` : ""}. ${esc(taught)}</p>
+    ${others.length ? `<label class="apick"><input type="checkbox" id="apOthers" checked><span>Re-check <b>${esc(f.name)}</b> on the other
+      ${pl(others.length, "report")} not confirmed yet: ${names}.<br><span class="sm muted">One Muse Spark call per report, on the masked text only.</span></span></label>` : ""}
+    <label class="apick"><input type="checkbox" id="apLearn" checked><span>Use this correction for future reports</span></label>
+    <div class="apgo"><button class="btn primary" id="apGo">Apply</button></div>`;
+  $("apGo").onclick = async () => {
+    const reread = !!($("apOthers") && $("apOthers").checked), learn = $("apLearn").checked;
+    $("applyDlg").close();
+    const res = await api("/api/apply_correction", {deid_id: r.deid, field: f.key, learn, others: reread ? others.map((x) => x.deid) : []});
+    if (res.error) return toast(res.error);
+    if (reread) for (const x of others) {          // read again with what was learned: now if open, else when you open it
+      delete x.results[f.key]; delete x.lists[f.key]; delete x.fieldPreview;
+      if (["safe", "choose"].includes(x.step) && x.prefetch !== "running") prefetch(x);
+    }
+    if (!learn) { await loadFields(); trace(r, `${f.name}: your correction was not kept for future reports.`, "local"); }
+    if (reread) trace(r, `${f.name}: the other ${pl(others.length, "report")} will be re-checked with your correction.`, "local");
+    toast(reread ? `${f.name} will be re-checked on ${pl(others.length, "other report")}${learn ? "" : ", without your correction"}.`
+      : learn ? "Kept for future reports." : "Not kept: future reports are read without it.");
+    renderMain();
+  };
+  $("applyDlg").showModal();
 }
 async function confirmAll(r) {
   let n = 0;
@@ -2253,7 +2308,8 @@ document.addEventListener("mouseup", (e) => {
         if (!r.results[c.key]) return chatFind(r, sel.text);     // PrivLab reads it first, then your value is saved
         c.stage = "done"; S.side = null;
         say("note", taughtNote());
-        useAs(r, S.fields.find((x) => x.key === c.key), sel.text, sel.at);
+        await useAs(r, S.fields.find((x) => x.key === c.key), sel.text, sel.at);
+        if (!r.editing) afterSideClose();       // the chat closed: read the fields still waiting
       };
     } else if (r.step === "review") {
       bar.innerHTML = `<span style="padding:0 var(--s2)">Hide as</span><select id="fbType" aria-label="Identifier type">${TYPES.map((t) => `<option value="${t}">${TL[t]}</option>`).join("")}</select>
@@ -2306,11 +2362,11 @@ function useAs(r, f, text, at) {
   const value = f.type === "number" ? (nums.length === 1 ? nums[0] : null) : text.trim().replace(/\s+/g, " ") || null;
   hideFloat(); window.getSelection().removeAllRanges(); S.side = null;
   if (value != null) return act(r, "typed", f.key, null, {value, evidence_text: text, at});   // text: the selection, as written
-  r.editing = f.key; r.edit = {key: f.key, evidence: text, at, value: nums[0] || ""};
+  r.editing = f.key; r.edit = {key: f.key, evidence: text, at, value: nums[0] || text.trim().replace(/\s+/g, " ")};   // what you selected, to edit
   renderMain();
   const ed = $("edVal");
   if (ed) { ed.closest(".frow").scrollIntoView({block: "nearest"}); ed.focus(); }
-  toast(f.type === "number" ? (nums.length ? "Not saved — you highlighted more than one number. Type the right one, then Save value." : "Not saved — there's no number in what you highlighted. Type the value, then Save value.")
+  toast(f.type === "number" ? (nums.length ? "Not saved — you highlighted more than one number. Type the right one, then Save value." : notNumber(f))
     : "Type the answer, then Save value.");
 }
 $("view").addEventListener("click", (e) => {
@@ -2592,8 +2648,12 @@ async function chatSave(r) {
   if (res.error || !res.field) { say("spark", `Not saved. ${esc(res.error || "")} Please try again.`); c.stage = "confirm"; return renderMain(); }
   c.key = res.field.key;
   await loadFields();
+  if (S.skip.has(c.key)) setPicked((sk) => sk.delete(c.key));   // a field you just made is extracted, even if one of its name was unticked
   say("note", `Saved <b>${esc(c.name)}</b>. I'll fill it on every report.`);
   for (const x of S.reports) { delete x.results[c.key]; delete x.lists[c.key]; delete x.fieldPreview; }   // re-read with the new meaning
+  // checked on the first report in the list (not wherever the batch ended), unless it started from your selection
+  const top = S.reports.findIndex((x) => x.dtext && !x.leftover && ["safe", "choose", "fields", "approved"].includes(x.step));
+  if (!S.pendingUse && top >= 0 && top !== S.cur) { S.cur = top; r = cur(); render(); }
   S.reports.filter((x) => x !== r && ["safe", "choose"].includes(x.step) && x.prefetch !== "running").forEach(prefetch);
   if (!canPreview()) {
     c.stage = "done";
@@ -2615,7 +2675,8 @@ async function chatFind(r, taught) {        // taught: text you selected, saved 
   if (taught) {
     say("note", taughtNote());
     c.stage = "done"; S.side = null; renderMain();
-    return useAs(r, S.fields.find((x) => x.key === c.key), taught);
+    await useAs(r, S.fields.find((x) => x.key === c.key), taught);
+    return r.editing ? undefined : afterSideClose();
   }
   const [k] = status(found), cand = (found.candidates || []).find((x) => x.id === found.candidate_id) || (found.candidates || []).find((x) => !x.fail);
   const f = S.fields.find((x) => x.key === c.key);
@@ -2652,6 +2713,7 @@ async function removeField(b) {
   const res = await api("/api/remove_field", {field: b.dataset.remove});
   if (res.error) return toast(res.error);
   for (const x of S.reports) { delete x.results[b.dataset.remove]; delete x.saved[b.dataset.remove]; }
+  if (S.skip.has(b.dataset.remove)) setPicked((sk) => sk.delete(b.dataset.remove));   // a new field of that name starts ticked
   await loadFields(); renderMain();
   toast("Field deleted. Files you already downloaded stay as they are.");
 }
@@ -2785,7 +2847,8 @@ async function openFromLink() {
 async function addFromServer(id, name) {
   const res = await api(`/api/open?deid_id=${id}`);
   if (res.error || res.next === "error") return false;
-  const r = newReport(name || res.report_id || "Report from chat", {fromChat: true, source: "From chat"});
+  const r = newReport(name || res.report_id || "Report from chat", {fromChat: res.from_chat !== false, source: res.from_chat === false ? (res.file_type === "pdf" ? "PDF" : "Text file") : "From chat", fileType: res.file_type,
+    original: res.has_original ? `/api/original?deid_id=${encodeURIComponent(id)}` : undefined});   // the file it was read from
   // at review the highlights are the items to answer; later steps list what is already hidden in "confirmed"
   Object.assign(r, {deid: id, text: res.original || res.text, dets: (res.next === "review" ? res.items : res.confirmed) || []});
   S.reports.push(r);

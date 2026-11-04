@@ -22,6 +22,7 @@ import threading
 import time
 
 from common import spark
+from common.config import ConfigError
 from deid import pipeline
 from extract.checks import norm_value, run_checks
 from extract.pack import get_field, load_pack, meaning_key
@@ -97,6 +98,15 @@ def prefetch(deid_id: str, *, pack_path=None, effort: str | None = None) -> dict
     return {"deid_id": deid_id, "status": "ready", "model_ms": model_ms}
 
 
+def forget_reply(deid_id: str) -> None:
+    """Drop a report's frozen reply, so its next read uses what PrivLab has learned since ("apply to other
+    reports"). The prompt holds the new examples, so that read is a new call; an unchanged prompt hits the cache."""
+    with _LOCKS_GUARD:
+        lock = _LOCKS.setdefault(deid_id, threading.Lock())
+    with lock:
+        _REPLIES.pop(deid_id, None)
+
+
 def preview(deid_id: str, *, pack_path=None) -> dict:
     """Where each field's value sits, from the read-ahead reply only: never a model call, no prediction
     frozen, no review timer. A field read under an older definition, or due a blind check, is left out."""
@@ -150,7 +160,8 @@ def _find(deid_id: str, field_key: str, pack_path, effort, blind: bool, log_path
         reply, model_ms = _frozen_reply(deid_id, result, pack, field.key, effort)
     except Exception as e:   # API down, timeout, bad JSON: amber, never a crash
         why = (f"{spark.OFFLINE}: extraction needs Muse Spark. Try again when online, or enter the value"
-               if isinstance(e, spark.OfflineError) else f"Muse Spark unavailable ({type(e).__name__}); review manually")
+               if isinstance(e, spark.OfflineError) else f"{e} Enter the value yourself for now"
+               if isinstance(e, ConfigError) else f"Muse Spark unavailable ({type(e).__name__}); review manually")
         return _result(deid_id, field, "amber", None, [], why)
 
     proposed = next((fc.candidates for fc in reply.fields if fc.key == field.key), [])

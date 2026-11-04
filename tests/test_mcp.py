@@ -129,10 +129,42 @@ def test_a_big_folder_names_what_was_not_processed_and_continues(mcp, local_keys
     assert mcp._names(["b.txt", "a7.txt", "x.pdf", "y.txt"]) == "b, a7, x and 1 more"
 
 
+def test_a_missing_key_is_named_and_the_second_opinion_only_named_when_it_ran(mcp, local_keys, monkeypatch):
+    done = mcp.privlab_review(mcp.privlab_deidentify(report_file(local_keys))["deid_id"])
+    monkeypatch.setenv("META_API_KEY", "")
+    d = mcp.privlab_fields("draft", name="tumour size", description="largest tumour size", example="2.1 cm")
+    assert "META_API_KEY" in d["say"] and "Nothing was sent" in d["say"]
+    mcp.privlab_fields("save", name="tumour size", meaning=DRAFT["meaning_question"], type="number", unit="cm",
+                       definition=DRAFT["definition"], range_min=0.1, range_max=30)
+    assert "META_API_KEY" in mcp.privlab_extract(done["deid_id"])["fields"][0]["reason"]
+    monkeypatch.setenv("META_API_KEY", "test-key")
+    monkeypatch.setenv("PRIVLAB_SECOND_OPINION", "on")
+    monkeypatch.setenv("BASETEN_DECISION_API_KEY", "")                       # no decision model: never named
+    mcp.spark_state["reply"] = {"fields": [{"key": "tumour_size", "candidates": [
+        {"value_text": "2.1", "unit_text": "cm", "evidence_text": "Invasive ductal carcinoma, 2.1 cm",
+         "reason": "diagnosis line", "confidence": 0.9}]}]}
+    got = mcp.privlab_extract(mcp.privlab_review(mcp.privlab_deidentify(
+        report_file(local_keys, REPORT + "Two.", name="two.txt"))["deid_id"])["deid_id"])
+    assert got["fields"][0]["value"] is not None and "elephant" not in got["say"]
+
+
+def test_a_report_from_the_chat_shows_its_original_file_and_only_that_file(mcp, local_keys):
+    import viewer.server as viewer
+    path = report_file(local_keys)
+    did = mcp.privlab_deidentify(path)["deid_id"]
+    assert viewer.api_open({"deid_id": did})["has_original"] is True          # the page shows the Original button
+    body, ctype = viewer.original_file(did)
+    assert body == Path(path).read_bytes() and ctype.startswith("text/plain")  # the file itself, as it is on disk
+    assert viewer.original_file("d_unknown") is None                           # never any other path
+    added = viewer.api_add({"name": "pasted.txt", "text": REPORT})                # added on the page: kept for a reload
+    assert viewer.api_open({"deid_id": added["deid_id"]})["from_chat"] is False
+    assert viewer.original_file(added["deid_id"])[0] == REPORT.encode("utf-8")
+
+
 def test_replies_say_what_was_sent_where_values_come_from_and_allow_undo(mcp, local_keys):
     first = mcp.privlab_deidentify(report_file(local_keys))
     kept = mcp.privlab_review(first["deid_id"], keep_ids=[first["items"][0]["id"]])       # kept one visible
-    assert kept["next"] == "done" and "start_over=True" in kept["say"] and "privlab_extract)" in kept["say"]
+    assert kept["next"] == "done" and "start_over=True" in kept["say"] and "only after they chose the fields" in kept["say"]
     again = mcp.privlab_review(first["deid_id"], start_over=True)                        # changed their mind
     assert again["next"] == "review" and again["deid_id"] != first["deid_id"]
     assert first["deid_id"] not in mcp.pipeline._RUNS                                    # never exported twice

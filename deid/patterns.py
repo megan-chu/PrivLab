@@ -53,7 +53,7 @@ CAPS_NAME = rf"{NOT_CAPS}[A-Z][A-Z'\-]+(?:[ \t]+{NOT_CAPS}[A-Z][A-Z'\-]+){{0,3}}
 LSEP = r"[ \t]*(?:\([^)\n]{0,20}\))?[ \t:#.\-]*"           # label -> value: "DOB (dd/mm/yyyy): ", "MRN-"
 D = r"[\dOl]"                                               # a digit, allowing OCR O for 0 and l for 1
 TITLES = ("Mr", "Mrs", "Ms", "Mdm", "Madam", "Miss", "Sister")
-MONTHS = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?"
+MONTHS = r"(?i:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*)\.?"   # "Apr", "APR", "April"
 RELATIONS = (r"(?:son|daughter|wife|husband|brother|sister|mother|father|partner|niece|nephew|"
              r"friend|carer|caregiver|guardian|relative|cousin|aunt|uncle)")
 HOSPITAL = (r"(?:St\.? )?(?:[A-Z][A-Za-z'\-]+ ){1,5}(?:General Hospital|Hospital|Cancer Institute|"

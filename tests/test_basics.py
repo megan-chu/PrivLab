@@ -39,6 +39,17 @@ def test_require_names_missing_variable(monkeypatch, tmp_path):
         settings.require("meta_api_key")
 
 
+def test_local_keys_made_on_first_start(monkeypatch, tmp_path):
+    monkeypatch.delenv("PRIVLAB_SEAL_KEY", raising=False)
+    monkeypatch.delenv("PRIVLAB_VAULT_KEY", raising=False)
+    env_file = tmp_path / ".env"
+    settings = load_config(env_file)
+    assert len(settings.seal_key) == 64 and settings.vault_key.endswith("=")
+    text = env_file.read_text()
+    assert f"PRIVLAB_SEAL_KEY={settings.seal_key}" in text and f"PRIVLAB_VAULT_KEY={settings.vault_key}" in text
+    assert "META_API_KEY=" in text                                     # created from .env.example
+
+
 def test_phispan_round_trip_and_validation():
     s = PhiSpan(id="p1", type="ID", start=128, end=137, text="G5987622N", source="pattern:sg_nric")
     assert PhiSpan.from_dict(s.to_dict()) == s

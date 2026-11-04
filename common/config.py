@@ -5,10 +5,14 @@ Missing values are only an error when something needs them, so pattern work
 and scoring run without an API key.
 """
 import os
+import secrets
+import shutil
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv, set_key
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -67,10 +71,27 @@ class Settings:
 _loaded_env_files: set = set()
 
 
+def _make_local_keys(env_file: Path) -> None:
+    """First start: make the two local secrets and write them to .env (created from .env.example if
+    missing), so the user only ever types the API keys. Never prints to stdout (MCP stdio)."""
+    missing = {"PRIVLAB_SEAL_KEY": secrets.token_hex(32), "PRIVLAB_VAULT_KEY": Fernet.generate_key().decode()}
+    missing = {k: v for k, v in missing.items() if not os.environ.get(k, "").strip()}
+    if not missing:
+        return
+    if not env_file.exists():
+        example = ROOT / ".env.example"
+        shutil.copy(example, env_file) if example.exists() else env_file.touch()
+    for key, value in missing.items():
+        set_key(str(env_file), key, value, quote_mode="never")
+        os.environ[key] = value
+    print(f"PrivLab: made {', '.join(missing)} in {env_file.name}", file=sys.stderr)
+
+
 def load_config(env_file: Path | None = None) -> Settings:
     env_file = env_file or ROOT / ".env"
     if env_file not in _loaded_env_files:       # read .env once per run, not on every call
         load_dotenv(env_file, override=False)
+        _make_local_keys(env_file)
         _loaded_env_files.add(env_file)
     values = {
         field: os.environ.get(env, "").strip() or DEFAULTS.get(field, "")

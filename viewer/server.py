@@ -50,7 +50,7 @@ from common.timing import timed
 from deid import pipeline
 from deid import profile as prof
 from extract import learn
-from extract.candidates import find_candidates, prefetch, preview
+from extract.candidates import find_candidates, forget_reply, prefetch, preview
 from extract.define import define_field
 from extract.export import export_items, export_rows
 from extract.pack import PACK_PATH, load_pack, remove_field, save_pack
@@ -60,6 +60,9 @@ DEMO_DIR = ROOT / "runs" / "demo"
 MAX_UPLOAD = 200_000                     # characters; pathology reports are a few thousand
 log = logging.getLogger("privlab.viewer")
 STATE = {"pack": None, "log": None, "demo": False}
+# deid_id -> what a report was read from, for the Original button (memory only, this computer only):
+# a file the chat named {"path", "chat": True}, or what was added on the page {"data", "type", "chat": False}
+ORIGINALS: dict[str, dict] = {}
 _WRITE = threading.Lock()                # pack, score log and profile files
 _REPORT_LOCKS: dict[str, threading.Lock] = {}
 _GUARD = threading.Lock()
@@ -104,6 +107,7 @@ def api_remove(b):
     ids = [str(d) for d in b.get("deid_ids") or []]
     for d in ids:
         pipeline._RUNS.pop(d, None)
+        ORIGINALS.pop(d, None)
     return {"removed": len(ids)}
 
 
@@ -136,9 +140,28 @@ def api_set_skip(b):
 def api_open(b):
     """A report started in the chat (MCP server, same process): where it is up to, with its text (local only)."""
     out = pipeline.report_state(str(b.get("deid_id", "")), show_text=True)
+    src = ORIGINALS.get(str(b.get("deid_id", "")))
+    if src is not None:                           # the page can show what the report was read from, even after a reload
+        out.update(has_original=True, from_chat=src["chat"],
+                   file_type=src.get("type") or src["path"].suffix.lower().lstrip("."))
     if out.get("next") == "done":                  # its confirmed values too, so it reopens where it was
         out["saved"] = learn.saved_for(out["deid_id"], STATE["log"])
     return out
+
+
+def original_file(deid_id: str) -> tuple[bytes, str] | None:
+    """What a report was read from, for the Original button: a file the chat named or what was added on the page,
+    never any other path. It goes from this computer to its own page only."""
+    src = ORIGINALS.get(deid_id)
+    if src is None:
+        return None
+    if "data" in src:
+        data, kind = src["data"], src["type"]
+    elif src["path"].is_file():
+        data, kind = src["path"].read_bytes(), src["path"].suffix.lower().lstrip(".")
+    else:
+        return None
+    return data, "application/pdf" if kind == "pdf" else "text/plain; charset=utf-8"
 
 
 def api_profile(_):
@@ -181,10 +204,11 @@ def api_deid(b):
 
 def api_add(b):
     """A dropped or pasted report, or a text PDF (pdf: base64). Kept in memory only; nothing is sent anywhere."""
-    text, name, warnings = b.get("text"), str(b.get("name") or "pasted report").strip()[:60], []
+    text, name, warnings, pdf = b.get("text"), str(b.get("name") or "pasted report").strip()[:60], [], None
     if b.get("pdf") is not None:
         try:
-            out = pdf_text(base64.b64decode(b["pdf"], validate=True))
+            pdf = base64.b64decode(b["pdf"], validate=True)
+            out = pdf_text(pdf)
         except (ValueError, TypeError):
             return {"error": "The PDF upload was damaged. Add it again.", "refused": True}
         if "error" in out:
@@ -198,6 +222,9 @@ def api_add(b):
     if any(r["report_id"] == name and r["split"] == "test" for r in manifest()):
         return {"error": "That name belongs to a held-out test report; rename the file."}
     out = _start(text.replace("\r\n", "\n").replace("\r", "\n"), name, b.get("choices"))
+    if out.get("deid_id"):                        # kept for the Original button, so it survives a page reload
+        ORIGINALS[out["deid_id"]] = ({"data": pdf, "type": "pdf", "chat": False} if pdf is not None
+                                     else {"data": text.encode("utf-8"), "type": "txt", "chat": False})
     return {**out, "warnings": out.get("warnings", []) + warnings}
 
 
@@ -321,6 +348,17 @@ def api_forget(b):
         else:
             return {"error": "Unknown kind."}
     return {"ok": True} if ok else {"error": "Nothing to remove: it may already be gone."}
+
+
+def api_apply_correction(b):
+    """After a correction: learn=False forgets what it taught (future reports); others: reports whose reply is
+    dropped, so the page re-reads them with what was learned."""
+    with _WRITE:
+        removed = 0 if b.get("learn", True) else learn.unlearn(b["deid_id"], b["field"], pack_path=STATE["pack"])
+    others = [d for d in b.get("others", []) if isinstance(d, str)]
+    for d in others:
+        forget_reply(d)
+    return {"ok": True, "forgotten": removed, "reread": len(others)}
 
 
 def api_reset_field(b):
@@ -513,7 +551,7 @@ POST = {"/api/deid": api_deid, "/api/add": api_add, "/api/confirm": api_confirm,
         "/api/flags": api_flags, "/api/prefetch": api_prefetch, "/api/preview": api_preview, "/api/define": api_define, "/api/find": api_find,
         "/api/confirm_field": api_confirm_field, "/api/reset_field": api_reset_field, "/api/forget": api_forget, "/api/remove": api_remove,
         "/api/fix_leak": api_fix_leak, "/api/back": api_back, "/api/profile_choices": api_profile_choices, "/api/remove_field": api_remove_field, "/api/reset": api_reset,
-        "/api/skip": api_set_skip}
+        "/api/skip": api_set_skip, "/api/apply_correction": api_apply_correction}
 
 
 # --------------------------------------------------------------------------
@@ -571,6 +609,11 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(404, {"error": "No de-identified reports to export yet."})
             body, ctype, fname = out
             return self._send(200, body, ctype, {"Content-Disposition": _attachment(fname)})
+        if url.path == "/api/original":
+            got = original_file(parse_qs(url.query).get("deid_id", [""])[0])
+            if got is None:
+                return self._json(404, {"error": "The original file is not available."})
+            return self._send(200, got[0], got[1], {"Content-Disposition": "inline"})
         fn = GET.get(url.path)
         if fn is None:
             return self._json(404, {"error": "not found"})

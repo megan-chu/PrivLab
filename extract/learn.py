@@ -21,6 +21,7 @@ learn.py - confirm_field and learning from it, scored "test then learn" (PLAN.md
 The log stores values, report ids and evidence positions only, never report text.
 """
 import json
+import re
 import time
 from math import comb
 from datetime import datetime, timedelta, timezone
@@ -31,7 +32,7 @@ from common.timing import record
 from deid import pipeline
 from deid.names import locate
 from deid.patterns import leftover_identifiers
-from extract.checks import norm_value, parse_number, tidy_text
+from extract.checks import NUMBER, TO_CM, norm_value, parse_number, tidy_text
 from extract.pack import get_field, load_pack, put_field, save_pack
 from extract.sections import section_at
 
@@ -71,7 +72,7 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
         return {"status": "error", "reason": "blind check: give value with evidence_text, or missing=True"}
     if phase == "bulk" and (predicted["status"] != "green" or predicted.get("blind")):
         return {"status": "error", "reason": "only a verified value can be accepted without review"}
-    if (phase == "remembered") != (predicted["status"] == "remembered"):
+    if phase == "remembered" and predicted["status"] != "remembered":     # a person may still replace a remembered one
         return {"status": "error", "reason": "only a remembered answer is saved as remembered"}
     if phase == "bulk" and not proven(field, pack["fields"], log_path):
         return {"status": "error", "reason": "this field is still learning: a person confirms its values until it is "
@@ -125,6 +126,21 @@ def confirm_field(deid_id: str, field_key: str, candidate_id: str | None = None,
     return out
 
 
+# "2.7 cm", "2.7 x 2.4 x 2.0 cm": a unit after a number, or after the last of its dimensions
+UNIT_AFTER = re.compile(rf"\d+(?:\.\d+)?(?:[ \t]*[x×][ \t]*\d+(?:\.\d+)?)*[ \t]*({'|'.join(TO_CM)})\b", re.I)
+
+
+def _written_unit(typed: str, evidence: str) -> str | None:
+    """The unit as written: in what was typed, else next to that number in the selection ("Size: 2.7 cm" -> cm),
+    so a selected 2.7 cm is saved as 27 mm, not 2.7 mm."""
+    num = NUMBER.search(typed.replace(",", "."))
+    for src in (typed, evidence):
+        for m in UNIT_AFTER.finditer(src.replace(",", ".")):
+            if num and float(num.group()) in [float(n) for n in NUMBER.findall(m.group())]:
+                return m.group(1).lower()
+    return None
+
+
 def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missing, at=None):
     if missing:
         return None
@@ -141,13 +157,32 @@ def _confirmed(predicted, text, field, candidate_id, value, evidence_text, missi
     if not hits:
         return "evidence_text not found in the de-identified report"
     if field.type == "number":
-        typed, value = value, parse_number(str(value), None, field.unit)
+        typed, value = value, parse_number(str(value), _written_unit(str(value), evidence_text), field.unit)
         if value is None:
             return f"'{typed}' is not a number; for a number field type e.g. 2.1"
     else:
         value = tidy_text(value)                                      # text: as written, minus slips
     start, end = min(hits, key=lambda h: abs(h[0] - at)) if isinstance(at, int) else hits[0]   # the one selected
     return {"value": value, "start": start, "end": end}
+
+
+def unlearn(deid_id: str, field_key: str, *, pack_path=None) -> int:
+    """Forget what one report's answer taught a field (its good and bad examples and rules); the saved value and
+    its score stay. Returns how many entries were removed."""
+    pack = load_pack(pack_path)
+    field = get_field(pack, field_key)
+    if field is None:
+        return 0
+    n = 0
+    for kind in ("good", "bad", "rules"):
+        keep = [e for e in field.examples.get(kind, []) if e.get("report") != deid_id]
+        n += len(field.examples.get(kind, [])) - len(keep)
+        if kind in field.examples:
+            field.examples[kind] = keep
+    if n:
+        put_field(pack, field)
+        save_pack(pack, pack_path)
+    return n
 
 
 def reset_field(deid_id: str, field_key: str, *, pack_path=None, log_path=None) -> dict:

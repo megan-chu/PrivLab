@@ -39,7 +39,7 @@ from pydantic import BaseModel, Field
 from mcp.types import ToolAnnotations
 
 from common import spark
-from common.config import ROOT
+from common.config import ROOT, ConfigError
 from common.data import manifest
 from common.pdf import pdf_text
 from deid import pipeline
@@ -80,7 +80,7 @@ is up to now, and continue from there.
    their words and one example value as a report writes it; action="draft" with all three; show the "Did you
    mean" definition; action="save" once the user agrees. The save previews the field on one report: show the
    value and its quote and ask if that is what they want (if not, draft again with their correction).
-4. Extract: privlab_extract(deid_id). Show each value with its quote. Ask the user to confirm, correct or mark
+4. Extract, only once the user has chosen the fields and asks: privlab_extract(deid_id). Show each value with its quote. Ask the user to confirm, correct or mark
    it "not stated", then send all the answers in one privlab_extract(deid_id, answers) call. A blind check: ask
    for the value without showing PrivLab's.
 5. Export: privlab_export(kind="data") for the CSV, or kind="masked" for the masked text.
@@ -89,7 +89,8 @@ A FOLDER OF REPORTS (bulk)
 1. If the fields are new, teach them first on 1-3 reports (in the browser, or one report at a time here).
 2. privlab_deidentify(folder): every report is read and its personal details hidden on this computer. Show the
    summary; ask whether to review any (all are listed in the browser) or to hide them all; privlab_review each.
-3. Ask: "Do you want to check the masked text in your browser before I extract?"
+3. Stop. Ask which fields to fill in (privlab_fields(action="list"); they may define a new one first) and whether
+   to check the masked text in the browser. Extract only when the user says so.
 4. privlab_extract(deid_id, auto_accept_verified=True) for each report: verified values of Proven accurate fields
    are saved by themselves (on a field still learning they wait for the user's OK);
    show the user only the ones that need them, then send their answers.
@@ -185,6 +186,10 @@ def _safe(fn):
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
+        except ConfigError as e:            # e.g. an API key missing in .env: say exactly what to fix
+            return {"next": "error", "error": str(e),
+                    "say": f"{e} Nothing was sent. Tell the user to add it to the .env file in the PrivLab folder and "
+                           "restart the assistant. De-identification still works without it."}
         except spark.OfflineError:
             return {"next": "offline", "error": spark.OFFLINE,
                     "say": f"{spark.OFFLINE}. De-identification still works on this laptop; the second check and "
@@ -228,9 +233,13 @@ def _read(path: str) -> tuple[str | None, str, list[str]]:
 # What left this computer, said each time something does (the user judges the risk in seconds)
 SENT_CHECK = ("Only the masked text (tags, no originals) was sent once, to Muse Spark Open on Baseten, for the second "
               "check. ")
-SENT_EXTRACT = ("Only the masked text was sent, to Meta's Muse Spark 1.3 (values) and Baseten's elephant decision "
-                "model (second opinion). ")
 SENT_DEFINE = "Only the field's name, the user's words and the example were sent, to Meta's Muse Spark 1.3. "
+
+
+def _sent_extract(second: bool) -> str:
+    """Names the decision model only when it answered (no key, switched off or not needed: nothing went there)."""
+    return ("Only the masked text was sent, to Meta's Muse Spark 1.3 (values)"
+            + (" and Baseten's elephant decision model (second opinion). " if second else ". "))
 
 
 def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
@@ -252,8 +261,10 @@ def _step(out: dict, offset: int = 0, limit: int = LIMIT) -> dict:
                        + (SENT_CHECK if sent else "Nothing was sent: the second check did not run, so ask the user to "
                           "read the masked text once. ")
                        + "If the user kept something visible by mistake, privlab_review(deid_id, start_over=True) "
-                         "lets them review it again. Next: fill in their fields (privlab_extract), or save the "
-                         "masked text (privlab_export, kind='masked')."}
+                         "lets them review it again. Next: stop and ask which fields to fill in "
+                         "(privlab_fields(action='list'); the user may define a new one first). Call privlab_extract "
+                         "only after they chose the fields and asked to extract; or save the masked text "
+                         "(privlab_export, kind='masked')."}
     items = out.get("items") or out.get("detections") or out.get("hold") or out.get("flags") or []
     items = [{**i, "context": scrub(i.get("context", ""))} for i in items]
     page = _page(items, offset, limit)
@@ -310,6 +321,7 @@ def privlab_deidentify(path: str = "", deid_id: str = "", offset: int = 0, limit
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         out["warnings"] = out.get("warnings", []) + warnings
         SOURCES[out.get("deid_id", "")] = Path(path).expanduser().resolve()
+        viewer.ORIGINALS[out.get("deid_id", "")] = {"path": SOURCES[out.get("deid_id", "")], "chat": True}
         STARTED[(SOURCES[out.get("deid_id", "")], hash(text))] = out.get("deid_id", "")
         _show(out.get("deid_id", ""))
         return _step(out, 0, limit)
@@ -364,6 +376,7 @@ def _folder(folder: Path) -> dict:
         with viewer._WRITE:
             out = pipeline.deidentify_report(text=text, report_id=rid, profile_choices={})
         SOURCES[out["deid_id"]] = f.resolve()
+        viewer.ORIGINALS[out["deid_id"]] = {"path": f.resolve(), "chat": True}
         STARTED[(f.resolve(), hash(text))] = out["deid_id"]
         reports.append({"deid_id": out["deid_id"], "report": rid, "found": sum((out.get("counts") or {}).values()),
                         "counts": out.get("counts"), "possible_names": sum(d["source"] == "hold" for d in out["detections"])})
@@ -418,8 +431,10 @@ def privlab_review(deid_id: str, keep_ids: list[str] = [], hide_ids: list[str] =
             out = pipeline.confirm_deid_flags(deid_id, keep=keep_ids, hide=hide_ids)
         else:
             return {"deid_id": deid_id, "next": "done", "viewer_url": _url(deid_id),
-                    "say": "This report is already de-identified. Next: fill in the user's fields (privlab_extract), "
-                           "or save the masked text (privlab_export). To review it again: start_over=True."}
+                    "say": "This report is already de-identified. Next: stop and ask which fields to fill in "
+                           "(privlab_fields(action='list')). Call privlab_extract only after they chose the fields "
+                           "and asked to extract; or save the masked text (privlab_export). To review it again: "
+                           "start_over=True."}
     return _step(out)
 
 
@@ -530,7 +545,7 @@ def _preview(key: str, name: str) -> dict:
     return {"preview": {"report": report, "value": value, "quote": r.get("evidence_text"), "status": r.get("status"),
                         "source": _source(r), "second_opinion": _second(r)},
             "viewer_url": _url(deid_id),
-            "say": SENT_EXTRACT + f"Saved '{name}'. Preview on {report}: {value}, from \"{r.get('evidence_text')}\" "
+            "say": _sent_extract(bool(r.get("second"))) + f"Saved '{name}'. Preview on {report}: {value}, from \"{r.get('evidence_text')}\" "
                    f"({_source(r)}{'; ' + _second(r) if _second(r) else ''}). Ask the user if "
                    "that is the value they want; if not, draft again with their correction."}
 
@@ -604,7 +619,7 @@ def privlab_extract(deid_id: str, answers: list[Answer] = [], auto_accept_verifi
                        "nothing to review. Next: save the data (privlab_export)."}
     opened = any(r["status"] != "green" for r in results) and _show_review(deid_id)
     return {"deid_id": deid_id, "next": "confirm", "fields": results, "remembered": again, "viewer_url": _url(deid_id),
-            "say": SENT_EXTRACT + (f"{len(again)} answer(s) reused from the user's earlier check of this report. " if again else "")
+            "say": _sent_extract(any(x["second_opinion"] for x in results)) + (f"{len(again)} answer(s) reused from the user's earlier check of this report. " if again else "")
                    + ("Some values need the user, so PrivLab opened this report in their browser at Extract: tell them. "
                     if opened else "") + "Show each value with its quote. Ask the user to confirm, correct or mark it not stated, then send "
                    "all the answers in one privlab_extract call." + _see(deid_id, "see every value highlighted in the report")
