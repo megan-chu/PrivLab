@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="60" viewBox="0 0 300 60" role="img" aria-label="Try it in 2 minutes">
+  <rect x="1" y="1" width="298" height="58" rx="29" fill="#00dbab"/>
+  <text x="136" y="37" text-anchor="middle" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="19" font-weight="700" fill="#07182a">Try it in 2 minutes</text>
+  <path d="M238 30h22m-8-8l8 8-8 8" fill="none" stroke="#07182a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

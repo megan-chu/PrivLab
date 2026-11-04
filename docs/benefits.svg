@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="176" viewBox="0 0 1280 176" role="img" aria-label="Under a cent per report. Full control and visibility at every step. Patient-identifiable information stays safe. De-identify and extract medical data in high volume.">
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11263c"/>
+      <stop offset="1" stop-color="#0b1a2b"/>
+    </linearGradient>
+  </defs>
+  <g font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif">
+
+    <!-- 1 cost -->
+    <rect x="8" y="8" width="302" height="160" rx="16" fill="url(#card)" stroke="#213d5b"/>
+    <circle cx="58" cy="58" r="24" fill="#00dbab" fill-opacity="0.14"/>
+    <text x="58" y="67" text-anchor="middle" font-size="26" font-weight="700" fill="#00dbab">$</text>
+    <text x="34" y="120" font-size="23" font-weight="700" fill="#ffffff">Under a cent</text>
+    <text x="34" y="146" font-size="17" fill="#8aa0b8">per report, about $7 per 1,000</text>
+
+    <!-- 2 control -->
+    <rect x="326" y="8" width="302" height="160" rx="16" fill="url(#card)" stroke="#213d5b"/>
+    <circle cx="376" cy="58" r="24" fill="#00dbab" fill-opacity="0.14"/>
+    <path d="M362 58c4-7 9-10 14-10s10 3 14 10c-4 7-9 10-14 10s-10-3-14-10z" fill="none" stroke="#00dbab" stroke-width="2.4" stroke-linejoin="round"/>
+    <circle cx="376" cy="58" r="4" fill="#00dbab"/>
+    <text x="352" y="120" font-size="23" font-weight="700" fill="#ffffff">Full control</text>
+    <text x="352" y="146" font-size="17" fill="#8aa0b8">and visibility at every step</text>
+
+    <!-- 3 safety -->
+    <rect x="644" y="8" width="302" height="160" rx="16" fill="url(#card)" stroke="#213d5b"/>
+    <circle cx="694" cy="58" r="24" fill="#00dbab" fill-opacity="0.14"/>
+    <path d="M694 44l12 5v8c0 8-5 13-12 16-7-3-12-8-12-16v-8z" fill="none" stroke="#00dbab" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M689 58l4 4 7-8" fill="none" stroke="#00dbab" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="670" y="120" font-size="23" font-weight="700" fill="#ffffff">Patient data stays safe</text>
+    <text x="670" y="146" font-size="17" fill="#8aa0b8">masked on your device</text>
+
+    <!-- 4 volume -->
+    <rect x="962" y="8" width="302" height="160" rx="16" fill="url(#card)" stroke="#213d5b"/>
+    <circle cx="1012" cy="58" r="24" fill="#00dbab" fill-opacity="0.14"/>
+    <g fill="none" stroke="#00dbab" stroke-width="2.4" stroke-linejoin="round">
+      <path d="M1012 45l13 6-13 6-13-6z"/>
+      <path d="M999 58l13 6 13-6"/>
+      <path d="M999 65l13 6 13-6"/>
+    </g>
+    <text x="988" y="120" font-size="23" font-weight="700" fill="#ffffff">High volume</text>
+    <text x="988" y="146" font-size="17" fill="#8aa0b8">de-identify and extract in bulk</text>
+  </g>
+</svg>

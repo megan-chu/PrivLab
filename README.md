@@ -2,28 +2,39 @@
 
 <img src="docs/banner.svg" alt="PrivLab: Reports in. Structured data out." width="100%"/>
 
-### Unlock the data in medical reports without the patient ever leaving your device.
+<br/>
+<br/>
 
-✓ **Under a cent per report** (about $7 per 1,000)<br/>
-✓ **Full control and visibility** at every step<br/>
-✓ **Patient-identifiable information stays safe**<br/>
-✓ **De-identify and extract medical data in high volume**
+### Unlock the data in medical reports<br/>without the patient ever leaving your device.
 
-[![Try it in 2 minutes](https://img.shields.io/badge/Try_it-in_2_minutes-00dbab?style=for-the-badge)](#getting-started)
+<br/>
 
-<table>
-  <tr>
-    <th>▶ Introduction</th>
-    <th>▶ Demo</th>
-  </tr>
-  <tr>
-    <td><a href="https://youtu.be/ZSSvqaIar08"><img src="https://img.youtube.com/vi/ZSSvqaIar08/maxresdefault.jpg" alt="Watch the PrivLab introduction" width="400"/></a></td>
-    <td><a href="https://youtu.be/8dhbRVAveLg"><img src="https://img.youtube.com/vi/8dhbRVAveLg/maxresdefault.jpg" alt="Watch the PrivLab demo" width="400"/></a></td>
-  </tr>
-</table>
+<img src="docs/benefits.svg" alt="Under a cent per report. Full control and visibility at every step. Patient-identifiable information stays safe. De-identify and extract medical data in high volume." width="100%"/>
 
-Built solo in 9 days for the **Meta Global AI Developer Hackathon** (Track 1, Indie developer) with two Meta models:<br/>
-**Muse Spark 1.3** (Meta Model API) and open-weights **Muse Spark Open**.
+<br/>
+<br/>
+
+<a href="#getting-started"><img src="docs/cta.svg" alt="Try it in 2 minutes" width="240"/></a>
+
+<br/>
+<br/>
+
+### See it in action
+
+<br/>
+
+<a href="https://youtu.be/ZSSvqaIar08"><img src="https://img.youtube.com/vi/ZSSvqaIar08/maxresdefault.jpg" alt="Watch the PrivLab introduction" width="47%"/></a>
+&nbsp;&nbsp;&nbsp;
+<a href="https://youtu.be/8dhbRVAveLg"><img src="https://img.youtube.com/vi/8dhbRVAveLg/maxresdefault.jpg" alt="Watch the PrivLab demo" width="47%"/></a>
+
+**[Watch the introduction](https://youtu.be/ZSSvqaIar08)** &nbsp;&nbsp;·&nbsp;&nbsp; **[Watch the demo](https://youtu.be/8dhbRVAveLg)**
+
+<br/>
+<br/>
+
+<sub>Built solo in 9 days for the <b>Meta Global AI Developer Hackathon</b> (Track 1, Indie developer)<br/>with two Meta models: <b>Muse Spark 1.3</b> (Meta Model API) and open-weights <b>Muse Spark Open</b>.</sub>
+
+<br/>
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-3776ab?style=flat-square&logo=python&logoColor=white)
 ![Runs locally](https://img.shields.io/badge/de--identification-on%20device-2e7d32?style=flat-square)
@@ -31,8 +42,11 @@ Built solo in 9 days for the **Meta Global AI Developer Hackathon** (Track 1, In
 ![Muse Spark 1.3](https://img.shields.io/badge/Meta-Muse%20Spark%201.3-0866ff?style=flat-square&logo=meta&logoColor=white)
 ![Muse Spark Open](https://img.shields.io/badge/Meta-Muse%20Spark%20Open%20%28open%20weights%29-0866ff?style=flat-square&logo=meta&logoColor=white)
 
-**[The problem](#the-problem)** · **[The solution](#how-privlab-solves-it)** · **[Results](#results)** · **[How it works](#how-it-works)** ·
-**[Getting started](#getting-started)** · **[Models](#models-and-tools)** · **[What's next](#whats-next)**
+<br/>
+
+[The problem](#the-problem) &nbsp;·&nbsp; [The solution](#how-privlab-solves-it) &nbsp;·&nbsp; [Results](#results) &nbsp;·&nbsp; [How it works](#how-it-works) &nbsp;·&nbsp; [Getting started](#getting-started) &nbsp;·&nbsp; [Models](#models-and-tools) &nbsp;·&nbsp; [What's next](#whats-next)
+
+<br/>
 
 </div>
 
@@ -134,17 +148,7 @@ That is why PrivLab does not rely on an AI alone. Different data, so the numbers
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A["📄 Add reports<br/>.txt, pasted text<br/>or text PDF"] --> B["1 · Review identifiers<br/>🔒 on your device<br/>you confirm what to mask"]
-    B --> C["2 · De-identify<br/>details become tags<br/>like [PERSON-1]"]
-    C --> D["3 · Choose fields<br/>describe them in<br/>your own words"]
-    D --> E["4 · Extract<br/>AI reads masked text;<br/>you confirm each value"]
-    E --> F["5 · Export<br/>CSV · masked text<br/>· or both in a .zip"]
-    E -. "your corrections" .-> L(["📈 PrivLab learns"])
-    L -.-> B
-    L -.-> E
-```
+<p align="center"><img src="docs/workflow.svg" alt="How PrivLab works, in seven steps" width="100%"/></p>
 
 1. **Read on your device:** Add reports as text files, pasted text or PDFs. PrivLab reads them on your own computer and
    turns a PDF into text locally, so nothing is uploaded to the cloud.
@@ -169,7 +173,9 @@ flowchart LR
    the full package: the structured data, the masked texts and a data dictionary with the definition of every field
    you extracted, in one zip. Before each download, PrivLab tells you what the file holds and what was left out.
 
-![PrivLab architecture](docs/architecture.png)
+**Where your data goes.** The original report stays on your device; only masked text reaches a Meta model.
+
+<p align="center"><img src="docs/architecture.svg" alt="Where your data goes: the original report stays on your device, only masked text reaches the Meta models" width="100%"/></p>
 
 ## Three ways to use PrivLab
 

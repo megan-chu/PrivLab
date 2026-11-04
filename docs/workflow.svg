@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="340" viewBox="0 0 1280 340" role="img" aria-label="How PrivLab works: 1 read locally, 2 de-identify locally, 3 privacy guardrail with Muse Spark Open, 4 smart field definition with Muse Spark 1.3, 5 annotate and validate with Muse Spark 1.3, 6 learn and personalise on your device, 7 flexible export. Your corrections steer the next reports.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1c30"/>
+      <stop offset="1" stop-color="#050e1a"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#12283f"/>
+      <stop offset="1" stop-color="#0c1b2c"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1l8 4-8 4" fill="none" stroke="#5f7a96" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1l8 4-8 4" fill="none" stroke="#00dbab" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="340" rx="20" fill="url(#bg)"/>
+
+  <g font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif">
+    <!-- zone labels -->
+    <line x1="31" y1="50" x2="359" y2="50" stroke="#00dbab" stroke-opacity="0.5" stroke-width="2"/>
+    <text x="31" y="38" font-size="12" font-weight="700" fill="#00dbab" letter-spacing="2">ON YOUR DEVICE</text>
+    <line x1="387" y1="50" x2="893" y2="50" stroke="#6ea8ff" stroke-opacity="0.5" stroke-width="2"/>
+    <text x="387" y="38" font-size="12" font-weight="700" fill="#6ea8ff" letter-spacing="2">META MODELS · MASKED TEXT ONLY</text>
+    <line x1="921" y1="50" x2="1249" y2="50" stroke="#00dbab" stroke-opacity="0.5" stroke-width="2"/>
+    <text x="921" y="38" font-size="12" font-weight="700" fill="#00dbab" letter-spacing="2">ON YOUR DEVICE</text>
+
+    <!-- cards: x = 31 + i*178, width 150 -->
+    <g id="cards">
+      <rect x="31"   y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#213d5b"/>
+      <rect x="209"  y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#213d5b"/>
+      <rect x="387"  y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#2a4a78"/>
+      <rect x="565"  y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#2a4a78"/>
+      <rect x="743"  y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#2a4a78"/>
+      <rect x="921"  y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#213d5b"/>
+      <rect x="1099" y="70" width="150" height="176" rx="14" fill="url(#card)" stroke="#213d5b"/>
+    </g>
+
+    <!-- arrows between cards -->
+    <g stroke="#5f7a96" stroke-width="1.6" marker-end="url(#arr)">
+      <line x1="185" y1="158" x2="204" y2="158"/>
+      <line x1="363" y1="158" x2="382" y2="158"/>
+      <line x1="541" y1="158" x2="560" y2="158"/>
+      <line x1="719" y1="158" x2="738" y2="158"/>
+      <line x1="897" y1="158" x2="916" y2="158"/>
+      <line x1="1075" y1="158" x2="1094" y2="158"/>
+    </g>
+
+    <!-- step numbers -->
+    <g font-size="14" font-weight="700" text-anchor="middle">
+      <circle cx="61"   cy="100" r="15" fill="#00dbab" fill-opacity="0.15"/><text x="61"   y="105" fill="#00dbab">1</text>
+      <circle cx="239"  cy="100" r="15" fill="#00dbab" fill-opacity="0.15"/><text x="239"  y="105" fill="#00dbab">2</text>
+      <circle cx="417"  cy="100" r="15" fill="#6ea8ff" fill-opacity="0.15"/><text x="417"  y="105" fill="#6ea8ff">3</text>
+      <circle cx="595"  cy="100" r="15" fill="#6ea8ff" fill-opacity="0.15"/><text x="595"  y="105" fill="#6ea8ff">4</text>
+      <circle cx="773"  cy="100" r="15" fill="#6ea8ff" fill-opacity="0.15"/><text x="773"  y="105" fill="#6ea8ff">5</text>
+      <circle cx="951"  cy="100" r="15" fill="#00dbab" fill-opacity="0.15"/><text x="951"  y="105" fill="#00dbab">6</text>
+      <circle cx="1129" cy="100" r="15" fill="#00dbab" fill-opacity="0.15"/><text x="1129" y="105" fill="#00dbab">7</text>
+    </g>
+
+    <!-- titles -->
+    <g font-size="17" font-weight="700" fill="#ffffff">
+      <text x="47" y="148">Read</text><text x="47" y="170">locally</text>
+      <text x="225" y="148">De-identify</text><text x="225" y="170">locally</text>
+      <text x="403" y="148">Privacy</text><text x="403" y="170">guardrail</text>
+      <text x="581" y="148">Smart field</text><text x="581" y="170">definition</text>
+      <text x="759" y="148">Annotate</text><text x="759" y="170">and validate</text>
+      <text x="937" y="148">Learn and</text><text x="937" y="170">personalise</text>
+      <text x="1115" y="148">Flexible</text><text x="1115" y="170">export</text>
+    </g>
+
+    <!-- one-line descriptions -->
+    <g font-size="13" fill="#8aa0b8">
+      <text x="47" y="196">text, paste or PDF</text>
+      <text x="225" y="196">details become tags</text>
+      <text x="403" y="196">checks masked text</text>
+      <text x="581" y="196">from your own words</text>
+      <text x="759" y="196">you confirm values</text>
+      <text x="937" y="196">from your corrections</text>
+      <text x="1115" y="196">CSV, text or zip</text>
+    </g>
+
+    <!-- chips -->
+    <g font-size="11.5" font-weight="600">
+      <rect x="47"  y="210" width="76" height="22" rx="11" fill="#00dbab" fill-opacity="0.12"/><text x="85"  y="225" text-anchor="middle" fill="#00dbab">On device</text>
+      <rect x="225" y="210" width="76" height="22" rx="11" fill="#00dbab" fill-opacity="0.12"/><text x="263" y="225" text-anchor="middle" fill="#00dbab">On device</text>
+      <rect x="403" y="210" width="112" height="22" rx="11" fill="#6ea8ff" fill-opacity="0.14"/><text x="459" y="225" text-anchor="middle" fill="#9cc4ff">Muse Spark Open</text>
+      <rect x="581" y="210" width="102" height="22" rx="11" fill="#6ea8ff" fill-opacity="0.14"/><text x="632" y="225" text-anchor="middle" fill="#9cc4ff">Muse Spark 1.3</text>
+      <rect x="759" y="210" width="102" height="22" rx="11" fill="#6ea8ff" fill-opacity="0.14"/><text x="810" y="225" text-anchor="middle" fill="#9cc4ff">Muse Spark 1.3</text>
+      <rect x="937" y="210" width="76" height="22" rx="11" fill="#00dbab" fill-opacity="0.12"/><text x="975" y="225" text-anchor="middle" fill="#00dbab">On device</text>
+      <rect x="1115" y="210" width="76" height="22" rx="11" fill="#00dbab" fill-opacity="0.12"/><text x="1153" y="225" text-anchor="middle" fill="#00dbab">On device</text>
+    </g>
+
+    <!-- learning loop: from step 6 back to steps 2 and 5 -->
+    <path d="M996 250 V286 Q996 298 984 298 H296 Q284 298 284 286 V252" fill="none" stroke="#00dbab" stroke-width="1.8" stroke-dasharray="6 6" marker-end="url(#arrg)"/>
+    <path d="M818 298 V252" fill="none" stroke="#00dbab" stroke-width="1.8" stroke-dasharray="6 6" marker-end="url(#arrg)"/>
+    <rect x="452" y="284" width="250" height="28" rx="14" fill="#0a1c30" stroke="#00dbab" stroke-opacity="0.5"/>
+    <text x="577" y="303" text-anchor="middle" font-size="13.5" font-weight="600" fill="#00dbab">Your corrections steer the next reports</text>
+  </g>
+</svg>
