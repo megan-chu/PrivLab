@@ -1,33 +1,43 @@
+<div align="center">
+
 # PrivLab
 
-**Unlock the data in medical reports without the patient ever leaving your device.**
+### Unlock the data in medical reports without the patient ever leaving your device.
 
-![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![Runs locally](https://img.shields.io/badge/de--identification-on%20device-2e7d32) ![MCP](https://img.shields.io/badge/MCP-server-6a4fb3) ![Muse Spark 1.3](https://img.shields.io/badge/Meta-Muse%20Spark%201.3-0866ff) ![Muse Spark Open](https://img.shields.io/badge/Meta-Muse%20Spark%20Open%20%28open%20weights%29-0866ff)
+![Python](https://img.shields.io/badge/python-3.11%2B-3776ab?style=for-the-badge&logo=python&logoColor=white)
+![Runs locally](https://img.shields.io/badge/de--identification-on%20device-2e7d32?style=for-the-badge)
+![MCP](https://img.shields.io/badge/MCP-server-6a4fb3?style=for-the-badge)
+<br/>
+![Muse Spark 1.3](https://img.shields.io/badge/Meta-Muse%20Spark%201.3-0866ff?style=for-the-badge&logo=meta&logoColor=white)
+![Muse Spark Open](https://img.shields.io/badge/Meta-Muse%20Spark%20Open%20%28open%20weights%29-0866ff?style=for-the-badge&logo=meta&logoColor=white)
 
-Built solo in 9 days for the **Meta Global AI Developer Hackathon** (Track 1, Indie developer) with two Meta models:
+Built solo in 9 days for the **Meta Global AI Developer Hackathon** (Track 1, Indie developer) with two Meta models:<br/>
 **Muse Spark 1.3** (Meta Model API) and open-weights **Muse Spark Open**.
 
-| ▶ [Introduction](https://youtu.be/ZSSvqaIar08) | ▶ [Demo](https://youtu.be/8dhbRVAveLg) |
-|---|---|
-| [![Watch the PrivLab introduction](https://img.youtube.com/vi/ZSSvqaIar08/maxresdefault.jpg)](https://youtu.be/ZSSvqaIar08) | [![Watch the PrivLab demo](https://img.youtube.com/vi/8dhbRVAveLg/maxresdefault.jpg)](https://youtu.be/8dhbRVAveLg) |
+<table>
+  <tr>
+    <th>▶ Introduction</th>
+    <th>▶ Demo</th>
+  </tr>
+  <tr>
+    <td><a href="https://youtu.be/ZSSvqaIar08"><img src="https://img.youtube.com/vi/ZSSvqaIar08/maxresdefault.jpg" alt="Watch the PrivLab introduction" width="400"/></a></td>
+    <td><a href="https://youtu.be/8dhbRVAveLg"><img src="https://img.youtube.com/vi/8dhbRVAveLg/maxresdefault.jpg" alt="Watch the PrivLab demo" width="400"/></a></td>
+  </tr>
+</table>
+
+| **100%** | **Minutes** | **Under a cent** | **279** |
+|:---:|:---:|:---:|:---:|
+| of 604 personal details in the held-out test reports hidden on the device | instead of hours, whole folders in bulk | per report (about $7 per 1,000) | automated tests, no AI calls |
+
+**[Why](#why)** · **[The problem](#the-problem)** · **[How it works](#how-it-works)** · **[Models](#models-and-tools)** ·
+**[Results](#results)** · **[Getting started](#getting-started)** · **[Browser](#use-it-in-your-browser)** ·
+**[MCP](#use-it-from-your-ai-assistant-mcp)** · **[What's next](#whats-next)**
 
 **Try it in 2 minutes:** [Getting started](#getting-started)
 
-## Contents
-- [Why](#why)
-- [The problem](#the-problem)
-- [How PrivLab solves it](#how-privlab-solves-it)
-- [How it works](#how-it-works)
-- [Three ways to use PrivLab](#three-ways-to-use-privlab)
-- [Models and tools](#models-and-tools)
-- [What you get](#what-you-get)
-- [Engineering](#engineering)
-- [Results](#results)
-- [Getting started](#getting-started)
-- [Use it in your browser](#use-it-in-your-browser)
-- [Use it from your AI assistant (MCP)](#use-it-from-your-ai-assistant-mcp)
-- [Running the tests](#running-the-tests)
-- [What's next](#whats-next)
+</div>
+
+---
 
 ## Why
 
@@ -63,20 +73,13 @@ reports.
 
 ## How PrivLab solves it
 
-- **Privacy:** Personal details are found and masked on your device before any AI sees the report, and you confirm the
-  masking yourself. An open-weights model double-checks the masked text, and it can be hosted in-house. The privacy
-  guard is built into the code: only masked text can ever reach an AI.
-- **Manual data entry:** Muse Spark 1.3 reads the masked report and highlights each value with the words it came from.
-  You confirm instead of retype, one report at a time in the browser or a whole folder at once through Muse Code.
-- **The prompt gap:** There is no developer and no prompt to hand over. The doctor or registrar describes a field in
-  their own words, and Muse Spark 1.3 turns it into a precise medical definition they approve. The definition is the
-  spec, written by the person who knows what it means.
-- **The validation gap:** The same person who defined the field validates its values, so there is no annotator reading
-  the document differently. Every check is scored, about one in ten is a blind check, and a field is Proven accurate
-  only when the user's own checks show it, with 95% confidence.
-- **The transparency and trust gap:** Every value shows its source in the report, every uncertain value is flagged
-  instead of guessed, every correction is learned and listed where the user can remove it, and the accuracy of every
-  field is shown on its card. The user sees the whole process and can change any part of it.
+| Problem | How PrivLab solves it |
+|---|---|
+| **Privacy** | Personal details are found and masked on your device before any AI sees the report, and you confirm the masking yourself. An open-weights model double-checks the masked text, and it can be hosted in-house. The privacy guard is built into the code: only masked text can ever reach an AI. |
+| **Manual data entry** | Muse Spark 1.3 reads the masked report and highlights each value with the words it came from. You confirm instead of retype, one report at a time in the browser or a whole folder at once through Muse Code. |
+| **The prompt gap** | There is no developer and no prompt to hand over. The doctor or registrar describes a field in their own words, and Muse Spark 1.3 turns it into a precise medical definition they approve. The definition is the spec, written by the person who knows what it means. |
+| **The validation gap** | The same person who defined the field validates its values, so there is no annotator reading the document differently. Every check is scored, about one in ten is a blind check, and a field is Proven accurate only when the user's own checks show it, with 95% confidence. |
+| **The transparency and trust gap** | Every value shows its source in the report, every uncertain value is flagged instead of guessed, every correction is learned and listed where the user can remove it, and the accuracy of every field is shown on its card. The user sees the whole process and can change any part of it. |
 
 ## How it works
 
@@ -138,18 +141,19 @@ Same reports, same fields, same learning either way.
 | **Muse Spark Open** | Open weights, hosted on Baseten | The security guardrail on masked text. Because the weights are open, a hospital can host it in-house and nothing leaves the building. Muse Spark 1.3 is its qualified backup |
 | **Muse Spark 1.3** | Meta Model API | Field definitions, annotation and extraction: one checked JSON call per report, steered by examples learned from your corrections |
 | **Elephant-1** | Baseten decision model | A second opinion on whether an annotated value needs the user's review; answers yes or no in under a second |
-| **Muse Code** | | Coding partner and tester for the nine-day build (it even ran usability tests on the browser UI); also a PrivLab user through MCP |
+| **Muse Code** | Command line (CLI) | Coding partner and tester for the nine-day build (it even ran usability tests on the browser UI); also a PrivLab user through MCP |
 
 A model is used only after passing a privacy qualification test on synthetic reports (`profiles/model_qualification.json`).
 Every call is one per report per step, cached, and logged with its tokens and cost.
 
-**Why Meta's models matter here.** Muse Spark Open has open weights, so a hospital can run the privacy check on its own
-servers; that is the only way "nothing leaves the building" can be a real promise, and extraction can move in-house the
-same way later. Muse Spark Open and Muse Spark 1.3 are one family taking the same structured call, and both passed the
-same privacy test, so each can stand in for the other. Muse Spark 1.3 understands medical data well: it turns a field
-described in everyday words into a full medical definition, and returns a consistent JSON structure every time, so every
-value comes with the exact words it was taken from and code can check it. Muse Code lets PrivLab live inside an assistant
-people already use.
+> [!NOTE]
+> **Why Meta's models matter here.** Muse Spark Open has open weights, so a hospital can run the privacy check on its own
+> servers; that is the only way "nothing leaves the building" can be a real promise, and extraction can move in-house the
+> same way later. Muse Spark Open and Muse Spark 1.3 are one family taking the same structured call, and both passed the
+> same privacy test, so each can stand in for the other. Muse Spark 1.3 understands medical data well: it turns a field
+> described in everyday words into a full medical definition, and returns a consistent JSON structure every time, so every
+> value comes with the exact words it was taken from and code can check it. Muse Code lets PrivLab live inside an assistant
+> people already use.
 
 ## What you get
 
@@ -192,7 +196,7 @@ are: each personal detail is fully hidden, partly hidden or missed, and every wo
 that really were personal; recall: personal words that were hidden).
 
 | Test set | Personal details | Fully hidden | Partly / missed | Precision | Recall | F1 |
-|---|---|---|---|---|---|---|
+|---|---:|---:|:---:|---:|---:|---:|
 | Pathology reports (dev) | 253 | **100%** | 0 / 0 | 100% | 100% | **1.00** |
 | Pathology reports (extra) | 1,623 | **100%** | 0 / 0 | 100% | 100% | **1.00** |
 | Tricky formats (red-team) | 30 | **100%** | 0 / 0 | 98.8% | 100% | **0.99** |
@@ -214,11 +218,13 @@ For context, a John Snow Labs benchmark found that two open-source AI-only tools
 details in clinical text ([article](https://medium.com/john-snow-labs/how-good-are-open-source-llm-based-de-identification-tools-in-a-medical-context-6600ddac6a0f)).
 That is why PrivLab does not rely on an AI alone. Different data, so the numbers are not directly comparable.
 
-**What PrivLab keeps by default.** Clinical dates and ages stay visible; only the date of birth is hidden. Under HIPAA
-Safe Harbor every date tied to a person except the year, and any age over 89, counts as an identifier; tick "Other
-dates" in the privacy choices to hide all dates. Date shifting and "90+" ages are on the roadmap.
+> [!IMPORTANT]
+> **What PrivLab keeps by default.** Clinical dates and ages stay visible; only the date of birth is hidden. Under HIPAA
+> Safe Harbor every date tied to a person except the year, and any age over 89, counts as an identifier; tick "Other
+> dates" in the privacy choices to hide all dates. Date shifting and "90+" ages are on the roadmap.
 
-All data in this repository is synthetic: public pathology text (TCGA) with invented personal details.
+> [!NOTE]
+> All data in this repository is synthetic: public pathology text (TCGA) with invented personal details.
 
 ## Getting started
 
@@ -254,7 +260,8 @@ AI key turns on one more step; anything missing is skipped or marked amber, neve
 | `META_API_KEY` | Field definitions and extraction (Muse Spark 1.3) | De-identification works; extraction says the key is missing | Meta Model API |
 | `BASETEN_DECISION_API_KEY` | *Optional.* Second opinion on values and on undecided name words | Skipped; you are asked as usual | A separate Baseten API key |
 
-With no API key at all you still get the whole de-identification on your computer, all tests, and the scorers.
+> [!TIP]
+> With no API key at all you still get the whole de-identification on your computer, all tests, and the scorers.
 
 **3. Start PrivLab.** On Windows, double-click **`PrivLab.cmd`**. On any system:
 `.venv\Scripts\python -m viewer.server --open` (Windows) or `.venv/bin/python -m viewer.server --open` (macOS/Linux).
@@ -314,8 +321,9 @@ to, and your reports never leave your computer.
 masks every report on your computer, you approve once, verified values are saved by themselves once a field is Proven
 accurate, the uncertain ones come back to you, and it asks where to save.
 
-**Under the hood:** six outcome-based tools with flat arguments and "Use when…" instructions, five ready-made prompts,
-paged results, and `privlab_wait` so the chat carries on by itself once you finish a report in the browser.
+> [!TIP]
+> **Under the hood:** six outcome-based tools with flat arguments and "Use when…" instructions, five ready-made prompts,
+> paged results, and `privlab_wait` so the chat carries on by itself once you finish a report in the browser.
 
 ## Running the tests
 
