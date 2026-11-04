@@ -7,7 +7,9 @@
 Built solo in 9 days for the **Meta Global AI Developer Hackathon** (Track 1, Indie developer) with two Meta models:
 **Muse Spark 1.3** (Meta Model API) and open-weights **Muse Spark Open**.
 
-**Demo video:** _link added at submission_ · **Try it in 2 minutes:** [Getting started](#getting-started)
+[![Watch the PrivLab demo](https://img.youtube.com/vi/8dhbRVAveLg/maxresdefault.jpg)](https://youtu.be/8dhbRVAveLg)
+
+**▶ [Watch the demo video](https://youtu.be/8dhbRVAveLg)** · **Try it in 2 minutes:** [Getting started](#getting-started)
 
 ## Contents
 - [Why](#why)
